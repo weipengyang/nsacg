@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wb="http://open.weibo.com/wb">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	 <meta name="keywords" content="{pigcms::C('keyword')}">
+    <meta name="description" content="{pigcms::C('content')}">
+	   <title>{pigcms::C('site_name')},微信公众平台,微信机器人,微信自动回复, 多用户微信营销系统,  </title>
+	<script src="{pigcms::RES}/js/jquery-1.9.1.min.js"></script>
+	<link href="{pigcms::RES}/css/main.css" rel="stylesheet" type="text/css">
+	<link href="{pigcms::RES}/new_index/index.css" rel="stylesheet" type="text/css">
+	<link href="{pigcms::RES}/css/banner.css" tppabs="{pigcms::RES}/css/banner.css" rel="stylesheet" type="text/css">
+<link href="{pigcms::RES}/css/serviceItem.css" tppabs="{pigcms::RES}/css/serviceItem.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="{pigcms::RES}/js/slide.js" tppabs="{pigcms::RES}/js/slide.js"></script>
+<style type="text/css">
+	.function_box{ width:100%;background:url({pigcms::RES}/images/fun_bg.jpg) no-repeat center top;}
+	.function_tit{ width:932px; height:54px; font-size:30px; font-family:"微软雅黑"; color:#ed4e34; padding-top:90px;}
+	.f_main{ width:943px;  padding:7px 0 0 6px;}
+	.f_foot{ width:943px; height:40px; }
+
+	
+	.f_main_leftbox{width:150px; float:left; height:680px; position:relative;}
+	.f_main_leftbox .shang{display:none; width:133px; height:20px; position:absolute; top:0px; left:0px; z-index:9; cursor:pointer;}
+	.f_main_leftbox .xia{display:none; width:133px; height:20px; position:absolute; bottom:0px; left:0px; z-index:9;cursor:pointer;}
+	.list_box{width:133px; height:612px; overflow:hidden; margin-top:0px;}
+	.f_main_left li{ width:133px; height:34px; line-height:34px; text-align:center; font-size:14px; font-family:"微软雅黑"; color:#605761; cursor:pointer;}
+	.f_main_left .cur{filter:progid:DXImageTransform.Microsoft.gradient(enabled='true',startColorstr='#66F1F1F1', endColorstr='#66F1F1F1'); font-weight:bold;font-size:16px;border-radius:15px;}
+	:root .f_main_left .cur{
+		filter:none;	 /*处理IE9浏览器中的滤镜效果*/
+		background-color:rgba(241,241,241,0.4);
+	}
+
+	.f_main_right{ width:783px; height:680px; float:left; filter:progid:DXImageTransform.Microsoft.gradient(enabled='true',startColorstr='#66000000', endColorstr='#66000000')}
+	:root .f_main_right {filter:none;background-color:rgba(0,0,0,0.4);}
+	.r_title{ width:783px; height:72px; line-height:72px; font-size:20px; font-family:"微软雅黑"; font-weight:bold; text-align:center; border-bottom:1px solid #d8d1c4; color:#fff;}
+	.r_img{ width:783px; height:350px; margin-top:55px; }
+	.r_img img{ border:3px solid #cccccc; width:620px; height:340px; background: url({pigcms::RES}/images/111.gif) no-repeat center;}
+	.r_text{ width:783px; margin-top:40px;}
+	.r_text p{ width:630px; text-indent:2em; font-size:14px; line-height:20px; color:#fff;}
+</style>
+<script src="{pigcms::RES}/js/lazyload.js"></script>
+<script type="text/javascript">
+	var num = [
+		{
+			tit:"微官网",
+			url:"{pigcms::RES}/images/function_1.png",
+			text:"	把您的企业网站搬到微信里面，打造一站式微信服务平台。几十种模板任选，智能的建站系统让您亲自设计自己的网站，建立一个您专属的微信网站。进入{pigcms::C('site_name')}微网站主页即可体验微信3G网站。"
+		},
+		{
+			tit:"微会员",
+			url:"{pigcms::RES}/images/function_2.png",
+			text:"随身携带的会员卡，降低发卡成本 提升用户体验。各大知名品牌，贴身服务。根据用户特征进行精细分类，从而实现各种模式的精准营销。"
+		},
+		{
+			tit:"微活动",
+			url:"{pigcms::RES}/images/function_3.jpg",
+			text:"	大转盘、刮刮卡、水果达人、砸金蛋、摇一摇抽奖、优惠券等一系列微信营销互动游戏应有尽有。真正实现互动活动电子化、自动化。充分利用微信本身的强交互性，整合商家自定义活动模块，让您的产品内容更多样、粘性更足，使您的产品活灵活现地出现在用户面前。"
+		},
+		{
+			tit:"微商城",
+			url:"{pigcms::RES}/images/function_11.png",
+			text:"一款基于移动互联网的商城应用服务产品，以时下最热门的互动应用微信为媒介，配合微信5.0微信支付功能，实现商家与客户的在线互动，即时推送最新商品信息给微信用户，实现微信在线的购物功能。其主要功能包括：支持商品管理、支持会员管理、支持购物车、支持商品分类管理、支持订单管理、支持店铺设置、支持支付方式管理、支持配送方式管理。"
+		},
+		{
+			tit:"微餐饮",
+			url:"{pigcms::RES}/images/function_12.png",
+			text:"微餐饮,是一款微信餐饮互联网移动产品，用户可实现在线实时预定、点菜等功能，饮企业可借助我们的微餐饮实现品牌传播、菜品宣传、粉丝到店、口碑营销等全自主营销手段。"
+		},
+		{
+			tit:"微服务",
+			url:"{pigcms::RES}/images/function_4.png",
+			text:"免费为用户提供第三方服务接口，开通服务后，只需回复简单的关键词，即可获取相应的服务信息。使用方便，为您的生活提供便利。"
+		},
+		{
+			tit:"自定义菜单",
+			url:"{pigcms::RES}/images/function_5.png",
+			text:"	提供微信公众号自定义菜单管理功能，用户无需再通过输入关键词触发回复，直接点击菜单就可以看相关的内容。可与企业原有Wap进行打通，复用企业APP原有功能，同时可定制个性化功能、使用HTML5新技术进行无限拓展，帮助企业打造最便捷、易推广的微信内置APP，此功能如果结合微信3G网站可以使您的公众号用户体验更好，带给粉丝不一样的感受。"
+		},
+		{
+			tit:"自定义回复",
+			url:"{pigcms::RES}/images/function_6.png",
+			text:"无微不至的智能客服系统：<br/>1、常见问题采用关键词自动回复功能，通过形象的菜单界面引导顾客进行微信互动操作，让您的客服团队轻松应对大量的客户咨询;<br/>2、用户首次关注时，企业形象图文推送;3、自定义关键字图文消息回复;<br/>3、24小时智能互动快速答疑，菜单式指引，准确引导提供业务服务。"
+		},
+		{
+			tit:"微请柬",
+			url:"{pigcms::RES}/images/function_7.png",
+			text:"商务请柬个性化定制，替换原始的纸质请柬，大大降低成本。采用新型技术，搭载微信强大的互动性，个性化表达您想要表达的请柬内容。使您的邀请更具个性化色彩，大大增加应邀率。方便快捷，传播迅速快，并且环保低碳。"
+		},
+		{
+			tit:"360°全景",
+			url:"{pigcms::RES}/images/function_8.png",
+			text:"360度全景通过把一组照片无缝拼接合成全景图，采用专业技术制作成可以随意上下左右前后拖动观看3D效果， 给人以三维立体的空间感觉，犹如身临其境。可应用于360°全景看房、全景看酒店、旅游景点全景游览、公司企业展示宣传、三维全景虚拟展示商业空间、三维全景展示汽车等等。"
+		},
+		{
+			tit:"一键拨号+导航",
+			url:"{pigcms::RES}/images/function_9.png",
+			text:"一键拨号+一键导航让客户快速找到你！让微信实现App应用的功能，却不用花费App的高额开发成本。更重要它无需下载、即搜即用，用户不用下载各种各样的应用，只要搜索到就能立刻使用。这对于用户来说，无疑是非常重要的。因为用户的手机存储空间有限，大部分用户装了十几个应用后，就会发现手机运行速度减慢，存储空间不够等问题，不得不选择卸载部分app。但有了微信公众账号打造出来的微应用后，用户想用多少就用多少，完全不占手机存储空间"
+		},
+		{
+			tit:"LBS回复",
+			url:"{pigcms::RES}/images/function_10.png",
+			text:"LBS图文回复是由商家设置店铺位置，用户提交当前所在位置后，可以找到最近的商家店铺，并进行一键导航、一键拨号。"
+		},
+		{
+			tit:"微报名",
+			url:"{pigcms::RES}/images/function_13.jpg",
+			text:"通过微信报名预约，客户报名数据清晰可见，和报名电话说再见吧！"
+		},
+		{
+			tit:"微留言",
+			url:"{pigcms::RES}/images/function_14.jpg",
+			text:"微留言是一种能为商家带来巨大的社会化流量的功能，允许留言可以被分享于留言者的朋友圈、腾讯微博和发送给好友，这意味着留言可以被无数的粉丝分享，用户对商家进行实时且客观的评价，真实的社交环境保证了留言的客观性和有效性。“微留言”的使用商家只需做好产品和用户服务即可，随着口碑的传播，消费者将源源不断。"
+		},
+		{
+			tit:"微相册",
+			url:"{pigcms::RES}/images/function_15.jpg",
+			text:"微相册作为微时代平台的一项主打基本功能，为用户提供图片的存储和展示服务，是基于图片兴趣分享的社区型产品。在微相册里，您可以方便的创建相册，轻松地发布您需要展示的照片，还可以拓展为商家开展活动的一种展现方式。"
+		},
+		{
+			tit:"微汽车",
+			url:"{pigcms::RES}/images/function_16.jpg",
+			text:"微汽车采用微时代平台进行汽车的销售管理、预约保养、预约试驾、保险计算、车贷计算、车型比较、违章查询、360度全景看车、车主关怀等功能，整个过程非常便捷，省时省力省心，并通过与平台有交互能力的手机客户端，快速便捷的实现了商家的销售管理与预约过程，同时也实现了客户无需进入4s店就能进行预约保养和试驾的功能。"
+		},
+		{
+			tit:"微房产",
+			url:"{pigcms::RES}/images/function_17.jpg",
+			text:"微房产是利用微时代平台打造的一款全新超炫酷的房产官方网站，其功能非常强大，包含了楼盘介绍、子楼盘管理、户型介绍及户型图、楼盘相册、房友印象以及专家点评等功能，更有360度全景看房超强大功能震撼登场！花几分钟时间即可打造微房产官网。"
+		},
+		{
+			tit:"微酒店",
+			url:"{pigcms::RES}/images/function_18.jpg",
+			text:"<p>1、消息管理：包含自动消息回复和功能性消息编辑功能,优化对用户的消息服务,提升用户体验。</p><p>2、门店管理：即对门店详情页面显示内容进行管理，且用户可直接一键导航或一键拨号。</p><p>3、用户管理：用户信息管理模块，给每个用户打上各种标签，为精准营销提供服务。</p><p>4、数据统计：各式各样的数据为后期运营提供重要帮助。</p><p>5、提供服务：用户直接可在公众账号进行预约房间、预约餐厅等操作。</p>"
+		},
+		{
+			tit:"微KTV",
+			url:"{pigcms::RES}/images/function_19.jpg",
+			text:"专门为KTV行业定制开发的“微KTV系统”正式上线。微信一点，就能完成包厢预约，更潮、更快、更及时。预定功能可查看KTV地址、预订电话，并且可以一键导航、一键拨号。可添加多个包厢房间、查看房间详情图片及包厢详情。"
+		},
+		{
+			tit:"微预定",
+			url:"{pigcms::RES}/images/function_20.jpg",
+			text:"微预约是商家实现在线预约的一种服务，可以运用于汽车、房产、酒店、医疗、餐饮等各个行业，给用户的出行办事、购物、消费带来了极大的便利！且操作简单，响应速度非常快！"
+		},
+		{
+			tit:"微喜帖",
+			url:"{pigcms::RES}/images/function_21.jpg",
+			text:"微喜帖是商家实现在线预约的一种服微喜帖是为结婚庆典而推出的一款行业产品，主要是为计划结婚的用户们，通过微喜帖来向亲朋好友发送自己即将结婚的动态，可以展现用户想要表达的话、结婚日期、地址、导航、接待电话，同时亲朋好友可以在微喜帖平台上提交赴宴通知、送上祝福，并且转发喜帖。"
+		}
+	];
+</script>
+</head>
+<body onselectstart="return false">
+
+ <include file="Public:header"/>
+
+<div class="function_box" id="nav_hover" data-id="2" style="
+    margin-top: -20px;
+">
+	<div class="function_tit Center"><img src="{pigcms::RES}/images/funtitle.png" /></div>
+	<div class="f_main Center Center clearfix">
+		<div class="f_main_leftbox">
+			<span class="shang"><img src="{pigcms::RES}/images/fun_s.png" /></span>
+			<div class="list_box">
+				<ul class="f_main_left">
+					<li class="cur">微官网</li>
+					<li>微会员</li>
+					<li>微活动</li>
+					<li>微商城</li>
+					<li>微餐饮</li>
+					<li>微服务</li>
+					<li>自定义菜单</li>
+					<li>自定义回复</li>
+					<li>微请柬</li>
+					<li>360°全景</li>
+					<li>一键拨号+导航</li>
+					<li>LBS回复</li>
+					<li>微报名</li>
+					<li>微留言</li>
+					<li>微相册</li>
+					<li>微汽车</li>
+					<li>微房产</li>
+					<li>微酒店</li>
+					<li>微KTV</li>
+					<li>微预定</li>
+					<li>微喜帖</li>
+				</ul>
+			</div>
+			<span class="xia"><img src="{pigcms::RES}/images/fun_x.png" /></span>
+		</div>
+		<div class="f_main_right">
+			
+		</div>
+	</div>
+	<div class="f_foot Center"></div>
+</div>
+<script type="text/javascript">
+	var btn = jQuery('.f_main_left li'),
+		title = jQuery('.r_title'),
+		pic = jQuery('.r_img img'),
+		text = jQuery('.r_text p');
+
+	var high = btn.eq(0).height();
+	
+	window.onload =function(){
+		var len = btn.length;
+		if(len > 18){
+			$('.list_box').css('margin-top','34px');
+			$('.shang,.xia').show();
+		}
+		var i = "0";
+		if(i > 18){
+			$('.list_box').animate({scrollTop:(i-17)*high},300);
+		}
+		btn.removeClass('cur').eq(i).addClass('cur');
+		var htm = '<div class="r_title">'+num[i].tit+'</div><div class="r_img"><img data-src="'+num[i].url+'" class="Center"/></div><div class="r_text"><p class="Center">'+num[i].text+'</p></div>';
+		$('.f_main_right').append(htm);
+		$('img').lazyload({threshold:0});
+	}
+	
+	btn.click(function(){
+		var index = btn.index(this);
+		var scroll = $('.list_box').scrollTop();
+		var scroll_num = scroll/high;
+		if(index - scroll_num == 0){
+			$('.list_box').animate({scrollTop:scroll-high},300);
+		}
+		if(index - scroll_num > 16){
+			$('.list_box').animate({scrollTop:scroll+high},300);
+		}
+		
+		$('.f_main_right').html("");
+		btn.removeClass('cur').eq(index).addClass('cur');
+		var htm = '<div class="r_title">'+num[index].tit+'</div><div class="r_img"><img data-src="'+num[index].url+'" class="Center"/></div><div class="r_text"><p class="Center">'+num[index].text+'</p></div>';
+		$('.f_main_right').append(htm);
+		$('img').lazyload({threshold:0});
+		
+	});
+
+	
+	$('.shang').click(function(){
+		var scroll = $('.list_box').scrollTop();
+		$('.list_box').animate({scrollTop:scroll-high},300);
+	});
+	$('.xia').click(function(){
+		var scroll = $('.list_box').scrollTop();
+		$('.list_box').animate({scrollTop:scroll+high},300);
+	})
+</script> <include file="Public:footer"/>
+<script src="{pigcms::RES}/js/login.js"></script>
+<script src="{pigcms::RES}/js/nav.js"></script>
+<div style="display:none;">
+</div>
+</body>
+</html>

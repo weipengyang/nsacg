@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<include file="Public:header" />
+<body style="background:#fff;">
+<include file="Public:menu" />
+<div class="banner_reg">
+	<div class="banner_reg_main">
+    </div>
+</div>
+<div class="bg_reg_main">
+	<form action={pigcms::U('Users/checkreg')} method="post" id="info_form">
+	<div class="reg_main">
+    	<div class="title">
+        	<i>1</i><h2>账号信息</h2>
+        </div>
+        <table width="100%" border="0">
+          <tr>
+            <th>用户名</th>
+            <td><input name="username" type="text" placeholder="请输入用户名" class="focus" /></td>
+          </tr>
+          <tr>
+            <th>密码</th>
+            <td><input name="password" type="password" placeholder="请输入密码" /></td>
+          </tr>
+          <tr>
+            <th>确认密码</th>
+            <td><input name="repassword" type="password" placeholder="请确认密码" /></td>
+          </tr>
+        </table>
+        <div class="title">
+        	<i>2</i><h2>公司信息</h2>
+        </div>
+        <table width="100%" border="0">
+          <tr>
+            <th>邮箱</th>
+            <td><input name="email" id="email" type="text" placeholder="请输入邮箱" /></td>
+          </tr>
+          <tr>
+            <th>电话</th>
+            <td><input name="phone" id="phone" type="text" placeholder="请输入电话" /></td>
+          </tr>
+        </table>
+        <input type="submit" value="立即注册" class="btn_reg" />
+    </div>
+    </form>
+</div>
+<script type="text/javascript">try{Dd('webpage_6').className='left_menu_on';}catch(e){}</script>
+<include file="Public:footer" />
+<!----注册 end---->
+</body>
+</html>
+

@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>{pigcms:$info['title']}</title>
+
+<link href="{pigcms:$staticPath}/tpl/static/public-framework/styles/framework.css" rel="stylesheet" type="text/css">
+<link href="{pigcms:$staticPath}/tpl/static/public-framework/styles/owl.carousel.css" rel="stylesheet" type="text/css">
+<link href="{pigcms:$staticPath}/tpl/static/public-framework/styles/owl.theme.css" rel="stylesheet" type="text/css">
+<link href="{pigcms:$staticPath}/tpl/static/Popularity/css/index.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/public-framework/scripts/jquery.js"></script>
+
+<script type="text/javascript">
+function swapStyleSheet(sheet){
+	document.getElementById('pagestyle').setAttribute('href', sheet);
+}
+</script>
+
+</head>
+<body>
+<div class="all-elements">
+  <div class="title"><i class="trophy">　</i>人气排行榜</div>
+    <div id="content" class="page-content">
+    
+		<!--sharelist start-->
+		 <div class="content">
+            <div class="container no-bottom">
+
+            	<volist id="rank" name="rank" key="key">
+            	<div class="column-responsive half-bottom">
+            		<img src="{pigcms:$rank.portrait}">
+                    <div class="info">
+                    	<b>{pigcms:$rank.username}</b>
+                    	<div class="con">
+	                    	<i class="diagram-list"></i>
+	                    	<span class="num">人气：{pigcms:$rank.share_count}</span>
+	                    	<span class="time">{pigcms:$rank.add_time|date="Y-m-d H:i",###}</span>
+	                    </div>
+	                    <i class="ic_rank2 ic{pigcms:$key}"><if condition="$key gt 3">{pigcms:$key}</if></i>
+                	</div>
+            	</div> 
+           		</volist>            	             
+				<div class="count">{pigcms:$urank['username']} 当前排第<span class="cor-1">{pigcms:$urank['count']}</span>名</div>
+                <div class="clear"></div>
+            </div>
+        </div>
+		<!--sharelist end-->
+  	
+    </div>  
+</div>
+
+
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"Popularity",
+            "moduleID":"0",
+            "imgUrl": "{pigcms:$info.pic}", 
+            "timeLineLink": "{pigcms:$f_siteUrl}{pigcms::U('Popularity/index',array('token'=>$token,'id'=>$info['id'],'share_code'=>$uinfo['share_key']))}",
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Popularity/index',array('token'=>$token,'id'=>$info['id'],'share_code'=>$uinfo['share_key']))}",
+            "weiboLink": "{pigcms:$f_siteUrl}{pigcms::U('Popularity/index',array('token'=>$token,'id'=>$info['id'],'share_code'=>$uinfo['share_key']))}",
+            "tTitle": "{pigcms:$info.title}",
+            "tContent": "{pigcms:$info.title}"
+};
+</script>
+{pigcms:$shareScript}
+
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/public-framework/scripts/framework.launcher.js"></script>
+
+</body>
+</html>

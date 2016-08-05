@@ -1,0 +1,126 @@
+<include file="Repast:newheader" />
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/repastnew/js/dialog.js"></script>
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/repastnew/js/showdialog.js"></script>
+<body onselectstart="return true;" ondragstart="return false;">
+<div data-role="container" class="container orderDetails">
+	<header data-role="header">	
+			<ul class="orderlist">
+			<li>
+				<a href="{pigcms::U('Repast/ShopPage', array('token'=>$token, 'cid'=>$orderList['cid'],'orid'=>$orderList['id'], 'wecha_id'=>$wecha_id))}">
+					<div class="info">
+					   <php>$orderS=0;</php>
+					   <if  condition="$orderList['paid'] eq 0">
+					    <if condition="($orderList['takeaway'] eq 2 AND $orderList['time'] gt $today) OR ($orderList['takeaway'] eq 0 AND ($orderList['reservetime'] gt $today))">
+						 <span id="finished" class="sawtooth processing">处理中</span>
+						 <php>$orderS=1;</php>
+						 <else/>
+						 <span class="sawtooth faild hasicon"><label>×</label>已过期</span>
+						 </if>
+						 <else/>
+						 <span class="sawtooth faild hasicon"><label>×</label>已完成</span>
+						 </if>
+						<label>
+							<span class="name">{pigcms:$company['name']}</span>
+							<span class="time">{pigcms:$orderList['otimestr']}</span>
+						</label>
+					</div>
+					<div><span class="right_adron"></span></div>
+				</a>
+			</li>
+		</ul>
+		<ul class="pay" style="padding-right: 20px;">
+			<li>餐桌情况<label>{pigcms:$orderList['tablestr']}</label></li>
+			<li>人数<label>{pigcms:$orderList['nums']}人</label></li>
+			<li>姓名<label>{pigcms:$orderList['name']} <if  condition="$orderList['sex'] eq 0">女士<else/>先生</if></label></li>
+			<li>联系电话<label>{pigcms:$orderList['tel']}</label></li>
+			<if condition="$orderList['takeaway'] eq 0 AND isset($orderList['reservetimestr'])">
+			<li>预约时间<label>{pigcms:$orderList['reservetimestr']}</label></li>
+			</if>
+		</ul>	
+		<div class="paybtn">
+		   <if condition="$orderS eq 1">
+			<a href="{pigcms::U('Repast/OrderToPay', array('token'=>$token, 'cid'=>$orderList['cid'],'orid'=>$orderList['id'], 'wecha_id'=>$wecha_id))}" class="btn orange bigfont left">去付款</a>
+			</if>
+			<if condition="$orderList['jiaxcai']">
+			<a href="{pigcms::U('Repast/dishMenu', array('token'=>$token, 'cid'=>$orderList['cid'],'orid'=>$orderList['id'], 'wecha_id'=>$wecha_id))}" class="btn orange bigfont right">去加菜</a>
+			</if>
+		</div>
+	</header>
+	<section data-role="body" class="section_scroll_content">
+		<div class="menulist ">
+			<div>我的菜单</div>
+			<label></label>		
+			<span>
+				<span></span>
+				<if condition="!empty($orderList['info']) AND is_array($orderList['info'])">
+				<div class="list">
+					<ul>
+					<volist name="orderList['info']" id="dishs">
+						<if condition="$key eq 'table'">
+						<li>
+							<span class="col1">餐桌预定费用</span>
+							<span class="col2">&nbsp;</span>
+							<span class="col3">￥{pigcms:$dishs['price']}</span>
+						</li>
+						<else/>
+						<li>
+							<span class="col1">{pigcms:$dishs['name']}<if condition="isset($dishs['j_c'])"><sup><i style="color:green;margin-left:5px;"><strong>加菜</strong></i></sup></if></span>
+							<span class="col2">×{pigcms:$dishs['num']}</span>
+							<span class="col3">￥{pigcms:$dishs['price']}</span>
+							<if condition="isset($dishs['omark']) && !empty($dishs['omark'])">
+							<div style="line-height: 18px;float: left;"><span style="color:#ef7f2c">备注：</span><span>{pigcms:$dishs['omark']|htmlspecialchars_decode=ENT_QUOTES}</span></div>
+							</if>
+						</li>
+						</if>
+					  </volist>
+					<if condition="isset($orderList['allmark']) && !empty($orderList['allmark'])">
+					<li>
+						<span style="color:#ef7f2c">购物车备注：</span><span style="line-height: 18px;float:none;">{pigcms:$orderList['allmark']|htmlspecialchars_decode=ENT_QUOTES}</span></span>
+					</li>
+					</if>
+					</ul>
+				<else/>
+				  <div class="tips" style="display:block;">亲，您还没有点菜喔！</div>
+				  	<div class="list">
+					<ul>
+					</ul>
+				</if>
+					<div>
+						<span class="col1">合计</span>
+						<span class="col2">&nbsp;&nbsp;{pigcms:$orderList['total']}</span>
+						<span class="col3">￥{pigcms:$orderList['price']}</span>
+						<if condition="$orderList['paid'] eq 0 && $orderList['havepaid'] gt 0">
+						<span class="col1">备注</span>
+						<span class="col2">已支付 {pigcms:$orderList['havepaid']}</span>
+						<span class="col3">未支付 <php>echo ($orderList['price']-$orderList['havepaid']);</php></span>
+						</if>
+						<span class="col1">支付方式</span>
+						<span class="col2">{pigcms:$orderList['paytypestr']}</span>
+						<span class="col3 no_fontcolor">{pigcms:$orderList['paidstr']}</span>
+					</div>
+				</div>
+				<label class="line"><span></span></label>
+			</span>	 
+		</div>
+	</section>
+	<footer data-role="footer">
+	</footer>
+</div>
+
+<script type="text/javascript">
+	function cancel(){
+		hidepopup();
+	}
+window.shareData = {  
+            "moduleName":"Repast",
+            "moduleID":"$company['id']",
+            "imgUrl": "{pigcms:$company['logourl']}", 
+            "timeLineLink": "{pigcms::$f_siteUrl .  U('Repast/index',array('token' => $token))}",
+            "sendFriendLink": "{pigcms::$f_siteUrl .  U('Repast/index',array('token' => $token))}",
+            "tTitle": "{pigcms:$metaTitle}",
+            "tContent": "{pigcms:$metaTitle}"
+        };
+</script>
+{pigcms:$shareScript}
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="{pigcms:$staticPath}/tpl/static/dishout/css/main.css" media="all">
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/dishout/js/jquery1.8.3.js"></script>
+<script language="javascript" src="http://webapi.amap.com/maps?v=1.3&key=b6c2c19cf45cd3d2b82541bc857eed7c"></script>
+<!--<link rel="stylesheet" type="text/css" href="http://developer.amap.com/Public/css/demo.Default.css"/>--地图样式，这里不需要显示出地图-->
+<title>{pigcms:$metaTitle}</title>
+<meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<meta name="Keywords" content="">
+<meta name="Description" content="">
+<!-- Mobile Devices Support @begin -->
+	<meta content="telephone=no, address=no" name="format-detection">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<!-- apple devices fullscreen -->
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- Mobile Devices Support @end -->
+<script language="javascript">
+var mapObj,toolBar,locationInfo;
+var locationX,locationY;
+//初始化地图对象，加载地图
+function mapInit(){
+	mapObj = new AMap.Map("iCenter");
+	//地图中添加地图操作ToolBar插件
+	mapObj.plugin(["AMap.ToolBar"],function(){		
+		toolBar = new AMap.ToolBar(); //设置地位标记为自定义标记
+		mapObj.addControl(toolBar);		
+		AMap.event.addListener(toolBar,'location',function callback(e){	
+			locationInfo = e.lnglat;
+			if(locationInfo){
+			  window.location.href=window.location.href+"&nowlat="+locationInfo.lat+"&nowlng="+locationInfo.lng;
+			  //calculateDistance(locationInfo.lat,locationInfo.lng); //改成php来计算 然后按距离远近排序输出
+			}
+		});
+		toolBar.doLocation();
+	});
+}
+	
+//获取定位位置信息
+function showLocationInfo()
+{
+	 locationX = locationInfo.lng; //定位坐标经度值
+	 locationY = locationInfo.lat; //定位坐标纬度值
+}
+</script>
+</head>
+<link rel="stylesheet" type="text/css" href="{pigcms:$staticPath}/tpl/static/dishout/css/style.css" media="all">
+<body id="cardunion" class="mode_webapp2" style="background: #d2d1cd;" <if condition="!isset($is_dwei)">onLoad="mapInit()" </if>>
+<div style="float:none;width:100%;" class="headselect">
+	<a class="link_tel icon-phone">请选择订餐门店</a>
+</div>
+<div id="dweing" style="margin:5px 0 0 5px;<if condition="isset($is_dwei)">display:none;</if>">定位中.....</div>
+<php>$tmpC=array();</php>
+<volist name="company" id="com">
+  <div class="box box-list">
+  <a href="{pigcms::U('DishOut/dishMenu', array('token'=>$token,'cid'=>$com['id'],'wecha_id'=>$wecha_id))}" class="bd fw">
+    <p><b>{pigcms:$com['name']}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<if condition="isset($com['distancestr']) && ($com['distance'] gt 0)">
+	<span style="color:#F95C50;" id="juli{pigcms:$com['id']}">距离：<span class="juli">{pigcms:$com['distancestr']}</span></span>
+	<else/>
+	<span style="color:#F95C50;display:none;" id="juli{pigcms:$com['id']}">距离：<span class="juli"></span></span>
+	</if>
+	</p>
+    <p style="margin-top:7px;">{pigcms:$com['address']}</p>
+  </a><!-- 详情 -->
+  <div class="ft table">
+      <a class="td" href="{pigcms::U('DishOut/dishMenu', array('token'=>$token, 'cid'=>$com['id'], 'wecha_id'=>$wecha_id))}">
+        <img src="{pigcms:$staticPath}/tpl/static/dishout/image/ico-wine.png">订餐
+      </a>
+      <a class="td order" href="tel:{pigcms:$com['tel']}"><img src="{pigcms:$staticPath}/tpl/static/dishout/image/ico-call.png">电话</a>
+      <a class="td" href="{pigcms::U('DishOut/companyMap', array('token'=>$token, 'cid'=>$com['id'], 'wecha_id'=>$wecha_id))}">
+        <img src="{pigcms:$staticPath}/tpl/static/dishout/image/ico-location.png">导航
+      </a>
+  </div>
+</div>
+<php>$tmpC["juli".$com['id']]=array('id'=>$com['id'],'lat'=>$com['latitude'],'lng'=>$com['longitude']);</php>
+</volist>
+<div id="iCenter"style="display:none;"></div>
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"DishOut",
+            "moduleID":"{pigcms:$company[0]['id']}",
+            "imgUrl": "{pigcms:$company[0]['logourl']}", 
+            "timeLineLink": "{pigcms::$f_siteUrl .  U('DishOut/index',array('token' => $token))}",
+            "sendFriendLink": "{pigcms::$f_siteUrl .  U('DishOut/index',array('token' => $token))}",
+            "tTitle": "{pigcms:$metaTitle}",
+            "tContent": "{pigcms:$metaTitle}"
+        };
+</script>
+</body>
+{pigcms:$shareScript}
+
+<script type="text/javascript">
+/*function OpenWxMap(obj){
+wx.openLocation({
+    latitude: obj.latitude, // 纬度，浮点数，范围为90 ~ -90
+    longitude: obj.longitude, // 经度，浮点数，范围为180 ~ -180。
+    name: obj.name, // 位置名
+    address: obj.address, // 地址详情说明
+    scale: 15, // 地图缩放级别,整形值,范围从1~28。默认为最大
+    infoUrl: '' // 在查看位置界面底部显示的超链接,可点击跳转
+});
+}
+*/
+<php>$comjson=json_encode($tmpC);echo "var ComJson=".$comjson.";"</php>
+
+function calculateDistance(nowlat,nowlng){
+		var tmpDistance=null;
+		for(key in ComJson){
+			tmpDistance=getFlatternDistance(nowlat,nowlng,parseFloat(ComJson[key].lat),parseFloat(ComJson[key].lng));
+			if(tmpDistance>=0){
+			 tmpDistance = tmpDistance>1000? ((tmpDistance/1000).toFixed(2)+' km'):(parseInt(tmpDistance)+ " m");
+			 $('#'+key+' .juli').text(tmpDistance);
+			 $('#'+key).show();
+			}
+		}
+}
+function getFlatternDistance(lat1,lng1,lat2,lng2){
+	var EARTH_RADIUS = 6378137.0;    //单位M
+	var PI = Math.PI;
+
+	function getRad(d){
+	    return d*PI/180.0;
+	}
+
+    var f = getRad((lat1 + lat2)/2);
+    var g = getRad((lat1 - lat2)/2);
+    var l = getRad((lng1 - lng2)/2);
+    
+    var sg = Math.sin(g);
+    var sl = Math.sin(l);
+    var sf = Math.sin(f);
+    
+    var s,c,w,r,d,h1,h2;
+    var a = EARTH_RADIUS;
+    var fl = 1/298.257;
+    
+    sg = sg*sg;
+    sl = sl*sl;
+    sf = sf*sf;
+    
+    s = sg*(1-sl) + (1-sf)*sl;
+    c = (1-sg)*(1-sl) + sf*sl;
+    
+    w = Math.atan(Math.sqrt(s/c));
+    r = Math.sqrt(s*c)/w;
+    d = 2*w*a;
+    h1 = (3*r -1)/2/c;
+    h2 = (3*r +1)/2/s;
+    
+    return d*(1 + fl*(h1*sf*(1-sg) - h2*(1-sf)*sg));
+}
+</script>
+</html>

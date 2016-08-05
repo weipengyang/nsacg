@@ -1,0 +1,67 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>支付密码</title>
+    <meta name="viewport" content="width=device-width,height=device-height,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css" />
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css" />
+</head>
+<body>
+    <div class="page" style="margin:0px">
+        <div class="content">
+            <form action="#" method="post" name="payform">
+                <div class="card" style="margin:0px;padding:0px">
+                    <div class="card-header">请输入会员卡支付密码</div>
+                    <div class="card-header"><h2>￥<b style="color:orangered">{pigcms:$_REQUEST['price']}</b>元</h2></div>
+                   <div class="card-content">
+                        <div class="card-content-inner">
+                            <div class="list-block">
+                                <ul>
+                                    <li>
+                                        <div class="item-content">
+                                            <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                            <div class="item-inner">
+                                                <div class="item-title label">支付密码:</div>
+                                                <div class="item-input">
+                                                    <input type="password" name="pass" id="pass" placeholder="请输入密码" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-block">
+                    <div class="row">
+                        <div class="col-50">
+                            <a href="#" onclick="javascript:history.go(-1)" class="button button-big button-fill button-danger">取消</a>
+                        </div>
+                        <div class="col-50">
+                            <a href="#" id="topay" class="button button-big button-fill ">支付</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <script>
+        $(function () {
+            'use strict';
+            //对话框
+            $.init();
+            $('#topay').click(function () {
+                $('form[name=payform]').submit();
+            });
+        });
+    </script>
+</body>
+
+
+</html>

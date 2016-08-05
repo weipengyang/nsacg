@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>合作代理|{pigcms::C('site_name')}|{pigcms::C('site_title')}</title>
+<include file="Public:header"/>
+<div class="nav clearfix">
+	<div class="nav-content">
+		<h1 class="left">{pigcms::C('site_name')}·微信营销，如此简单！</h1>
+		<div class="right line-li">
+			<ul>
+				<li>
+					<a href="/">首页</a>
+				</li>
+				<li>
+					<a href="{pigcms::U('Home/Index/common')}">经典案例</a>
+				</li>
+				<li>
+					<a href="{pigcms::U('Home/Index/gongneng')}">功能介绍</a>
+				</li>
+				<li>
+					<a href="{pigcms::U('Home/Index/daili')}" class="hover">合作代理</a>
+				</li>
+			<if condition="$_SESSION[uid]==false">
+				<li><a href="{pigcms::U('Index/login')}" class="hover">登录</a></li>
+				<li><a href="{pigcms::U('Index/reg')}">注册</a></li>
+			<else/><li>
+			<a href="{pigcms::U('User/Index/index')}" hidefocus="true"  ><span style="color:red">管理中心</span></a>
+			<a href="javascript:void(0)" onClick="Javascript:window.open('{pigcms::U('Admin/Admin/logout')}','_self')" >退出</a></li>
+	</if>		
+			</ul>
+		</div>
+	</div>
+</div>
+<!-- banner -->
+<DIV class="Public-content clearfix" style="margin-top:38px;">
+<DIV class=Public>
+<H2 class=Public-h2>微商家致辞</H2>
+<DIV class=Public-box>
+<DIV class=Proxy>
+<H3>尊敬的各位合作伙伴：</H3>
+<P>　　首先非常感谢您对{pigcms::C('site_name')}平台的认可和支持，信任是合作的基础，这是我们一直强调的核心价值观。</P>
+<P>　　{pigcms::C('site_name')}平台在大家的共同努力下，目前已经成长为在微信第三方平台中拥有较高知名度和用户数量的第三方平台。为了能使更多的用户享受{pigcms::C('site_name')}提供的高品质的微信营销产品和服务，目前我们正在全国范围内大力发展代理伙伴。我们的目标是：通过发展一批有实力的区域和行业代理商作为稳定的合作伙伴来承担销售业务，建立{pigcms::C('site_name')}的营销战略合作伙伴体系，共同投身于微信营销的事业。</P>
+<P>　　{pigcms::C('site_name')}平台通过市场与技术支持、各种媒体宣传、促消活动及完善的售后服务，为{pigcms::C('site_name')}的代理商提供及时的、量身定做的高效特色服务及全面支持。</P>
+<P>　　无论您在何方，不管您有多远，无论是个人还是团体，我们都欢迎您成为我们的一员，{pigcms::C('site_name')}平台希望每个人都能通过{pigcms::C('site_name')}实现价值，正像微信公众平台提出的一样：“再小的个体，也有自己的品牌。”我们将与您始终保持零距离的接触，提供零距离的服务。欢迎全国各地、各广告商、渠道代理商踊跃加盟，{pigcms::C('site_name')}对有意成为合作伙伴的朋友致以诚挚的谢意，感谢您对{pigcms::C('site_name')}平台的支持和信任。</P>
+</DIV>
+</DIV>
+</DIV>
+<DIV class=Public>
+  <H2 class=Public-h2>招区域代理</H2>
+  <DIV class=Public-box>
+    <DIV class=Proxy>
+      <H3>尊敬的各位创业伙伴：</H3>
+      <P>　　基于微信用户逐渐扩大，各地市场不能及时拓展开来。一家的能力始终有限！</P>
+      <P>现招34位省级代理：2680元/位！660位市级代理：960元/位！（最新代理价格）</P>
+      <P>省级代理可以招市级代理（只需向微商家缴纳200元技术费即可，售价微商家不干预！）</P>
+      <P>另： 出售微商家授权源码5套：6000元（2014年做微信代理，不如自己开微信平台）</P>
+      <P>注：两种代理的网站都和微商家一样！功能也一样！开通VIP无需向微商家缴纳任何费用！0成本！</P>
+      <P>加盟前，请联系客服，您的所在地是不是已经有代理加盟，如有加盟，抱歉，不予以合作！</P>
+      <P>全国34个省，660个市，一个地方只招一个代理！请悉之！想创业的请尽快联系客服加盟！名额有限！      </P>
+      <P>合作及代理联系方式：18520590889 张经理 咨询QQ：<SPAN>{pigcms::C('site_qq')}</SPAN></P>
+    </DIV>
+  </DIV>
+</DIV>
+<include file="Public:footer"/>
+</body>
+</html>

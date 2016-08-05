@@ -1,0 +1,35 @@
+<div style="height:40px;"></div>
+<div class="footermenu">
+    <ul>
+        <li>
+            <a href="/index.php?g=Wap&m=Store&a=index&token={pigcms:$token}&cardid={pigcms:$thisCard.id}&wecha_id={pigcms:$wecha_id}">
+                <img src="{pigcms::RES}/card/images/home.png">
+                <p>首页</p>
+            </a>
+        </li>
+        <li>
+            <a <php>if(ACTION_NAME=='card'){</php>class="active"<php>}</php> href="/index.php?g=Wap&m=Card&a=card&token={pigcms:$token}&cardid={pigcms:$thisCard.id}&wecha_id={pigcms:$wecha_id}">
+           	<img src="{pigcms::RES}/card/images/c.png">
+            <p>会员卡</p>
+            </a>
+        </li>
+        <li>
+            <a <php>if(ACTION_NAME=='my_coupon'){</php>class="active"<php>}</php> href="/index.php?g=Wap&m=Card&a=my_coupon&token={pigcms:$token}&wecha_id={pigcms:$wecha_id}&cardid={pigcms:$thisCard.id}">
+           	<img src="{pigcms::RES}/card/images/prev.png">
+            <p>会员专享</p>
+            </a>
+        </li>
+        <li>
+            <a <php>if(ACTION_NAME=='wallet'){</php>class="active"<php>}</php> href="/index.php?g=Wap&m=Card&a=wallet&token={pigcms:$token}&wecha_id={pigcms:$wecha_id}&cardid={pigcms:$thisCard.id}">
+             <img src="{pigcms::RES}/card/images/intergral.png">
+            <p>我的钱包</p>
+            </a>
+        </li>
+        <li>
+            <a <php>if(ACTION_NAME=='cards'){</php>class="active"<php>}</php> href="/index.php?g=Wap&m=Card&a=cards&token={pigcms:$token}&cardid={pigcms:$thisCard.id}&wecha_id={pigcms:$wecha_id}">
+           	<img src="{pigcms::RES}/card/images/my.png">
+            <p>个人设置</p>
+            </a>
+        </li>
+    </ul>
+</div>

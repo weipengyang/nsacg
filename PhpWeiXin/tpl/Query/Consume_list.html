@@ -1,0 +1,144 @@
+﻿<!doctype html>
+<html class="no-js fixed-layout">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>爱养车</title>
+    <meta name="description" content="爱养车">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="icon" type="image/png" href="assets/i/favicon.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+    <meta name="apple-mobile-web-app-title" content="Amaze UI" />
+    <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.7.0/css/amazeui.min.css" />
+    <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
+</head>
+<body>
+    <!--[if lte IE 9]>
+    <p class="browsehappy">你正在使用<strong>过时</strong>的浏览器，Amaze UI 暂不支持。 请 <a href="http://browsehappy.com/" target="_blank">升级浏览器</a>
+      以获得更好的体验！</p>
+    <![endif]-->
+    <div class="am-cf admin-main" style="padding:0;margin:0">
+        <!-- content start -->
+        <div class="admin-content">
+                <div class="admin-content-body">
+                    <div class="am-input-group">
+                        <input type="text" class="am-form-field" id="doc-qr-text">
+                        <span class="am-input-group-btn">
+                            <button class="am-btn am-btn-default" type="button" id="doc-gen-qr">生成</button>
+                        </span>
+                    </div>
+                    <div id="doc-qrcode" class="am-text-center"></div>
+                    <div class="am-cf am-padding am-padding-bottom-0">
+                        <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">会员消费记录查询</strong> </div>
+                    </div>
+                    <hr>
+                    <div class="am-g">
+                        <div class="am-u-sm-12 am-u-md-3">
+                            <div class="am-form-group">
+                                <select data-am-selected="{btnSize: 'sm'}" id="shop">
+                                    <option value="">所有门店</option>
+                                    <option value="塘坑店">塘坑店</option>
+                                    <option value="区府店">区府店</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="am-u-sm-12 am-u-md-3">
+                            <div class="am-input-group am-input-group-sm">
+                                <input type="text" id="searchkey" class="am-form-field">
+                                <span class="am-input-group-btn">
+                                    <button id="search" class="am-btn am-btn-default" type="button">搜索</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="am-u-sm-12 am-u-md-3">
+                            <div class="am-form-group">
+                                <button class="am-btn am-btn-primary" id="reflash">
+                                    <i class="am-icon-refresh"></i>
+                                    刷新
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="am-g">
+                        <div class="am-u-sm-12">
+                            <form class="am-form">
+                                <table class="am-table am-table-striped am-table-hover table-main">
+                                    <thead>
+                                        <tr>
+                                            <th class="table-title">当前状态</th>
+                                            <th class="table-title">车牌号</th>
+                                            <th class="table-title">车主</th>
+                                            <th class="table-title">单据类别</th>
+                                            <th class="table-title ">制单日期</th>
+                                            <th class="table-title ">制单人</th>
+                                            <th class="table-title ">制单人</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <volist name="record" id="item">
+                                            <tr>
+                                                <td>{pigcms:$item.truename}</td>
+                                                <td>{pigcms:$item.carno}</td>
+                                                <td>{pigcms:$item.shop}</td>
+                                                <td>{pigcms:$item.time|date='Y-m-d H:i',###}</td>
+                                                <td>{pigcms:$item.notes}</td>
+                                            </tr>
+
+                                        </volist>
+                                    </tbody>
+                                </table>
+                                <div class="am-cf">
+                                    <div class="am-fr">
+                                        <div class="cLine">
+                                            <div class="pageNavigator right">
+                                                <div class="pages">{pigcms:$page}</div>
+                                            </div>
+                                            <div class="clr"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <footer class="admin-content-footer">
+                    <hr>
+                    <p class="am-padding-left">
+                        广州市爱养车汽车服务公司(c)版权所有 <a href="http://www.miibeian.gov.cn" target="_blank" style="color:white">粤ICP备16029128号-1</a><br />
+                    </p>
+                </footer>
+            </div>
+        <!-- content end -->
+    </div>
+    <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
+    <script src="/tpl/static/assets/js/jquery.min.js"></script>
+    <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
+    <script src="/tpl/static/assets/js/app.js"></script>
+    <script>
+  $(function() {
+    var $input = $('#doc-qr-text');
+    $qr = $('#doc-qrcode');
+
+    function makeCode(text) {
+      $qr.empty().qrcode(text);
+    }
+
+    $input.val(location.href);
+    makeCode(location.href);
+
+    $('#doc-gen-qr').on('click', function() {
+      makeCode($input.val());
+    });
+
+    $input.on('focusout', function() {
+      makeCode($input.val());
+    });
+  });
+    </script>
+
+</body>
+</html>

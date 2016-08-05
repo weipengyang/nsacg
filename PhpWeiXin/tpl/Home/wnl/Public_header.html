@@ -1,0 +1,26 @@
+<!-- wrapper start -->
+	<div class="wrapper">
+		<!-- top start -->
+		<div class="top">
+			<!-- nav start -->
+			<div class="nav">
+				<div class="nav-inner">	
+					<a class="logo f_l" href="{pigcms::U('Home/Index/index')}"><img src="{pigcms:$f_logo}" alt="{pigcms:$f_siteName}-多用户微信营销服务平台"></a>
+					<div class="nav-list f_r">
+					        <h2><a href="{pigcms::U('Home/Index/index')}" <eq name="ACTION_NAME" value="index"> class="active" </eq> >首页</a></h2>
+							<h2><a href="{pigcms::U('Home/Index/fc')}" <eq name="ACTION_NAME" value="fc"> class="active" </eq> >功能介绍</a></h2>
+							<h2><a href="{pigcms::U('Home/Index/common')}" <eq name="ACTION_NAME" value="common"> class="active" </eq> >客户案例</a></h2>
+							<h2><a href="{pigcms::U('Home/Index/price')}" <eq name="ACTION_NAME" value="price"> class="active" </eq> >渠道合作</a></h2>
+							<h2><a href="{pigcms::U('Home/Index/help')}" <eq name="ACTION_NAME" value="help"> class="active" </eq>  >帮助中心</a></h2>
+							<h2><a href="{pigcms::U('Home/Index/about')}" <eq name="ACTION_NAME" value="about"> class="active" </eq>  >关于我们</a></h2>
+					  <if condition="$_SESSION[uid]==false">
+						<span><a href="{pigcms::U('Home/Index/login')}" target="_blank">登录</a>&nbsp;
+						<a class="sqty" href="{pigcms::U('Index/reg')}" target="_blank">申请体验</a></span>
+					   <else/>
+					    <span><a href="{pigcms::U('User/Index/index')}" target="_blank">管理</a>&nbsp;
+						<a href="javascript:void(0)" class="sqty" onClick="Javascript:window.open('{pigcms::U('System/Admin/logout')}','_blank')" >安全退出</a>
+			         </if>						
+					</div>
+				</div>
+			</div>
+                        <div class="ding yincang" id="ding"></div>

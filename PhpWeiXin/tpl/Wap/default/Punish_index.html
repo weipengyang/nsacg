@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no, initial-scale=1">
+    <title>惩罚台</title>
+    <link rel="stylesheet" type="text/css" href="./tpl/static/Punish/css/cvent.css">
+    <link rel="stylesheet" type="text/css" href="./tpl/static/Punish/css/style.css">
+    <script type="text/javascript" src="./tpl/static/jquery.min.js"></script>
+    <script type="text/javascript" src="./tpl/static/Punish/js/template.js"></script>
+    <script type="text/javascript">
+    	var gameid = '{pigcms:$punish['id']}';
+        var _global = '{pigcms:$f_siteUrl}/index.php?g=Wap&m=Punish&a=run&token={pigcms:$token}&id={pigcms:$punish['id']}&wecha_id=no';
+        var _use_num = '{pigcms:$f_siteUrl}/index.php?g=Wap&m=Punish&a=use_num&token={pigcms:$token}&id={pigcms:$punish['id']}&wecha_id=no';
+    </script>
+    <script type="text/javascript" src="./tpl/static/Punish/js/index.js"></script>
+</head>
+<body>
+<div id="wrap">
+	<div class="plate">
+		<ul class="clearfix"></ul>
+	</div>
+	<div class="pop pop-result" style="display: none;">
+		<span class="pop-closed">×</span>
+		<div class="pop-con">
+			<i class="smile"></i>
+			<p></p>
+		</div>
+	</div>
+	<div class="pop pop-info" style="display: none;">
+		<span class="pop-closed">×</span>
+		<div class="pop-con"></div>
+	</div>
+	<div class="pop-mask" style="display: none;"></div>
+</div>
+
+<script id="item-list" type="text/html">
+	{{if item}}
+		<li item-order="1"><div class="plate-item"><span>{{item.item1}}</span></div></li>
+		<li item-order="2"><div class="plate-item"><span>{{item.item2}}</span></div></li>
+		<li item-order="3"><div class="plate-item"><span>{{item.item3}}</span></div></li>
+		<li item-order="12"><div class="plate-item"><span>{{item.item12}}</span></div></li>
+		<li class="blank-item"></li>
+		<li item-order="4"><div class="plate-item"><span>{{item.item4}}</span></div></li>
+		<li item-order="11"><div class="plate-item"><span>{{item.item11}}</span></div></li>
+		<li class="blank-item"></li>
+		<li item-order="5"><div class="plate-item"><span>{{item.item5}}</span></div></li>
+		<li item-order="10"><div class="plate-item"><span>{{item.item10}}</span></div></li>
+		<li class="blank-item"></li>
+		<li item-order="6"><div class="plate-item"><span>{{item.item6}}</span></div></li>
+		<li item-order="9"><div class="plate-item"><span>{{item.item9}}</span></div></li>
+		<li item-order="8"><div class="plate-item"><span>{{item.item8}}</span></div></li>
+		<li item-order="7"><div class="plate-item"><span>{{item.item7}}</span></div></li>
+		<li class="plate-btn"><span class="name"><table><tr><td>{pigcms:$punish.name}</td></tr></table></span></li>
+	{{/if}}
+</script>
+
+<script type="text/javascript">
+window.shareData = {
+            "moduleName":"Punish",
+            "moduleID":"0",
+            "imgUrl": "{pigcms:$punish.pic}",
+            "timeLineLink": "{pigcms::C('site_url')}{pigcms::U('Punish/index',array('token'=>$token,'id'=>$punish['id']))}",
+            "sendFriendLink": "{pigcms::C('site_url')}{pigcms::U('Punish/index',array('token'=>$token,'id'=>$punish['id']))}",
+           	"weiboLink": "{pigcms::C('site_url')}{pigcms::U('Punish/index',array('token'=>$token,'id'=>$punish['id']))}",
+            "tTitle": "{pigcms:$punish.title}",
+            "tContent": "{pigcms:$punish.info}"
+        };
+</script>
+{pigcms:$shareScript}
+</body>
+</html>

@@ -1,0 +1,24 @@
+@charset "utf-8";
+/* CSS Document */
+
+/* 走进微网 二级菜单 */
+.ProSer1 { position:absolute; left:500px; top:-200px;z-index:99; overflow:hidden; /*padding-top:9px;*/ display:none;}
+.ProSerCont a { color:#fff;}
+.ProSerCont a:active { color:#fff;}
+.ProSer1 .ProSerCont { padding:10px 0 0; overflow:hidden; background-color:#303030; color:#fff; }
+.ProSer1 ul { padding:0; overflow:hidden;}
+.ProSer1 li,.ProSer2 li { width:100px; background:url(../images/haedmenu-dot.jpg) no-repeat 10px 16px; padding:2px 20px; line-height:30px; overflow:hidden;}
+.ProSer1 li:hover,.ProSer2 li:hover { background-color:#00A1FC}
+.ProSer1 .ProSerTitle { width:100px; padding:0 10px; background-color:#07b; height:30px; line-height:30px;}
+/* 产品与服务 二级菜单 */
+.ProSer2 { position:absolute; left:500px; top:200px; z-index:99; overflow:hidden; padding-top:9px; display:none;}
+.ProSerPic { width:17px; height:9px; position:absolute; left:200px; top:0px; }
+.ProSer2 .ProSerCont {  padding:10px 0 0; overflow:hidden; background-color:#303030; color:#fff;}
+.ProSer2 .FloatLeft,.ProSer2 .FloatRight { width:220px; overflow:hidden; }
+.ProSer2 .FloatLeft a,.ProSer2 .FloatRight a{ color:#FFF;}
+.ProSer2 .FloatLeft{ float:left;}
+.ProSer2 .FloatRight{ float:right;}
+.ProSer2 ul { padding:0; overflow:hidden;}
+.ProSer2 .ProSerTitle { width:100px; padding:0 10px; background-color:#07b; height:30px; line-height:30px;}
+.ProSerCont ul li a{ color:#FFF;}
+

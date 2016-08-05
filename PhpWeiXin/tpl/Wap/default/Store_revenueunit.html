@@ -1,0 +1,105 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>万份收益</title>
+    <meta name="viewport" content="width=device-width,height=device-height,maximum-scale=1.0,user-scalable=no;">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css">
+    <link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/0.4.1/weui.min.css" />
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+
+    <style>
+        .pic {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            display: block;
+            width: 2.5rem;
+            height: 2.5rem;
+            color: white;
+            text-align: center;
+            line-height: 2rem;
+            margin: 2px;
+            border-radius: 100%;
+        }
+
+        .line {
+            width: 100%;
+            height: 2.5rem;
+            line-height: 2.5rem;
+            overflow: hidden;
+            margin: 0px;
+            text-align: center;
+            padding: 0px;
+            color: #FF6600;
+            font-size: 1.4rem;
+            background: #333333;
+            z-index: 9999;
+            font-weight: bold;
+            filter: alpha(opacity=40);
+            opacity: 0.4;
+        }
+
+        .bg {
+            margin: 0px;
+            padding: 0px;
+            margin-top: 5px;
+            border-radius: 4%;
+            color: white;
+            background: #11A487; /* Old browsers */
+        }
+    </style>
+
+</head>
+<body>
+    <div class="page" style="margin:0px">
+        <header class="bar bar-nav">
+            <a class="button button-link button-nav pull-left" href="#" onclick="history.go(-1);" data-transition='slide-out'>
+                <span class="icon icon-left"></span>
+                返回
+            </a>
+        </header>
+        <div class="content" style="margin:0px">
+            <div class="card" style="margin:0px;padding:0px">
+                <div class="card-content">
+                    <div class="item-title" style="margin:0px;padding:0px">
+                        <div class="row">
+                            <div class="col-100" style="text-align:center;font-size:1rem">近一月万份平均收益(元)</div>
+                            <div class="col-100" style="text-align:center;font-size:1.5rem">{pigcms:$avgrevenue}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="list-block" style="margin:0px;padding:0px">
+                <ul>
+                    <volist name="revenuelist" id="item">
+                        <li class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title">{pigcms:$item.revenue_time|substr=###,0,10}</div>
+                                <div class="item-after">{pigcms:$item.revenueunit}</div>
+                            </div>
+                        </li>
+                    </volist>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm-extend.min.js' charset='utf-8'></script>
+
+    <script type="text/javascript">
+        $(function () {
+            'use strict';
+            //对话框
+            $.init();
+        });
+    </script>
+</body>
+</html>

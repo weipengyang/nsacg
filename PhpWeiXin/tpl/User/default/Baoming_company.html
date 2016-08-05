@@ -1,0 +1,72 @@
+
+<include file="Public:head"/>
+<script src="/tpl/static/artDialog/jquery.artDialog.js?skin=default"></script>
+<script src="/tpl/static/artDialog/plugins/iframeTools.js"></script>
+<link rel="stylesheet" type="text/css" href="{pigcms::RES}/css/cymain.css" />
+<script type="text/javascript" src="/tpl/User/default/common/js/select/js/jquery.js"></script>
+<div class="content" <if condition="session('isQcloud') eq true">style="float:center;"</if>>
+
+<div class="cLineB">
+  <h4>回复配置 </h4><a href="javascript:history.go(-1);" class="right btnGrayS vm" style="margin-top:-27px">返回</a>
+ </div>
+<div class="tab">
+<ul>
+<li class="current tabli" id="tab0"><a href="{pigcms::U('Baoming/index', array('token' => $token))}">主题活动列表</a></li>
+<li class="tabli" id="tab0"><a href="{pigcms::U('Baoming/company', array('token' => $token))}">回复配置</a></li>
+</ul>
+</div>
+<!--tab end-->        
+    <div class="msgWrap bgfc">
+	  <form class="form" method="post" action="" enctype="multipart/form-data">	 
+		<table class="userinfoArea" style=" margin:0;" border="0" cellspacing="0" cellpadding="0" width="100%">
+			<tbody>
+             <tr>
+				  <th valign="top"><span class="red">*</span>关键词：</th>
+				  
+				  <td>
+					<span class="red">主题活动 —— 当用户输入该关键词时，将会触发此回复。</span></td>
+				</tr>
+				<tr>
+					<th width="120"><span class="red">*</span>图文回复标题：</th>
+					<td><input type="text" name="title" value="{pigcms:$info.title}" class="px" style="width:550px;"></td>
+				</tr>
+                <tr>
+				<th>图文回复介绍：</th>
+					<td><textarea style="width:560px;height:75px" name="jianjie" id="jianjie" class="px">{pigcms:$info.jianjie}</textarea><br/>最多填写120个字</td>					
+					</td>
+
+				</tr>
+                 <tr>
+					<th>图文回复图片：</th>
+					<td><input type="text" name="tp" id="picurl1" value="{pigcms:$info.tp}" class="px" style="width:550px;">  
+                    <script src="/tpl/static/upyun.js"></script>  <a href="###" onclick="upyunPicUpload('picurl1',360,200,'{pigcms:$token}')" class="a_upload">上传</a> <a href="###" onclick="viewImg('picurl1')">预览</a><br/> </td>				</tr>
+				<tr>
+				  <th>公司名称：</th>
+				  <td><input type="text" name="company" value="{pigcms:$info.company}" class="px" style="width:550px;">
+					</td>
+				</tr>
+				<tr>
+					<th>公司logo：</th>
+					<td><input type="text" id="logo" value="{pigcms:$info.logo}" name="logo" class="px" style="width:550px;">  
+				   <a href="###" onclick="upyunPicUpload('logo',1500,1000,'{pigcms:$token}')" class="a_upload">上传</a> <a href="###" onclick="viewImg('logo')">预览</a><br/> </td>				</tr>
+				<tr>
+					<th width="120"><span class="red">*</span>公司简介：</th>
+					<td><textarea style="width:560px;height:75px" name="info" id="info" class="px" onkeydown='countChar("info","counter");' onkeyup="countChar('info','counter');">{pigcms:$info.info}</textarea><br/><font color="red">可以输入<span id="counter">400</span>字<br></font></td>
+				</tr>
+               
+          
+				<th>&nbsp;</th>
+					<td>
+						<input type="hidden" name="token" value="{pigcms:$_GET['token']}" />
+						<button type="submit" class="btnGreen">保存</button>
+						<a href="javascript:history.go(-1);" class="btnGray vm">取消</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
+  </div> 
+ 
+  
+        </div>
+<include file="Public:footer"/>

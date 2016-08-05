@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wb="http://open.weibo.com/wb">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	 <meta name="keywords" content="{pigcms::C('keyword')}">
+    <meta name="description" content="{pigcms::C('content')}">
+	   <title>{pigcms::C('site_name')},微信公众平台,微信机器人,微信自动回复, 多用户微信营销系统,  </title>
+	<script src="{pigcms::RES}/js/jquery-1.9.1.min.js"></script>
+	<link href="{pigcms::RES}/css/main.css" rel="stylesheet" type="text/css">
+	<link href="{pigcms::RES}/new_index/index.css" rel="stylesheet" type="text/css">
+	<link href="{pigcms::RES}/css/success.css" tppabs="{pigcms::RES}/css/success.css" rel="stylesheet" type="text/css">
+<script src="{pigcms::RES}/js/lazyload.js" tppabs="{pigcms::RES}/js/lazyload.js"></script>
+<script src="{pigcms::RES}/js/json.js" tppabs="{pigcms::RES}/js/json.js"></script>
+</head>
+
+
+<body onselectstart="return false">
+
+ <include file="Public:header"/>
+
+<div class="case_head" id="nav_hover" data-id="4" style="
+    margin-top: -20px;
+">
+	<div class="case_title Center">案例展示</div>
+</div>
+<div class="case_content">
+	<div class="case_main Center clearfix">
+		<ul class="left">
+			<li class="cur">贸易电商</li>
+			<li>杂志刊物</li>
+			<li>互联网</li>
+			<li>行业协会</li>
+			<li>食品加工</li>
+			<li>咖啡</li>
+			<li>餐饮</li>
+			<li>广告媒体</li>
+			<li>家居建材</li>
+			<li>旅游</li>
+			<li>教育培训</li>
+			<li>政府</li>
+			<li>生物科技</li>
+			<li>房地产</li>
+			<li>娱乐</li>
+			<li>美容美妆</li>
+			<li>汽车</li>
+			<li>投资理财</li>
+		</ul>
+		<div class="right">
+			<div class="right_main">
+				<ul class="main_nav clearfix"></ul>
+				<div class="cont Center"></div>
+			</div>
+		</div>
+	</div>
+	<div class="casedi"></div>
+</div>
+<script language="javascript">
+	$(function(){
+		shopShow(0);
+	});
+
+	$('.left li').click(function(){
+		var index = $('.left li').index(this);
+		$('.left li').removeClass('cur').eq(index).addClass('cur');
+		$('.main_nav').html("");
+		$('.cont').html("");
+		shopShow(index);
+	});
+
+	function shopShow(index){
+		for(var i=0;i<caseI[index].navI.length;i++){
+			var htm = '<li class="hover"><p class="nav_img"><img data-src="'+caseI[index].navI[i].pic+'"  width="100%"/><span></span></p><p class="nav_text">'+caseI[index].navI[i].name+'</p></li>';
+			$('.main_nav').append(htm);
+		}
+		for(var i=0;i<caseI[index].main.length;i++){
+			var html = '<ul class="casepic clearfix"><li><img data-src="'+caseI[index].main[i].pic1+'" width="220" height="378"/></li><li><img data-src="'+caseI[index].main[i].pic2+'" width="220" height="378"/></li><li class="code_box"><p class="code"><img data-src="'+caseI[index].main[i].code+'" width="165" height="165"/></p><p class="jianjie">'+caseI[index].main[i].text+'</p></li></ul>';
+			$('.cont').append(html);
+		}
+		$('img').lazyload({threshold:0});
+		$('.nav_img span').eq(0).addClass('img_cur');
+		$('.casepic').eq(0).show();
+
+		$('.nav_img').click(function(){
+			var img_this = $('.nav_img').index(this);
+			$('.nav_img span').removeClass('img_cur').eq(img_this).addClass('img_cur');
+			$('.casepic').hide().eq(img_this).show();
+		});
+	}
+</script><include file="Public:footer"/>
+<script src="{pigcms::RES}/js/login.js"></script>
+<script src="{pigcms::RES}/js/nav.js"></script>
+<div style="display:none;">
+</div>
+</body>
+</html>

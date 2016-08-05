@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="{suetech::C('keyword')}"/>
+    <meta name="description" content="{suetech::C('content')}"/>
+    <link rel="shortcut icon" href="favicon.ico">
+
+<style>
+.pos{ height:30px; line-height:30px; margin:10px 0; color:#666; font-size:14px;}
+.wxgzbox{ border:1px solid #EEE; margin-bottom:10px; background:#FFF;}
+.wxgzbox-top{ height:40px; line-height:40px; border-bottom:1px solid #EEE;}
+.wxgzbox-top h3{ float:left; font-size:16px; font-weight:normal; margin-left:10px;}
+.wxgzbor1{ border-bottom:2px solid #393;}
+.wxgzlist{ width:948px;overflow:hidden; padding:15px;}
+.wxgzlist ul{width:980px;}
+.wxgzlist li{ float:left;margin-right:24px; margin-bottom:20px; font-size:14px;}
+.wxgzlist li img{width:150px; height:130px;}
+.wxgzlist li span{ display:block; text-align:center; margin-top:3px; line-height:22px;}
+.wxgzlist li a{color:#666; display:block; width:150px; height:170px; background:#EFF1F5;padding:10px;overflow:hidden;}
+.wxgzlist li a:hover{background:#EDF8E6; color:#4F8C23;}
+</style>
+
+
+    <title>功能介绍－{suetech::C('site_title')}</title></head>
+    <include file="Public:header"/>
+<div class="Public-content clearfix">
+    <div class="Public">
+
+            <div> </div>
+                
+                <div class="wxgzbox">
+                <div class="wxgzbox-top wxgzbor1"><h3>推荐账号</h3></div>
+                <div class="wxgzlist">
+                <ul>
+                </ul>
+                </div>
+            </div>
+            
+            <div class="wxgzbox">
+                <div class="wxgzbox-top"><h3>全部账号</h3></div>
+                <div class="wxgzlist">
+                <ul>
+                                </ul>
+                </div>
+            </div>
+    
+    </div>
+</div>
+
+<include file="Public:footer"/>
+<div style="display:none">
+{suetech::C('counts')}
+</div>
+</body></html>

@@ -1,0 +1,132 @@
+<include file="DishOut:header" />
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/dishout/js/scroller.js"></script>
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/dishout/js/menu.js"></script>
+<style type="text/css">
+#mymenu_lists .dztj_c{display:none}
+#mymenu_lists .nodztj_c{display:block}
+</style>
+<body onselectstart="return true;" ondragstart="return false;">
+<div class="container">
+	<header class="nav menu">
+		<div>
+			<a href="javascript:;" class="on">菜单</a>
+			<a href="{pigcms::U('DishOut/MyShop',array('token' => $token,'cid'=>$cid,'wecha_id' => $wecha_id))}">门店详情</a>
+		</div>
+	</header>
+	<form name="cart_form" action="{pigcms::U('DishOut/sureOrder',array('token' => $token,'wecha_id' => $wecha_id))}" method="post">
+	<section class="menu_wrap" id="menuWrap">
+	<div id="menuNav" class="menu_nav">
+		 <div class="ico_menu_wrap clearfix"><span class="ico_menu" id="icoMenu"><i></i></span></div>
+			<div class="side_nav" id="sideNav" style="height: 666px;">
+				<ul>
+				<if condition="!empty($fenleiarr)">
+				 <pigcmslist array="fenleiarr" key="ik" foreach="item">
+				<li><a href="javascript:void(0);" title="{pigcms:$ik}">{pigcms:$item}</a></li>
+				</pigcmslist>
+				<if condition="$dz_tj">
+				<li><a href="javascript:void(0);" title="dztj" class="dztj_a">店长推荐</a></li>
+				</if>
+				</if>
+				</ul>
+			</div>
+		 </div>
+		
+	 <div class="menu_container" id="mymenu_lists">
+	 <if condition="!empty($disharr)">
+		<pigcmslist array="disharr" key="dk" foreach="ditem">
+		 <if condition="$key eq 'dztj' AND !empty($ditem)">
+		  <php>$dztj=true;</php>
+			<div class="menu_tt dztj_c">
+			<h2>店长推荐</h2></div>
+			<ul class="menu_list dztj_c">
+		   <else/>
+		   <php>$dztj=false;</php>
+			<div class="menu_tt nodztj_c">
+			<h2>{pigcms:$ditem['0']['sortname']}</h2></div>
+			<ul class="menu_list nodztj_c">
+		   </if>
+			<pigcmslist array="ditem" key="ddk" foreach="dditem">
+			<li>
+				<div>
+					<if condition="!empty($dditem['image'])">
+					<img src="{pigcms:$dditem['image']}" alt="" url="{pigcms:$dditem['image']}">
+					</if>
+				</div>
+				<div>
+					<h3>{pigcms:$dditem['name']}</h3>
+					<p>月售<span class="sale_num">{pigcms:$dditem['m_sale']}</span><if condition="!empty($dditem['unit'])">{pigcms:$dditem['unit']}<else/>份</if>
+					<if condition="$kconoff eq 1"> 库存：{pigcms:$dditem['instock']}</if>
+					<!--<span class="sales"><strong class="sale_8"></strong></span>--></p>
+					<div class="info">{pigcms:$dditem['des']|htmlspecialchars_decode=ENT_QUOTES}</div>
+				</div>
+				<div class="price_wrap">
+					<strong>￥<span class="unit_price">{pigcms:$dditem['price']}</span></strong>
+					<div class="fr" <if condition="$kconoff eq 1"> max="{pigcms:$dditem['instock']}" <else/>max="-1"</if>>
+				    <if condition="$kconoff eq 0 OR $dditem['instock'] gt 0">
+					 <a href="javascript:void(0);" class="btn add" <php> if(isset($dditem['ornum']) && !empty($dditem['ornum'])) echo "data-num=".$dditem['ornum']; else echo "data-num=''";</php>></a>
+					</if>
+					</div>
+					<if condition="$dztj">
+					<input autocomplete="off" class="number" type="hidden" name="dzdish[{pigcms:$dditem['id']}]" value="">
+					<else/>
+					<input autocomplete="off" class="number" type="hidden" name="dish[{pigcms:$dditem['id']}]" value="">
+					</if>
+				</div>
+			</li>
+			</pigcmslist>
+			</ul>
+		</pigcmslist>
+
+	 </if>
+	</div>
+	</section>
+	<input type="hidden" name="mycid" value="{pigcms:$cid}">
+	<footer class="shopping_cart">
+		<div class="fixed">
+			<div class="cart_bg">
+			<span class="cart_num" id="cartNum"></span></div>
+			<div>￥<span id="totalPrice">0</span></div>
+			<div><span class="comm_btn disabled">还差 <span id="sendCondition"><if condition="$stype eq 1">{pigcms:$pricing}<else/>0</if></span> 起送</span>
+			<a id="settlement" href="javascript:document.cart_form.submit();" class="comm_btn" style="display: none;">去结算</a></div>
+			<if condition="$stype eq 2">
+			<p style="padding:10px;"><span>温馨提示：</span>商家设定了外送起步价为{pigcms:$pricing}元，订单金额不超过{pigcms:$pricing}元的将按{pigcms:$pricing}元收取</p>
+			</if>
+		</div>
+	</footer>
+	</form>
+
+	<div class="menu_detail" id="menuDetail">
+		<img style="display: none;">
+		<div class="nopic"></div>
+		<a href="javascript:void(0);" class="comm_btn" id="detailBtn">来一<if condition="!empty($dditem['unit'])">{pigcms:$dditem['unit']}<else/>份</if></a>
+		<dl>
+			<dt>价格：</dt>
+			<dd class="highlight">￥<span class="price"></span></dd>
+		</dl>
+		<p>月售<span class="sale_num"></span><if condition="!empty($dditem['unit'])">{pigcms:$dditem['unit']}<else/>份</if><!--<span class="sales"><strong></strong></span>--></p>
+		<dl>
+			<dt>介绍：</dt>
+			<dd class="info"></dd>
+		</dl>
+	</div>
+
+</div>
+<script type="text/javascript">
+ <if condition="$stype eq 1">
+   var Pricing="{pigcms:$pricing}";
+   <else/>
+   var Pricing="0";
+ </if>
+
+	window.shareData = {  
+		"moduleName":"DishOut",
+		"moduleID":"{pigcms:$company['id']}",
+		"imgUrl": "{pigcms:$company['logourl']}", 
+		"sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('DishOut/dishMenu',array('token' => $token,'cid'=>$cid))}",
+		"tTitle": "{pigcms:$metaTitle}",
+		"tContent": "{pigcms:$metaTitle}"
+     };
+</script>
+</body>
+{pigcms:$shareScript}
+</html>

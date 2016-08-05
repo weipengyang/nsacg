@@ -1,0 +1,41 @@
+<include file="Public:head"/>
+<script src="/tpl/static/artDialog/jquery.artDialog.js?skin=default"></script>
+<script src="/tpl/static/artDialog/plugins/iframeTools.js"></script>
+	<if condition="$usertplid eq 0">
+		<link href="{pigcms:$staticPath}{pigcms::ltrim(RES,'.')}/css/style.css?id=103" rel="stylesheet" type="text/css" />
+	<else />
+		<link href="{pigcms:$staticPath}{pigcms::ltrim(RES,'.')}/css/style-{pigcms:$usertplid}.css?id=103" rel="stylesheet" type="text/css" />
+	</if>
+<link rel="stylesheet" type="text/css" href="{pigcms:$staticPath}{pigcms::ltrim(RES,'.')}/css/style_2_common.css?BPm" />
+<div class="content" >  
+<div class="cLineB">
+  <h4>&nbsp;</h4>
+ </div>
+ <div class="cLine">
+    <div class="pageNavigator left">
+          		<a class="btnGrayS vm bigbtn" title="微信图文编辑器" href="./wx/index.html" target="_blank"><img width="16" class="vm" src="./tpl/User/default/common/images/product/add.png">微信图文编辑器</a>
+    </div>
+          
+    <div class="clr"></div>
+</div>
+ <div class="msgWrap form">
+  <div class="bdrcontent">
+<div id="div_ptype"></div>
+</div>
+
+        </div>
+  
+        </div>
+   
+        <div class="clr"></div>
+      </div>
+    </div>
+  </div> 
+  <!--底部-->
+ </div>
+<script>
+function preview(id){
+	art.dialog.open('?g=User&m=Message&a=preview&id='+id,{lock:true,title:'群发预览',width:600,height:400,yesText:'关闭',background: '#000',opacity: 0.45});
+}
+</script>
+<include file="Public:footer"/>

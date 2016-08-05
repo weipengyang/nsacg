@@ -1,0 +1,55 @@
+<include file="Public:head"/>
+<div class="content" <if condition="session('isQcloud') eq true">style="float:center;"</if>>
+<div class="cLineB">
+  <h4>养车宝设置</h4>
+ </div>
+ <div class="msgWrap form">
+	<form class="form" method="post" action="{pigcms::U('Yangchebao/customSave')}">	 
+		<table class="ListProduct" style=" margin:0;" border="0" cellspacing="0" cellpadding="0" width="100%">
+			<tbody>
+				
+				<tr>
+					<td width="120">年利率</td>
+					<td>
+						<input type="text" name="rate" id="rate"  value="{pigcms:$item['rate']}" /> <label for="rate">%</label>
+					</td>
+				</tr>
+                <!--<tr>
+                    <td width="120">最大年利率</td>
+                    <td>
+                        <input type="text" name="max_rate" id="max_rate" value="{pigcms:$item['max_rate']}" /> <label for="max_rate">%</label>
+                    </td>
+                </tr>				
+				<tr>
+					<td width="120">最小年利率</td>
+					<td>
+						<input type="text" name="min_rate" id="min_rate"  value="{pigcms:$item['min_rate']}" /> <label for="min_rate">%</label>
+					</td>
+				</tr>-->
+								
+				<tr>
+					<td width="120">允许存入最大金额</td>
+					<td>
+						<input type="text" name="max_price" id="max_price"  value="{pigcms:$item['max_price']}" /> <label for="max_price">元</label>
+					</td>
+				</tr>
+                <tr>
+				<td>&nbsp;</td>
+					<td>
+						<button type="submit" class="btnGreen">保存</button>
+						<a href="javascript:history.go(-1);" class="btnGray vm">取消</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
+  
+</div>  
+  
+</div>
+   
+        <div class="clr"></div>
+
+<if condition="session('isQcloud') neq true">
+<include file="Public:footer"/>
+</if>

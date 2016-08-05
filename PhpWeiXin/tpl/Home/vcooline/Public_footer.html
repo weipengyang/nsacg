@@ -1,0 +1,151 @@
+  <div class="footer">
+	<div class="footer-nav clearfix">
+		<div class="wrap clearfix">
+			<dl class="list-arrow-square">
+				<dt>关于{pigcms:$f_siteName}</dt>
+				<dd><a href="{pigcms::U('Home/Index/contact')}">联系方式</a></dd>
+				<dd><a href="{pigcms::U('Home/Index/index')}">在线招聘</a></dd>
+				<dd><a href="{pigcms::U('Home/Index/index')}">查询代理商</a></dd>
+			</dl>
+			<dl class="list-arrow-square">
+				<dt><a href="{pigcms::U('Home/Index/index')}">常见问题</a></dt>
+				<volist id="info1" name="info1">
+	  			<dd><a href="index.php?g=Home&m=Index&a=news&id={pigcms:$info1.id}" target="_blank" >
+{pigcms:$info1.name}</a></dd>
+                    </volist>
+			</dl>
+			<dl class="list-icon">
+				<dt>联系方式</dt>
+				<dd class="icon-address"><a href="{pigcms::U('Home/Index/contact')}">公司地址</a>  -  <a href="{pigcms::U('Home/Index/contact')}">交通路线</a></dd>
+				<dd class="icon-phone">{pigcms:$f_mp}</dd>
+				<dd class="icon-mail"><a href="mailto:{pigcms::C('site_email')}">{pigcms::C('site_email')}</a></dd>
+			</dl>
+			<dl class="list-link">
+				<dt>友情链接</dt>
+				<dd>
+			<volist name="links" id="loo">	
+            <a href="{pigcms:$loo.url}" target="blank" rel="nofollow">{pigcms:$loo.name}</a>
+			</volist>
+				</dd>
+			</dl>
+		</div>
+
+	</div>
+	<div class="footer-copyright">
+		<div class="wrap clearfix">
+			<p class="fl text-left">{pigcms::C('ipc')}</p>
+			<p class="fr text-right mod-share">
+				<a href="http://weibo.com/vcooline" class="icon-weibo" target="blank"></a>
+				<a href="http://t.qq.com/vcooline" class="icon-tencent" target="blank"></a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<div class="mod-tools" id="tools">
+    <a class="tools-qq" id="launch_qq">{pigcms::C('site_qq')}</a>
+    <a class="tools-phone">{pigcms::C('site_mp')}</a>
+    <a class="tools-spread" href="{pigcms::U('Home/Index/proxy')}">申请代理</a>
+    <a class="tools-qrd"></a>
+</div>
+<!--  js  -->
+  <script src="{pigcms::RES}/js/jquery.anythingslider.min.js"></script>
+  <script src="{pigcms::RES}/js/affix.js"></script>
+  <script src="{pigcms::RES}/js/scrollspy.js"></script>
+	<script src="{pigcms::RES}/js/plugins.js"></script>
+	<script src="{pigcms::RES}/js/main.js"></script>
+  <script src="{pigcms::RES}/js/jquery.cookie.js"></script>
+	<script>
+		$(function(){
+			$('#slider-spread').anythingSlider({
+				theme:"minimalist-round",
+				buildStartStop:false,
+				pauseOnHover: true,
+				startPanel:0,
+        hashTags: false
+			});
+		});
+	</script>
+	<script>
+		$("#change_verify_code").click(function() {
+			$image_code = $('#image_code');
+			$image_code.attr("src", $image_code.attr("src") + Math.random());
+			$('#verify_code').val('').focus();
+			return false;
+		});
+	</script>
+
+
+  
+<script>
+  $(function(){
+    $("#page-index").affix({
+        offset: {
+            top: 200,
+            bottom: 300
+        }
+    });
+    $.fn.scrollspy.Constructor.DEFAULTS = {
+        offset: 100
+    }
+  });
+</script>
+
+<script>
+    $(function(){
+        $(window).resize(function(){
+            $('#slider-index').anythingSlider({
+                theme:"cs-portfolio",
+                buildStartStop:false,
+                autoPlay:true,
+                pauseOnHover: true,
+                buildArrows:false,
+                startPanel:0,
+                hashTags: false
+            });
+        });
+        $('#slider-index').anythingSlider({
+            theme:"cs-portfolio",
+            buildStartStop:false,
+            autoPlay:true,
+            pauseOnHover: true,
+            buildArrows:false,
+            startPanel:0,
+            hashTags: false
+        });
+        $('#slider-note').anythingSlider({
+            mode: "vertical",
+            buildNavigation: false,
+            theme:"cs-portfolio",
+            buildStartStop:false,
+            autoPlay:true,
+            pauseOnHover: true,
+            buildArrows:false,
+            startPanel:0,
+            hashTags: false
+        });
+        $('#slider-index-4').anythingSlider({
+            theme:"minimalist-square",
+            buildStartStop:false,
+            autoPlay:true,
+            pauseOnHover: true,
+            expand : true,
+            showMultiple : 5,
+            startPanel:0,
+            hashTags: false
+        });
+
+        $('#slider-case').anythingSlider({
+            theme:"minimalist-square",
+            autoPlay: false,
+            buildStartStop:false,
+            pauseOnHover: true,
+            expand : true,
+            showMultiple : 1,
+            startPanel:3,
+            hashTags: false
+        });
+
+    });
+
+</script>

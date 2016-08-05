@@ -1,0 +1,1036 @@
+<?php
+
+/**
+ * ConsumeAction short summary.
+ *
+ * ConsumeAction description.
+ *
+ * @version 1.0
+ * @author Administrator
+ */
+class ConsumeAction extends Action{
+    public function _initialize(){
+        $this->token='rlydsv1453614397';
+        if(!in_array(ACTION_NAME, array('register', 'login'))){
+            if(!cookie('username')){
+                $this->redirect(U('Consume/login', array('token' => $this->token)));
+            }
+            else{
+                $username=cookie('username');
+                cookie('username',$username,3600);
+                $this->assign('username',$username);
+            }
+        }
+    }
+
+    public function member_del(){
+		$card_create_db=M('Member_card_create');
+		$thisUser=M('Userinfo')->where(array('id'=>intval($_GET['id'])))->find();
+		$where=array('wecha_id'=>$thisUser['wecha_id'],'token'=>$this->token);
+		M('Member_card_sign')->where($where)->delete();
+		M('member_card_car')->where($where)->delete();
+		M('member_card_coupon_record')->where($where)->delete();
+		M('Member_card_use_record')->where($where)->delete();
+		M('Product_cart')->where($where)->delete();
+		M('Product_cart_list')->where($where)->delete();
+		M('Userinfo')->where($where)->delete();
+		$card_create_db->where($where)->save(array('wecha_id'=>''));
+		echo('操作成功');
+	}
+    public function acgmember_del(){
+		$card_create_db=M('Member_card_create','','acg');
+		$thisUser=M('Userinfo','','acg')->where(array('id'=>intval($_GET['id'])))->find();
+		$where=array('wecha_id'=>$thisUser['wecha_id'],'token'=>$thisUser['token']);
+		M('Member_card_sign','','acg')->where($where)->delete();
+		M('member_card_coupon_record','','acg')->where($where)->delete();
+		M('Member_card_use_record','','acg')->where($where)->delete();
+		M('Product_cart','','acg')->where($where)->delete();
+		M('Product_cart_list','','acg')->where($where)->delete();
+		M('Userinfo','','acg')->where($where)->delete();
+		$card_create_db->where($where)->save(array('wecha_id'=>''));
+		echo('操作成功');
+	}
+
+    public function membercard(){
+        
+        $user=M('用户管理','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();
+        
+        $this->assign('right',$user['权限']);
+
+		$card_create_db=M('Member_card_create');
+		$where=array();
+		$where['tp_member_card_create.wecha_id']=array('neq','');
+        $parms=$_GET;
+		if (IS_POST){
+			if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
+                $searchkey='%'.trim($_POST['searchkey']).'%';
+                $parms['searchkey']=$_POST['searchkey'];
+			}
+		}
+        else
+        {
+            if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+                $searchkey='%'.trim($_GET['searchkey']).'%';
+			}
+        }
+        if($searchkey){       
+            $searchwhere['number']=array('like',$searchkey);
+            $searchwhere['tel']=array('like',$searchkey);
+            $searchwhere['carno']=array('like',$searchkey);
+            $searchwhere['carno2']=array('like',$searchkey);
+            $searchwhere['carno1']=array('like',$searchkey);
+            $searchwhere['truename']=array('like',$searchkey);
+            $searchwhere['wechaname']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+		$count		= $card_create_db->join('tp_userinfo on tp_member_card_create.wecha_id=tp_userinfo.wecha_id')->where($where)->count(); 
+		$Page       = new Page($count,15,$parms);
+		$show       = $Page->show();
+		$list 		= $card_create_db->join('tp_userinfo on tp_member_card_create.wecha_id=tp_userinfo.wecha_id')->where($where)->order('tp_userinfo.getcardtime desc')->limit($Page->firstRow.','.$Page->listRows)->select();
+		$members	= $list;
+		if ($members){		
+			$this->assign('members',$members);
+			$this->assign('page',$show);
+		}
+		$this->display();
+	}
+
+     public function acgmembercard(){
+        
+        $user=M('用户管理','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();
+        $this->assign('right',$user['权限']);
+		$card_create_db=M('Member_card_create','','acg');
+		$where=array();
+		$where['tp_member_card_create.wecha_id']=array('neq','');
+        $parms=$_GET;
+		if (IS_POST){
+			if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
+                $searchkey='%'.trim($_POST['searchkey']).'%';
+                $parms['searchkey']=$_POST['searchkey'];
+			}
+		}
+        else
+        {
+            if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+                $searchkey='%'.trim($_GET['searchkey']).'%';
+			}
+        }
+        if($searchkey){       
+            $searchwhere['number']=array('like',$searchkey);
+            $searchwhere['tel']=array('like',$searchkey);
+            $searchwhere['carno']=array('like',$searchkey);
+            $searchwhere['carno1']=array('like',$searchkey);
+            $searchwhere['carno2']=array('like',$searchkey);
+            $searchwhere['truename']=array('like',$searchkey);
+            $searchwhere['wechaname']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+		$count		= $card_create_db->join('tp_userinfo on tp_member_card_create.wecha_id=tp_userinfo.wecha_id')->where($where)->count();
+		$Page       = new Page($count,15,$parms);
+		$show       = $Page->show();
+		$list 		= $card_create_db->join('tp_userinfo on tp_member_card_create.wecha_id=tp_userinfo.wecha_id')->where($where)->order('tp_userinfo.getcardtime desc')->limit($Page->firstRow.','.$Page->listRows)->select();
+		$members	= $list;
+		if ($members){		
+			$this->assign('members',$members);
+			$this->assign('page',$show);
+		}
+		$this->display();
+	}
+   public function resetpass()
+    {
+        if(IS_POST){
+            $update['wecha_id']=$_GET['wecha_id'];
+            $data['paypass'] = md5('123456');
+            if(M('Userinfo')->where($update)->save($data)){
+            }
+            echo'{"success":1,"msg":"密码重置成功"}';	
+            
+        }
+    }
+    public function quitsystem()
+    {
+        cookie('username',null);
+        echo'{"success":1,"msg":"退出成功"}';	
+    }
+   private function change($cardid,$wecha_id)
+    {
+        $member_card_set_db=M('Member_card_set'); 
+        $thisCard=$member_card_set_db->where(array('id'=>$cardid))->find(); 
+        if($thisCard['grade']==1){
+            $newcard=$member_card_set_db->where(array('grade'=>2))->find();
+            $card=M('Member_card_create')->field('id,number')->where(" cardid=".intval($newcard['id'])." and wecha_id = ''")->order('id ASC')->find();
+            $now=time();
+            if($card)
+            {
+                $gwhere = array('token'=>$this->token,'cardid'=>$newcard['id'],'is_open'=>'1','start'=>array('lt',$now),'end'=>array('gt',$now));
+                $gifts 	= M('Member_card_gifts')->where($gwhere)->select();
+                foreach($gifts as $key=>$value){
+                    if($value['type'] == "1"){
+                        //赠积分
+                        $arr=array();
+                        $arr['itemid']	= 0;
+                        $arr['token']	= $this->token;
+                        $arr['wecha_id']= $wecha_id;
+                        $arr['expense']	= 0;
+                        $arr['time']	= $now;
+                        $arr['cat']		= 3;
+                        $arr['staffid']	= 0;
+                        $arr['notes']	= '开卡赠送积分';
+                        $arr['score']	= $value['item_value'];
+                        
+                        M('Member_card_use_record')->add($arr);
+                        M('Userinfo')->where(array('token'=>$this->token,'wecha_id'=>$wecha_id))->setInc('total_score',$arr['score']);
+                    }else{
+                        $data['token']		= $this->token;
+                        $data['wecha_id']	= $wecha_id;
+                        $data['coupon_id']	= $value['item_value'];
+                        $data['is_use']		= '0';
+                        $data['cardid']		= $cardid;
+                        $data['add_time']	= $now;
+                        $where 	= array('token'=>$this->token,'cardid'=>$thisCard['id'],'id'=>$data['coupon_id']);
+                        $coupon=M('Member_card_coupon')->where($where)->find();
+                        $days=$coupon['days'];
+                        $data['over_time']=strtotime(date('Y-m-d',time)."+$days day");
+                        $data['coupon_num']=date('YmdHis',time()).mt_rand(1000,9999);
+                        //赠卷
+                        if($value['item_attr'] == '1'){						
+                            $data['coupon_type']	= '1';
+                            M('Member_card_coupon_record')->add($data);
+                        }else{
+                            $data['coupon_type']	= '2';
+                            M('Member_card_coupon_record')->add($data);
+                        }
+                    }
+                }                 
+                M('Member_card_create')->where(array('token'=>$this->token,'wecha_id'=>$wecha_id))->save(array('wecha_id'=>''));
+                M('Member_card_create')->where(array('id'=>$card['id']))->save(array('wecha_id'=>$wecha_id));
+                return $card['number'];
+            }else{
+                return 0;
+            }
+        }
+        return 0;
+        
+    }
+   private function changecarinfo($user,$number)
+   {
+       $car=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$user['carno']))->find();
+       $lb='4星客户';
+       if(!empty($car)){
+           $item['车主']=$number;
+           $item['联系人']=$user['truename'];
+           $item['联系电话']=$user['tel'];
+           $item['手机号码']=$user['tel'];
+           $item['客户类别']=$lb;
+           M('车辆档案','dbo.','difo')->where(array('客户ID'=>$car['客户ID']))->save($item);
+           M('维修','dbo.','difo')->where(array('客户ID'=>$car['客户ID']))->save($item);
+           
+           $czinfo['名称']=$number;
+           $czinfo['会员']=1;
+           $czinfo['等级']='★★★★';
+           $czinfo['会员编号']=$number;
+           $czinfo['入会日期']=date('Y-m-d',time());
+           $czinfo['联系人']=$user['truename'];
+           $czinfo['联系电话']=$user['tel'];
+           $czinfo['手机号码']=$user['tel'];
+           $czinfo['类别']=$lb;
+           M('往来单位','dbo.','difo')->where(array('ID'=>$car['客户ID']))->save($czinfo);
+       }
+   }
+    public function recharge(){
+
+		if(IS_POST){
+		    $db = M('Userinfo');
+			$wecha_id = $_POST['wecha_id'];
+		    $uinfo = $db->where(array('token'=>$this->token,'wecha_id'=>$wecha_id))->find();
+            $mycard = M('Member_card_create')->where(array('token'=>$this->token,'wecha_id'=>$wecha_id))->find();
+			if($db->where(array('token'=>$this->token,'wecha_id'=>$wecha_id))->setInc('balance',$_POST['price'])){
+				$orderid = date('YmdHis',time()).mt_rand(1000,9999);
+				M('Member_card_pay_record')->add(array('orderid' => $orderid , 'ordername' => '前台手动充值' ,'note'=>'操作人'.cookie('username'), 'createtime' => time() , 'token' => $this->token , 'wecha_id' => $uinfo['wecha_id'] , 'price' => $_POST['price'] , 'type' => 1 , 'paid' => 1 , 'module' => 'qiantai' , 'paytime' => time() , 'paytype' => 'recharge'));
+                if(intval($_POST['price'])>=200){
+                    $cardnumber=$this->change($mycard['cardid'],$uinfo['wecha_id']);
+                    if($cardnumber!='0'){
+                       $this->changecarinfo($uinfo,$cardnumber);
+                    }
+                }
+                /*模板消息*/
+                $model  = new templateNews();
+                $dataKey    = 'TM151125';
+                $dataArr    = array(
+                    'first'         => '您好，前台会员卡充值成功。',
+                    'accountType'      => '会员卡号',
+                    'account'      => $mycard['number'],
+                    'amount'      => $_POST['price'].'元',
+                    'result'      => '充值成功',
+                    'wecha_id'      => $uinfo['wecha_id'],
+                    'remark'        => '会员充值如有疑问，请致电020-39099139联系我们。',
+                    'url'      => U('Wap/Store/myinfo',array('token'=>$this->token,'wecha_id'=>$uinfo['wecha_id'],'cardid'=>$mycard['cardid']),true,false,true),
+                );
+                $model->sendTempMsg($dataKey,$dataArr);
+				echo '充值成功';
+				//$this->success('充值成功');
+
+			}else{
+				echo '充值失败，请稍后再试';
+			}
+
+		}
+	}
+    public function bindcar(){
+    
+        $carno = isset($_POST['carno']) ? htmlspecialchars($_POST['carno']) : '';
+        $wecha_id = isset($_POST['wecha_id']) ? htmlspecialchars($_POST['wecha_id']) : '';
+        $carno=strtoupper($carno);
+        $carinfo=M('member_card_car')->where(array('token' => $this->token,wecha_id=>$wecha_id,'carno'=>$carno))->find();
+        if(empty($carinfo))
+        {   
+            $user=M('userinfo')->where(array('token' => $this->token,wecha_id=>$wecha_id))->find();
+            if($user['carno1']==""){
+                M('userinfo')->where(array('token' => $this->token,wecha_id=>$wecha_id))->save(array('carno1'=>$carno));
+            }else{
+                M('userinfo')->where(array('token' => $this->token,wecha_id=>$wecha_id))->save(array('carno2'=>$carno));
+            }
+            M('member_card_car')->add(array('token' => $this->token,wecha_id=>$wecha_id,'carno'=>$carno,'optuser'=>cookie('username'),'bindtime'=>time()));
+            echo '添加成功';
+            exit();
+        }
+        else
+        {
+           //M('member_card_car')->where(array('token' => $this->token,wecha_id=>$wecha_id,'carno'=>$carno))->delete();
+           echo '车牌号码已存在';
+            exit();
+        }
+
+    }
+
+    public function left()
+    {
+        //$user=M('用户管理','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();
+        //$this->assign('user',$user);
+        //$this->display();
+    }
+    public function index()
+    {
+        $where=array('1'=>'1');
+        if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+            $searchkey='%'.trim($_GET['searchkey']).'%';
+        }
+        if($_GET['shop']&&trim($_GET['shop'])!='')
+        {
+          $where=array('shop'=>trim($_GET['shop']));
+
+        }
+        else{
+           $where['shop']=array('neq','');
+        }
+        if($searchkey){       
+            $searchwhere['carno']=array('like',$searchkey);
+            $searchwhere['carno1']=array('like',$searchkey);
+            $searchwhere['carno2']=array('like',$searchkey);
+            $searchwhere['truename']=array('like',$searchkey);
+            $searchwhere['wechaname']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $parms=$_GET;
+        $count= M('Member_card_use_record','','acg')
+            ->join('join tp_userinfo on tp_member_card_use_record.wecha_id=tp_userinfo.wecha_id')
+            ->join('join tp_member_card_create on tp_member_card_use_record.wecha_id=tp_member_card_create.wecha_id')
+            ->where($where)->count();
+		$Page = new Page($count,15,$parms);
+		$show = $Page->show();
+		$record = M('Member_card_use_record','','acg')
+            ->join('join tp_userinfo on tp_member_card_use_record.wecha_id=tp_userinfo.wecha_id')
+            ->join('join tp_member_card_create on tp_member_card_use_record.wecha_id=tp_member_card_create.wecha_id')
+            ->where($where)->order('tp_member_card_use_record.time desc')->limit($Page->firstRow.','.$Page->listRows)->select();
+        $this->assign('page',$show);
+        $this->assign('record',$record);
+        $pay_record=M('Member_card_pay_record','','acg');
+        $count2      = $pay_record
+            ->join('join tp_userinfo on tp_member_card_pay_record.wecha_id=tp_userinfo.wecha_id')
+            ->join('join tp_member_card_create on tp_member_card_pay_record.wecha_id=tp_member_card_create.wecha_id')
+            ->where($where)->count();
+		$Page2       = new Page($count2,15,$parms);
+		$rmb = $pay_record
+            ->join('join tp_userinfo on tp_member_card_pay_record.wecha_id=tp_userinfo.wecha_id')
+            ->join('join tp_member_card_create on tp_member_card_pay_record.wecha_id=tp_member_card_create.wecha_id')
+            ->where($where)->limit($Page2->firstRow.','.$Page2->listRows)->order('createtime DESC')->select();
+		$show2       = $Page2->show();
+		$this->assign('rmb',$rmb);
+		$this->assign('page2',$show2);
+        $this->display();
+    }
+    public function members()
+    {
+        $where=array('1'=>'1');
+        if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+            $searchkey='%'.trim($_GET['searchkey']).'%';
+        }
+        if($_GET['shop']&&trim($_GET['shop'])!='')
+        {
+            $where=array('shop'=>trim($_GET['shop']));
+
+        }
+        else{
+            $where['shop']=array('neq','');
+        }
+        if($searchkey){       
+            $searchwhere['carno']=array('like',$searchkey);
+            $searchwhere['carno1']=array('like',$searchkey);
+            $searchwhere['carno2']=array('like',$searchkey);
+            $searchwhere['truename']=array('like',$searchkey);
+            $searchwhere['wechaname']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $parms=$_GET;
+        $count= M('Member_card_use_record')
+            ->join('join tp_userinfo on tp_member_card_use_record.wecha_id=tp_userinfo.wecha_id')
+            ->join('tp_member_card_create on tp_member_card_use_record.wecha_id=tp_member_card_create.wecha_id')
+            ->where($where)->count();
+		$Page = new Page($count,15,$parms);
+		$show = $Page->show();
+		$record = M('Member_card_use_record')
+            ->join('join tp_userinfo on tp_member_card_use_record.wecha_id=tp_userinfo.wecha_id')
+            ->join('join tp_member_card_create on tp_member_card_use_record.wecha_id=tp_member_card_create.wecha_id')
+            ->where($where)->order('tp_member_card_use_record.time desc')->limit($Page->firstRow.','.$Page->listRows)->select();
+        $this->assign('page',$show);
+        $this->assign('record',$record);
+        $pay_record=M('Member_card_pay_record');
+        unset($where['shop']);
+        $count2      = $pay_record
+            ->join('join tp_userinfo on tp_member_card_pay_record.wecha_id=tp_userinfo.wecha_id')
+             ->join('join tp_member_card_create on tp_member_card_pay_record.wecha_id=tp_member_card_create.wecha_id')
+           ->where($where)->count();
+		$Page2       = new Page($count2,15,$parms);
+		$rmb = $pay_record
+            ->join('join tp_userinfo on tp_member_card_pay_record.wecha_id=tp_userinfo.wecha_id')
+            ->join('join tp_member_card_create on tp_member_card_pay_record.wecha_id=tp_member_card_create.wecha_id')
+            ->where($where)->limit($Page2->firstRow.','.$Page2->listRows)->order('createtime DESC')->select();
+		$show2       = $Page2->show();
+		$this->assign('rmb',$rmb);
+		$this->assign('page2',$show2);
+        $this->display();
+		
+    }
+    private function getcode($randLength=6,$attatime=1,$includenumber=0){
+		if ($includenumber){
+			$chars='abcdefghijklmnopqrstuvwxyzABCDEFGHJKLMNPQEST123456789';
+		}else {
+			$chars='abcdefghijklmnopqrstuvwxyz';
+		}
+		$len=strlen($chars);
+		$randStr='';
+		for ($i=0;$i<$randLength;$i++){
+			$randStr.=$chars[rand(0,$len-1)];
+		}
+		$tokenvalue=$randStr;
+		if ($attatime){
+			$tokenvalue=$randStr.time();
+		}
+		return $tokenvalue;
+	}
+    public function getgrade(){
+        
+        if(IS_POST){
+            $carno=$_POST['carno'];
+            $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
+            echo json_encode($carinfo);
+            exit;
+        }
+    }
+    public function setprice()
+    {
+        $this->display();
+    }
+    private function getprice(){
+      
+    }
+    public function login()
+    {
+        if(IS_POST)
+        {
+            $username=$_POST['username'];
+            $password=$_POST['password'];
+            $user=M('用户管理','dbo.','difo')->where(array('姓名'=>$username))->find();
+            if($user&&$user['密码']==$password)
+            {
+                cookie('username',$username,3600);
+                $this->redirect(U('Consume/newindex', array('token' => $this->token)));
+                exit();
+            }
+            else{
+                $this->error('用户名密码不正确');
+                 exit();
+            }
+            
+        }
+        $this->display();
+
+    }
+    public function days()
+    {
+         $parms=$_GET;
+         $count=M('维修日营业表','dbo.','difo')->count();
+         $Page = new Page($count,15,$parms);
+         $show = $Page->show();
+         $yelist=M('维修日营业表','dbo.','difo')->limit($Page->firstRow.','.$Page->listRows)->order('日期 desc')->select();
+         $this->assign('page',$show);
+         $this->assign('count',$count);
+         $this->assign('yelist',$yelist);
+         $this->display();
+    }
+    private function getcodenum($type)
+    {
+        $code=M('编号单','dbo.','difo')->where(array('类别'=>"$type",'日期'=>date('Y-m-d', time())))->max('队列');
+        $bianhao="$type-".date('ymd', time()).'-'.str_pad(($code+1),3,'0',STR_PAD_LEFT);
+        M('编号单','dbo.','difo')->add(array('单据编号'=>$bianhao,'队列'=>($code+1),'类别'=>"$type",'日期'=>date('Y-m-d', time())));
+        return $bianhao;
+    }
+
+    private function genbill($price,$chezhu,$zhaiyao,$danwei){
+
+        $bianhao=$this->getcodenum("BI");
+        $data['单据编号']=$bianhao;
+        $data['ID']=$this->getcode(10,0,1);
+        $data['制单日期']=date('Y-m-d',time());
+        $data['制单人']='系统自动';
+        $data['单位名称']=$chezhu;
+        $data['账款类别']='收款单';
+        $data['开户银行']='';
+        $data['银行账号']='';
+        $data['本次应付']=0;
+        $data['本次应收']=0;
+        $data['整单折扣']=1;
+        $data['实付金额']=0;
+        $data['实收金额']=$price;
+        $data['折扣金额']=0;
+        $data['结算方式']='会员卡支付';
+        $data['结算账户']='会员账户';
+        $data['支票号']=0;
+        $data['凭证号']=0;
+        $data['摘要']=$zhaiyao;
+        $data['收支项目']='维修收款';
+        $data['当前状态']='待审核';
+        $data['发票类别']='';
+        $data['发票号']='';
+        $data['单位编号']=$danwei;
+        $data['取用预付']=0;
+        $data['取用预收']=0;
+        $data['本次冲账']=$price;
+        $data['单据类别']='应收款';
+        $data['取用预存']=0;
+        M('日常收支','dbo.','difo')->add($data);
+    }
+
+   public function wxcx()
+    {  
+       if(IS_POST){
+           $id=$_POST['id'];
+           $zhuxiu=$_POST['zhuxiu'];
+           $data['当前主修人']=$zhuxiu;
+           $itemid=$_POST['itemid'];
+           $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>$zhuxiu))->find();
+           M('维修项目','dbo.','difo')->where(array('ID'=>$id))->save(array('主修人'=>$zhuxiu,'班组'=>$yg['班组']));
+
+           $wx=M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->find();
+           $this->genbill($wx['应收金额'],$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID']);
+           M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save(array('当前状态'=>'结束'));
+           $data['出厂时间']=date('Y-m-d H:i',time());
+           $data['实际完工']=date('Y-m-d H:i',time());
+           $data['结算日期']=date('Y-m-d',time());
+           $data['结束日期']=date('Y-m-d',time());
+           $data['挂账金额']=0;
+           $data['现收金额']=0;
+           $data['标志']='已结算';
+           M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save($data);
+           echo '订单完成';
+           exit;
+       }
+        $parms=$_GET;
+        if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+            $searchkey='%'.trim($_GET['searchkey']).'%';
+        }
+        if($_GET['lb']&&trim($_GET['lb'])!='')
+        {
+            $where['维修类别']=trim($_GET['lb']);
+            
+        }
+        if($_GET['startDate']&&trim($_GET['startDate'])!='')
+        {
+            $where['制单日期']=array('egt',trim($_GET['startDate']));
+            
+        }
+        if($_GET['endDate']&&trim($_GET['endDate'])!='')
+        {
+            $where['制单日期']=array('elt',trim($_GET['endDate']));
+            
+        }
+        if(trim($_GET['startDate'])!=''&&trim($_GET['endDate'])!='')
+        {
+            $where['制单日期']=array('BETWEEN',array(trim($_GET['startDate']),trim($_GET['endDate'])));
+            
+        }
+        if($searchkey){       
+            $searchwhere['制单人']=array('like',$searchkey);
+            $searchwhere['接车人']=array('like',$searchkey);
+            $searchwhere['维修类别']=array('like',$searchkey);
+            $searchwhere['车主']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['客户类别']=array('like',$searchkey);
+            $searchwhere['联系人']=array('like',$searchkey);
+            $searchwhere['联系电话']=array('like',$searchkey);
+            $searchwhere['送修人']=array('like',$searchkey);
+            $searchwhere['当前状态']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+         $count=M('维修','dbo.','difo')->where($where)->count();
+         $Page = new Page($count,15,$parms);
+         $show = $Page->show();
+         $list=M('员工目录','dbo.','difo')->where(array('职务'=>array('like','%美容%')))->select();
+         $this->assign('list',$list);
+         $lblist=M('车辆档案','dbo.','difo')->Distinct(true)->field('客户类别')->order('客户类别')->select();
+         $this->assign('lblist',$lblist);
+
+         $yelist=M('维修','dbo.','difo')->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('流水号 desc')->select();
+         //$lblist=M('车辆档案','dbo.','difo')->Distinct(true)->field('客户类别')->order('客户类别')->select();
+         //$this->assign('lblist',$lblist);
+         $this->assign('page',$show);
+         $this->assign('count',$count);
+         $this->assign('yelist',$yelist);
+         $this->display();
+    }
+    public function clxx()
+    {   
+        if(IS_POST)
+        {
+             $carno=$_POST['carno'];
+             if($_POST['pinpai']!='')
+             {
+                $data['品牌']=$_POST['pinpai'];
+             }
+             if($_POST['luntai']!='')
+             {
+                $data['运输证号']=$_POST['luntai'];
+             }
+             if($_POST['jiyou']!='')
+             {
+                $data['车架号']=$_POST['jiyou'];
+             }
+              if($_POST['kongqi']!='')
+             {
+                $data['发动机号']=$_POST['kongqi'];
+             }
+               if($_POST['baoxian']!='')
+             {
+                $data['保险公司']=$_POST['baoxian'];
+             }
+                 if($_POST['bxrq']!='')
+             {
+                $data['交保到期']=$_POST['bxrq'];
+             }
+                    if($_POST['nianshen']!='')
+             {
+                $data['年检到期']=$_POST['nianshen'];
+             }
+                    if($_POST['lengqi']!='')
+             {
+                $data['发动机型号']=$_POST['lengqi'];
+             }
+              if(M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->save($data))
+              {
+                  echo '保存成功';
+                  exit();
+              }
+              else{
+                  echo '保存失败';
+                  exit();
+              }
+        }
+        $parms=$_GET;
+        if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+            $searchkey='%'.trim($_GET['searchkey']).'%';
+        }
+        if($_GET['lb']&&trim($_GET['lb'])!='')
+        {
+            $where['维修类别']=trim($_GET['lb']);
+            
+        }
+        if($_GET['startDate']&&trim($_GET['startDate'])!='')
+        {
+            $where['制单日期']=array('egt',trim($_GET['startDate']));
+            
+        }
+        if($_GET['endDate']&&trim($_GET['endDate'])!='')
+        {
+            $where['制单日期']=array('elt',trim($_GET['endDate']));
+            
+        }
+        if(trim($_GET['startDate'])!=''&&trim($_GET['endDate'])!='')
+        {
+            $where['制单日期']=array('BETWEEN',array(trim($_GET['startDate']),trim($_GET['endDate'])));
+            
+        }
+        $where['车牌号码']=array('neq','0000');
+        if($searchkey){       
+            $searchwhere['品牌']=array('like',$searchkey);
+            $searchwhere['运输证号']=array('like',$searchkey);
+            $searchwhere['车架号']=array('like',$searchkey);
+            $searchwhere['车主']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['客户类别']=array('like',$searchkey);
+            $searchwhere['联系人']=array('like',$searchkey);
+            $searchwhere['联系电话']=array('like',$searchkey);
+            $searchwhere['保险公司']=array('like',$searchkey);
+            $searchwhere['发动机号']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+         $count=M('维修','dbo.','difo')->where($where)->count();
+         $Page = new Page($count,15,$parms);
+         $show = $Page->show();
+         $yelist=M('维修','dbo.','difo')->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('流水号 desc')->select();
+         $this->assign('page',$show);
+         $this->assign('count',$count);
+         $this->assign('yelist',$yelist);
+         $this->display();
+    }
+  public function purchase()
+    {
+         $parms=$_GET;
+         if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+             $searchkey='%'.trim($_GET['searchkey']).'%';
+         }
+         if($_GET['lb']&&trim($_GET['lb'])!='')
+         {
+             $where['维修类别']=trim($_GET['lb']);
+             
+         }
+         if($_GET['startDate']&&trim($_GET['startDate'])!='')
+         {
+             $where['日期']=array('egt',trim($_GET['startDate']));
+             
+         }
+         if($_GET['endDate']&&trim($_GET['endDate'])!='')
+         {
+             $where['日期']=array('elt',trim($_GET['endDate']));
+             
+         }
+         if(trim($_GET['startDate'])!=''&&trim($_GET['endDate'])!='')
+         {
+             $where['日期']=array('BETWEEN',array(trim($_GET['startDate']),trim($_GET['endDate'])));
+             
+         }
+         if($_GET['zhidan']&&trim($_GET['zhidan'])!='')
+         {
+             $where['制单人']=trim($_GET['zhidan']);
+             
+         }
+         if($searchkey){       
+             $searchwhere['制单人']=array('like',$searchkey);
+             $searchwhere['维修类别']=array('like',$searchkey);
+             $searchwhere['_logic']='OR';
+             $where['_complex']=$searchwhere;
+
+         }
+         $zdlist=M('员工目录','dbo.','difo')->where(array('班组'=>array('in',array('录单采购','区府店前台收银','塘坑店前台收银'))))->select();
+
+         $count=M('采购录单业绩表','dbo.','difo')->where($where)->count();
+         $Page = new Page($count,15,$parms);
+         $show = $Page->show();
+         $yelist=M('采购录单业绩表','dbo.','difo')->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('日期 desc')->select();
+         $this->assign('page',$show);
+         $this->assign('count',$count);
+         $this->assign('zdlist',$zdlist);
+         $this->assign('yelist',$yelist);
+         $this->display();
+    }
+     public function month()
+    {
+         $parms=$_GET;
+         $count=M('维修月营业表','dbo.','difo')->count();
+         $Page = new Page($count,15,$parms);
+         $show = $Page->show();
+         $yelist=M('维修月营业表','dbo.','difo')->limit($Page->firstRow.','.$Page->listRows)->order('日期 desc')->select();
+         $this->assign('page',$show);
+         $this->assign('count',$count);
+         $this->assign('yelist',$yelist);
+         $this->display();
+    }
+   public function persons()
+    {
+         $parms=$_GET;
+         if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+             $searchkey='%'.trim($_GET['searchkey']).'%';
+         }
+         if($_GET['lb']&&trim($_GET['lb'])!='')
+         {
+             $where['维修类别']=trim($_GET['lb']);
+             
+         }
+         if($_GET['bm']&&trim($_GET['bm'])!='')
+         {
+             $where['部门']=trim($_GET['bm']);
+             
+         }
+         if($_GET['startDate']&&trim($_GET['startDate'])!='')
+         {
+             $where['时间']=array('egt',trim($_GET['startDate']));
+             
+         }
+         if($_GET['endDate']&&trim($_GET['endDate'])!='')
+         {
+             $where['时间']=array('elt',trim($_GET['endDate']));
+             
+         }
+         if(trim($_GET['startDate'])!=''&&trim($_GET['endDate'])!='')
+         {
+             $where['时间']=array('BETWEEN',array(trim($_GET['startDate']),trim($_GET['endDate'])));
+             
+         }
+         if($_GET['zhuxiu']&&trim($_GET['zhuxiu'])!='')
+         {
+             $where['主修人']=trim($_GET['zhuxiu']);
+             
+         }
+         if($searchkey){       
+             $searchwhere['维修类别']=array('like',$searchkey);
+             $searchwhere['主修人']=array('like',$searchkey);
+             $searchwhere['_logic']='OR';
+             $where['_complex']=$searchwhere;
+
+         }
+         $count=M('个人业绩表','dbo.','difo')->join('员工目录 on 个人业绩表.主修人=员工目录.姓名')->where($where)->count();
+         $Page = new Page($count,15,$parms);
+         $show = $Page->show();
+         if(S('yglist')){
+             $zxlist=S('yglist');
+         }else{
+             $zxlist=M('员工目录','dbo.','difo')->where(array('部门'=>array('in',array('区府店美容部','区府店维修部','塘坑店美容部','塘坑店维修部'))))->order('姓名')->select();
+             S('yglist',$zxlist);
+         }
+         $yelist=M('个人业绩表','dbo.','difo')->join('员工目录 on 个人业绩表.主修人=员工目录.姓名')->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('时间 desc,服务车辆数 desc')->select();
+         $this->assign('page',$show);
+         $this->assign('count',$count);
+         $this->assign('yelist',$yelist);
+         $this->assign('zxlist',$zxlist);
+         $this->display();
+    }
+   public function fwgw()
+    {
+         $parms=$_GET;
+         if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+             $searchkey='%'.trim($_GET['searchkey']).'%';
+         }
+         if($_GET['lb']&&trim($_GET['lb'])!='')
+         {
+             $where['维修类别']=trim($_GET['lb']);
+             
+         }
+         if($_GET['startDate']&&trim($_GET['startDate'])!='')
+         {
+             $where['日期']=array('egt',trim($_GET['startDate']));
+             
+         }
+         if($_GET['bm']&&trim($_GET['bm'])!='')
+         {
+             $where['班组']=array('like',trim($_GET['bm']).'%');
+             
+         }
+         if($_GET['endDate']&&trim($_GET['endDate'])!='')
+         {
+             $where['日期']=array('elt',trim($_GET['endDate']));
+             
+         }
+         if(trim($_GET['startDate'])!=''&&trim($_GET['endDate'])!='')
+         {
+             $where['日期']=array('BETWEEN',array(trim($_GET['startDate']),trim($_GET['endDate'])));
+             
+         }
+         if($_GET['zhuxiu']&&trim($_GET['zhuxiu'])!='')
+         {
+             $where['接车人']=trim($_GET['zhuxiu']);
+             
+         }
+         if($searchkey){       
+             $searchwhere['维修类别']=array('like',$searchkey);
+             $searchwhere['接车人']=array('like',$searchkey);
+             $searchwhere['_logic']='OR';
+             $where['_complex']=$searchwhere;
+
+         }
+         $count=M('服务顾问业绩表','dbo.','difo')->join('员工目录 on 服务顾问业绩表.接车人=员工目录.姓名')->where($where)->count();
+         $Page = new Page($count,15,$parms);
+         $show = $Page->show();
+         
+         $zxlist=M('员工目录','dbo.','difo')->where(array('部门'=>array('in',array('业务部','门店行政'))))->order('姓名')->select();
+         $yelist=M('服务顾问业绩表','dbo.','difo')->join('员工目录 on 服务顾问业绩表.接车人=员工目录.姓名')->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('日期 desc')->select();
+         $this->assign('page',$show);
+         $this->assign('count',$count);
+         $this->assign('yelist',$yelist);
+         $this->assign('zxlist',$zxlist);
+         $this->display();
+    }
+
+   public function products()
+   {
+       if(IS_POST)
+       {
+           $code=$_POST['code'];
+           $pjlist=null;
+           if($code!='')
+                $pjlist=M('配件分类','dbo.','difo')->where(array('父项'=>$code))->select();
+           echo json_encode($pjlist);
+           exit;
+       }
+       else{
+           if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+               $searchkey='%'.trim($_GET['searchkey']).'%';
+           }
+           if($_GET['lb']&&trim($_GET['lb'])!='')
+           {
+               $where['类别']=array('like','%'.trim($_GET['lb'].'%'));
+               
+           }
+           if($searchkey){       
+               $searchwhere['编号']=array('like',$searchkey);
+               $searchwhere['名称']=array('like',$searchkey);
+               $searchwhere['规格']=array('like',$searchkey);
+               $searchwhere['_logic']='OR';
+               $where['_complex']=$searchwhere;
+
+           }
+           $parms=$_GET;
+           $pjlist=M('配件分类','dbo.','difo')->where(array('级别'=>'0'))->select();
+           $count=M('配件库存','dbo.','difo')->where($where)->count();
+           $Page = new Page($count,15,$parms);
+           $show = $Page->show();
+           $list=M('配件库存','dbo.','difo')->where($where)->limit($Page->firstRow.','.$Page->listRows)->select();
+           $this->assign('page',$show);
+           $this->assign('count',$count);
+           $this->assign('pjlist',$pjlist);
+           $this->assign('list',$list);
+           $this->display();
+       }
+   }
+    public function record()
+    {
+        $list=M('员工目录','dbo.','difo')->where(array('部门'=>array('like','%美容部')))->select();
+        $this->assign('list',$list);
+        $lblist=M('车辆档案','dbo.','difo')->Distinct(true)->field('客户类别')->order('客户类别')->select();
+        $this->assign('lblist',$lblist);
+        if(IS_POST)
+        {
+            $carno=$_POST['carno'];
+            $person=$_POST['person'];
+            $money=$_POST['money'];
+            //M('维修','','difo')->where();
+            $data=M('维修','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
+            $data['流水号']=null;
+            unset( $data['流水号']);
+            unset($data['ROW_NUMBER']);
+            $code=M('编号单','dbo.','difo')->where(array('类别'=>'WX','日期'=>date('Y-m-d', time())))->max('队列');
+            $bianhao='WX-'.date('ymd', time()).'-'.str_pad(($code+1),3,'0',STR_PAD_LEFT);
+            M('编号单','dbo.','difo')->add(array('单据编号'=>$bianhao,'队列'=>($code+1),'类别'=>'WX','日期'=>date('Y-m-d', time())));
+            $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
+            if($carinfo)
+            {
+               $data['车牌号码']=$carno;
+               $data['送修人']=$carinfo['手机号码'];
+               foreach($data as $key=>$value){
+                   $data[$key]=$carinfo[$key];
+               }
+            }
+            else{
+                $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
+                foreach($data as $key=>$value){
+                    $data[$key]=$carinfo[$key];
+                }
+                $data['车牌号码']='0000';
+                $data['联系人']=$carno;
+                $data['送修人']=$carno;
+                $data['联系电话']='';
+            }
+           
+            $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>$person))->find();
+            $data['接车人']='刘述庆';
+            if($yg&&strpos($yg['班组'], '塘坑') === 0){
+                $data['接车人']='廖吉洪';
+            }
+            //$data['车牌号码']=$carno;
+            $data['ID']=$this->getcode(10,0,1);
+            $data['制单日期']=date('Y-m-d',time());
+            $data['制单人']=cookie('username');
+            $data['维修类别']='蜡水洗车';
+            $data['保修类别']='保外';
+            $data['单据类别']='快修单';
+            $data['当前主修人']=$person;
+            $data['结算客户']=$carinfo['车主'];;
+            $data['结算客户ID']=$carinfo['客户ID'];
+            //$data['送修人电话']=$carinfo['手机号码'];
+            $data['当前状态']='结算';
+            $data['维修状态']='结算';
+            $data['进厂时间']=date('Y-m-d',time());
+            $data['结算日期']=date('Y-m-d',time());
+            $data['下次保养']=null;
+            $data['报价金额']=0;
+            $data['应收金额']=0;
+            if(strpos($data['车主'], 'ACG') === 0||(strpos($data['车主'], 'AYC') === 0)){
+                $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0001'))->find();
+            }elseif($carinfo['客户类别']=='VIP客户'){
+                 $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0004'))->find();
+            }
+            elseif(strpos($carinfo['客户类别'],'定点签约')===0){
+                $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0003'))->find();
+                $xm['标准金额']=$money;
+                $data['报价金额']=$money;
+                $data['应收金额']=$money;
+            }
+            elseif($carinfo['客户类别']=='三方合作'){
+                 $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0007'))->find();
+            }
+            else{
+                 $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0002'))->find();
+                 $data['报价金额']=35;
+                 $data['应收金额']=35;
+            }
+            $data['业务编号']=$bianhao;
+            M('维修','dbo.','difo')->add($data);
+            $row=array();
+            $row['ID']=$data['ID'];
+            $row['项目编号']=$xm['项目编号'];
+            $row['项目名称']=$xm['项目名称'];
+            $row['维修工艺']=$xm['维修工艺'];
+            $row['结算方式']='客付';
+            $row['工时']=$xm['标准工时'];
+            $row['单价']=$xm['标准金额'];
+            $row['金额']=$xm['标准金额'];
+            $row['折扣']=1;
+            $row['提成工时']=1;
+            $row['提成金额']=1;
+            $row['主修人']=$person;
+            $row['班组']=$yg['班组'];
+            $row['开工时间']=date('Y-m-d H:i',time());
+            $row['完工时间']=date('Y-m-d H:i',time());
+            $row['是否同意']=0;
+            $row['已维修']='0小时'; 
+            M('维修项目','dbo.','difo')->add($row);
+            echo '提交成功';
+            exit;
+        }
+       
+        $this->display();
+      
+
+    }
+}
+

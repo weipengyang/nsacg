@@ -1,0 +1,126 @@
+* {
+	padding:0;
+	margin:0;
+	border:none;
+}
+body, input, button, select, textarea {
+    font: 12px/1.5 Microsoft YaHei,Helvitica,Verdana,Arial,san-serif;
+}
+.content p, .content table, .content tr, .content td, .content th, .content dl, .content dt, .content dd, .content ol, .content ul, .content li, .content input, .content button, .content select, .content stextarea {
+	line-height:1.5;
+
+}
+
+a {
+	text-decoration:none;
+	color:#636b89;
+	blr:expression(this.onFocus=this.blur())
+}
+/*a:link, a:visited {
+	text-decoration:none;
+	color:#636b89;
+}*/
+a:hover, a:active {
+	text-decoration:none;
+	color: #090;
+}
+
+ul, li {
+    list-style-type: none; padding: 0; margin: 0;
+}
+.container {
+	width:960px;
+	margin:0 auto;
+	font-size:14px;
+	line-height:1.5;
+}
+.clr {
+	display:block;
+	clear:both;
+	height:1px;
+	overflow:hidden;
+}
+.hr {
+	border-bottom:1px solid #eee;
+	height:1px;
+	overflow:hidden;
+}
+h3 {
+    color: #AAAAAA;
+    font-size: 24px;
+    font-weight: normal;
+    /*margin: 0 0 20px;*/
+}
+input, textarea {
+	background:#fff;
+}
+textarea {
+	resize:vertical;
+	height:130px;
+}
+.container {
+	width:960px;
+	margin:0 auto;
+}
+/*中间内容*/
+.qtcontent {
+	 margin: 0 auto;
+    text-align: left;
+    width: 980px;
+}
+.contentmanage{
+	 margin: 0 auto;
+    text-align: left;
+    width: 1210px;
+}
+
+.article, .intro, .download, .document, .developer {
+	margin:40px 0px;
+	border:1px solid #c7cdd6;/*border-radius:8px;*/
+	background:#f5f6f7;
+	box-shadow:0px 1px 3px #ccc;
+}
+.section {
+	padding:0 0 20px 0;
+	margin:0 0 20px 0;
+	border-bottom:1px solid #eee;
+	overflow: hidden;
+}
+.section p{padding-top:0;margin-top:0; font-size:16px;/*text-indent: 2em;*/}
+.lastSection {
+	border:none;
+	margin-bottom:0px;
+}
+.sectionDesc {
+	color:#aaa;/*margin-top:-22px;*/
+	margin-bottom:20px;
+}
+.noBorder {
+	border-width:0;
+}
+.intro p {
+	color:#666;
+}
+.normalTitle {
+	border-bottom:1px solid #d7dde6;
+	border-radius:10px 10px 0 0;/*border-top:1px solid #fff;*/
+	padding:20px 40px;
+	text-shadow:0 1px 1px #fff;
+}
+.normalTitle2 {
+	border-bottom:1px solid #d7dde6;
+	border-radius:10px 10px 0 0;/*border-top:1px solid #fff;*/
+	padding:10px 20px;
+	text-shadow:0 1px 1px #fff;
+}
+
+.normalContent {
+	background:#fff;/*border-radius:0 0 10px 10px;*/
+	padding:40px;
+}
+.normalTitle h2, .panelTitle h2, .processTitle h2 {
+	font-size:20px;
+	font-weight:bold;
+}
+.red{ color: #F00;background-color: transparent; border:0;}
+.green{ color:#090;background-color: transparent; border:0;}

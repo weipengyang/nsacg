@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="{pigcms:$staticPath}/tpl/static/dishout/css/main.css" media="all">
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/dishout/js/jquery1.8.3.js"></script>
+<title>温馨提示</title>
+<meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<meta name="Keywords" content="">
+<meta name="Description" content="">
+<!-- Mobile Devices Support @begin -->
+	<meta content="telephone=no, address=no" name="format-detection">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<!-- apple devices fullscreen -->
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- Mobile Devices Support @end -->
+<style type="text/css">
+.menu_container{margin: 35px;margin-top: 50px;}
+.p1{ margin: 15px;
+font-size: 25px;
+font-weight: bold;
+color: #ea381e;}
+.p2{ font-size: 20px;
+	margin: 15px;
+  }
+
+.p2 a{
+    margin-left: 40px;
+    color:rgb(52, 130, 216);
+	}
+</style>
+</head>
+<body>
+<div class="container">
+	<header class="nav menu">
+		<div>
+			<a href="" class="on">温馨提示</a>
+		</div>
+	</header>
+	
+	<section class="menu_wrap" id="menuWrap">	
+	<div class="menu_container">
+	  <p class="p1">{pigcms:$tips}</p>
+	  <p class="p2">
+	  <?php if($returnurl && !stripos($returnurl,'g=Wap')){ ?>
+	  <span id="wait">7</span>&nbsp;秒后自动返回
+	  <a id="href"  href="javascript:;" onclick="window.history.back()">点击手动跳转</a>
+		<?php }elseif(stripos($returnurl,'g=Wap')){ ?>
+	  <span id="wait">7</span>&nbsp;秒后自动跳转
+	  <a id="href"  href="<?php echo($returnurl); ?>">点击手动跳转</a>
+		<?php } ?>
+	  </p>
+	</div>
+	</section>
+<?php if($returnurl){ ?>
+<script type="text/javascript">
+var tourl=false;
+<?php if(stripos($returnurl,'g=Wap')){ ?>
+ tourl="<?php echo($returnurl); ?>";
+<?php } ?>
+(function(){
+var wait = document.getElementById('wait');
+var interval = setInterval(function(){
+	var time = --wait.innerHTML;
+	if(time == 0) {
+	    if(tourl){
+		  window.location.href = tourl;
+		}else{
+		  window.history.back();
+		}
+		clearInterval(interval);
+	};
+}, 1000);
+})();
+</script>
+<?php } ?>
+</body>
+
+</html>

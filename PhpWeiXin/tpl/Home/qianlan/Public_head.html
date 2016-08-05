@@ -1,0 +1,42 @@
+<link rel="stylesheet" type="text/css" href="{pigcms::RES}/css/style.css"/>
+<link rel="stylesheet" type="text/css" href="{pigcms::RES}/css/index.css"/>
+<!--[if lte IE 6]>
+<link rel="stylesheet" type="text/css" href="{pigcms::RES}/css/ie6.css"/>
+<![endif]-->
+
+
+</head>
+<body oncontextmenu="return false" onselectstart ="return false">
+<div class="topbg">
+<div class="top">
+<div class="toplink">
+<div class="welcome">欢迎使用赛微网-免费微信营销平台!</div>
+    <div class="memberinfo"  id="destoon_member">	
+		<if condition="$_SESSION[uid]==false">
+			你好&nbsp;&nbsp;<span class="f_red">游客</span>&nbsp;&nbsp;
+			<a href="{pigcms::U('Index/login')}">登录</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+			<a href="{pigcms::U('Index/reg')}">注册</a>
+			<else/>
+			你好,<a href="/#" hidefocus="true"  ><span style="color:red">{pigcms:$Think.session.uname}</span></a>（uid:{pigcms:$Think.session.uid}）
+			<a href="/#" onClick="Javascript:window.open('{pigcms::U('System/Admin/logout')}','_blank')" >退出</a>
+	</if>	
+	</div>
+</div>
+    <div class="logo">
+        <div style="float:left"></div>
+            <h1><a href="/" title="多用户微信营销服务平台"><img src="{pigcms::C('site_logo')}" /></a></h1>
+            <div class="navr">
+        <ul id="topMenu">           
+			 <li <if condition="(ACTION_NAME eq 'index') and (GROUP_NAME eq 'Home')">class="menuon"</if> ><a href="http://www.edawn.cc" >首页</a></li>
+           <li <eq name="ACTION_NAME" value="fc">class="menuon"</eq>><a href="http://www.edawn.cc/wechat">功能介绍</a></li>
+                <li <eq name="ACTION_NAME" value="about">class="menuon"</eq>><a href="http://www.edawn.cc/about">关于我们</a></li>
+				
+             
+                <li <eq name="GROUP_NAME" value="User">class="menuon"</eq>><a href="http://www.edawn.cc/contact-us">管理中心</a></li>
+                <li <eq name="ACTION_NAME" value="help">class="menuon"</eq>><a href="http://www.edawn.cc/help">帮助中心</a></li>
+            
+            </ul>
+        </div>
+        </div>
+    </div>
+</div>

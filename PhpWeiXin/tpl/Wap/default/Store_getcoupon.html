@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <link href="//at.alicdn.com/t/font_1465798715_7936175.css" rel="stylesheet" type="text/css" />
+    <title>券码兑换</title>
+</head>
+<body>
+    <div class="page">
+        <nav class="bar bar-tab">
+            <a class="tab-item" data-no-cache="true" href="javascript:void(0);" onclick="history.go(-1);">
+                <span class="icon icon-left"></span>
+                <span class="tab-label">返回</span>
+            </a>
+            <a class="tab-item" data-no-cache="true" href="{pigcms::U('Store/cats',array('token' => $_GET['token'], 'catid' => $hostlist['id'], 'wecha_id' => $wecha_id, 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-home"></span>
+                <span class="tab-label">首页</span>
+            </a>
+            <a class="tab-item" data-no-cache="true" href="{pigcms::U('Store/cart',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-cart"></span>
+                <if condition="$count neq 0">
+                    <span class="badge" id='badge'>{pigcms:$count}</span>
+                    <else />
+                    <span class="badge" id='badge' style="display:none">{pigcms:$count}</span>
+                </if>
+                <span class="tab-label">购物车</span>
+            </a>
+            <a class="tab-item" data-no-cache="true" href="{pigcms::U('Store/myinfo',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-me"></span>
+                <span class="tab-label">我</span>
+            </a>
+        </nav>
+        <div class="content">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-content-inner">
+                        <div class="list-block">
+                            <ul>
+                                <!-- Text inputs -->
+                                <li>
+                                    <div class="item-content">
+                                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title label" style="width:3rem">优惠码</div>
+                                            <div class="item-input">
+                                                <input type="text" id="codenum" placeholder="输入优惠码">
+                                            </div>
+                                            <div class="item-title label"  style="width:1.5rem"><a class="icon iconfont icon-saoma" style="font-size:1.2rem;float:right" href="#" ></a></div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content-block">
+                <div class="row">
+                    <div class="col-100"><a href="#" class="button button-big button-fill button-success">兑换</a></div>
+                </div>
+            </div>
+        </div>
+        <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+        <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+        <script type='text/javascript' src='http://res.wx.qq.com/open/js/jweixin-1.1.0.js' charset='utf-8'></script>
+        <script type="text/javascript">
+        $.config = {
+            // 路由功能开关过滤器，返回 false 表示当前点击链接不使用路由
+            routerFilter: function ($link) {
+                // 某个区域的 a 链接不想使用路由功能
+                if ($link.is('.disable-router a')) {
+                    return false;
+                }
+                return true;
+            }
+        };
+        $(function () {
+            'use strict';
+            //对话框
+            $.init();
+            $('.button-success').click(function () {
+                $('#codenum').val();
+                var submitData = {
+                    couponid: $('#codenum').val()
+                };
+                $.post('/index.php?g=Wap&m=Store&a=getcoupon&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData,
+                function (data) {
+                    $.toast(data);
+                    location.href = location.href;
+                });
+            });
+            $('.icon-saoma').click(function () {
+                wx.scanQRCode({
+                    needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                    scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                    success: function (res) {
+                        var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+                        $('#codenum').val(result);
+                    }
+                });
+            });
+            wx.config({
+                //debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                appId: "{pigcms:$signPackage['appId']}", // 必填，公众号的唯一标识
+                timestamp: "{pigcms:$signPackage['timestamp']}",
+                nonceStr: "{pigcms:$signPackage['nonceStr']}",
+                signature: "{pigcms:$signPackage['signature']}",// 必填，签名，见附录1
+                jsApiList: [
+                    'checkJsApi',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareWeibo',
+                    'onMenuShareQZone',
+                    'hideMenuItems',
+                    'showMenuItems',
+                    'hideAllNonBaseMenuItem',
+                    'showAllNonBaseMenuItem',
+                    'translateVoice',
+                    'startRecord',
+                    'stopRecord',
+                    'onVoiceRecordEnd',
+                    'playVoice',
+                    'onVoicePlayEnd',
+                    'pauseVoice',
+                    'stopVoice',
+                    'uploadVoice',
+                    'downloadVoice',
+                    'chooseImage',
+                    'previewImage',
+                    'uploadImage',
+                    'downloadImage',
+                    'getNetworkType',
+                    'openLocation',
+                    'getLocation',
+                    'hideOptionMenu',
+                    'showOptionMenu',
+                    'closeWindow',
+                    'scanQRCode',
+                    'chooseWXPay',
+                    'openProductSpecificView',
+                    'addCard',
+                    'chooseCard',
+                    'openCard'
+                ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+            });
+            wx.ready(function () {
+                wx.hideOptionMenu();
+
+            });
+
+        });
+        </script>
+        <script type="text/javascript">
+        window.shareData = {
+            "moduleName": "Store",
+            "moduleID": "{pigcms:$product['id']}",
+            "imgUrl": "{pigcms:$product['logourl']}",
+            "timeLineLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/product',array('token' => $_GET['token'],'id'=>$product['id'], 'twid' => $mytwid, 'cid' => $cid))}",
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/product',array('token' => $_GET['token'],'id'=>$product['id'], 'twid' => $mytwid, 'cid' => $cid))}",
+            "weiboLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/product',array('token' => $_GET['token'],'id'=>$product['id'], 'twid' => $mytwid, 'cid' => $cid))}",
+            "tTitle": "{pigcms:$metaTitle}",
+            "tContent": "{pigcms:$metaTitle}"
+        };
+        </script>
+        {pigcms:$shareScript}
+</body>
+</html>

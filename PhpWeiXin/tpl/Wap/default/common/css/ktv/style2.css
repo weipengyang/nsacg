@@ -1,0 +1,39 @@
+html, body {	color:#000000;	font-family:"Microsoft YaHei", Helvitica, Verdana, Tohoma, Arial, san-serif;	background-color:#ffffff;	margin:0 auto;	padding: 0;	text-decoration: none;	width:320px}ol, ul {	list-style: none outside none;	margin:0;	padding: 0;}h1, h2, h3, h4, h5, h6 {	font-size:100%;	/*font-weight:normal;*/}h2{ font-size:16px;}h3 {font-size: 18px;  margin:0; padding:0;}.clr{ clear:both}.marginb { display: block;margin-bottom: 15px;}.content {margin: 10px; text-decoration: none; word-wrap: break-word;}.content p {color: #666666;font-size: 14px; line-height: 1.5; margin:0; padding:0;}.content img {height: auto;max-width: 100%;border: 0 none;}	/*	*/.mainmenu2 {	margin: 0 auto;	display:block;	border:1px solid #DDDDDD;}.mainmenu2 li {	display: block;	position:relative;	z-index:1;	color: #222222;	border-top:1px solid #fff;	border-left:1px solid #fff;	border-right:1px solid #fff;	border-bottom:1px solid #DDDDDD;	font-weight: bold;	text-shadow: 0 1px 0 #FFFFFF;	text-decoration: none;	background:#FFFFFF;	-moz-user-select:none;	-webkit-user-select:none;	-ms-user-select:none;}.mainmenu2 .menubtn {	display: block;	min-height: 60px;	position:relative;	overflow: hidden;}.mainmenu2 li:active {	background:#f5f5f5;	border-top:1px solid #f5f5f5;	border-left:1px solid #f5f5f5;	border-right:1px solid #f5f5f5;	font-weight:bold;	cursor:pointer;	text-decoration:none;}.mainmenu2 li a {	display:block;	padding: 0.7em 15px;	font-size:14px;	color: #000000;	text-decoration: none;	padding-right: 40px;}.mainmenu2 li a.left {	padding-left: 87px;}.mainmenu2 li a.left img {	float: left;display:block;    margin-right: 10px;left: 1px;top: 0;    max-height: 77px;    max-width: 77px;	height: 77px;    width: 77px;    position: absolute;	background-color:#FFF;    }.mainmenu2 .menubtn .menumesg {	padding:0px}.mainmenu2 .menutitle {	display: block;	font-size: 16px;	font-weight: bold;	margin: 0.6em 0;	overflow: hidden;	text-overflow: ellipsis;	white-space: nowrap;}.mainmenu2 .menudesc {	display: block;	font-size: 12px;	font-weight: normal;	margin: -0.5em 0 0.6em;	overflow: hidden;	text-overflow: ellipsis;	white-space: nowrap;}.mainmenu2 .icon {	margin-top: -9px;	position: absolute;	top: 50%;	right: 10px;	height: 18px;	width: 18px;	background:url(img/jiantou.png) no-repeat 0 0 ;	background-size: 18px 18px;}li.border-top-none{ border-top:0px solid #DDDDDD}li.border-bottom-none{ border-bottom:0px solid #DDDDDD}.borderok{border:1px solid #CCCCCC;}.box-shadow{-moz-box-shadow:0 1px 4px rgba(0,0,0,.3);-webkit-box-shadow:0 1px 4px rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3);}.border-clear{border-width:1px 0 0 0;}.margin10{margin:10px}.radius {	border-radius: 0.6em 0.6em 0.6em 0.6em;}.radius_top {	border-top-left-radius: 0.6em;	border-top-right-radius: 0.6em;}.radius_bottom {	border-bottom-left-radius: 0.6em;	border-bottom-right-radius: 0.6em;}.radius_top_left {	border-top-left-radius: 0.6em;}.radius_bottom_left {	border-bottom-left-radius: 0.6em;}
+/*新加CSS*/
+.copyright{padding:8px;text-align:center;font-size:12px;color:#666;}
+.copyright a{color:#666;}
+.header{height:2em; line-height:2em; text-align:right; padding-right:54px; font-size:18px; font-weight:bold; color:#FFF; background-color:#ff8a00; position:fixed; top:0; left:0; right:0; z-index:100;}
+.header:before,.header:after{ content:''; display:block; overflow:hidden;position:absolute;}
+.header:before{ width:8px; height:6px; border:#FFF solid; border-width:0 6px 6px 0; right:26px; top:17px;}
+.header:after{width:0; height:0; border-style:solid; border-width:0 9px 8px 9px; border-color:transparent transparent #FFF transparent; right:20px; top:8px;}
+.banner{width:100%;height:40px;}
+.copytop{padding:0px;text-align:center;font-size:12px;color:#666;}
+.copytop a{color:#666;}
+.footer {
+    /*box-shadow:0 3px 6px #e2e2e2;*/
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+	border-radius:5px;
+	cursor: pointer;
+	background: none repeat scroll 0 0 #ffffff;
+    border: 1px solid #DDDDDD;
+	box-shadow:0 1px 2px 0 rgba(0, 0, 0, 0.15);
+	-moz-box-shadow:0 1px 2px 0 rgba(0, 0, 0, 0.15);
+	-webkit-box-shadow:0 1px 2px 0 rgba(0, 0, 0, 0.15);
+	margin:10px;
+	padding:15px;
+	text-align:center;
+	display: block;
+}
+.footer .top{
+	background: url("img/newstop.png") no-repeat scroll left center transparent;
+	background-size: 11px auto;
+	display: block;
+    margin: 0 auto;
+    text-indent: 15px;
+    width: 85px;
+}
+a {
+	color:#000000;
+	text-decoration: none;
+}

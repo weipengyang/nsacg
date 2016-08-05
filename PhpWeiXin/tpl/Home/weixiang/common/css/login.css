@@ -1,0 +1,123 @@
+﻿@charset "utf-8";
+
+/*
+*@Description: 首页
+*@Author:      wuyongyong
+*@Update:      2013-06-25
+*/
+
+
+.index_login_status{ /*height:190px;*/ margin-top:-240px; z-index:1000; top:35px;}
+.index_login_status .ls_opacbg{ width:260px; height:190px; right:15px; background-color:#ccc; filter:alpha(opacity=65);-moz-opacity:0.65;-khtml-opacity: 0.65;opacity: 0.65;/*特别要求的透明度为0.65*/height:212px;}
+.index_login_status .ls_div1{ width:260px; height:190px; right:15px; height:212px;}
+/*快速登录状态(待删除) start*/
+.index_login_status .pa_t51{ height:230px;/*height:275px;*//*错误提示显示此高度*/top:-51px;height:278px;/*用这个高度12.13*/ top:0;/*用这个*/}
+.index_login_status .kslogin_ul2{ width:229px;}
+.index_login_status .kslogin_ul2 li{ height:40px; line-height:40px; position:relative;}
+.index_login_status .kslogin_ul2 .cw_ts{ width:187px; border:1px solid #FFAD77; background-color:#FFFFD0; line-height:22px; color:#FF0000;}
+.index_login_status .kslogin_ul2 .cw1{ width:14px; height:14px; top:4px; left:8px; background-position:-273px -25px;}
+.index_login_status .kslogin_ul2 .h50{ height:50px; *height:63px;}
+.index_login_status .kslogin_ul2 .li1{ border-bottom:1px solid #838181; margin-bottom:5px;}
+.index_login_status .kslogin_ul2 .span1{ left:0;top:0;}
+.index_login_status .kslogin_ul2 .a1{ color:#CC6308;left:0;top:4px;}
+.index_login_status .kslogin_ul2 .inp1{ width:197px; height:29px; line-height:29px; border:1px solid #FFA600;}
+.index_login_status .kslogin_ul2 .inp1:focus{ box-shadow: 0px 0px 4px 2px #FCC15A;/*css3.0阴影效果11.21*/}
+.index_login_status .kslogin_ul2 .w70{ width:70px;}
+.index_login_status .kslogin_ul2 .png4{ width:76px;height:32px;left:110px;top:5px;top:0\9;*top:5px;_top:0;background-position:-329px -69px;}
+.index_login_status .kslogin_ul2 .a2{ right:0; top:8px; top:5px\9; *top:8px; _top:5px; color:#CC6308;}
+.index_login_status .kslogin_ul2 .btn1{ width:229px; height:31px; background-position:-420px -263px; top:10px; left:0;}
+.index_login_status .kslogin_ul2 .btn1:hover{ background-position:-420px -295px;}
+.index_login_status .kslogin_ul2 .png0{width:18px;height:18px;left:5px;top:11px;top:7px\9;}
+.index_login_status .kslogin_ul2 .png1{ background-position:-96px -320px;}
+.index_login_status .kslogin_ul2 .png2{ background-position:-119px -320px;}
+.index_login_status .kslogin_ul2 .png3{ background-position:-142px -320px;}
+.index_login_status .kslogin_ul2 .img-code{position:relative;left:5px;top:4px;margin-top:-3px\0;*margin-top:-4px;}/*验证图片12.18*/
+/*快速登录状态(待删除) end*/
+/*新改的登录前状态2014.01.17 start*/
+.index_login_status .before-login .blogin-ul2{ margin-left:25px; margin-top:20px; position:relative;}
+.index_login_status .before-login .blogin-ul2 .li-mt18{ margin-top:15px; *margin-top:20px;}
+.index_login_status .before-login .blogin-ul2 .span-f1{ font-size:18px; color:#fff;}
+.index_login_status .before-login .blogin-ul2 .span-f2{ font-size:30px; color:#FC8026; font-weight:bold; position:relative; left:-2px;}
+.index_login_status .before-login .blogin-ul2 .span-f3{ color:#fff; font-size:14px;}
+.index_login_status .before-login .blogin-ul2 .span-f4{ font-size:20px; color:#FC8026; position:relative; top:-1px; *top:-4px; margin-right:2px;}
+.index_login_status .before-login .blogin-ul2 .span-login{ color:#fff; margin-left:102px;}
+.index_login_status .before-login .blogin-ul2 .a-login{ color:#fff; text-decoration:underline;}
+.index_login_status .before-login .reg-btn1{ width:209px;height:35px;background-position:-420px -331px;}
+.index_login_status .before-login .reg-btn1:hover{ background-position:-420px -367px;}
+/*新改的登录前状态2014.01.17 end*/
+/*登录后状态 start*/
+.index_login_status .ylogin_ul1{ width:210px; margin-left:25px;}
+.index_login_status .ylogin_ul1 .png1{ width:47px; height:17px; background-position:0 -40px; margin-right:4px;}
+.index_login_status .ylogin_ul1 .png2{ width:47px; height:17px; background-position:-51px -40px;}
+.index_login_status .ylogin_ul1 .png3{ width:209px; height:35px; background-position:0 0; top:25px; *top:5px; _top:15px;}
+.index_login_status .ylogin_ul1 .png3:hover{background-position:-210px 0;}
+.index_login_status .ylogin_ul1 .span1{ color:#FFFFFF;}
+.index_login_status .ylogin_ul1 .span2{ color:#FFFFFF; top:3px;}
+.index_login_status .ylogin_ul1 .span3{ color:#FFFFFF; left:40px;}
+.index_login_status .ylogin_ul1 .span4{ height:24px; line-height:24px; color:#FFFFFF;}
+.index_login_status .ylogin_ul1 .li1{ height:35px; border-bottom:2px solid #88574B; margin-bottom:10px; _margin-bottom:0;}
+/*登录后状态 end*/
+
+
+/*注册(手机认证11.12) start*/
+.register_main .reg_sjrz_ul1{ margin-left:215px;}
+.register_main .reg_sjrz_main .sjrz_p1{ font-size:22px;}
+.register_main .reg_sjrz_main .sjrz_span1{ color:#C60307; line-height:38px; *position:relative; *top:12px;}
+.register_main .reg_sjrz_main .sjrz_btn1{ width:100px;height:30px;line-height:30px;color:#FFF;background-position:-267px -40px;margin-left:25px;*margin-left:-275px;}
+/*注册(手机认证11.12) end*/
+
+/*注册成功(待删除11.12) start*/
+.register_main .regsucc_main{ height:425px;top:75px;left:0;z-index:10;background-color:#fff;}
+.register_main .regsucc_main .dl1{ width:380px;margin-top:160px;margin-left:328px;}
+.register_main .regsucc_main .dl1 dd{ position:relative;}
+.register_main .regsucc_main .pic1{ width:108px;height:72px;background-position:-885px -1162px;left:-125px;top:-12px;}
+.register_main .regsucc_main .span1{ color:#C50208;}
+.register_main .regsucc_main .a1{ width:94px; height:22px; line-height:22px;}
+.register_main .regsucc_main .png1{ width:10px; height:5px; background-position:-558px -38px; top:8px;right:6px;}
+.register_main .regsucc_main .png1_1{ width:10px; height:5px;background-position:-558px -45px; top:8px;right:6px; display:none;}
+.register_main .regsucc_main .p2{ top:0;left:110px;}
+.register_main .regsucc_main .btn1{width:100px;height:30px;line-height:30px;color:#FFF;background-position:-267px -40px;right:0px;top:-4px;}
+.register_main .regsucc_main .ul1{ height:85px;background-color:#F5F5F5;}
+.register_main .regsucc_main .ul1 li{ position:relative; margin-left:5px;}
+.register_main .regsucc_main .ul1 .inp1{ width:171px; height:25px; line-height:25px;}
+.register_main .regsucc_main .ul1 .lab1{ width:105px; height:25px; line-height:25px;}
+.register_main .regsucc_main .p3{ height:27px; line-height:27px; background-color:#F5F5F5;}
+.register_main .regsucc_main .png2{ width:16px; height:15px; background-position:-272px -58px;top:7px;left:10px;}
+/*注册成功 end*/
+
+/*
+*@Description: 登录页面
+*@Author:      wuyongyong
+*@Update:      2013-07-02
+*/
+.login_main_bg{ height:522px; background:url(../images/login_bg_ggao.jpg) no-repeat 50% 20%;}
+.login_main{ height:522px;}
+.login_main .div1_opac{width:305px; height:350px; right:0;top:80px; background-color:#fff;}
+.login_main .h285{ height:285px;}/*当没提示时，高度设为285px*/
+.login_main .div1{ width:305px; /*height:350px;*/ right:0;top:80px;}
+.login_main .div1 .cw_ts{ width:232px; /*height:48px;*/ border:1px solid #FFAD77; background-color:#FFFFD0; line-height:22px; color:#FF0000;}
+.login_main .div1 .cw_ts .cw1{ width:14px; height:14px; top:4px;left:8px; background-position:-273px -25px;}
+.login_main .div1 .ul1{ width:265px;}
+.login_main .div1 .ul1 li{ height:30px; line-height:30px; position:relative;}
+.login_main .div1 .ul1 .h55{ height:40px;}
+.login_main .div1 .li1{ border-bottom:1px solid #838181;}
+.login_main .div1 .span1{ left:0;top:0;}
+.login_main .div1 .a1{ color:#CC6308;}
+.login_main .div1 .inp1{ width:233px; height:29px; line-height:29px; border:1px solid #FFA600;}
+.login_main .div1 .inp1:focus{ box-shadow: 0px 0px 4px 2px #FCC15A;/*css3.0阴影效果11.21*/}
+.login_main .div1 .w108{ width:83px;}
+.login_main .div1 .a3{ right:0;top:0;}
+.login_main .div1 .png2{ width:76px; height:32px; left:128px; top:0; background-position:-329px -69px;}
+.login_main .div1 .a2{ right:10px;top:8px; color:#CC6308;}
+.login_main .div1 .btn1{ width:265px; height:35px; background-position:-420px 0; top:15px; left:0;}
+.login_main .div1 .btn1:hover{ background-position:-420px -36px;}
+/*最新添加的代码 12.12*/
+.login_main .div1 .img-png0{width:18px;height:18px;left:5px;top:7px;}
+.login_main .div1 .img-png1{ background-position:-96px -320px;}
+.login_main .div1 .img-png2{ background-position:-119px -320px;}
+.login_main .div1 .img-png3{ background-position:-142px -320px;}
+/*end*/
+.login_main .div2{ width:445px; height:220px; top:140px; left:22px;} 
+.login_main .div2 .p1{ font-size:28px; color:#fff;}
+.login_main .div2 .p2{ height:130px; color:#fff;}
+.login_main .div2 .img-ewm{ position:absolute; left:0; top:0;}

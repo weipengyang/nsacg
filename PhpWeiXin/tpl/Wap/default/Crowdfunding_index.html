@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="format-detection" content="telephone=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta charset="utf-8">
+<title>{pigcms:$info.name}</title>
+<link rel="stylesheet" href="{pigcms:$staticPath}/tpl/static/crowdfunding/css/zc-common.css">
+<link rel="stylesheet" href="{pigcms:$staticPath}/tpl/static/crowdfunding/css/zc-index.css">
+
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/jquery.min.js"></script>
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/alert.js"></script>
+<!-- <script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/crowdfunding/js/zepto.min.js"></script> -->
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/crowdfunding/js/lightbox.js"></script>
+<style>
+.window .title{
+    background-image: linear-gradient(#f05c52, #f05c52);
+}
+</style>
+</head>
+<body>
+<div class="wrapbox">
+<if condition="$memberNotice neq ''">
+    {pigcms:$memberNotice}
+</if>    
+    <!-- heard -->
+    <header class="header">
+        <h2><a href="javascript:void(0);" class="text-red">项目详情</a></h2>
+        <a href="{pigcms::U('Crowdfunding/home',array('token'=>$token,'wecha_id'=>$wecha_id))}" class="icon btn-home" style="left:0px;"></a>
+        <a href="{pigcms::U('Crowdfunding/my_support',array('token'=>$token,'wecha_id'=>$wecha_id))}" class="icon btn-person"></a>
+    </header>
+    <!-- / -->
+    <!-- main -->
+    <div class="pd-b50">
+        <div class="zc-list">
+            <div class="zc-item">
+                <div>
+                    <a href="{pigcms::U('Crowdfunding/detail',array('token'=>$token,'wecha_id'=>$wecha_id,'id'=>$info['id']))}">
+                        <img src="{pigcms:$info.pic}" alt="">
+                    </a>
+                </div>
+                <div class="pd-0-10 bd-b">
+                    <a href="{pigcms::U('Crowdfunding/detail',array('token'=>$token,'wecha_id'=>$wecha_id,'id'=>$info['id']))}" class="detail-a">
+                    <h4 class="h4-title"> {pigcms:$info.name} <i class="icon more-r fr"></i></h4>
+                    <p>
+                        {pigcms:$info.intro}
+                    </p>
+                    </a>
+                    <div class="progress-box <if condition="$info.status eq 4">sta-end<else/>sta-ing</if>">
+                        <div class="progrestate-b  fr">
+                            <if condition="$info.status eq 4">
+                                已结束
+                            <else/>
+                                众筹中
+                            </if>
+                        </div>
+                        <div class="progresnum">
+                            {pigcms:$info.progress}
+                        </div>
+                        <div class="progressbar">
+                            <div class="progressing" style="width:{pigcms:$info.percent}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gridbox zc-datum">
+                        <div class="grid-3">
+                            <strong>￥{pigcms:$info.price_count}</strong>
+                            <p>
+                                已筹集
+                            </p>
+                        </div>
+                        <div class="grid-2">
+                            <strong>{pigcms:$info.people_count}</strong>
+                            <p>
+                                支持人数
+                            </p>
+                        </div>
+                        <div class="grid-2">
+                            <strong>  {pigcms:$info.remain_day} 天</strong>
+                            <p>
+                                剩余时间
+                            </p>
+                        </div>
+                    </div>
+                    <ul class="gridbox">
+                        <li class="grid-1 btn-oncern">
+                            <a href="javascript:void(0);" id="a_focus">
+                                <i class="icon"></i>关注<span></span>
+                            </a>
+                        </li>
+                        <li class="grid-1 btn-praise">
+                            <a href="javascript:void(0);" id="a_prais">
+                                <i class="icon"></i>赞<span></span>
+                            </a>
+                        </li>
+                        <input id="user_pin"   value="{pigcms:$wecha_id}" type="hidden">
+                        <input id="project_id" value="{pigcms:$info.id}" type="hidden">
+                    </ul>
+<!--                <a clstag="jr|keycount|zc_m_detail|zc_htxq" href="#" class="btn btn-l2 topicbtn">
+                                                    项目话题（58个）
+<i class="icon more-r"></i>
+</a> -->
+                </div>
+            </div>
+        </div>
+        <if condition="$reward neq ''">
+        <h2 class="h2-title">选择回报</h2>
+        <ul class="return-list">
+            <volist name="reward" id="reward">
+            <li>
+                <div class="gridbox supportbox">
+                    <div class="grid-2 supp-price">
+                        支持￥{pigcms:$reward.money}
+                    </div>
+                    <div class="grid-2">
+                        <if condition="$reward.surplus gt 0">
+                            <a name="btn_support" projectid="3238" redoundid="12176" href="{pigcms::U('Crowdfunding/order',array('token'=>$token,'wecha_id'=>$wecha_id,'id'=>$info['id'],'reward_id'=>$reward['id']))}" class="btn btn-red fr is_null">去支持</a>
+                        <else/>
+                            <a href="javascript:void(0);" class="btn btn-disable fr">限额已满</a>         
+                        </if>
+                    </div>
+                </div>
+                <div class="info-min">
+                    <p>
+                        {pigcms:$reward.content}
+                    </p>
+                    <a href="{pigcms:$reward.img}" class="lightbox" data-id="bigimg1">
+                        <img src="{pigcms:$reward.img}" class="" height="64" width="64">
+                    </a>
+                    <p>
+                        配送费用：
+                        <if condition="$reward.carriage neq 0">
+                            {pigcms:$reward.carriage}元
+                        <else/>
+                            免运费
+                        </if>
+                    </p>
+                    <p>
+                        预计回报发送时间：项目成功结束后{pigcms:$reward.back_day}天内
+                    </p>
+                </div>
+
+                <div class="gridbox supportfoot">
+                    <div class="grid-1">
+                        <div class="grid-2">
+                            <span class="text-red">
+                            <strong>
+                                {pigcms:$reward.count}位
+                            </strong>
+                            </span>
+                            支持者
+                            （剩余<span class="text-red">{pigcms:$reward.surplus}位</span>）
+                        </div>
+                    </div>
+                </div>
+            </li>
+            </volist>
+        </ul>
+        </if>
+        <h2 class="h2-title">无私奉献</h2>
+        <div class="return-list">
+            <div class="wsbox">
+                <div class="gridbox">
+                    <div class="grid-1 zctxt">
+                        <span class="text-red">{pigcms:$selfless}位</span>支持者
+                    </div>
+                    <div class="grid-1 clearfix">
+                        <a name="btn_support"  projectid="3238" redoundid="0" href="{pigcms::U('Crowdfunding/order',array('token'=>$token,'wecha_id'=>$wecha_id,'id'=>$info['id'],'reward_id'=>-1))}" class="btn btn-red fr is_null">无私奉献</a>
+                    </div>
+                </div>
+                <p>
+                    不需要给回报，选择此项，项目成功后发起人将不会给您发送回报
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <include file="Crowdfunding:footer" />
+</div>
+
+<script>
+    var projectId   = '{pigcms:$info.id}';
+    <if condition="$is_over eq 1">
+        $('.is_null').each(function(){
+            $(this).attr('href','javascript:alert("项目已经结束");');
+            //$(this).attr('id','modaltrigger_notice');
+            //$(this).addClass('modaltrigger_notice');
+        });
+    <elseif condition="$memberNotice neq ''"/>
+        $('.is_null').each(function(){
+            $(this).attr('href','javascript:alert("关注或者注册后才能操作");');
+            //$(this).attr('id','modaltrigger_notice');
+            //$(this).addClass('modaltrigger_notice');
+        });
+    </if>
+
+
+    $(function(){
+        new lightbox({
+            obj: $(".lightbox")
+        });
+
+
+        var name = $("#user_pin").val();
+        var url = "{pigcms::U('Crowdfunding/initFocus',array('token'=>$token))}&id=" + projectId + "&name="+name;
+        initFocusCount(url);
+
+        function initFocusCount(url){
+            $.getJSON(url, function(data,e) {
+                if(data == null || data == undefined || data.result==null || data.result==undefined){
+                    $("#a_prais").children("span").html("（0）");
+                    $("#a_focus").children("span").html("（0）");
+                }else{
+                    show_data(data.focusCounter);
+                    if(data.flag=='yes' ){
+                        $("#a_focus").html($("#a_focus").html().replace("关注","已关注"));
+                    }
+                }
+            });
+        }
+
+
+        $("#a_prais").click(function () { //点赞
+            $.getJSON("{pigcms::U('Crowdfunding/praise',array('token'=>$token))}&id=" + projectId, function (data, e) {
+                if(data!=null && data.result!=undefined && data.result.isSuccess){
+                    show_data(data.focusCounter);
+                }else{
+                    alert(data.error);
+                }
+            });
+        });
+
+        $("#a_focus").click(function(){ //关注
+            var code = $(this).html();
+//            var c_focus_val=$.fn.cookie("c_focus_project_id"+projectId);
+            if(code.indexOf("已关注")!= -1){ //已关注了
+                alert("已关注");
+                return;
+            }else{
+                var url = "{pigcms::U('Crowdfunding/focus',array('token'=>$token))}&id="+projectId+"&name="+name;
+                $.ajax({url:url, dataType: "json", scriptCharset: "utf-8", success: function (data) {
+
+                    if(data!=null && data.result!=undefined && data.result.isSuccess){
+                        show_data(data.focusCounter);
+                        
+                        if($("#a_focus").html().indexOf("已关注")== -1){
+                            $("#a_focus").html($("#a_focus").html().replace("关注","已关注"));
+                        }
+                    }else{
+                        alert(data.error);
+                    }
+                },
+                error: function (a) {
+                        alert("系统繁忙");
+                    }
+                });
+            }
+        });
+    });
+
+    function show_data(data) {
+        if(data!=null && data.praise!=null && data.focus!=null && data.praise!=undefined && data.focus!=undefined){
+            $("#a_prais").children("span").html("（"+show_num(data.praise)+"）");
+            $("#a_focus").children("span").html("（"+show_num(data.focus)+"）");
+        }
+    }
+
+    function show_num(f){
+        if(f>=10000){
+            return parseInt(f/10000) +"万";
+        }else if(f<10000 && f>=1000){
+            return parseInt(f/1000) +"千";
+        }else{
+            return f;
+        }
+    }
+</script>
+
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"Crowdfunding",
+            "moduleID":"0",
+            "imgUrl": "{pigcms:$info['pic']}", 
+            "timeLineLink": "{pigcms:$f_siteUrl}{pigcms::U('Crowdfunding/index',array('token'=>$token,'id'=>$info['id']))}",
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Crowdfunding/index',array('token'=>$token,'id'=>$info['id']))}",
+            "weiboLink": "{pigcms:$f_siteUrl}{pigcms::U('Crowdfunding/index',array('token'=>$token,'id'=>$info['id']))}",
+            "tTitle": "{pigcms:$info['name']}",
+            "tContent": "{pigcms:$info['intro']}"
+};
+</script>
+{pigcms:$shareScript}
+</body>
+</html>

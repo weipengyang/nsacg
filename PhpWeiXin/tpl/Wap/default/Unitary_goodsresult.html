@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+		<title>计算结果</title>
+		<meta content="app-id=518966501" name="apple-itunes-app" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no, maximum-scale=1.0"/>
+		<meta content="yes" name="apple-mobile-web-app-capable" />
+		<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+		<meta content="telephone=no" name="format-detection" />
+		<link href="{pigcms:$staticPath}/tpl/static/unitary/css/comm.css" rel="stylesheet" type="text/css" />
+		<link href="{pigcms:$staticPath}/tpl/static/unitary/css/lottery.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<script src="{pigcms:$staticPath}/tpl/static/unitary/js/jquery-2.1.3.min.js" language="javascript" type="text/javascript"></script>
+		
+		<div class="wrapper">
+			<div id="calResult" class="calCon">
+				<dl class="dl1">
+					<dt><span>购买时间</span><span> </span><span>转换数据</span><span>会员账号</span></dt>
+					<volist name="list1" id="vo1">
+						<?php
+							$thistime1 = floor($vo1['addtime']/1000);
+							$ms1 = substr($vo1['addtime'],-3);
+						?>
+						<dd><span><?php echo date("Y-m-d",$thistime1);?></span><span><?php echo date("H:i:s",$thistime1).".".$ms1;?></span><span> </span><span>{pigcms:$vo1.name}</span></dd>
+					</volist>
+				</dl>
+				<dl class="dl2">
+					<?php
+						$thistime = floor($list2[0]['addtime']/1000);
+						$ms = substr($list2[0]['addtime'],-3);
+					?>
+					<dt>最后一位购买时间【<?php echo date("Y-m-d H:i:s",$thistime).".".$ms;?>】<br/>之前{pigcms:$unitary.lastnum}条全站购买时间记录</dt>
+					<volist name="list2" id="vo2">
+						<?php
+							$thistime2 = floor($vo2['addtime']/1000);
+							$ms2 = substr($vo2['addtime'],-3);
+						?>
+						<dd><span><?php echo date("Y-m-d",$thistime2);?><b></b></span><span><?php echo date("H:i:s",$thistime2).".".$ms2;?><s></s></span><span><i><em></em></i><?php echo date("H",$thistime2).date("i",$thistime2).date("s",$thistime2).$ms2?><s></s></span><span>{pigcms:$vo2.name}</span></dd>
+					</volist>
+				</dl>
+				<dl class="dl3">
+					<dt>1、求和：{pigcms:$sum} (上面{pigcms:$unitary.lastnum}条购买记录时间取值相加之和)<br>2、取余：{pigcms:$sum} ({pigcms:$unitary.lastnum}条时间记录之和) % {pigcms:$unitary.price} (本商品总需参与人次) = {pigcms:$lucknum}(余数)<br>3、结果：{pigcms:$lucknum}(余数) + 100000 = <?php echo $lucknum + 100000?> (最终结果)<i></i></dt>
+					<volist name="list3" id="vo3">
+						<?php
+							$thistime3 = floor($vo3['addtime']/1000);
+							$ms3 = substr($vo3['addtime'],-3);
+						?>
+						<dd><span><?php echo date("Y-m-d",$thistime3);?></span><span><?php echo date("H:i:s",$thistime3).".".$ms3;?></span><span> </span><span>{pigcms:$vo3.wecha_id}</span></dd>
+					</volist>
+				</dl>
+			</div>
+			<div class="footer" style="display:block;">
+				<ul>
+					<li class="f_whole"><a href="{pigcms::U('Unitary/index',array('token'=>$token))}" class="hover" title="所有商品"><i></i>所有商品</a></li>
+					<li class="f_car"><a id="btnCart" href="{pigcms::U('Unitary/cart',array('token'=>$token))}"  title="购物车"><i><?php if($cart_count != null && $cart_count != 0){?><b>{pigcms:$cart_count}</b><?php }?></i>购物车</a></li>
+					<li class="f_personal"><a href="{pigcms::U('Unitary/my',array('token'=>$token))}"  title="我的"><i></i>我的</a></li>
+				</ul>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+		
+		</script>
+
+<if condition="$unitary eq ''">
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"Unitary",
+            "moduleID":"0",
+            "imgUrl": "{pigcms:$staticPath}/tpl/static/unitary/images/wxnewspic.jpg", 
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Unitary/index',array('token'=>$token))}",
+            "tTitle": "一元夺宝",
+            "tContent": ""
+        };
+</script>
+<else />
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"Unitary",
+            "moduleID":"0",
+            "imgUrl": "{pigcms:$unitary['wxpic']}", 
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Unitary/goodswhere',array('token'=>$token,'unitaryid'=>$_GET['unitaryid']))}",
+            "tTitle": "{pigcms:$unitary['name']}",
+            "tContent": "{pigcms:$unitary['wxinfo']}"
+        };
+</script>
+</if>
+{pigcms:$shareScript}
+	</body>
+</html>

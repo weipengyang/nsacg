@@ -1,0 +1,158 @@
+<include file="Repast:newheader" />
+<body onselectstart="return true;" ondragstart="return false;">
+	<div data-role="container" class="container businessHours">
+	<header data-role="header">	
+	<if condition="!empty($DishC['imgs'])">
+	  <a href="{pigcms::U('Repast/ShopPage', array('token'=>$token, 'cid'=>$company['id'],'dt'=>$dt,'wecha_id'=>$wecha_id))}">
+	  <img src="{pigcms:$DishC['imgs']}" style="width: 100%;">
+	  </a>
+	</if>
+	</header>
+	<section data-role="body" class="section_scroll_content">
+		<ul class="pay">
+			<li class="title"><a><span class="icon time"></span>营业时间</a></li>
+			<li>{pigcms:$openstr}</li>
+		</ul>
+		<ul class="pay">
+			<li class="title"><a><span class="icon mark"></span>餐厅简介</a></li>
+			<li style="color:#000000;font-family:&#39;sans serif&#39;, tahoma, verdana, helvetica;font-size:12px;font-style:normal;font-weight:normal;line-height:18px;">
+			<php>echo html_entity_decode(htmlspecialchars_decode($company['intro']),ENT_QUOTES,"UTF-8");</php>
+			</li>
+		</ul>
+	</section>
+	<footer data-role="footer">			
+			
+	</footer>
+</div>
+<script>
+function onBridgeReady(){
+	WeixinJSBridge.call('hideOptionMenu');
+}
+
+if (typeof WeixinJSBridge == "undefined"){
+    if( document.addEventListener ){
+        document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+    }else if (document.attachEvent){
+        document.attachEvent('WeixinJSBridgeReady', onBridgeReady); 
+        document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+    }
+}else{
+    onBridgeReady();
+}
+</script>
+<script type="text/javascript">
+(function() {
+	var wtj = document.createElement('script'); wtj.type = 'text/javascript'; wtj.async = true;
+	wtj.src = 'http://tj.weimob.com/wtj.js?url=' + encodeURIComponent(location.href);
+	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(wtj, s);
+})();
+function weimobAfterShare(shareFromWechatId,sendFriendLink,shareToPlatform){
+	var wmShare = document.createElement('script'); wmShare.type = 'text/javascript'; wmShare.async = true;
+    wmShare.src = 'http://tj.weimob.com/api-share.js?fromWechatId=' + shareFromWechatId + '&shareToPlatform=';
+	wmShare.src += shareToPlatform + '&pid=1071&sendFriendLink=' + encodeURIComponent(sendFriendLink);
+    var stj = document.getElementsByTagName('script')[0]; stj.parentNode.insertBefore(wmShare, stj);
+}
+
+/**
+ * 默认分享出去的数据
+ *
+ */
+function getShareImageUrl(){
+
+	var share_imgurl = "";
+	if("" == share_imgurl){
+		var shareImgObj = document.getElementsByClassName("shareImgUrl")[0];
+		if('undefined' != typeof(shareImgObj)){
+			share_imgurl = shareImgObj.src;
+		}
+	}
+	return share_imgurl;
+}
+
+window.shareData = window.shareData || {
+		"timeLineLink": "http://1071.m.weimob.com/dining/info?pid=1071&outletid=13717&wechatid=fromUsername",
+	"sendFriendLink": "http://1071.m.weimob.com/dining/info?pid=1071&outletid=13717&wechatid=fromUsername",
+	"weiboLink": "http://1071.m.weimob.com/dining/info?pid=1071&outletid=13717&wechatid=fromUsername",
+	"tTitle": document.title,
+	"tContent": document.title,
+	"fTitle": document.title,
+	"fContent": document.title,
+	"wContent": document.title}
+
+
+
+document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+	// 发送给好友
+	WeixinJSBridge.on('menu:share:appmessage', function (argv) {
+		WeixinJSBridge.invoke('sendAppMessage', { 
+			"img_url": getShareImageUrl(),
+			"img_width": "640",
+			"img_height": "640",
+			"link": window.shareData.sendFriendLink,
+			"desc": window.shareData.fContent,
+			"title": window.shareData.fTitle
+		}, function (res) {
+			if('send_app_msg:cancel' != res.err_msg){
+				weimobAfterShare("osXr8jjimSKHXaxfQ3wlNmVitKPY",window.shareData.sendFriendLink,'appmessage');
+			}
+			//_report('send_msg', res.err_msg);
+		})
+	});
+
+	// 分享到朋友圈
+	WeixinJSBridge.on('menu:share:timeline', function (argv) {
+		WeixinJSBridge.invoke('shareTimeline', {
+			"img_url": getShareImageUrl(),
+			"img_width": "640",
+			"img_height": "640",
+			"link": window.shareData.timeLineLink,
+			"desc": window.shareData.tContent,
+			"title": window.shareData.tTitle
+		}, function (res) {
+			if('share_timeline:cancel' != res.err_msg){
+				//如果用户没有取消
+				weimobAfterShare("osXr8jjimSKHXaxfQ3wlNmVitKPY",window.shareData.timeLineLink,'timeline');
+			}
+			//_report('timeline', res.err_msg);
+		});
+	});
+
+	// 分享到微博
+	WeixinJSBridge.on('menu:share:weibo', function (argv) {
+		WeixinJSBridge.invoke('shareWeibo', {
+			"content": window.shareData.wContent,
+			"url": window.shareData.weiboLink
+		}, function (res) {
+			if('share_weibo:cancel' != res.err_msg){
+				weimobAfterShare("osXr8jjimSKHXaxfQ3wlNmVitKPY",window.shareData.weiboLink,'weibo');
+			}
+			//_report('weibo', res.err_msg);
+		});
+	});
+}, false);
+</script>
+<script type="text/javascript" src="./2_xiangxi_files/ChatFloat.js"></script>
+<script type="text/javascript">
+new ChatFloat({
+        AId: '1071',
+        openid: "osXr8jjimSKHXaxfQ3wlNmVitKPY",
+		top:150,
+		right:0,
+		IsTest:false
+});
+</script>
+
+
+<script type="text/javascript" src="./2_xiangxi_files/share_channel.js"></script>
+<script type="text/javascript" src="./2_xiangxi_files/base64.js"></script>
+<script type="text/javascript" src="./2_xiangxi_files/st.js"></script>
+<script type="text/javascript">
+ //使用案例如###如若上线请到研发群找我@赵增煜###
+st.push("_triggerEvent",{
+		"is_statistic_on":"on", //开关
+		"statisticServerPath": "http://statistic.weimob.com/wm.js", //统计地址
+		"memcServerPath": "http://statistic.weimob.com/memc?cmd=get", //缓存地址
+		"stat_action":"loadPage",  //统计动作类型
+		"stat_optValue":""    //参数值
+});
+</script><script src="./2_xiangxi_files/wm.js"></script></body></html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+       <if condition="$zd['status'] eq 1">
+            {pigcms:$zd['code']}
+        </if>
+<title>{pigcms:$tpl.wxname}</title>
+<link rel="stylesheet" href="./tpl/static/tpl/1330/css/cate.css" />
+        <meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="format-detection" content="telephone=no" />
+       <style>
+	   body {
+			<volist name="flashbg" id="so">
+            background:url('{pigcms:$so.img}');
+            </volist>       
+			background-position: center top;
+                background-repeat: no-repeat;
+                background-size: 100% auto;
+                background-size: cover;
+            }
+
+            #global-cart {
+                display: none;
+            }
+        </style>
+		<script type="text/javascript">  
+		var _global = {
+    "fans_id": 0,
+       }; 
+
+	_global.spm = {logType:"h"};	
+    </script>
+	</head>
+	<body class="with-dark-footer">
+	<div class="container ">
+	<div class="content js-mini-height">
+	<div id="wxdesc" class="tpl-fbb tpl-course">
+	<div class="swiper-container js-tpl-fbb">
+	<div style="padding-left: 0px; padding-right: 0px; transition-duration: 0s; transform: translate3d(0px, 0px, 0px); width: 774px; height: 100px;" class="swiper-wrapper clearfix">
+	 <volist name="info" id="vo">
+	<div class="swiper-slide tpl-fbb-item done swiper-slide-visible">
+	<a href="<if condition="$vo['url'] eq ''">{pigcms::U('Wap/Index/lists',array('classid'=>$vo['id'],'token'=>$vo['token']))}<else/>{pigcms:$vo.url|htmlspecialchars_decode}</if>">
+	<div class="tpl-fbb-item-wrap">
+	<div class="tpl-fbb-item-name">{pigcms:$vo.name}</div>
+	<div class="tpl-fbb-item-line"></div>
+	<div class="tpl-fbb-item-icon">
+	<img src="{pigcms:$vo.img}" height="30" width="30"></div></div></a>
+	</div>
+	 </volist>
+	
+	</div></div></div>
+	<div class="content-sidebar"></div></div>
+		<script src="./tpl/static/tpl/1330/js/jquery-2.0.3.min.js">
+		</script>
+		<script src="./tpl/static/tpl/1330/js/underscore-min.js">
+		</script>
+		<script src="./tpl/static/tpl/1330/js/idangerous.swiper-2.4.1.min.js">
+		</script>
+		<script src="./tpl/static/tpl/1330/js/base_cb3ed940fb.js">
+		</script>
+		<script src="./tpl/static/tpl/1330/js/wap_8c2dc40dcf.js">
+		</script>
+	<!--	footer	-->
+	<div class="js-footer homepage-footer" style="min-height: 1px;">
+	<div class="footer">
+	<div class="copyright">
+	<if condition="$iscopyright eq 1">
+{pigcms:$homeInfo.copyright}
+<else/>
+{pigcms:$siteCopyright}
+</if>
+</div>  <include file="Index:styleInclude"/><include file="$cateMenuFileName"/> <include file="Index:kcdh"/>
+<!-- share -->
+<include file="Index:share" />
+  </body>
+</html>

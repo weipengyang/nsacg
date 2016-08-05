@@ -1,0 +1,27 @@
+﻿ .wyd-shadow {
+	-moz-box-shadow:1px 1px 2px #D8D8D8;
+    -webkit-box-shadow:1px 1px 2px #D8D8D8;
+    box-shadow:1px 1px 2px #D8D8D8;
+}
+ 
+ /*yuanjiao*/
+.wyd-radius {
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+}
+
+.dialog-win {width: 300px; height: 0px; position:fixed; right: 0; bottom: 0; border: 1px solid #999999;  margin: 0;    padding: 1px;  overflow: hidden;  display: none;  background: #FFFFFF;  z-index:10000000;  zoom:1;}
+.dialog-content {}
+.dialog-notice{font:14px/28px '微软雅黑'; color:#444; float:left}
+.dialog-pannle {width: 300px; margin: 0 auto; overflow:hidden;}
+.dialog-tit {height:28px; line-height:28px;margin:0 0 8px 0;border-bottom: 1px solid #E1E1E1;padding: 0 10px;background: #EEE;}
+.dialog-prev {float:left;width:8px; height:28px; cursor:pointer; background:url(/images/dialog.png) no-repeat 0 9px;}
+.dialog-next {float:left;width:8px; height:28px; cursor:pointer; background:url(/images/dialog.png) no-repeat -21px 9px; }
+.dialog-close {float:right; width:12px; height:28px; background:url(/images/dialog.png) no-repeat right 9px; text-indent:-1000px; cursor:pointer}
+.dialog-inner { height:100px;margin: 0 10px;overflow:hidden;-o-text-overflow: ellipsis;	text-overflow: ellipsis;}
+.dialog-inner-tit { font-weight:bold;line-height:26px;}
+.dialog-inner-text { text-indent:2em; line-height:26px; }
+.dialog-more {border-top:1px dashed #9c9a9c; margin:10px 10px 0; line-height:28px; text-align:right}
+.dialog-more a {color:#3382d2; text-decoration:none}
+.dialog-more a:hover {color:#dd4b12; }

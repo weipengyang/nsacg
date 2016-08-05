@@ -1,0 +1,329 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>我的礼品券</title>
+    <meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css">
+    <link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/0.4.1/weui.min.css" />
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+
+    <style>
+        .pic {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            display: block;
+            width: 2.5rem;
+            height: 2.5rem;
+            color: white;
+            text-align: center;
+            line-height: 2rem;
+            margin: 2px;
+            border-radius: 100%;
+        }
+
+        .line {
+            width: 100%;
+            height: 2.5rem;
+            line-height: 2.5rem;
+            overflow: hidden;
+            margin: 0px;
+            text-align: center;
+            padding: 0px;
+            color: #FF6600;
+            font-size: 1.4rem;
+            background: #333333;
+            z-index: 9999;
+            font-weight: bold;
+            filter: alpha(opacity=40);
+            -moz-opacity: 0.4;
+            -khtml-opacity: 0.4;
+            opacity: 0.4;
+        }
+
+        .bg {
+            margin: 0px;
+            padding: 0px;
+            margin-top: 5px;
+            border-radius: 4%;
+            color: white;
+            background: #11A487; /* Old browsers */
+        }
+    </style>
+
+</head>
+<body>
+    <div class="page" style="margin:0px">
+        <nav class="bar bar-tab">
+            <a class="tab-item" href="#" data-no-cache="true" onclick="history.go(-1);">
+                <span class="icon icon-left"></span>
+                <span class="tab-label">返回</span>
+            </a>
+            <a class="tab-item" data-no-cache="true" href="{pigcms::U('Store/cats',array('token' => $_GET['token'], 'catid' => $hostlist['id'], 'wecha_id' => $wecha_id, 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-home"></span>
+                <span class="tab-label">首页</span>
+            </a>
+            <a class="tab-item" data-no-cache="true" href="{pigcms::U('Store/cart',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-cart"></span>
+                <if condition="$productcount neq 0">
+                    <span class="badge" id='badge'>{pigcms:$productcount}</span>
+                    <else />
+                    <span class="badge" id='badge' style="display:none">{pigcms:$productcount}</span>
+                </if>
+                <span class="tab-label">购物车</span>
+            </a>
+            <a class="tab-item active" data-no-cache="true" href="{pigcms::U('Store/myinfo',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-me"></span>
+                <span class="tab-label">我</span>
+            </a>
+        </nav>
+        <div class="content" style="margin:0px">
+            <div class="buttons-tab">
+                <a data-no-cache="true" href="#tab1" class="tab-link active button">
+                    未使用
+                    <if condition="$count1 neq 0">
+                        <span class="badge" style='background:red;color:white'>{pigcms:$count1}</span>
+                    </if>
+                </a>
+                <a data-no-cache="true" href="#tab2" class="tab-link button">
+                    已使用
+                    <if condition="$count2 neq 0">
+                        <span class="badge" style='background:red;color:white'>{pigcms:$count2}</span>
+                    </if>
+                </a>
+                <a data-no-cache="true" href="#tab3" class="tab-link button">
+                    已过期
+                    <if condition="$count3 neq 0">
+                        <span class="badge" style='background:red;color:white'>{pigcms:$count3}</span>
+                    </if>
+                </a>
+            </div>
+            <div class="tabs" style="margin:0px;width:100%">
+                <div id="tab1" class="tab active" style="margin:0px;width:100%">
+                    <div class="content-block" style="margin:0px;width:100%">
+                        <volist name="list" id="item">
+                            <div class="card bg">
+                                <div class="card-content" style="margin:0px;padding:0px;">
+                                    <div class="card-content-inner" style="margin:0px;padding:0px;">
+                                        <div class="item-title">
+                                            <div class="row">
+                                                <div class="col-40"><img src='{pigcms:$item.pic}' class='logo' /></div>
+                                                <div class="col-60" style='margin-top:1rem;'>{pigcms:$item.title}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="item-title line"><span style='margin-top:50px'>{pigcms:$item.coupon_num}</span></div>
+                                    <div class='row'>
+                                        <div class="col-40">
+                                            <a style="margin:10px;height:25px;line-height:25px;font-size:0.6rem" id="{pigcms:$item.id}" class="button button-big button-round button-fill button-warning" href="#">点击立即使用</a>
+                                        </div>
+                                        <div class='col-60'>
+                                            <div class="item-after" style=' text-align:right;padding-top:10px'>
+                                                有效期至{pigcms:$item.over_time|date='Y年m月d日',###}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </volist>
+                    </div>
+                </div>
+                <div id="tab2" class="tab">
+                    <div class="content-block" style="margin:0px;width:100%">
+                        <volist name="uselist" id="item">
+                            <div class="card bg" style="background-color:#642554">
+                                <div class="card-content" style="margin:0px;padding:0px;">
+                                    <div class="card-content-inner" style="margin:0px;padding:0px;">
+                                        <div class="item-title">
+                                            <div class="row">
+                                                <div class="col-40"><img src='{pigcms:$item.pic}' class='logo' /></div>
+                                                <div class="col-60" style='margin-top:1rem;'>{pigcms:$item.title}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="item-title line"><span style='margin-top:50px'>{pigcms:$item.coupon_num}</span></div>
+                                    <div class='row'>
+                                        <div class='col-100'>
+                                            <div class="item-after" style=' text-align:right;padding-top:10px'>
+                                                使用日期{pigcms:$item.use_time|date='Y年m月d日',###}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </volist>
+                    </div>
+                </div>
+                <div id="tab3" class="tab">
+                    <div class="content-block" style="margin:0px;width:100%">
+                        <volist name="overlist" id="item">
+                            <div class="card bg" style="background-color:#CCCCCC">
+                                <div class="card-content" style="margin:0px;padding:0px;">
+                                    <div class="card-content-inner" style="margin:0px;padding:0px;">
+                                        <div class="item-title">
+                                            <div class="row">
+                                                <div class="col-40"><img src='{pigcms:$item.pic}' class='logo' /></div>
+                                                <div class="col-60" style='margin-top:1rem;'>{pigcms:$item.title}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="item-title line" style="color:white"><span style='margin-top:50px'>{pigcms:$item.coupon_num}</span></div>
+                                    <div class='row'>
+                                        <div class='col-100'>
+                                            <div class="item-after" style='text-align:right;padding-top:10px'>
+                                                过期日期{pigcms:$item.over_time|date='Y年m月d日',###}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </volist>
+                    </div>
+                </div>
+
+            </div>
+            <div class="weui_dialog_confirm" style="display: none;">
+                <div class="weui_mask"></div>
+                <div class="weui_dialog">
+                    <div class="weui_cells weui_cells_form">
+                        <div class="weui_cell">
+                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">服务门店</label></div>
+                            <div class="weui_cell_bd weui_cell_primary">
+                                <input type="text" class="weui_input" placeholder="选择门店" id='address' readonly />
+                            </div>
+                        </div>
+                        <if condition="count($carinfo) gt 1">
+                            <div class="weui_cell">
+                                <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">车牌号码</label></div>
+                                <div class="weui_cell_bd weui_cell_primary">
+                                    <input type="text" placeholder="本次使用车牌号码" class="weui_input" id='carno' readonly />
+                                </div>
+                            </div>
+                            <else />
+                            <input type="hidden" id='carno' readonly value="{pigcms:$carinfo[0].carno}" />
+                        </if>
+                        <div class="weui_cell">
+                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">消费密码</label></div>
+                            <div class="weui_cell_bd weui_cell_primary">
+                                <input name="password" class="weui_input" id="password" value="" type="password" placeholder="请输入消费密码">
+                            </div>
+                        </div>
+                        <div class="weui_cell">
+                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap; ">备注信息</label></div>
+                            <div class="weui_cell_bd weui_cell_primary">
+                                <textarea placeholder="备注信息" class="weui_input" id="notes" name="notes"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="weui_dialog_ft">
+                        <a href="javascript:;" class="weui_btn_dialog default">取消</a>
+                        <a href="javascript:;" class="weui_btn_dialog primary">确定</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm-extend.min.js' charset='utf-8'></script>
+
+    <script type="text/javascript">
+        $(function () {
+            'use strict';
+            //对话框
+            $.init();
+            $("#address").picker({
+                toolbarTemplate: '<header class="bar bar-nav">\
+                  <button class="button button-link pull-right close-picker">\
+                  确定\
+                  </button>\
+                  <h1 class="title">选择门店</h1>\
+                  </header>',
+                cols: [
+                  {
+                      textAlign: 'center',
+                      values: ['区府店','塘坑店'],
+                      cssClass: 'picker-items-col-normal'
+                  }
+                ]
+            });
+            $("#carno").picker({
+                toolbarTemplate: '<header class="bar bar-nav">\
+                  <button class="button button-link pull-right close-picker">\
+                  确定\
+                  </button>\
+                  <h1 class="title">选择车牌</h1>\
+                  </header>',
+                cols: [
+                  {
+                      textAlign: 'center',
+                      values: [
+                         <volist name="carinfo" id="car">
+                            '{pigcms:$car.carno}',
+                         </volist>
+                      ],
+                      cssClass: 'picker-items-col-normal'
+                  }
+                ]
+            });
+            $(document).on('click', '.button-warning', function () {
+                $('#password').val("");
+                $('#notes').val("");
+                $('#address').val("");
+                var id=this.id;
+                $('.weui_dialog_confirm').show().on('click', '.default ', function () {
+                    $('.weui_dialog_confirm').off('click').hide();
+                }).on('click', '.primary', function () {
+                    use(id);
+                });
+            });
+        });
+        function use(i) {
+
+            var password = $('#password').val();
+            var notes = $('#notes').val();
+            var carno = $('#carno').val();
+            var address = $('#address').val();
+            if (!address) {
+                $.alert('请选择消费门店');
+                return false;
+            }
+            if (!carno) {
+                $.alert('请选择车牌号码');
+                return false;
+            }
+            if (!password) {
+                $.alert('请输入支付密码');
+                return false;
+            }
+         
+            $('.weui_dialog_confirm').off('click').hide();
+
+            var itemid = i;
+            var submitData = {
+                password: password,
+                record_id: itemid,
+                address: address,
+                notes: notes,
+                carno: carno,
+                coupon_type: 3,
+                cat: 0,
+            };
+            $.post('/index.php?g=Wap&m=Store&a=action_useIntergral&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData,
+            function (data) {
+                $.alert(data);
+                location.href = location.href;
+            });
+        }
+    </script>
+    <include file="Card:share" />
+</body>
+</html>

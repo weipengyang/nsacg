@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+		<title>我的</title>
+		<meta content="app-id=518966501" name="apple-itunes-app" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no, maximum-scale=1.0"/>
+		<meta content="yes" name="apple-mobile-web-app-capable" />
+		<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+		<meta content="telephone=no" name="format-detection" />
+		<link href="{pigcms:$staticPath}/tpl/static/unitary/css/comm.css" rel="stylesheet" type="text/css" />
+		<link href="{pigcms:$staticPath}/tpl/static/unitary/css/member.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<script src="{pigcms:$staticPath}/tpl/static/unitary/js/jquery-2.1.3.min.js" language="javascript" type="text/javascript"></script>
+		
+		<div class="wrapper">
+			<div class="m_myInfo">
+				<dl>
+					<dt class="gray6">
+						<if condition="$user.portrait eq ''">
+						<img src="{pigcms:$staticPath}/tpl/static/unitary/images/00000000000000000.jpg">
+						<else />
+						<img src="{pigcms:$user.portrait}">
+						</if>
+						<p>{pigcms:$user.wechaname}</p>
+						<p>{pigcms:$user.tel}</p>
+					</dt>
+					<dd>
+					</dd>
+				</dl>
+			</div>
+			<div class="sub_nav marginB">
+				<a href="{pigcms::U('Unitary/mypay',array('token'=>$token))}"><s class="m_s1"></s>夺宝记录<i></i></a>
+				<a href="{pigcms::U('Unitary/myluck',array('token'=>$token))}"><s class="m_s2"></s>获得的商品<i></i></a>
+				<a href="{pigcms::U('Unitary/register',array('token'=>$token))}"><s class="m_s5"></s>收货地址设置<i></i></a>
+			</div>
+			<div class="footer" style="display:block;">
+				<ul>
+					<li class="f_whole"><a href="{pigcms::U('Unitary/index',array('token'=>$token))}"  title="所有商品"><i></i>所有商品</a></li>
+					<li class="f_car"><a id="btnCart" href="{pigcms::U('Unitary/cart',array('token'=>$token))}"  title="购物车"><i><?php if($cart_count != null && $cart_count != 0){?><b>{pigcms:$cart_count}</b><?php }?></i>购物车</a></li>
+					<li class="f_personal"><a href="{pigcms::U('Unitary/my',array('token'=>$token))}" class="hover" title="我的"><i></i>我的</a></li>
+				</ul>
+			</div>
+		</div>
+		
+		
+		<script type="text/javascript">
+		
+		</script>
+		
+<if condition="$unitary eq ''">
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"Unitary",
+            "moduleID":"0",
+            "imgUrl": "{pigcms:$staticPath}/tpl/static/unitary/images/wxnewspic.jpg", 
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Unitary/index',array('token'=>$token))}",
+            "tTitle": "一元夺宝",
+            "tContent": ""
+        };
+</script>
+<else />
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"Unitary",
+            "moduleID":"0",
+            "imgUrl": "{pigcms:$unitary['wxpic']}", 
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Unitary/goodswhere',array('token'=>$token,'unitaryid'=>$_GET['unitaryid']))}",
+            "tTitle": "{pigcms:$unitary['name']}",
+            "tContent": "{pigcms:$unitary['wxinfo']}"
+        };
+</script>
+</if>
+{pigcms:$shareScript}
+	</body>
+</html>

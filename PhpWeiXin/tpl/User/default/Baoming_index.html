@@ -1,0 +1,57 @@
+<include file="Public:head"/>
+<link rel="stylesheet" type="text/css" href="{pigcms::RES}/css/cymain.css" />
+<link href="{pigcms::RES}/css/activity.css" rel="stylesheet" type="text/css">
+<script src="/tpl/static/artDialog/jquery.artDialog.js?skin=default"></script>
+<script src="/tpl/static/artDialog/plugins/iframeTools.js"></script>
+<script src="/tpl/static/upyun.js"></script>
+<div class="content">
+<div class="cLineB">
+<h4 class="left">活动报名</h4>
+<div class="clr"></div>
+</div>
+<!--tab start-->
+<div class="tab">
+<ul>
+<li class="current tabli" id="tab0"><a href="{pigcms::U('Baoming/index', array('token' => $token))}">主题活动列表</a></li>
+<li class="tabli" id="tab0"><a href="{pigcms::U('Baoming/company', array('token' => $token))}">回复配置</a></li>
+</ul>
+</div>
+<div class="cLine">
+<div class="pageNavigator left"> <a href="{pigcms::U('Baoming/add', array('token' => $token))}" title="添加" class="btnGrayS vm bigbtn"><img src="{pigcms::RES}/images/product/add.png" width="16" class="vm">添加报名</a></div>
+<div class="clr"></div>
+</div>
+<!--tab end-->
+<div class="msgWrap">
+<form method="post" action="" id="info">
+<table class="ListProduct" border="0" cellspacing="0" cellpadding="0" width="100%">
+<thead>
+<tr>
+<th width="120">主题海报</th>
+<th width="60">主题</th>
+<th width="80">时间</th>
+<th width="60">费用</th>
+
+<th width="80" class="norightborder">操作</th>
+</tr>
+</thead>
+<tbody>
+<tr></tr>
+<volist name="info" id="o"> 
+<tr>
+<td><img src="{pigcms:$o.banner}" width="100" height="100" /></td>
+<td>{pigcms:$o.zhuti}</td>
+<td>{pigcms:$o.time}</td>
+<td>{pigcms:$o.feiyong}元</td>
+
+<td class="norightborder">
+<a href="{pigcms::U('Baoming/infos',array('token'=>$o['token'],'pid'=>$o['id']))}">报名人员</a>
+<a href="{pigcms::U('Baoming/edit',array('id'=>$o['id']))}">修改</a> 
+<a href="javascript:drop_confirm('您确定要删除吗?', '{pigcms::U('Baoming/delete',array('id'=>$o['id']))}');">删除</a></td>
+</tr>
+</volist>
+</tbody>
+</table>
+</form>
+</div>
+</div>
+<include file="Public:footer"/>

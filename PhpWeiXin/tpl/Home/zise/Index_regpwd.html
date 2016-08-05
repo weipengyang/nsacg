@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>{pigcms::C('site_name')} | {pigcms::C('site_title')}</title>
+<include file="Public:header"/>
+<style type="text/css">
+<!--
+.red {color: #FF0000}
+.login { color:#555555}
+.login input { 
+	padding: 5px;
+	margin-top:12px;
+	border: solid 1px #E1E1E1;
+	outline: 0;
+	font: normal 13px/100% Verdana, Tahoma, sans-serif;
+	width: 150px;
+	box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
+	-moz-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
+	-webkit-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
+	}
+.login input:hover,.login input:focus{ 
+	border-color: #C9C9C9; 
+	-webkit-box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 8px;
+	}
+.think-login{ margin-top: 36px;padding-right: 60px; border-right: 1px solid #ddd; }
+.think-login .body{ padding-top: 12px; }
+.think-login{ float: left; }
+.think-form{ padding-bottom: 36px; }
+.think-form .submit{ background: #348FD4; color: #fff; font-size: 16px; height: 30px; line-height: 21px; padding: 0 24px; vertical-align: middle; border: 0; cursor: pointer; }
+.think-form .submit:hover{ background-color: #2F81BF; }
+-->
+</style>
+
+<div class="nav clearfix">
+	<div class="nav-content">
+		<h1 class="left">{pigcms::C('site_name')}·微信营销，如此简单！</h1>
+		<div class="right line-li">
+			<ul>
+				<li>
+					<a href="/" class="hover">首页</a>
+				</li>
+				<li>
+					<a href="{pigcms::U('Home/Index/common')}">经典案例</a>
+				</li>
+				<li>
+					<a href="{pigcms::U('Home/Index/gongneng')}">功能介绍</a>
+				</li>
+				<li>
+					<a href="{pigcms::U('Home/Index/daili')}">合作代理</a>
+				</li>
+				<li>
+					<a href="http://www.weshangjia.com" target="_blank">更多服务</a>
+				</li>
+			<if condition="$_SESSION[uid]==false">
+				<li><a href="{pigcms::U('Index/login')}" class="hover">登录</a></li>
+				<li><a href="{pigcms::U('Index/reg')}">注册</a></li>
+			<else/><li>
+			<a href="{pigcms::U('User/Index/index')}" hidefocus="true"  ><span style="color:red">管理中心</span></a>
+			<a href="javascript:void(0)" onClick="Javascript:window.open('{pigcms::U('Admin/Admin/logout')}','_self')" >退出</a></li>
+	</if>		
+			</ul>
+		</div>
+	</div>
+</div>
+<!-- banner -->
+<DIV class="Public-content clearfix" style="margin-top:38px;">
+<DIV class=Public>
+<H2 class=Public-h2>帐户登录</H2>
+<DIV class=Public-box>
+<DIV class=Proxy>
+<div class="think-login">
+<DIV class="body think-form ">
+<FORM class=login method=post action="{pigcms::U('Users/checkpwd')}">
+<TABLE height=272 class="login">
+  <TBODY>
+    <TR>
+      <TH width=101>用户名</TH>
+      <TD width=565><INPUT class=text type=text name=username onclick="if(this.value=='请输入用户名'){this.value=''}" onblur="if(this.value==''){this.value='请输入用户名'}">
+      </TD>
+      <TD rowSpan=4 width=263><IMG alt="" src="{pigcms::RES}/images/weshangjia-com.jpg" width=258 
+      height=258></TD>
+    </TR>
+    <TR>
+      <TH>邮箱地址</TH>
+      <TD><INPUT class=text type=text name=email><font color="#FF0000">*</font>找回密码所填的邮箱
+      </TD>
+    </TR>
+
+    <TR>
+      <TH></TH>
+      <TD><INPUT name="submit" type=submit class=submit value=点击找回密码>
+
+      </TD>
+    </TR>
+    <TR>
+      <TH>帐号审核：</TH>
+      <TD style="line-height:26px;">自助审核方法：关注右侧官方微信号<span class="red">xiangheweixin</span>（右侧扫一扫）<br>
+      在微信中输入：审核+注册的用户名，如：审核wxin0350<br>
+      人工审核方法： QQ：70047548，联系审核</TD>
+    </TR>
+  </TBODY>
+</TABLE>
+<input type="hidden" name="__hash__" value="3e9fde7441cc55bf46afe7f8361af205_ab037d0cb24069e86b06c23943410ad1" /></FORM>
+
+</div>
+</DIV></DIV>
+</DIV></DIV>
+
+<!--公告信息-->
+<include file="Public:footer"/>
+
+</body></html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<include file="Public:header" />
+<body>
+    <include file="Public:menu" />
+    <div class="header_login">
+        <div class="header_login_main"></div>
+    </div>
+    <div class="bg_login_main">
+        <div class="login_main">
+            <div class="img"><img src="{pigcms::RES}/images/login/img.png" width="485" height="485"/></div>
+            <div class="img02"><img src="{pigcms::RES}/images/login/img02.png" width="127" height="127"/></div>
+            <form action="{pigcms::U('Users/checklogin')}" method="post">
+                <input name="username" type="text" class="txt_name" placeholder="平台账号" />
+                <input name="password" type="password" class="txt_pwd" placeholder="密码" />
+                <input name="captcha" type="text" class="txt_code" placeholder="验证码" />
+                <script>
+                function refreshImg(){
+                    document.getElementById("txtCheckCode").src="/index.php?m=Index&a=verify&s="+Math.random();
+                }
+                </script>
+                <div class="code">
+                    <img src="{pigcms::U('Index/verify')}" width="60" height="31" id="txtCheckCode" alt="验证码" data-url="{pigcms::U('Index/verify')}" />
+                    <a href="javascript:refreshImg();">换一张</a>
+                </div>
+                <div class="op">
+                    <!--<span><input name="" type="checkbox" value="" />下次自动登录</span>
+                    <a href="#">忘记密码？</a> -->
+                </div>
+                <input type="submit" class="btn_login" value="" />
+                <a href="{pigcms::U('Index/reg')}" class="btn_reg"> 新用户注册</a>
+            </form>
+        </div>
+    </div>
+    <script type="text/javascript">try{Dd('webpage_6').className='left_menu_on';}catch(e){}</script>
+    <script type="text/javascript">$(function(){$(".img").addClass("active");$(".btn_reg").animate({right:"22px"},"slow");})</script>
+    <include file="Public:footer" />
+    <style>.joinLine{margin-top:-18px;}</style>
+    </body>
+</html>

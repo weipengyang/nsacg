@@ -1,0 +1,161 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">   
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+<title>{pigcms:$metaTitle}</title>
+<link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+<link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/0.4.1/weui.min.css" />
+<link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="page" style="margin:0px">
+        <nav class="bar bar-tab">
+            <a class="tab-item" href="#" onclick="history.go(-1);">
+                <span class="icon icon-left"></span>
+                <span class="tab-label">返回</span>
+            </a>
+            <a class="tab-item" href="{pigcms::U('Store/cats',array('token' => $_GET['token'], 'catid' => $hostlist['id'], 'wecha_id' => $wecha_id, 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-home"></span>
+                <span class="tab-label">首页</span>
+            </a>
+            <a class="tab-item" href="{pigcms::U('Store/cart',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-cart"></span>
+                <if condition="$productcount neq 0">
+                    <span class="badge" id='badge'>{pigcms:$productcount}</span>
+                    <else />
+                    <span class="badge" id='badge' style="display:none">{pigcms:$productcount}</span>
+                </if>
+                <span class="tab-label">购物车</span>
+            </a>
+            <a class="tab-item" href="{pigcms::U('Store/myinfo',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-me"></span>
+                <span class="tab-label">我</span>
+            </a>
+        </nav>
+        <div class="content" style="margin:0px;text-align:center;">
+            <volist name="list" id="item">
+                <span style="width:100%;text-align:center;font-size:0.6rem">{pigcms:$item.进厂时间|strtotime|date="Y-m-d H:i",###}</span>
+                <div class="card" style="background-color:#016FC4;color:white">
+                    <div class="card-header" ><span>{pigcms:$item.维修类别}</span><span style="float:right">{pigcms:$item.主修人}</span></div>
+                    <div class="card-content">
+                        <div class="card-content-inner" style="font-size:0.6rem;">
+                            <div class="row">
+                                <div class="col-33">项目名称</div>
+                                <div class="col-33">金额</div>
+                                <div class="col-33">服务技师</div>
+                            </div>
+                            <volist name="item.items" id="xm">
+                                <div class="row">
+                                    <div class="col-33">{pigcms:$xm.项目名称}</div>
+                                    <div class="col-33">{pigcms:$xm.金额}</div>
+                                    <div class="col-33">{pigcms:$xm.主修人}</div>
+                                </div>
+                              </volist>
+                    </div>
+                    </div>
+                    <notempty name="item.peijian">
+                        <div class="card-content">
+                            <div class="card-content-inner" style="font-size:0.6rem;">  
+                                <div class="row">
+                                    <div class="col-33">配件名称</div>
+                                    <div class="col-33">数量</div>
+                                    <div class="col-33">金额</div>
+                                </div>
+                                <volist name="item.peijian" id="pj">
+                                    <div class="row">
+                                        <div class="col-33">{pigcms:$pj.名称}</div>
+                                        <div class="col-33">x{pigcms:$pj.数量}</div>
+                                        <div class="col-33">{pigcms:$pj.金额}</div>
+                                    </div>
+                                </volist>
+                            </div>
+                        </div>
+                    </notempty>
+                    <div class="card-footer" style="font-size:0.6rem;color:white">当前状态:{pigcms:$item.当前状态}</div>
+                </div>
+            </volist>
+          </div>
+        </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <script>
+        function modify(oldcarno) {
+            $('.weui_dialog_confirm').show().on('click', '.default ', function () {
+                $('.weui_dialog_confirm').off('click').hide();
+            }).on('click', '.primary', function () {
+                var carno = $("#carno").val();
+                if (carno == '') {
+                    $.alert("请输入您的车牌号码");
+                    return;
+                }
+                var reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i
+                if(!reg.test(carno)){
+                    $.alert("请输入完整的车牌号码，格式如粤T83G5NB");
+                    return;
+                }
+                var submitData = {
+                    carno: carno,
+                    oldcarno: oldcarno,
+                    opt: "modify"
+                };
+                $.post('index.php?g=Wap&m=Store&a=mycar', submitData,
+                  function (data) {
+                      $.alert(data);
+                      location.href = location.href;
+                  });
+
+            });
+           
+        }
+        function deleteCar(carno) {
+            var submitData = {
+                carno: carno,
+                opt: "delete"
+            };
+            $.post('index.php?g=Wap&m=Store&a=mycar', submitData,
+             function (data) {
+                 $.alert(data);
+                 location.href = location.href;
+             });
+        }
+        $(function () {
+            'use strict';
+            //对话框
+            $.init();
+
+            $(document).on('click', '#addcar', function () {
+                $('#carno').val("");
+                $('.weui_dialog_confirm').show().on('click', '.default ', function () {
+                    $('.weui_dialog_confirm').off('click').hide();
+                }).on('click', '.primary', function () {
+                    var carno = $("#carno").val();
+                    if (carno == '') {
+                        $.alert("请输入您的车牌号码");
+                        return;
+                    }
+                    var reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i
+                    if(!reg.test(carno)){
+                        $.alert("请输入完整的车牌号码，格式如粤T83G5NB");
+                        return;
+                    }
+                    var submitData = {
+                        carno: $('#carno').val(),
+                        action: "index"
+                    };
+                    $.post('index.php?g=Wap&m=Store&a=mycar', submitData,
+                   function (data) {
+                           $.alert(data);
+                           location.href = location.href;
+                   });
+
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

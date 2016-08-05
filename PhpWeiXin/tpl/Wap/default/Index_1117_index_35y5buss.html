@@ -1,0 +1,112 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/html">
+  <head>
+       <if condition="$zd['status'] eq 1">
+            {pigcms:$zd['code']}
+        </if>
+<title>{pigcms:$tpl.wxname}</title>
+    <link type="text/css" rel="stylesheet" href="./tpl/static/tpl/com/css/comstyle.css"/>
+    <link type="text/css" rel="stylesheet" href="./tpl/static/tpl/com/css/font-awesome.css"/>
+    <link href="./tpl/static/tpl/1117/css/index36.css" media="screen" rel="stylesheet" type="text/css" />
+    <script src="./tpl/static/tpl/com/js/comjs.js" type="text/javascript"></script>
+    <meta content="authenticity_token" name="csrf-param" />
+  </head>
+
+  <body>
+
+    <div class="html">
+      <div class="stage" id="stage">
+        <section id="sec-index">
+
+          <div class="body">
+
+
+  <div class="mod-slider slider-ver" id="index">
+    <ul class="slider-list">
+	<volist name="flashbg" id="so">
+		<li>
+			<img alt="" src="{pigcms:$so.img}">
+		</li>
+	</volist>
+    </ul>
+    </div>
+          </div>
+        </section>
+
+
+    <section class="mod-navLine navLine14">
+      <div class="navLine-menu" id="navLine-menu">
+        <ul class="p1">
+          <li class="s1"><a>菜单</a>
+            <ul class="p2">
+				<volist name="info" id="vo" offset="0" length="6">
+                <li class="s2">
+                    <a href="{pigcms:$vo.url|htmlspecialchars_decode}"><span>{pigcms:$vo.name}</span></a>
+                </li>
+				</volist>
+
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+
+      </div><!--.stage end-->
+    </div><!--.html end-->
+    <script type="text/javascript">
+      $(document).ready(function(){
+
+                indexSwipe("index", ["", "", ""]);
+  navLineSwipe=divSwipe("navLine-menu");
+
+
+        showBtnUp(100);
+
+      });
+
+    </script>
+ <div id="insert2"></div>
+ <div class="copyright">
+ <if condition="$iscopyright eq 1">
+{pigcms:$homeInfo.copyright}
+<else/>
+{pigcms:$siteCopyright}
+</if>
+ </div>
+
+ <div style="display:none"> </div>
+
+
+<include file="Index:styleInclude"/><include file="$cateMenuFileName"/>
+	<if condition="ACTION_NAME eq 'index'">
+		<script type="text/javascript">
+			window.shareData = {
+					"moduleName":"Index",
+					"moduleID": '0',
+					"imgUrl": "{pigcms:$homeInfo.picurl}",
+					"timeLineLink": "{pigcms::C('site_url')}{pigcms::U(Index/ACTION_NAME,array('token'=>$_GET['token']))}",
+					"sendFriendLink": "{pigcms::C('site_url')}{pigcms::U(Index/ACTION_NAME,array('token'=>$_GET['token']))}",
+					"weiboLink": "{pigcms::C('site_url')}{pigcms::U(Index/ACTION_NAME,array('token'=>$_GET['token']))}",
+					"tTitle": "{pigcms:$homeInfo.title}",
+					"tContent": "{pigcms:$homeInfo.info}"
+				};
+		</script>
+	<else />
+		<script type="text/javascript">
+			window.shareData = {
+				"moduleName":"Index",
+				"moduleID": '1',
+				"imgUrl": "{pigcms:$homeInfo.picurl}",
+				"timeLineLink": "{pigcms::C('site_url')}{pigcms::U(Index/ACTION_NAME,array('token'=>$_GET['token'],'classid'=>$_GET['classid']))}",
+				"sendFriendLink": "{pigcms::C('site_url')}{pigcms::U(MODULE_NAME/ACTION_NAME,array('token'=>$_GET['token'],'classid'=>$_GET['classid']))}",
+				"weiboLink": "{pigcms::C('site_url')}{pigcms::U(MODULE_NAME/ACTION_NAME,array('token'=>$_GET['token'],'classid'=>$_GET['classid']))}",
+				"tTitle": "{pigcms:$homeInfo.title}",
+				"tContent": "{pigcms:$homeInfo.info}"
+			};
+		</script>
+
+	</if>
+{pigcms:$shareScript}
+  </body>
+</html>

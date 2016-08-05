@@ -1,0 +1,265 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>爱养车</title>
+    <meta name="description" content="爱养车">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="icon" type="image/png" href="/tpl/static/assets/i/favicon.png">
+    <link rel="apple-touch-icon-precomposed" href="/tpl/static/assets/i/app-icon72x72@2x.png">
+    <meta name="apple-mobile-web-app-title" content="爱养车" />
+    <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.7.0/css/amazeui.min.css" />
+    <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
+</head>
+<body>
+    <!--[if lte IE 9]>
+    <p class="browsehappy">你正在使用<strong>过时</strong>的浏览器。 请 <a href="http://browsehappy.com/" target="_blank">升级浏览器</a>
+      以获得更好的体验！</p>
+    <![endif]-->
+    <div class="am-cf admin-main" style="padding:0;margin:0">
+        <!-- content start -->
+        <div class="admin-content">
+            <div class="admin-content-body">
+                <div class="am-cf am-padding am-padding-bottom-0">
+                    <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">会员卡列表</strong> </div>
+                </div>
+                <hr>
+                <div class="am-g">
+                    <div class="am-u-sm-12 am-u-md-3">
+                        <div class="am-input-group am-input-group-sm">
+                            <input type="text" id="searchkey" class="am-form-field">
+                            <span class="am-input-group-btn">
+                                <button id="search" class="am-btn am-btn-default" type="button">搜索</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="am-g">
+                    <div class="am-u-sm-12">
+                        <form class="am-form">
+                            <table class="am-table am-table-striped am-table-hover table-main">
+                                <thead>
+                                    <TR>
+                                        <th width="110px" style='font-size:10px'>卡号</th>
+                                        <th width="80px" style='font-size:10px'>微信名</th>
+                                        <th width="70px" style='font-size:10px'>车牌号1</th>
+                                        <th width="70px" style='font-size:10px'>车牌号2</th>
+                                        <th width="70px" style='font-size:10px'>车牌号3</th>
+                                        <th width="100px" style='font-size:10px'>联系电话</th>
+                                        <th width="80px" style='font-size:10px'>领卡时间</th>
+                                        <th width="45px" style='font-size:10px'>积分</th>
+                                        <th width="80px" style='font-size:10px'>消费总额(元)</th>
+                                        <th width="50px" style='font-size:10px'>余额</th>
+                                        <TH width="300px" style='font-size:10px'>操作</TH>
+                                    </TR>
+
+                                </thead>
+                                <tbody>
+                                    <volist id="list" name="members">
+                                        <TR>
+                                            <TD style='font-size:10px'>{pigcms:$list.number}</TD>
+                                            <TD style='font-size:10px'>{pigcms:$list.wechaname}</TD>
+                                            <TD style='font-size:10px'>{pigcms:$list.carno}</TD>
+                                            <TD style='font-size:10px'>{pigcms:$list.carno1}</TD>
+                                            <TD style='font-size:10px'>{pigcms:$list.carno2}</TD>
+                                            <TD style='font-size:10px'>{pigcms:$list.tel}</TD>
+                                            <TD style='font-size:10px'>
+                                                <if condition="$list['getcardtime'] gt 0">
+                                                    {pigcms:$list.getcardtime|date='Y-m-d',###}
+                                                    <else />
+                                                    无时间记录
+                                                </if>
+                                            </TD>
+                                            <TD style='font-size:10px'>
+                                                {pigcms:$list.total_score}
+                                            </TD>
+                                            <TD style='font-size:10px'>
+                                                {pigcms:$list.expensetotal}
+                                            </TD>
+                                            <TD style='font-size:10px'>
+                                                {pigcms:$list.balance}
+                                            </TD>
+                                            <TD class="norightborder" style='font-size:12px'>
+                                                <a href="javascript:void(0);" onclick="memberCardRecharge('{pigcms:$list.wecha_id}')"><strong>充值</strong></a>
+                                                |
+                                                <a href="{pigcms::U('User/Member_card/member',array('token'=>$token,'wecha_id'=>$list['wecha_id'],'id'=>$thisCard['id']))}"><strong>消费记录</strong></a>
+                                                |
+                                                <a href="javascript:void(0);" onclick="RestPassWord('{pigcms:$list.wecha_id}');"><strong>密码重置</strong></a>
+                                                |
+                                                <if condition="$right eq '超级用户'">
+                                                    <a href="javascript:void(0);" onclick="bingCard('{pigcms:$list.wecha_id}');"><strong>绑定车牌</strong></a>
+                                                </if>
+                                                <if condition="$right eq '超级用户'">
+                                                    <a href="javascript:void(0);" onclick="deletemember('{pigcms:$list.id}');"><strong>删除</strong></a>
+                                                </if></TD>
+                                        </TR>
+                                    </volist>
+                                </tbody>
+                            </table>
+                            <div class="am-cf">
+                                <div class="am-fr">
+                                    <div class="cLine">
+                                        <div class="pageNavigator right">
+                                            <div class="pages">{pigcms:$page}</div>
+                                        </div>
+                                        <div class="clr"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="am-modal am-modal-prompt" tabindex="-1" id="doc-modal-1">
+                <div class="am-modal-dialog">
+                    <div class="am-modal-hd">
+                        会员充值
+                        <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+                    </div>
+                    <div class="am-modal-bd">
+                        <div class="am-form">
+                            <input type="hidden" name="uid" id='uid' value="{pigcms:$uinfo.id}" />
+                            <input type="hidden" name="cardid" id='cardid' value="{pigcms:$cardid}" />
+                            <div class="am-g am-margin-top">
+                                <div class="am-u-sm-6 am-u-md-6 am-text-right">
+                                    <span class="red">*</span>充值金额(元)
+                                </div>
+                                <div class="am-u-sm-6 am-u-md-6">
+                                    <input type="text" name="price" id="price" value="" class="am-input-sm" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="am-modal-footer">
+                        <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                        <span class="am-modal-btn" data-am-modal-confirm>提交</span>
+                    </div>
+                </div>
+            </div>
+            <div class="am-modal am-modal-prompt" tabindex="-1" id="doc-modal-2">
+                <div class="am-modal-dialog">
+                    <div class="am-modal-hd">
+                        绑定车牌
+                        <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+                    </div>
+                    <div class="am-modal-bd">
+                        <div class="am-form">
+                            <input type="hidden" name="uid" id='uid' value="{pigcms:$uinfo.id}" />
+                            <input type="hidden" name="cardid" id='cardid' value="{pigcms:$cardid}" />
+                            <div class="am-g am-margin-top">
+                                <div class="am-u-sm-6 am-u-md-6 am-text-right">
+                                    <span class="red">*</span>车牌号码
+                                </div>
+                                <div class="am-u-sm-6 am-u-md-6">
+                                    <input type="text" name="carno" id="carno" value="" class="am-input-sm" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="am-modal-footer">
+                        <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                        <span class="am-modal-btn" data-am-modal-confirm>提交</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- content end -->
+    </div>
+    <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
+    <script src="/tpl/static/assets/js/jquery.min.js"></script>
+    <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
+    <script src="/tpl/static/assets/js/app.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#search').click(function () {
+                location.href = '/index.php?g=Query&m=Consume&a=membercard&token=jifbjv1429543374&searchkey=' + $('#searchkey').val();
+
+            });
+        });
+        function bingCard(wecha_id) {
+            $('#doc-modal-2').modal({
+                relatedTarget: this,
+                width: 350,
+                closeOnConfirm: false,
+                onConfirm: function (e) {
+                    var carno = $('#carno').val();
+                    var data = {
+                        wecha_id: wecha_id,
+                        carno: carno
+                    };
+                    $.post('/index.php?g=Query&m=Consume&a=bindcar', data,
+                      function (msg) {
+                          alert(msg);
+                          $('#doc-modal-2').modal('close');
+                          location.href = location.href;
+                      });
+                },
+                onCancel: function (e) {
+                }
+            });
+
+        }
+        function memberCardRecharge(wecha_id) {
+            $('#doc-modal-1').modal({
+                relatedTarget: this,
+                width: 350,
+                closeOnConfirm:false,
+                onConfirm: function(e) {
+                    var price = $('#price').val();
+                    if ('{pigcms:$username}' != '阳伟鹏') {
+                        if (!(price && price > 0 && price % 100 == 0)) {
+                            $.alert({ title: '提示', content: "充值金额必须为100的整数倍" });
+                            return false;
+                        }
+                    }
+                    var data = {
+                        wecha_id: wecha_id,
+                        price:price
+                    };
+                    $.post('/index.php?g=Query&m=Consume&a=recharge', data,
+                      function (msg) {
+                          alert(msg);
+                          $('#doc-modal-1').modal('close');
+                          location.href = location.href;
+                });
+              },
+                onCancel: function(e) {
+              }
+    });
+        }
+        function RestPassWord(id) {
+            if (confirm("您确认要进行密码重置操作？")) {
+                $.post('/index.php?g=Query&m=Consume&a=resetpass&wecha_id=' + id, null,
+                function (data) {
+                    if (data.success == 1) {
+                        alert(data.msg);
+                    } else {
+                        alert(data.msg);
+                    }
+                }, "json");
+            }
+        }
+        function deletemember(id) {
+            if (confirm("您确认要删除？")) {
+                $.post('/index.php?g=Query&m=Consume&a=member_del&id=' + id, null,
+                function (data) {
+                   alert(data);
+                });
+            }
+        }
+
+        //reflash();
+        //function reflash() {
+
+        //    location.href = location.href;
+        //    setTimeout("reflash()", 100000);
+
+        //}
+    </script>
+</body>
+</html>

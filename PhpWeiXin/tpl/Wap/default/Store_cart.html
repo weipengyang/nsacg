@@ -1,0 +1,186 @@
+<!--<include file="Store:header" />-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+    <link type="text/css" rel="stylesheet" href="{pigcms::$staticFilePath}/css/style_touch.css">
+    <title>{pigcms:$metaTitle}</title>
+</head>
+<body>
+    <div class="page">
+        <nav class="bar bar-tab">
+            <a class="tab-item" href="javascript:void(0);" onclick="history.go(-1);">
+                <span class="icon icon-left"></span>
+                <span class="tab-label">返回</span>
+            </a>
+            <a class="tab-item" href="{pigcms::U('Store/cats',array('token' => $_GET['token'], 'catid' => $hostlist['id'], 'wecha_id' => $wecha_id, 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-home"></span>
+                <span class="tab-label">首页</span>
+            </a>
+            <a class="tab-item active" href="{pigcms::U('Store/cart',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-cart"></span>
+                <span class="tab-label">购物车</span>
+            </a>
+            <a class="tab-item" href="{pigcms::U('Store/myinfo',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-me"></span>
+                <span class="tab-label">我</span>
+            </a>
+        </nav>
+        <div class="content" style="margin:0px">
+            <div class="list-block media-list" style="margin:0px">
+                <if condition="empty($products) neq true ">
+                    <ul>
+                        <volist name="products" id="p">
+                            <if condition="empty($p['detail']) neq true">
+                                <volist name="p['detail']" id="row">
+                                    <li number="1">
+                                        <div class="item-content" style="font-size:0.8rem">
+                                            <div class="item-media"><a href="{pigcms::U('Store/product',array('token'=>$_GET['token'],'id'=>$p['id'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid))}"><img src="{pigcms:$p.logourl}" width="75" height="75"></a></div>
+                                            <div class="item-inner">
+                                                <div class="item-title">
+                                                    <a href="{pigcms::U('Store/product',array('token'=>$_GET['token'],'id'=>$p['id'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid))}" class="t">{pigcms:$p.name}</a>
+                                                    <i class="d"><if condition="empty($p['formatTitle']) neq true">{pigcms:$p.formatTitle}：{pigcms:$row.formatName}</if> <if condition="empty($p['colorTitle']) neq true">，{pigcms:$p.colorTitle}：{pigcms:$row.colorName}</if></i>
+                                                </div>
+                                                <div class="item-title">
+                                                    <div class="item-title-row">
+                                                        <span>数量：</span>
+                                                        <i style="cursor: pointer;color:#FF6600;font-weight:bold" class="iconfont icon-jianqu" onclick="plus_minus({pigcms:$p.id}, -1, {pigcms:$row.id})" class="dec"></i>
+                                                        <input type="text" value="{pigcms:$row.count}" style="width:50px;" onchange="change_minus({pigcms:$p.id}, {pigcms:$row.id})" id="num_{pigcms:$p.id}_{pigcms:$row.id}">
+                                                        <i style="cursor: pointer;color:#FF6600;font-weight:bold" class="iconfont icon-tianjia" onclick="plus_minus({pigcms:$p.id}, 1, {pigcms:$row.id})" class="add"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="item-title">
+                                                    <label>库存：</label>
+                                                    <span id="stock">{pigcms:$row.num}</span>
+                                                </div>
+                                                <div class="item-title">
+                                                    <label>价格：</label><span class="price">￥{pigcms:$row.price}</span>
+                                                    <label style="cursor:pointer" onclick="location.href='{pigcms::U('Store/deleteCart',array('token'=>$_GET['token'],'id'=>$p['id'],'did'=>$row['id'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid))}'" class="del">删除</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </volist>
+                                <else />
+                                <li number="{pigcms:$p.count}">
+                                    <div class="item-content" style="font-size:0.8rem">
+                                        <div class="item-media"><a href="{pigcms::U('Store/product',array('token'=>$_GET['token'],'id'=>$p['id'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid))}"><img src="{pigcms:$p.logourl}" width="75" height="75"></a></div>
+                                        <div class="item-inner">
+                                            <div class="item-title">
+                                                <a href="{pigcms::U('Store/product',array('token'=>$_GET['token'],'id'=>$p['id'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid))}" class="t">{pigcms:$p.name}</a>
+                                            </div>
+                                            <div class="item-title">
+                                                <div class="item-title-row">
+                                                    <span>数量：</span>
+                                                    <i style="cursor:pointer;color:#FF6600;font-weight:bold" class="iconfont icon-jianqu" onclick="plus_minus({pigcms:$p.id}, -1, 0)"></i>
+                                                    <input type="text" value="{pigcms:$p.count}" style="width:50px;" onchange="change_minus({pigcms:$p.id}, 0)" id="num_{pigcms:$p.id}_0">
+                                                    <i style="cursor: pointer;color:#FF6600;font-weight:bold" class="iconfont icon-tianjia" onclick="plus_minus({pigcms:$p.id}, 1, 0)"></i>
+                                                </div>
+                                            </div>
+                                            <div class="item-title">
+                                                <label>库存：</label>
+                                                <span id="stock">{pigcms:$p.num}</span>
+                                            </div>
+                                            <div class="item-title">
+                                                <label>销售价：</label><span class="price">￥{pigcms:$p.price}</span>
+                                                <a style="cursor:pointer" href="javascript:;" onclick="location.href='{pigcms::U('Store/deleteCart',array('token'=>$_GET['token'],'id'=>$p['id'],'did'=>0,'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid))}'" class="button button-danger">删除</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </if>
+                        </volist>
+                    </ul>
+                    <div class="card" style="margin:0px">
+                        <div class="card-content">
+                            <div class="card-content-inner">
+                                <div class="item-title" style="font-size:0.8rem">商品总数:<b id="total_count">{pigcms:$totalCount}</b>　商品总额:<b id="total_price">￥{pigcms:$totalFee}</b></div>
+                                <div class="item-title-row" style="margin-top:10px">
+                                    <a href="{pigcms::U('Store/index',array('token'=>$_GET['token'], 'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid))}" class="button button-big button-round button-fill button-warning" style="width:150px">继续购物</a>
+                                    <a href="{pigcms::U('Store/orderCart',array('token'=>$_GET['token'], 'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid))}" class="button button-big button-round button-fill button-danger" style="width:150px">下单结算</a>
+
+                                </div>
+                                </div>
+                            </div>
+                    </div>
+                    <else />
+                    <div class="m-cart-e">
+                        <div class="icon"></div>
+                        <div class="txt">您还没有挑选商品哦</div>
+                        <a href="{pigcms::U('Store/cats',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid))}" class="gobuy">去挑选商品</a>
+                    </div>
+                </if>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function full_update(rowid,price) {
+            var _this = $('#qty'+rowid);
+            var this_val = parseInt($(_this).val());
+            if (this_val < 1 || isNaN(this_val)) {
+                alert('购买数量不能小于1！');
+                $(_this).focus();
+                return false;
+            }
+            update_cart(rowid, this_val,price);
+        }
+        //加减
+        function plus_minus(rowid, number, did) {
+            var num = parseInt($('#num_'+rowid + '_' + did).val());
+            num = num + number;
+            if (num < 1) {
+                return false;
+            }
+            $('#num_'+rowid + '_' + did).attr('value',num);
+            update_cart(rowid, num, did);
+        }
+        function change_minus(rowid, did) {
+            var num = parseInt($('#num_'+rowid + '_' + did).val());
+            if (num < 1) {
+                return false;
+            }
+            $('#num_'+rowid + '_' + did).attr('value',num);
+            update_cart(rowid, num, did);
+        }
+        //更新购物车
+        function update_cart(rowid, num, did) {
+            if (num > parseInt($("#stock").text())) {
+                num = parseInt($("#stock").text());
+                $('#num_'+rowid + '_' + did).val(num);
+                floatNotify.simple('抱歉，您的购买量超过了库存了');
+            }
+            $.ajax({
+                url: '{pigcms::U('Store/ajaxUpdateCart',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid))}&id='+rowid+'&count='+num+'&did='+ did,
+            success: function( data ) {
+                if(data){
+                    var datas=data.split('|');
+                    //$('#p_buy #all_price').html('￥'+datas[1]);
+                    $('#total_count').html(datas[0]);
+                    $('#total_price').html('￥'+datas[1]);
+                }
+            }
+        });
+        }
+    </script>
+</body>
+<script type="text/javascript">
+    window.shareData = {
+        "moduleName":"Store",
+        "moduleID":"0",
+        "imgUrl": "",
+        "timeLineLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/cart',array('token' => $_GET['token'], 'twid' => $mytwid, 'cid' => $cid))}",
+        "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/cart',array('token' => $_GET['token'], 'twid' => $mytwid, 'cid' => $cid))}",
+        "weiboLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/cart',array('token' => $_GET['token'], 'twid' => $mytwid, 'cid' => $cid))}",
+        "tTitle": "{pigcms:$metaTitle}",
+        "tContent": "{pigcms:$metaTitle}"
+    };
+</script>
+{pigcms:$shareScript}
+</html>

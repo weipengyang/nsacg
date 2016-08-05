@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="format-detection" content="telephone=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta charset="utf-8">
+<title>众筹-首页</title>
+<link rel="stylesheet" href="{pigcms:$staticPath}/tpl/static/crowdfunding/css/zc-common.css">
+<link rel="stylesheet" href="{pigcms:$staticPath}/tpl/static/crowdfunding/css/zc-index.css">
+
+</head>
+<body>
+<!-- heard -->
+<header class="header">
+    <h2><a href="javascript:void(0);" class="text-red">首页</a></h2>
+    <a href="{pigcms::U('Crowdfunding/home',array('token'=>$token,'wecha_id'=>$wecha_id))}" class="icon btn-home" style="left:0px;"></a>
+    <a href="{pigcms::U('Crowdfunding/my_support',array('token'=>$token,'wecha_id'=>$wecha_id))}" class="icon btn-person"></a>
+</header>
+<!-- / -->
+<!-- main -->
+<div class="p-index">
+<!--    
+    <div class="slide-box" id="slider">
+        <div class="swiper-wrapper" id="scrollHolder">
+            <volist id="pic" name="solid">
+                <div class="swiper-slide">
+                    <a href="{pigcms::U('Crowdfunding/index',array('token'=>$token,'wecha_id'=>$wecha_id,'id'=>$pic['id']))}">
+                        <img src="{pigcms:$pic.pic}" alt="">
+                    </a>
+                </div>
+            </volist>
+        </div>
+        <div class="slide-circle" id="slideCircle">
+            <volist id="menu" name="solid">
+                <span class="swiper-pagination-switch"></span>
+            </volist>
+        </div>
+    </div>
+    分类
+    <div class="slide-box category-box" id="category">
+    <div class="swiper-wrapper" id="categoryWrap">
+        <div class="swiper-slide">
+            <ul class="category-ul mt15">
+                <li><a href="#" class="category-a category1"><span>全部分类</span></a></li>
+                <li><a href="#" code="10" class="category-a category2"><span>智能硬件</span></a></li>
+                <li><a href="#" code="11" class="category-a category3"><span>流行文化</span></a></li>
+                <li><a href="#" code="12" class="category-a category4"><span>生活美学</span></a></li>
+            </ul>
+            <ul class="category-ul mt20">
+                <li><a href="#" code="13" class="category-a category5"><span>公益</span></a></li>
+                <li><a href="#" code="14" class="category-a category6"><span>其他</span></a></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </div>
+    </div>
+    <div style="display: none;" class="slide-circle" id="categoryCircle">
+        <span class="swiper-active"></span>
+        <span class=""></span>
+    </div>
+</div> 
+    <h2 class="h2-title bdl">精品项目</h2>-->
+    <div class="tabbox">
+        <div class="tabul-box">
+            <a name="classify"></a>
+            <div class="tabul-div">
+                <ul class="tab-ul">
+                    <li><a class="current" id="zhtj" href="javascript:void(0);">综合推荐</a></li>
+                    <li><a id="zxsx" href="javascript:void(0);">最新上线</a></li>
+                    <li><a id="gzzg" href="javascript:void(0);">关注最高</a></li>
+                    <li><a id="zczd" href="javascript:void(0);">支持最多</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="tab-con pd-0-10">
+            <ul class="zc-list">
+                <volist id="list" name="list">
+                    <li>
+                    <div>
+                        <a href="{pigcms::U('Crowdfunding/index',array('token'=>$token,'wecha_id'=>$wecha_id,'id'=>$list['id']))}"><img src="{pigcms:$list.pic}"></a>
+                    </div>
+                    <div class="gridbox zc-datum">
+                        <div class="grid-3">
+                            <strong>{pigcms:$list.progress}</strong>
+                            <p>
+                                已达到
+                            </p>
+                        </div>
+                        <if condition="$list_type eq 'zczd'">
+                        <div class="grid-3">
+                            <strong>{pigcms:$list.supports}</strong>
+                            <p>
+                                支持人数
+                            </p>
+                        </div>
+                        <elseif condition="$list_type eq 'gzzg'"/>
+                        <div class="grid-3">
+                            <strong>{pigcms:$list.focus}</strong>
+                            <p>
+                                关注人数
+                            </p>
+                        </div>
+                        <else/>
+                        <div class="grid-3">
+                            <strong>￥{pigcms:$list.price_count}</strong>
+                            <p>
+                                已筹集
+                            </p>
+                        </div>
+                        </if>
+                        <div class="grid-2">
+                            <div class="fr">
+                                <strong>{pigcms:$list.remain_day}天</strong>
+                                <p>
+                                    剩余时间
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    </li>
+                </volist>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mypanel f-text2">
+        <a href="javascript:;" id="goTop">回到顶部</a>
+    </div>
+
+<include file="Crowdfunding:footer" />
+
+</div>
+<input value="{pigcms:$list_type}" id="listType" type="hidden">
+<input name="tapp_page_point" id="tapp_page_point" value="1021" type="hidden">
+<!-- end main -->
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/crowdfunding/js/zepto.js"></script>
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/crowdfunding/js/zepto_002.js"></script>
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/crowdfunding/js/proTools.js"></script>
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/crowdfunding/js/home.js"></script>
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/crowdfunding/js/fastclick.js"></script>
+
+
+<script type="text/javascript">
+    var projectPage=2;
+    var isLoadProject=true;
+    var loading=false;
+    // $("#zhtj").addClass("current");
+    var list_type = '';
+    $(function () {
+        list_type = $("#listType").val();
+            $(".tab-ul li a").removeClass("current")
+            $('#'+list_type).addClass("current");
+        new FastClick(document.body);
+        $(".tab-ul li a").on("click",function(){
+            $("#listType").val($(this).attr("id"));
+            window.location.href = "{pigcms::U('Crowdfunding/home',array('token'=>$token))}&list_type="+$("#listType").val()+"#classify";
+        });
+    });
+    function loadproject() {
+        loading=true;
+        isLoadProject=false;
+        var loadUrl = "{pigcms::U('Crowdfunding/home',array('token'=>$token))}&ajax=1&page="+projectPage+"&list_type="+$("#listType").val();
+        $.ajax({url:loadUrl, dataType:"json", scriptCharset:"utf-8", success: function (a) {
+            var projectHtml="";
+            $.each(a, function(index,obj){
+                projectHtml=projectHtml + "<li>";
+                projectHtml=projectHtml + "<div><a clstag='jr|keycount|zc_m_frontpage|zc_dpy' href='{pigcms::U('Crowdfunding/index',array('token'=>$token,'wecha_id'=>$wecha_id))}&id="+obj.id+"'><img class='projectImg' src='{pigcms:$staticPath}/tpl/static/crowdfunding/images/index_default.png' data-original='"+obj.pic+"'></a></div>";
+                projectHtml=projectHtml + "<div class='gridbox zc-datum'>";
+                projectHtml=projectHtml + "<div class='grid-3'>";
+                projectHtml=projectHtml + "<strong>"+obj.progress+"</strong>";
+                projectHtml=projectHtml + "<p>已达到</p>";
+                projectHtml=projectHtml + "</div>";
+                projectHtml=projectHtml + "<div class='grid-3'>";
+                if (list_type == "zczd"){
+                    projectHtml=projectHtml + "<strong>"+obj.supports+"</strong>";
+                    projectHtml=projectHtml + "<p>支持人数</p>";
+                }else if(list_type == "gzzg"){
+                    projectHtml=projectHtml + "<strong>"+obj.focus+"</strong>";
+                    projectHtml=projectHtml + "<p>关注人数</p>";
+                }else {
+                    projectHtml=projectHtml + "<strong>￥"+obj.price_count+"</strong>";
+                    projectHtml=projectHtml + "<p>已筹集</p>";
+                }
+                projectHtml=projectHtml + "</div>";
+                projectHtml=projectHtml + "<div class='grid-2'><div class='fr'>";
+    //                    if (obj.remainType == 0){
+                projectHtml=projectHtml + "<strong>"+obj.remain_day+"天</strong>";
+    //                    }else if (obj.remainType == 1){
+    //                        projectHtml=projectHtml + "<strong>"+obj.remainHour+"小时</strong>";
+    //                    }else if (obj.remainType ==2){
+    //                        projectHtml=projectHtml + "<strong>"+obj.remainMin+"分钟</strong>";
+    //                    }
+                projectHtml=projectHtml + "<p>剩余时间</p>";
+                projectHtml=projectHtml + "</div></div></div></li>";
+            });
+            $(".zc-list").append(projectHtml);
+            $('.projectImg').picLazyLoad({
+                threshold:100
+            });
+            try{
+                if (a!=undefined && a.length>0){
+                    projectPage++;
+                    if (a.length<=4){
+                        isLoadProject=false;
+                    } else {
+                        isLoadProject=true;
+                    }
+                }else {
+                    isLoadProject=false;
+                }
+            }catch (e){}
+        }});
+        loading=false;
+    }
+    //页面加载时不需要 loadproject();
+    $(window).scroll(function(){
+        if (isLoadProject && loading==false && projectPage>1){
+            if($(document).height() - $(this).scrollTop() - $(this).height()<600){
+                isLoadProject=false;
+                loadproject();
+            }
+        }
+    });
+
+    //顶部轮播
+    var $slideHolder = $("#slider");
+    var $scrollHolder = $("#scrollHolder");
+    var $pagination = $("#slideCircle");
+    var myWebSlider = new WebSlider({
+        slideHolder: $slideHolder,
+        scrollHolder: $scrollHolder,
+        pagination: $pagination,
+        loop: true,
+        autoPlay: true,
+        currentClass: "swiper-active-switch"
+    });
+    //分类滚动
+    var $slideHolder = $("#category");
+    var $scrollHolder = $("#categoryWrap");
+    var $pagination = $("#categoryCircle");
+    var myWebSlider = new WebSlider({
+        slideHolder: $slideHolder,
+        scrollHolder: $scrollHolder,
+        pagination: $pagination,
+        currentClass: "swiper-active"
+    });
+
+</script>
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"Crowdfunding",
+            "moduleID":"0",
+            "imgUrl": "{pigcms:$solid[0]['pic']}", 
+            "timeLineLink": "{pigcms:$f_siteUrl}{pigcms::U('Crowdfunding/home',array('token'=>$token))}",
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Crowdfunding/home',array('token'=>$token))}",
+            "weiboLink": "{pigcms:$f_siteUrl}{pigcms::U('Crowdfunding/home',array('token'=>$token))}",
+            "tTitle": "众筹",
+            "tContent": "众筹"
+};
+</script>
+{pigcms:$shareScript}
+</body>
+</html>

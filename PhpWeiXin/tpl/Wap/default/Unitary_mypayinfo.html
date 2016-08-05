@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+		<title>购买详情</title>
+		<meta content="app-id=518966501" name="apple-itunes-app" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no, maximum-scale=1.0"/>
+		<meta content="yes" name="apple-mobile-web-app-capable" />
+		<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+		<meta content="telephone=no" name="format-detection" />
+		<link href="{pigcms:$staticPath}/tpl/static/unitary/css/comm.css" rel="stylesheet" type="text/css" />
+		<link href="{pigcms:$staticPath}/tpl/static/unitary/css/member.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<script src="{pigcms:$staticPath}/tpl/static/unitary/js/jquery-2.1.3.min.js" language="javascript" type="text/javascript"></script>
+		
+		<div id="loadingPicBlock">
+			<div class="wrapper">
+				<if condition="$unitary.state eq 1">
+				<div class="m_buylistDet m_now">
+					<cite>
+						<a href="{pigcms::U('Unitary/goodswhere',array('token'=>$token,'unitaryid'=>$unitary['id']))}"><img src="{pigcms:$unitary.logopic}"><i>进行中</i></a>
+					</cite>
+					<dl>
+						<dt>
+							<a href="javascript:;" class="gray6">{pigcms:$unitary.name}</a>
+						</dt>
+						<dd>已参与<em class="orange">{pigcms:$pay_count}</em>人次</dd>
+						<dd>
+							<div class="gRate">
+								<div class="Progress-bar">
+									<p class="u-progress" title=""><span class="pgbar" style="width:{pigcms:$unitary.proportion}%;"><span class="pging"></span></span></p>
+									<ul class="Pro-bar-li">
+										<li class="P-bar01"><em>{pigcms:$pay_count}</em>已参与</li>
+										<li class="P-bar02"><em>{pigcms:$unitary.price}</em>总需人次</li>
+										<li class="P-bar03"><em><?php echo $unitary['price'] - $pay_count;?></em>剩余</li>
+									</ul>
+								</div>
+							</div>
+						</dd>
+						<dd class="m_addto">
+							<input id="txtNum" type="number" maxlength="7" value="1">
+							<a id="btnBuy" class="orangeBtn">追加</a>
+						</dd>
+					</dl>
+				</div>
+				<elseif condition="$unitary.state eq 2" />
+				<div class="m_buylistDet">
+					<cite><a href="{pigcms::U('Unitary/goodswhere',array('token'=>$token,'unitaryid'=>$unitary['id']))}"><img src="{pigcms:$unitary.logopic}"><i>已结束</i></a></cite>
+					<dl>
+						<dt><a href="{pigcms::U('Unitary/goodswhere',array('token'=>$token,'unitaryid'=>$unitary['id']))}" class="gray6">{pigcms:$unitary.name}</a></dt>
+						<dd>已参与<em class="orange">{pigcms:$pay_count}</em>人次</dd>
+						<?php if(time() > $unitary['endtime']){?>
+						<dd>获得者：<a href="" class="blue">{pigcms:$lucker['name']}</a></dd>
+						<?php }?>
+						<dd class="gray9">揭晓时间：<em><?php echo date("Y-m-d H:i:s",$unitary['endtime']);?></em></dd>
+						<?php if(time() > $unitary['endtime']){?>
+						<dd><a href="{pigcms::U('Unitary/goodsresult',array('token'=>$token,'unitaryid'=>$unitary['id']))}" class="orangeBtn">计算详情</a></dd>
+						<?php }?>
+					</dl>
+				</div>
+				<else />
+				<div class="m_buylistDet m_now">
+					<cite>
+						<a href="{pigcms::U('Unitary/goodswhere',array('token'=>$token,'unitaryid'=>$unitary['id']))}"><img src="{pigcms:$unitary.logopic}"><i style="background: blue;">已暂停</i></a>
+					</cite>
+					<dl>
+						<dt>
+							<a href="javascript:;" class="gray6">{pigcms:$unitary.name}</a>
+						</dt>
+						<dd>已参与<em class="orange">{pigcms:$pay_count}</em>人次</dd>
+						<dd>
+							<div class="gRate">
+								<div class="Progress-bar">
+									<p class="u-progress" title=""><span class="pgbar" style="width:{pigcms:$unitary.proportion}%;"><span class="pging"></span></span></p>
+									<ul class="Pro-bar-li">
+										<li class="P-bar01"><em>{pigcms:$pay_count}</em>已参与</li>
+										<li class="P-bar02"><em>{pigcms:$unitary.price}</em>总需人次</li>
+										<li class="P-bar03"><em><?php echo $unitary['price'] - $pay_count;?></em>剩余</li>
+									</ul>
+								</div>
+							</div>
+						</dd>
+					</dl>
+				</div>
+				</if>
+				<div class="g-Record-ctlst marginB">
+					<ul>
+						<volist name="lucknum_list" id="vo">
+						<?php 
+							$thistime = floor($vo['addtime']/1000);
+						?>
+						<li><p><?php echo date("Y-m-d H:i:s",$thistime);?><span>1人次</span></p><b><?php echo $vo['lucknum'] + 100000;?></b></li>
+						</volist>
+					</ul>
+				</div>
+				
+				
+				<div class="footer" style="display:block;">
+					<ul>
+						<li class="f_whole"><a href="{pigcms::U('Unitary/index',array('token'=>$token))}" title="所有商品"><i></i>所有商品</a></li>
+						<li class="f_car"><a id="btnCart" href="{pigcms::U('Unitary/cart',array('token'=>$token))}"  title="购物车"><i></i>购物车</a></li>
+						<li class="f_personal"><a href="{pigcms::U('Unitary/my',array('token'=>$token))}" class="hover" title="我的"><i></i>我的</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+		
+		<script type="text/javascript">
+			$(function(){
+				$("#btnBuy").click(function(){
+					var buynum = $("#txtNum").val();
+					if(buynum != 0 && buynum != ""){
+						window.location.href="{pigcms::U('Unitary/zhuijia',array('token'=>$token,'uid'=>$_GET['uid']))}&buynum="+buynum;
+					}
+				});
+			});
+		</script>
+		
+<if condition="$unitary eq ''">
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"Unitary",
+            "moduleID":"0",
+            "imgUrl": "{pigcms:$staticPath}/tpl/static/unitary/images/wxnewspic.jpg", 
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Unitary/index',array('token'=>$token))}",
+            "tTitle": "一元夺宝",
+            "tContent": ""
+        };
+</script>
+<else />
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"Unitary",
+            "moduleID":"0",
+            "imgUrl": "{pigcms:$unitary['wxpic']}", 
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Unitary/goodswhere',array('token'=>$token,'unitaryid'=>$_GET['unitaryid']))}",
+            "tTitle": "{pigcms:$unitary['name']}",
+            "tContent": "{pigcms:$unitary['wxinfo']}"
+        };
+</script>
+</if>
+{pigcms:$shareScript}
+	</body>
+</html>

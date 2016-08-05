@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="{pigcms:$staticPath}/tpl/static/autumns/css/reset.css" media="all">
+<link rel="stylesheet" type="text/css" href="{pigcms:$staticPath}/tpl/static/autumns/css/index.css" media="all">
+<link rel="stylesheet" type="text/css" href="{pigcms:$staticPath}/tpl/static/autumns/css/common.css" media="all">
+<!-- <link rel="stylesheet" type="text/css" href="{pigcms:$staticPath}/tpl/static/vhouse/bootstrap_min.css" media="all"> -->
+<script type="text/javascript" async="" src="{pigcms:$staticPath}/tpl/static/autumns/js/wtj.js"></script><script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/autumns/js/common.js"></script>
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/autumns/js/iscroll.js"></script>
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/autumns/js/index.js"></script>
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/autumns/js/zepto_min.js"></script>
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/vhouse/jQuery.js"></script>
+<!-- <script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/vhouse/js/bootstrap_min.js"></script> -->
+    
+    <title>{pigcms:$linfo.title}</title>
+
+		<meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+        <!-- Mobile Devices Support @begin -->
+            
+            <meta content="telephone=no, address=no" name="format-detection">
+            <meta name="apple-mobile-web-app-capable" content="yes"> <!-- apple devices fullscreen -->
+            <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <!-- Mobile Devices Support @end -->
+        <style>
+            img{max-width:100%!important;}
+            .black_overlay{  display: none;  position: absolute;  top: 0%;  left: 0%;  width: 100%;  height: 100%;  background-color: black;  z-index:1001;  -moz-opacity: 0.8;  opacity:.80;  filter: alpha(opacity=80);  }
+            .white_content {  display: none;  position: absolute;  top: 25%; padding: 16px;  border: 3px solid ;  background-color: white;  z-index:1002;  overflow:auto; margin-left: 15px;
+margin-right: 15px;border-radius:20px;line-height:24px;} 
+            .aif{margin-top:10px;}
+            .yes{width:50px;height:25px;background:#0000ff;float:left;margin-left:50px;color:#FFFFFF;border-radius:8px;text-align:center;}
+            .no{width:50px;height:25px;background:#0000ff;float:right;margin-right:50px;color:#FFFFFF;border-radius:8px;text-align:center;}
+        </style> 
+    </head>
+<body onselectstart="return true;" ondragstart="return false;">
+    <if condition="$wecha_id eq ''">
+        {pigcms:$memberNotice}
+    </if>
+<script>
+    (function(){
+        window.config_custom = {
+                        OPENSLIDE:true, 
+            IMG:{
+                BG:"{pigcms:$linfo.hpic}"
+            },
+                        MUSICBG:"{pigcms:$linfo.backmp3}"
+                    }
+    })()
+</script>
+<script src="{pigcms:$staticPath}/tpl/static/autumns/js/sound.js"></script>
+<script src="{pigcms:$staticPath}/tpl/static/autumns/js/soundmanager.js"></script>
+    <div data-role="container" class="container">
+        <header data-role="header"><!----></header>
+        <section data-role="bodys" class="bodys">
+        <if condition="$memberNotice neq NULL">
+            {pigcms:$memberNotice}
+            <div class="btn-layout">
+                    <a href="#memberNoticeBox" id="modaltrigger_notice" class="btn-againnn"></a>
+            </div>
+        <elseif condition="$list != 0" />
+    			<div class="btn-layout">
+                    <a href="{pigcms::U('Autumns/mybox',array('token'=>$token,'wecha_id'=>$wecha_id,'id'=>$_GET['id']))}" class="btn-see"></a>
+                    <a href="{pigcms::U('Autumns/box',array('token'=>$token,'wecha_id'=>$wecha_id,'id'=>$_GET['id']))}"   class="btn-again"></a>
+            	</div>
+        <else />
+				<div class="btn-layout">
+                    <a href="{pigcms::U('Autumns/box',array('token'=>$token,'wecha_id'=>$wecha_id,'id'=>$_GET['id']))}"   class="btn-againn"></a>
+                </div>
+         </if>
+            <div class="img-list"> 
+            </div>
+            <span class="roof"></span>
+            <volist name="linfo" id="vo">
+                <div class="game-ps">{pigcms:$linfo.sttxt}</div>
+            </volist>
+                <div class="btn-as">
+                    <a href="javascript:void(0);" class="btn-a list">获奖名单</a>
+                    <a href="javascript:void(0);" class="btn-a rule right">活动规则</a>
+                    <hr class="common-hr">
+                
+                    <p class="text-num-get">已有<b>{pigcms:$count}</b>人参与领取了礼盒</p>
+                    <p class="text-num-get">此活动由<strong style="color:#FFFFFF">{pigcms:$weixin}</strong>公众号提供</p>
+                </div>
+           	
+        </section>
+
+    </div>
+        <div class="panel-box-layer"></div>
+        <div class="panel-box">
+            <ul class="panel-title">
+                <li><a href="javascript:void(0);" class="btn-list"></a></li>
+                <li><a href="javascript:void(0);" class="btn-rule"></a></li>
+            </ul>
+            <div class="panel-content">
+                <div class="panel-content-child" style="overflow: hidden;">  
+                    <table style="transition: transform 0ms; -webkit-transition: transform 0ms; transform-origin: 0px 0px 0px; transform: translate(0px, 0px) translateZ(0px);">
+                        <colgroup><col width="45%">
+                        <col width="55%">
+                        </colgroup>
+                        <if condition="$displayjpnums != 0">
+                            <tr>
+                            	<th><b>奖品总数：{pigcms:$nums}</b></th>
+                            	<th><b>已经领取：{pigcms:$lucknums}</b></th>
+                            </tr>
+                            <tr>
+                                <th><div class="text-nick"></div></th>
+                                <th><div class="text-name"></div></th>
+                            </tr>
+                            <foreach name="prize" item="vo">
+                                <tr>
+                                    <td>{pigcms:$vo.name}</td>
+                                    <td>&nbsp;&nbsp;&nbsp;{pigcms:$vo.prize}</td>
+                                </tr>
+                            </foreach>
+                        <else />
+                            <tr>
+                                <th><div class="text-nick"></div></th>
+                                <th><div class="text-name"></div></th>
+                            </tr>
+                            <foreach name="prize" item="vo">
+                                <tr>
+                                    <td>{pigcms:$vo.name}</td>
+                                    <td>&nbsp;&nbsp;&nbsp;{pigcms:$vo.prize}</td>
+                                </tr>
+                            </foreach>
+                        </if>
+    </table>
+                   
+                </div>
+                <div class="panel-content-child" style="overflow: hidden;">
+                    <dl style="transition: transform 0ms; -webkit-transition: transform 0ms; transform-origin: 0px 0px 0px; transform: translate(0px, 0px) translateZ(0px);">
+                        <dt><div class="text-time"></div></dt><dd>{pigcms:$linfo.statdate|date="Y年m月d日",###}-{pigcms:$linfo.enddate|date="Y年m月d日",###}</dd>
+                        <dt><div class="text-rule"></div></dt><dd>{pigcms:$activity.aginfo}</dd>
+                        <dt><div class="text-desc"></div></dt><dd>{pigcms:$linfo.txt}</dd>
+                    </dl>
+                </div>
+                <div class="btn-layout">
+                    <form action="###" method="post" data-role="form"></form>
+                </div>
+            </div>
+        </div>
+        <div class="share-layer"></div>
+
+<div id="fade" class="black_overlay"> 
+</div>
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"Autumns",
+            "moduleID":"{pigcms:$_GET['id']|intval}",
+            "imgUrl": "{pigcms:$linfo.starpicurl}",
+            "timeLineLink":"{pigcms:$f_siteUrl}{pigcms::U('Autumns/index',array('token'=>$token,'id'=>intval($_GET['id'])))}",
+            "sendFriendLink":"{pigcms:$f_siteUrl}{pigcms::U('Autumns/index',array('token'=>$token,'id'=>intval($_GET['id'])))}",
+            "weiboLink": "{pigcms:$f_siteUrl}{pigcms::U('Autumns/index',array('token'=>$token,'id'=>intval($_GET['id'])))}",
+            "tTitle": "{pigcms:$linfo.title}",
+            "tContent": "{pigcms:$linfo.info}"
+        };
+</script>
+{pigcms:$shareScript}
+
+</body></html>

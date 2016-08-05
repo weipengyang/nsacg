@@ -1,0 +1,500 @@
+/*ICON 定义部分*/
+.mechat-icon{
+	display: inline-block;
+	background:url('/tpl/Home/weiqianlong/common/images/mc-pc.png') no-repeat;
+}
+.mechat-icon-chat{
+	width: 30px;
+	height: 26px;
+	background-position: 0 -21px;
+}
+.mechat-icon-email-1{
+	width: 24px;
+	height: 18px;
+	background-position: 0 -47px;
+}
+/*ICON 定义部分 END*/
+
+/*------ 悬浮按钮部分 ----*/
+#mechat-btns{
+	position: fixed;
+	width: 46px;
+	top: 50%;
+	right: 0;
+	margin-top: -100px;
+	z-index: 20000;
+}
+#mechat-btns div{
+	position: relative;
+	width: 120px;
+	left: -0px;
+	background: #00CFAC;
+	cursor: pointer;
+}
+#mechat-btns span{
+	display: block;
+	padding-left: 45px;
+	width: 100%;
+	color: #fff;
+	line-height: 21px;
+	font: 16px/24px "Microsoft YaHei","微软雅黑",Arial,"Hiragino Sans GB","STHeiti","WenQuanYi Micro Hei",SimSun,sans-serif;
+}
+#mechat-btn-chat{
+	padding: 8px;
+	padding-bottom: 7px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+}
+#mechat-btn-chat span{
+	height: 26px;
+	line-height: 26px;
+}
+
+#mechat-btn-chat #mechat-btn-bubble{
+	position: absolute;
+	top:5px;
+	left: 35px;
+	padding: 0;
+	width: 6px;
+	height: 6px;
+	border-radius: 3px;
+}
+/*------ 悬浮按钮部分 end ----*/
+
+
+/*-------- 聊天框部分 start ---------*/
+#mechat-layout{
+	display: none;
+	font-family: 'Open Sans',Arial,Helvetica,Sans-Serif;
+	position: fixed;
+	bottom: -350px;
+	right: 50px;
+	width: 288px;
+	height: 380px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	z-index: 20000;
+	box-shadow: 0 0 3px 2px rgba(135, 135, 135, 0.1);
+	-moz-box-shadow: 0 0 3px 2px rgba(135, 135, 135, 0.1);
+	-webkit-box-shadow: 0 0 3px 2px rgba(135, 135, 135, 0.1);
+	font: 14px/24px "Microsoft YaHei","微软雅黑",Arial,"Hiragino Sans GB","STHeiti","WenQuanYi Micro Hei",SimSun,sans-serif;
+}
+
+#mechat-layout-header{
+	height: 30px;
+	color: #fff;
+	cursor: pointer;
+	background:#00CFAC;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;	
+}
+#mechat-layout-header span{
+	line-height: 30px;
+	font-weight: 300;
+	padding:0 5px;
+	font: 14px/30px "Microsoft YaHei","微软雅黑",Arial,"Hiragino Sans GB","STHeiti","WenQuanYi Micro Hei",SimSun,sans-serif;
+}
+
+#mechat-layout-hd-title{
+	float: left;
+}
+
+.mechat-layout-hd-btn {
+	display: inline-block;
+	float: right;
+	padding: 12px;
+	margin-right: 4px;
+	margin-top: 3px;
+}
+.mechat-layout-hd-close{
+	background:url('/tpl/Home/weiqianlong/common/images/close.png') 6px 6px no-repeat;
+}
+.mechat-layout-hd-up{
+	background:url('/tpl/Home/weiqianlong/common/images/up.png') 6px 6px no-repeat;
+}
+.mechat-layout-hd-down{
+	background:url('/tpl/Home/weiqianlong/common/images/down.png') 6px 6px no-repeat;
+}
+#mechat-layout-header a:hover{
+}
+
+#mechat-layout-body{
+	position: relative;
+	height: 350px;
+}
+
+#mechat-msg-tips{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: #00CFAC;
+	z-index: 20100;
+}
+#mechat-msg-tips .mechat-tips-loading{
+	position: relative;
+	height: 60px;
+	width: 200px;
+	top: 50%;
+	left: 50%;
+	margin-top: -80px;
+	margin-left: -100px;
+	color:#fff;
+	font-size: 14px;
+	text-align: center;
+}
+#mechat-tips-load-msg{
+	margin-top: 10px;
+	line-height: 20px;
+}
+#mechat-tips-rectangle-bounce{
+	width: 50px;
+	height: 60px;
+	margin: 0 auto;
+	font-size: 30px;
+	font-weight: bold;
+}
+#mechat-tips-rectangle-bounce div{
+	width: 6px;
+	display: inline-block;
+	float: left;
+	background: #fff;
+	height: 30px;
+	margin-top: 15px;
+	margin-left: 4px;
+}
+/*------消息列表--------start--*/
+#mechat-msg-content{
+	position: relative;
+	overflow: hidden;
+	width: 100%;
+	height: 300px;
+	background: #fff;
+}
+#mechat-scroll-bar,.mechat-scroll-bar{
+	position: absolute;
+	top: 0;
+	right: 2px;
+	width: 8px;
+	height: 90%;
+	border-radius: 4px;
+	background-color: #000;
+	z-index: 18000;
+	cursor: pointer;
+	/* other browsers */
+	opacity: 0;
+	/* this works in IE6, IE7, and IE8 */
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0); 
+	/* this works in IE8 only */
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(opacity=0)";
+}
+#mechat-scroll-view{
+	position: relative;
+	top: -0px;
+}
+.mechat-tips-message{
+	text-align: center;
+	padding: 10px;
+	margin: 20px;
+	color: #444;
+	border-radius: 5px;
+}
+
+.mechat-msg-info{
+	width: 100%;
+	margin: 0;
+	padding: 7px 5px;
+	border-bottom:1px solid #ebeced;
+	color: #3f484f;
+}
+.mechat-msg-info a{
+	text-decoration: underline;
+}
+.mechat-msg-self{
+	background: #FFF;
+}
+.mechat-msg-firm{
+	background: #e8e8e8;
+}
+
+
+.mechat-msg-body{
+	position: relative;
+	margin-left: 35px;
+}
+
+
+.mechat-msg-name{
+	font-size: 13px;
+	font-weight: bold;
+}
+.mechat-msg-text{
+	line-height: 16px;
+	margin-top: 6px;
+	line-height: 20px;
+	padding-right: 10px;
+}
+
+.mechat-send-status{
+	margin-top: 5px;
+	margin-right: 10px;
+	text-align: right;
+	color: #ccc;
+	font-size: 12px;
+}
+.mechat-send-status a{
+	color: #ccc;
+	text-decoration: underline;
+}
+.mechat-send-status a:hover{
+	color: #3f484f;	
+}
+/*---------------2015-05-19 消息列表的修改 start ---------------*/
+
+
+.mechat-msg-time{
+	right: 10px;
+	color: #9fa3a7;
+	font-size: 13px;
+	position: absolute;
+	top: 2px;
+}
+
+.mechat-msg-head{
+	position: absolute;
+	width: 28px;
+	font-size: 13px;
+	height: 28px;
+}
+.mechat-msg-head img{
+	width: 28px;
+	height: 28px;
+}
+/*---------------2015-05-19 消息列表的修改  end  ---------------*/
+
+/*------消息列表--------end--*/
+
+#mechat-msg-input{
+	position: relative;
+	right: 0;
+	left: 0;
+	width: 100%;
+	height: 48px;
+	border-top: 1px #c3c3c3 solid;
+	background-color: #fff;
+	overflow: hidden;
+}
+.mechat-msg-foucs{
+	box-shadow: 0 0 10px #00CFAC;
+	-moz-box-shadow: 0 0 10px #00CFAC;
+	-webkit-box-shadow: 0 0 10px #00CFAC;
+	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=135, Color='#00CFAC');
+	-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=135, Color='#00CFAC')";
+
+}
+#mechat-input-content{
+	height: 100%;
+	width: 248px;
+	display: block;
+	margin-left: 40px;
+	border:none;
+	padding: 5px;
+	color: #666;
+	font-size: 14px;
+	outline: none;
+	line-height: 18px;
+	font: 14px/24px "Microsoft YaHei","微软雅黑",Arial,"Hiragino Sans GB","STHeiti","WenQuanYi Micro Hei",SimSun,sans-serif;
+}
+#mechat-msg-input .mechat-input-btns,.mechat-consult-btn{
+	position: absolute;
+	right: 0;
+	bottom: 8px;
+	height: 22px;
+	text-align: right;
+}
+
+#mechat-msg-input a{
+	position: absolute;
+	left: 0px;
+	left: 6px\9;
+	top: 0px;
+	display: block;
+	width: 40px;
+	height: 40px;
+	text-align: center;
+	color: #fff;
+	font-size: 14px;
+	cursor: pointer;
+	padding: 0;
+	margin: 0;
+	background:url('/tpl/Home/weiqianlong/common/images/face1.png') 10px 10px no-repeat;
+}
+/* 表情层 */
+#mechat-face{
+	position: absolute;
+	width: 100%;
+	height: 95px;
+	background: #ff0;
+	z-index: 20200;
+	left: -1px;
+	bottom: 50px;
+	background: #fff;
+	border:1px solid #e0e0e0;
+	box-shadow: 0 0 8px #e0e0e0;
+	display: none;
+}
+#mechat-face .mechat-face-list{
+	position: relative;
+	top: 1px;
+	width: 100%;
+	height: 93px;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+#mechat-face ul{
+	position: absolute;
+	top: 0px;
+	left: 0;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+	display: table;
+	clear: both;
+}
+#mechat-face li{
+	padding: 3px;
+	width:24px;
+	height: 24px;
+	float: left;
+	list-style: none;
+}
+#mechat-face .mechat-scroll-bar{
+	opacity: 0.3;
+}
+#mechat-face .mechat-face-arrow,#mechat-face .mechat-face-arrow div{
+	position:absolute;
+    display:block;
+    height:0;
+    width:0;
+    font-size: 0;
+    line-height: 0;
+    z-index: 10;
+}
+#mechat-face .mechat-face-arrow{
+    border-width:10px;
+    bottom:-20px;
+    left:10px;
+    border-color:#e0e0e0 transparent transparent transparent;
+    border-style:solid dashed  dashed  dashed;
+}
+#mechat-face .mechat-face-arrow div{
+
+    border-width:8px;
+	top:-10px;
+    left:-8px;
+    border-color:#fff transparent transparent transparent;
+    border-style:solid dashed dashed  dashed;  
+}
+#mechat-face a img{
+	border:none;
+}
+
+/*-------- 聊天框部分  end  ---------*/
+
+
+
+
+/*------留言框------*/
+#mechat-message-box{
+	position: relative;
+	height: 320px;
+	z-index: 30100;
+	display: none;
+	background: #fff;
+}
+
+#mechat-message-box .mechat-box-body{
+	padding:5px 8px;
+}
+
+#mechat-message-box p{
+	color: #999;
+	text-align: center;
+}
+
+#mechat-input-email{
+	position: relative;
+	border:1px solid #ccc;
+	padding:  5px 10px;
+	overflow: hidden;
+}
+#mechat-input-email span{
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	display: inline-block;
+	width: 25px;
+	height: 20px;
+}
+#mechat-input-email input{
+	display: block;
+	width: 100%;
+	height: 30px;
+	line-height: 30px;
+	padding: 2px 5px;
+	padding-left: 35px;
+	font-size: 16px;
+	color: #bbb;
+	border:none;
+	font-size: 14px;
+	outline: none;
+}
+
+#mechat-message-box .mechat-input-txt{
+	border:1px solid #ccc;
+	padding: 10px;
+	margin-top: 20px;
+	font-size: 14px;
+	color:#bbb;
+	height: 120px;
+}
+#mechat-message-input-btn{
+	margin-top: 13px;
+}
+.mechat-abtn-style{
+	text-align: right;
+}
+.mechat-abtn-style a{
+	display: inline-block;
+	background: #00CFAC;
+	color: #fff;
+	font-size: 16px;
+	padding: 5px;
+	width: 80px;
+	text-align: center;
+	border-radius: 4px;
+	border:none;
+	cursor: pointer;
+	text-decoration: none;
+	FILTER: progid:DXImageTransform.Microsoft.Gradient(gradientType=0,startColorStr=#00CFAC,endColorStr=#00C29B); /*IE */
+	background: -o-linear-gradient(top,  #00CFAC 0%,#00C29B 100%); /*opera*/
+	background:-moz-linear-gradient(top,#00CFAC,#00C29B);/*火狐 */
+	background:-webkit-gradient(linear, 0% 0%, 0% 100%,from(#00CFAC), to(#00C29B));/*谷歌*/
+}
+.mechat-abtn-style a:hover{
+	background: #00C29B;
+}
+.mechat-abtn-style a:active{
+	background: #007A7B;
+}
+.mechat-message-error,.mechat-message-success{
+	font-size: 13px;
+	color: #ff0000;
+	display: inline-block;
+	margin-right: 10px;
+}
+.mechat-message-success{
+	color: #00CFAC;
+}
+/*------/留言框------*/
+

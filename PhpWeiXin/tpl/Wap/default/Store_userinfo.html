@@ -1,0 +1,290 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+</head>
+<body>
+    <div class="page">
+        <header class="bar bar-nav">
+            <h1 class='title'>用户资料</h1>
+        </header>
+        <form id="normal-login-form" action="{pigcms::U('Store/register',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid, 'cid' => $cid))}" autocomplete="off" method="post">
+            <p><input class="input-common" type="text" placeholder="请输入您的通信地址" name="address" /></p>
+        </form>
+        <div class="content">
+            <div class="list-block" style="margin-top:5px;padding-top:2px">
+                <ul>
+                    <!-- Text inputs -->
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-name"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">姓名</div>
+                                <div class="item-input">
+                                    <input type="text" onblur="check1(this)" id="truename" placeholder="真实姓名">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-gender"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">性别</div>
+                                <div class="item-input">
+                                    <select id="sex">
+                                        <option value="0">男</option>
+                                        <option value="1">女</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-email"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">手机号</div>
+                                <div class="item-input">
+                                    <input type="text" onblur="check3(this)" id="tel" placeholder="手机号码">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-email"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">车牌号码</div>
+                                <div class="item-input">
+                                    <input type="text" onblur="check4(this)" id="carno" placeholder="车牌号码">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-password"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">密码</div>
+                                <div class="item-input">
+                                    <input type="password" id='password' onblur="check5(this)" placeholder="支付密码" class="">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-password"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">确认密码</div>
+                                <div class="item-input">
+                                    <input type="password" id="password1" onblur="check6(this)" placeholder="确认支付密码" class="">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- Date
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-calendar"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">生日</div>
+                                <div class="item-input">
+                                    <input type="date" placeholder="Birth day" value="2014-04-30">
+                                </div>
+                            </div>
+                        </div>
+                    </li>-->
+                </ul>
+            </div>
+            <div class="content-block">
+                <div class="row">
+                    <div class="col-50"><a href="#" id="cancle" class="button button-big button-fill button-danger">取消</a></div>
+                    <div class="col-50"><a href="#" id="showcard" class="button button-big button-fill button-success">提交</a></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="meituan_check" style="margin:0 0 55px 0"><br><br><br></div>
+    </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <script type="text/javascript">
+        function check1(obj) {
+            if (obj.value == '') {
+                $.alert("请输入您的姓名.");
+                document.getElementById(obj.id).style.background = "red";
+                return;
+            }
+            if ( obj.value.length>4) {
+                $.alert("姓名长度不能超过4个汉字.");
+                document.getElementById(obj.id).style.background = "red";
+                return;
+            }
+            document.getElementById(obj.id).style.background = "";
+        }
+        function check5(obj) {
+            if (obj.value == '') {
+                $.alert("请输入您的支付密码.");
+                document.getElementById(obj.id).style.background = "red";
+                return;
+            }
+            document.getElementById(obj.id).style.background = "";
+
+        }
+        function check6(obj) {
+            if (obj.value == '') {
+                $.alert("请确认您的支付密码.");
+                document.getElementById(obj.id).style.background = "red";
+                return;
+            }
+            if (obj.value != $("#password").val())
+            {
+                $.alert("两次输入的密码不一致");
+                document.getElementById(obj.id).style.background = "red";
+                document.getElementById(obj.id).value = "";
+                return;
+            }
+            document.getElementById(obj.id).style.background = "";
+
+        }
+        function check2(obj) {
+            document.getElementById(obj.id).style.background = "white";
+        }
+        function check3(obj) {
+            if (obj.value == '') {
+                $.alert('手机号码必须填写');
+                document.getElementById(obj.id).style.background = "red";
+                return;
+            }
+            reg = /^0{0,1}(13[0-9]|145|15[0-9]|18[0-9])[0-9]{8}$/i;
+            if (!reg.test(obj.value)) {
+                $.alert("错误,请输入11位的手机号！");
+                document.getElementById(obj.id).style.background = "red";
+                return;
+            }
+            document.getElementById(obj.id).style.background = "";
+        }
+        function checkCarNo(obj) {
+            if (obj.value != '') {
+                reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i
+                if (!reg.test(obj.value)) {
+                    $.alert("请输入完整的车牌号码，格式如粤T83G5NB");
+                    document.getElementById(obj.id).style.background = "red";
+                    return;
+                }
+            }
+            document.getElementById(obj.id).style.background = "";
+
+        }
+        function check4(obj) {
+            if (obj.value == '') {
+                $.alert("请输入您的车牌号码");
+                document.getElementById(obj.id).style.background = "red";
+                return;
+            }
+            reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i
+            if (!reg.test(obj.value)) {
+                $.alert("请输入完整的车牌号码，格式如粤T83G5NB");
+                document.getElementById(obj.id).style.background = "red";
+                return;
+            }
+            document.getElementById(obj.id).style.background = "";
+
+        }
+        $(document).on('click', '#cancle', function () {
+            history.go(-1);
+        });
+
+        //$(document).on('click', '#cancle',function(e){alert(1111);});
+        $(document).on('click', '#showcard',
+        function (e) {
+            var tel = $("#tel").val();
+            var carno = $("#carno").val();
+            var truename = $("#truename").val();
+            var password = $("#password").val();
+            var password2 = $("#password1").val();
+            var sex = $("#sex").val();
+            //var twid = $twid;
+            //var cid=$cid;
+            if (truename == '') {
+                $.alert("请输入您的姓名");
+                return;
+            }
+            if (truename.length>4) {
+                $.alert("姓名不能超过四个汉字");
+                return;
+            }
+            if (carno == '') {
+                $.alert("请输入车牌号码");
+                return;
+            }
+            reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i
+            if (!reg.test(carno)) {
+                $.alert("请输入完整的车牌号码，格式如粤T83G5NB");
+                document.getElementById(obj.id).style.background = "red";
+                return;
+            }
+            if (tel == '') {
+                $.alert("请认真输入手机号");
+                return;
+            }
+            if (password == '') {
+                $.alert(" 请设置支付密码");
+                return;
+            }
+            var submitData = {
+                tel: tel,
+                carno: carno,
+                truename: truename,
+                password: password,
+                password2: password2,
+                sex: sex,
+                action: "index"
+            };
+            $("#showcard").hide();
+            $.post('index.php?g=Wap&m=Store&a=userinfo&token={pigcms:$Think.get.token}&wecha_id={pigcms:$Think.get.wecha_id}', submitData,
+           function (data) {
+               if (data == 1) {
+                   $.alert('个人信息保存成功');
+               } else if (data == 2) {
+                   $.alert('成功领取了会员卡');
+               } else if (data == 3) {
+                   $.alert('该商家会员卡缺货了');
+               } else if (data == 4) {
+                   $.alert('您的积分不够领取该会员卡');
+               } else if (data == 5) {
+                   $.alert('短信验证码无效');
+               } else if (data == 6) {
+                   $.alert('该车牌号码已经绑定两个微信，每个车牌最多绑定两个微信.');
+               }
+               else {
+                   $.alert(data);
+                   location.href = "{pigcms::U('Store/index',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id']))}";
+               }
+               location.href = location.href;
+           });
+        });
+
+    </script>
+
+    <script type="text/javascript">
+        window.shareData = {
+            "moduleName": "Store",
+            "moduleID": "",
+            "imgUrl": "",
+            "timeLineLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/products',array('token' => $_GET['token'], 'twid' => $mytwid, 'cid' => $cid))}",
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/products',array('token' => $_GET['token'], 'twid' => $mytwid, 'cid' => $cid))}",
+            "weiboLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/products',array('token' => $_GET['token'], 'twid' => $mytwid, 'cid' => $cid))}",
+            "tTitle": "{pigcms:$metaTitle}",
+            "tContent": "{pigcms:$metaTitle}"
+        };
+    </script>
+</body>
+    {pigcms:$shareScript}
+</html>

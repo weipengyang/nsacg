@@ -1,0 +1,180 @@
+﻿<!doctype html>
+<html class="no-js fixed-layout">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>爱养车</title>
+    <meta name="description" content="爱养车">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="icon" type="image/png" href="assets/i/favicon.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+    <meta name="apple-mobile-web-app-title" content="Amaze UI" />
+    <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.7.0/css/amazeui.min.css" />
+    <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
+</head>
+<body>
+    <!--[if lte IE 9]>
+    <p class="browsehappy">你正在使用<strong>过时</strong>的浏览器，Amaze UI 暂不支持。 请 <a href="http://browsehappy.com/" target="_blank">升级浏览器</a>
+      以获得更好的体验！</p>
+    <![endif]-->
+    <div class="am-cf admin-main" style="padding:0;margin:0">
+        <!-- content start -->
+        <div class="admin-content">
+                <div class="admin-content-body">
+                    <div id="doc-qrcode" class="am-text-center"></div>
+                    <div class="am-cf am-padding am-padding-bottom-0">
+                        <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">个人业绩查询</strong> </div>
+                    </div>
+                    <hr>
+                    <div class="am-g">
+                        <div class="am-u-sm-10 am-u-md-9">
+                            <div class="am-form-group">
+                                主修人
+                                <select data-am-selected="{btnSize: 'sm'}" id="zhuxiu">
+                                    <option value="">所有人</option>
+                                    <volist name="zxlist" id="item">
+                                        <option value="{pigcms:$item.姓名}">{pigcms:$item.姓名}</option>
+                                    </volist>
+                                </select>
+                                类别
+                                <select data-am-selected="{btnSize: 'sm'}" id="lb">
+                                    <option value="">所有分类</option>
+                                    <option value="蜡水洗车">蜡水洗车</option>
+                                    <option value="蜡水洗车">汽车美容</option>
+                                    <option value="普通快修">普通快修</option>
+                                    <option value="常规保养">常规保养</option>
+                                    <option value="保险理赔">保险理赔</option>
+                                    <option value="汽车维修">汽车维修</option>
+                                </select>
+                                部门
+                                <select data-am-selected="{btnSize: 'sm'}" id="bumen">
+                                    <option value="">所有部门</option>
+                                    <option value="区府店美容部">区府店美容部</option>
+                                    <option value="区府店维修部">区府店维修部</option>
+                                    <option value="塘坑店美容部">塘坑店美容部</option>
+                                    <option value="塘坑店维修部">塘坑店维修部</option>
+                                </select>
+
+                                <button type="button" class="am-btn am-btn-default am-margin-right" id="my-start">开始日期</button><span id="my-startDate"></span>
+                                <button type="button" class="am-btn am-btn-default am-margin-right" id="my-end">结束日期</button><span id="my-endDate"></span>
+                           </div>
+                        </div>
+                        <div class="am-u-sm-2 am-u-md-3">
+                            <div class="am-input-group am-input-group-sm">
+                                <input type="text" id="searchkey" class="am-form-field">
+                                <span class="am-input-group-btn">
+                                    <button id="search" class="am-btn am-btn-default" type="button">搜索</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="am-g">
+                        <div class="am-u-sm-12">
+                            <form class="am-form">
+                                <table class="am-table am-table-striped am-table-hover table-main">
+                                    <thead>
+                                        <tr>
+                                            <th class="table-title">主修人</th>
+                                            <th class="table-title">日期</th>
+                                            <th class="table-title">维修类别</th>
+                                            <th class="table-title">服务车辆数</th>
+                                            <th class="table-title">工时费</th>
+                                            <th class="table-title ">产值</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody> 
+                                        <volist name="yelist" id="item">
+                                            <tr>
+                                                <td>{pigcms:$item.主修人}</td>
+                                                <td>{pigcms:$item.时间}</td>
+                                                <td>{pigcms:$item.维修类别}</td>
+                                                <td>{pigcms:$item.服务车辆数}</td>
+                                                <td>{pigcms:$item.工时费}</td>
+                                                <td>{pigcms:$item.产值}</td>
+                                            </tr>
+
+                                        </volist>
+                                    </tbody>
+                                </table>
+                                <div class="am-cf">
+                                    <div class="am-fr">
+                                        <div class="cLine">
+                                            <div class="pageNavigator right">
+                                                <div class="pages">{pigcms:$page}</div>
+                                            </div>
+                                            <div class="clr"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!-- content end -->
+    </div>
+    <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
+    <script src="/tpl/static/assets/js/jquery.min.js"></script>
+    <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
+    <script src="/tpl/static/assets/js/app.js"></script>
+    <script>
+        $(document).ready(function () {
+            var startDate = new Date(2014, 11, 20);
+            var endDate = new Date(2014, 11, 25);
+            var d = new Date();
+            var end = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+            var start = d.getFullYear() + "-" + (d.getMonth() + 1) + "-01";
+            $('#my-startDate').text();
+            $('#my-endDate').text();
+            $('#my-start').datepicker().
+              on('changeDate.datepicker.amui', function (event) {
+                startDate = new Date(event.date);
+                $('#my-startDate').text($('#my-start').data('date'));
+                $(this).datepicker('close');
+              });
+
+            $('#my-end').datepicker().
+              on('changeDate.datepicker.amui', function (event) {
+                  endDate = new Date(event.date);
+                  $('#my-endDate').text($('#my-end').data('date'));
+                  $(this).datepicker('close');
+              });
+            $('#search').click(function () {
+                var url = '/index.php?g=Query&m=Consume&a=persons';
+                var endDate = $('#my-endDate').text();
+                if (endDate != '')
+                    url += '&endDate=' + endDate;
+                var startDate = $('#my-startDate').text();
+                if (startDate != '')
+                    url += '&startDate=' + startDate;
+                var lb = $('#lb').val();
+                if (lb!='')
+                    url += '&lb=' + lb;
+                var bm = $('#bumen').val();
+                if (bm != '')
+                    url += '&bm=' + bm;
+                var zhuxiu = $('#zhuxiu').val();
+                if (zhuxiu != '')
+                    url += '&zhuxiu=' + zhuxiu;
+                var searchkey = $('#searchkey').val();
+                if (searchkey != '')
+                    url += '&searchkey=' + searchkey;
+                location.href = url;
+            });
+
+        });
+        //reflash();
+        //function reflash() {
+
+        //    location.href = location.href;
+        //    setTimeout("reflash()", 100000);
+
+        //}
+    </script>
+
+</body>
+</html>

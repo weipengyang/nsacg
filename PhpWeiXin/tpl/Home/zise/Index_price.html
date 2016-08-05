@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>资费说明|{pigcms::C('site_name')}|{pigcms::C('site_title')}</title>
+<include file="Public:header"/>
+<div class="nav clearfix">
+	<div class="nav-content">
+		<h1 class="left">{pigcms::C('site_name')}·微信营销，如此简单！</h1>
+		<div class="right line-li">
+			<ul>
+				<li>
+					<a href="/">首页</a>
+				</li>
+				<li>
+					<a href="{pigcms::U('Home/Index/common')}">经典案例</a>
+				</li>
+				<li>
+					<a href="{pigcms::U('Home/Index/gongneng')}">功能介绍</a>
+				</li>
+				<li>
+					<a href="{pigcms::U('Home/Index/daili')}" class="hover">合作代理</a>
+				</li>
+				<li>
+					<a href="#" target="_blank">更多服务</a>
+				</li>
+			<if condition="$_SESSION[uid]==false">
+				<li><a href="{pigcms::U('Index/login')}" class="hover">登录</a></li>
+				<li><a href="{pigcms::U('Index/reg')}">注册</a></li>
+			<else/><li>
+			<a href="{pigcms::U('User/Index/index')}" hidefocus="true"  ><span style="color:red">管理中心</span></a>
+			<a href="javascript:void(0)" onClick="Javascript:window.open('{pigcms::U('Admin/Admin/logout')}','_self')" >退出</a></li>
+	</if>		
+			</ul>
+		</div>
+	</div>
+</div>
+<!-- banner -->
+<DIV class="Public-content clearfix" style="margin-top:38px;">
+<DIV class=Public>
+<H2 class=Public-h2>资费说明</H2>
+<DIV class=Public-box>
+<DIV class=Proxy>
+
+<P>合作联系方式：18730699599 陈经理 咨询QQ：<SPAN>{pigcms::C('site_qq')}</SPAN></P>
+</DIV></DIV>
+</DIV>
+<include file="Public:footer"/>
+</body></html>

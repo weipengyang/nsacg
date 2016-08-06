@@ -2230,7 +2230,7 @@ private function washcar($price,$carno,$type='AYC0002',$wxlb='蜡水洗车'){
         $uselist=array();
         $carinfo=M('member_card_car')->where(array('token' => $this->token,wecha_id=>$this->wecha_id))->select();
 		foreach($data as $key=>$value){
-			$cwhere 		= array('token'=>$this->token,'cardid'=>$value['cardid'],'id'=>$value['coupon_id']);
+			$cwhere 		= array('token'=>$this->token,'id'=>$value['coupon_id']);
 			$cinfo			= M('Member_card_integral')->where($cwhere)->field('info,pic,statdate,enddate,title,integral,useinfo')->find();
 			$cinfo['info'] 	= html_entity_decode($cinfo['info']);
 			if($value['is_use']==0){

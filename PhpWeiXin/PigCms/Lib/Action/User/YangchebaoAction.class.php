@@ -73,8 +73,13 @@ class YangchebaoAction extends UserAction{
     {
         if(IS_POST){
             $db = M('yangchebao_withdraw');
-            $record=$db->where(array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id']))->find();
+            $id=$_GET['id'];
+            $record=$db->where(array('id'=>$id))->find();
             $record['state']=$_POST['state'];
+            if(intval($record['state'])==4)
+            {
+                M('userinfo')->where(array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id']))->setInc('balance',$record['money']);
+            }
             $record['end_time']=time();
             if($db->save($record))
             {

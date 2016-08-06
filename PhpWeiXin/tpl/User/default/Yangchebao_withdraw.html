@@ -56,12 +56,18 @@
     审核中
    <elseif condition="$item.state eq 2" />
     审核通过，正在处理中
+    <elseif condition="$item.state eq 4" />
+    审核未通过
     <elseif condition="$item.state eq 3" />
      处理完成，已发放
     </if>
 </TD>
     <TD>{pigcms:$item.end_time|date='Y-m-d H:i',###}</TD>
-<TD><a href="javascript:void(0);" onclick="ChangeState('{pigcms:$item.wecha_id}');"><strong>更改状态</strong></a></TD>
+<TD>
+    <if condition="$item.state lt 3">
+    <a href="javascript:void(0);" onclick="ChangeState('{pigcms:$item.wecha_id}',{pigcms:$item.id});"><strong>更改状态</strong></a>
+ </if>
+  </TD>
 </TR>
 </volist>
 </TBODY>
@@ -80,8 +86,8 @@
 <script src="/tpl/static/jquery.min.js" type="text/javascript"></script>
 <script>
    var jQ = jQuery.noConflict();
-   function ChangeState(id) {
-       art.dialog.open('?g=User&m=Yangchebao&a=changestate&wecha_id=' + id , { id: 'changestate', lock: true, title: '变更提现状态', width: 400, height: 280, yesText: '关闭', background: '#000', opacity: 0.45 });
+   function ChangeState(wecha_id,id) {
+       art.dialog.open('?g=User&m=Yangchebao&a=changestate&wecha_id='+ wecha_id+'&id='+id, { id: 'changestate', lock: true, title: '变更提现状态', width: 400, height: 280, yesText: '关闭', background: '#000', opacity: 0.45 });
     }
 </script>
 <include file="Public:footer"/>

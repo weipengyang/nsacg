@@ -104,20 +104,25 @@
                                            <div class="col-25" style="color:blue;width:32%"><hr style="margin-top:0.75rem;width:100%;height:3px;border:none;border-top:3px ridge green;" /></div>
                                            <div class="col-15" style="width:12%"><span class="icon icon-clock logo"></span><span style="text-align: center;font-size:0.6rem">处理中</span></div>
                                            <if condition="$item.end_time gt 0">
-                                               <div class="col-25" style="color:red;width:32%"><hr style="margin-top:0.75rem;width:100%;height:3px;border:none;border-top:3px ridge green;" /></div>
-                                               <div class="col-15" style="width:12%"><span class="icon icon-check logo"></span><span style="text-align: center;font-size:0.6rem">已完成</span></div>
-                                               <else/>
-                                               <div class="col-25" style="color:red;width:32%"><hr style="margin-top:0.75rem;width:100%;height:3px;border:none;border-top:3px ridge red;" /></div>
-                                               <div class="col-15" style="width:12%"><span class="icon icon-check logo" style="background-color:red"></span><span style="text-align: center;font-size:0.6rem">已完成</span></div>
+                                               <if condition="$item.state eq 4">
+                                                   <div class="col-25" style="color:red;width:32%"><hr style="margin-top:0.75rem;width:100%;height:3px;border:none;border-top:3px ridge green;" /></div>
+                                                   <div class="col-15" style="width:12%"><span class="icon icon-check logo"></span><span style="text-align: center;font-size:0.6rem">审核未通过</span></div>
+                                                   <else/>
+                                                   <div class="col-25" style="color:red;width:32%"><hr style="margin-top:0.75rem;width:100%;height:3px;border:none;border-top:3px ridge green;" /></div>
+                                                   <div class="col-15" style="width:12%"><span class="icon icon-check logo"></span><span style="text-align: center;font-size:0.6rem">已完成</span></div>
+                                                   </if>
+                                                   <else />
+                                                   <div class="col-25" style="color:red;width:32%"><hr style="margin-top:0.75rem;width:100%;height:3px;border:none;border-top:3px ridge red;" /></div>
+                                                   <div class="col-15" style="width:12%"><span class="icon icon-check logo" style="background-color:red"></span><span style="text-align: center;font-size:0.6rem">已完成</span></div>
                                                </if>
 </div>
                                        <div class="row no-gutter">
                                            <div class="col-50" style="text-align:left"><span style="text-align: center;font-size:0.6rem">{pigcms:$item.withdraw_time|date='Y-m-d H:i',###}</span></div>
-                                           <div class="col-50" style="text-align:right"><span style="text-align: center;font-size:0.6rem"><if condition="$item.end_time gt 0">{pigcms:$item.end_time|date='Y-m-d',###}</if></span></div>
+                                           <div class="col-50" style="text-align:right"><span style="text-align: center;font-size:0.6rem"><if condition="$item.end_time gt 0">{pigcms:$item.end_time|date='Y-m-d H:i',###}</if></span></div>
                                        </div>
                                    </div>
                                </div>
-                               <div class="card-footer"><span style="color:#FE995A;font-size:0.6rem">如有疑问请致电0203909913或在微信公众平台上咨询</span></div>
+                               <div class="card-footer"><span style="color:#FE995A;font-size:0.6rem">申请将在48小时内受理，如有疑问请致电02039099139或在微信公众平台上咨询</span></div>
                            </li>
                         </volist>
 </ul>

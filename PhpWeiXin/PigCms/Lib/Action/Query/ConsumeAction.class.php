@@ -641,12 +641,17 @@ class ConsumeAction extends Action{
              {
                 $data['年检到期']=$_POST['nianshen'];
              }
-                    if($_POST['lengqi']!='')
+             if($_POST['lengqi']!='')
              {
                 $data['发动机型号']=$_POST['lengqi'];
              }
+            if($_POST['sftp']!='')
+             {
+                $data['车辆图片']=$_POST['sftp'];
+             }
               if(M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->save($data))
               {
+                  M('维修','dbo.','difo')->where(array('车牌号码'=>$carno))->save($data);
                   echo '保存成功';
                   exit();
               }

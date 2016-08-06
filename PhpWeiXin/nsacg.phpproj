@@ -869,6 +869,7 @@
     <Compile Include="PigCms\Lib\Action\User\AuthAction.class.php" />
     <Compile Include="PigCms\Lib\Action\User\AutumnAction.class.php" />
     <Compile Include="PigCms\Lib\Action\User\AutumnsAction.class.php" />
+    <Compile Include="PigCms\Lib\Action\User\BaomingAction.class.php" />
     <Compile Include="PigCms\Lib\Action\User\BargainAction.class.php" />
     <Compile Include="PigCms\Lib\Action\User\BusinessAction.class.php" />
     <Compile Include="PigCms\Lib\Action\User\BusinessbarAction.class.php" />
@@ -22761,6 +22762,7 @@
     <Content Include="tpl\User\default\Wedding_index.html" />
     <Content Include="tpl\User\default\Wedding_info.html" />
     <Content Include="tpl\User\default\wx_wxtw.html" />
+    <Content Include="tpl\User\default\Yangchebao_changestate.html" />
     <Content Include="tpl\User\default\Yangchebao_withdraw.html" />
     <Content Include="tpl\User\default\Yangchebao_record.html" />
     <Content Include="tpl\User\default\Yangchebao_center.html" />

@@ -159,6 +159,17 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="am-g am-margin-top">
+                                            <div class="am-u-sm-8 am-text-right">
+                                                是否已上传图片
+                                            </div>
+                                            <div class="am-u-sm-4 ">
+                                                <select data-am-selected name="sftp" id="sftp">
+                                                  <option value="是">是</option>
+                                                  <option value="否">否</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
 
                                 </div>
@@ -186,6 +197,7 @@
                                             <th class="table-title ">保险公司</th>
                                             <th class="table-title ">保险到期</th>
                                             <th class="table-title ">年审到期</th>
+                                            <th class="table-title ">是否拍照</th>
                                             <th class="table-title ">操作</th>
                                         </tr>
                                     </thead>
@@ -203,6 +215,7 @@
                                                 <td>{pigcms:$item.保险公司}</td>
                                                 <td>{pigcms:$item.交保到期}</td>
                                                 <td>{pigcms:$item.年检日期}</td>
+                                                <td>{pigcms:$item.车辆图片}</td>
                                                 <td><a href="javascript:void(0);" onclick="modifycarinfo('{pigcms:$item.车牌号码}');"><strong>编辑</strong></a></td>
                                             </tr>
 
@@ -248,10 +261,11 @@
                          $('#baoxian').val(data.保险公司);
                          //$('#bxrq').val(data.交保到期);
                          $('#lengqi').val(data.发动机型号);
+                         $('#sftp').val(data.车辆图片);
                          //$('#nianshen').val(data.年检到期);
                      }
                      
-                 }, 'JSON');
+                 }, 'JSON'); 
             $('#doc-modal-1').modal({
                 relatedTarget: this,
                 width: 800,
@@ -265,8 +279,9 @@
                         kongqi:$('#kongqi').val(),
                         baoxian:$('#baoxian').val(),
                         bxrq:$('#bxrq').val(),
-                        lengqi :$('#lengqi').val(),
-                        nianshen: $('#nianshen').val()
+                        lengqi:$('#lengqi').val(),
+                        nianshen:$('#nianshen').val(),
+                        sftp:$('#sftp').val()
                     };
                     $.post('/index.php?g=Query&m=Consume&a=clxx', data,
                       function (msg) {

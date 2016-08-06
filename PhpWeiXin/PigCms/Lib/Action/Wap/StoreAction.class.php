@@ -136,6 +136,7 @@ class StoreAction extends WapAction{
 			$user['sex'] = isset($_POST['sex']) ? htmlspecialchars($_POST['sex']) : '';
             $user['tel']=$tel;
             $user['carno']=str_replace('粵','粤',$carno);
+            $user['carno']=str_replace(' ','',$user['carno']);
             M('member_card_car')->where(array('token' => $this->token,wecha_id=>$this->wecha_id))->delete();
             $count=M('member_card_car')->where(array('token' => $this->token,'carno'=>$user['carno']))->count();
             if($count>=2)

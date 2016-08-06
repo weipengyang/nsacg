@@ -8959,6 +8959,7 @@
     <Content Include="Conf\Wap\index.html" />
     <Content Include="Extend\index.html" />
     <Content Include="Extend\Vendor\index.html" />
+    <Content Include="favicon.ico" />
     <Content Include="install\css\index.html" />
     <Content Include="install\css\style.css" />
     <Content Include="install\images\bg_shopnc.gif" />
@@ -27187,6 +27188,7 @@
     <Content Include="UCenter\advanced\examples\uc_client\model\index.htm" />
     <Content Include="uploads\n\ncwjjd1427286481\3\b\3\a\thumb_5512b88b243b9.png" />
     <Content Include="uploads\n\ncwjjd1427286481\b\d\e\b\thumb_5512b802c86ff.png" />
+    <Content Include="web.config" />
     <Content Include="wx\css\colorpicker.css" />
     <Content Include="wx\css\common.css" />
     <Content Include="wx\css\editor-min.css" />
@@ -27486,5 +27488,6 @@
     <Content Include="wx\ueditor\ueditor.config.js" />
     <Content Include="wx\ueditor\ueditor.parse.js" />
     <Content Include="wx\ueditor\ueditor.parse.min.js" />
+    <Content Include="安装说明.txt" />
   </ItemGroup>
 </Project>

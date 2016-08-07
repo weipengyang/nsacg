@@ -80,11 +80,10 @@
           num: num,
           days:days
       };
-      alert(num);
       $.post('/index.php?g=User&m=Member_card&a=lottery_add&token={pigcms:$token}', submitData,
       function (data) {
           alert(data);
-          //location.href = location.href;
+          location.href = 'index.php?g=User&m=Member_card&a=lottery';
       });
   });
 

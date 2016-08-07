@@ -26,19 +26,12 @@
                 <div class="admin-content-body">
                     <div id="doc-qrcode" class="am-text-center"></div>
                     <div class="am-cf am-padding am-padding-bottom-0">
-                        <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">个人业绩查询</strong> </div>
+                        <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">用户评价</strong> </div>
                     </div>
                     <hr>
                     <div class="am-g">
-                        <div class="am-u-sm-10 am-u-md-9">
+                        <div class="am-u-sm-6 am-u-md-3">
                             <div class="am-form-group">
-                                主修人
-                                <select data-am-selected="{btnSize: 'sm'}" id="zhuxiu">
-                                    <option value="">所有人</option>
-                                    <volist name="zxlist" id="item">
-                                        <option value="{pigcms:$item.姓名}">{pigcms:$item.姓名}</option>
-                                    </volist>
-                                </select>
                                 类别
                                 <select data-am-selected="{btnSize: 'sm'}" id="lb">
                                     <option value="">所有分类</option>
@@ -49,25 +42,31 @@
                                     <option value="保险理赔">保险理赔</option>
                                     <option value="汽车维修">汽车维修</option>
                                 </select>
-                                部门
-                                <select data-am-selected="{btnSize: 'sm'}" id="bumen">
-                                    <option value="">所有部门</option>
-                                    <option value="区府店美容">区府店美容部</option>
-                                    <option value="区府店维修">区府店维修部</option>
-                                    <option value="区府店维修">区府店钣喷部</option>
-                                    <option value="塘坑店美容">塘坑店美容部</option>
-                                    <option value="塘坑店维修">塘坑店维修部</option>
-                                </select>
-
-                                <button type="button" class="am-btn am-btn-default am-margin-right" id="my-start">开始日期</button><span id="my-startDate"></span>
-                                <button type="button" class="am-btn am-btn-default am-margin-right" id="my-end">结束日期</button><span id="my-endDate"></span>
                            </div>
+                        </div>
+                        <div class="am-u-sm-2 am-u-md-3">
+                            <div class="am-form-group">
+                                <div class="am-input-group am-datepicker-date" data-am-datepicker="{format: 'yyyy-mm-dd'}">
+                                    <input type="text" class="am-form-field" id="my-start" placeholder="开始日期" readonly>
+                                    <span class="am-input-group-btn am-datepicker-add-on">
+                                        <button class="am-btn am-btn-default" type="button"><span class="am-icon-calendar"></span> </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="am-u-sm-2 am-u-md-3">
+                            <div class="am-input-group am-datepicker-date" data-am-datepicker="{format: 'yyyy-mm-dd'}">
+                                <input type="text" class="am-form-field" id="my-end" placeholder="结束日期" readonly>
+                                <span class="am-input-group-btn am-datepicker-add-on">
+                                    <button class="am-btn am-btn-default" type="button"><span class="am-icon-calendar"></span> </button>
+                                </span>
+                            </div>
                         </div>
                         <div class="am-u-sm-2 am-u-md-3">
                             <div class="am-input-group am-input-group-sm">
                                 <input type="text" id="searchkey" class="am-form-field">
                                 <span class="am-input-group-btn">
-                                    <button id="search" class="am-btn am-btn-default" type="button">搜索</button>
+                                    <button id="search" class="am-btn am-btn-default" type="button">模糊查询</button>
                                 </span>
                             </div>
                         </div>
@@ -78,23 +77,31 @@
                                 <table class="am-table am-table-striped am-table-hover table-main">
                                     <thead>
                                         <tr>
-                                            <th class="table-title">主修人</th>
-                                            <th class="table-title">日期</th>
+                                            <th class="table-title">最近维修</th>
+                                            <th class="table-title ">车牌号码</th>
+                                            <th class="table-title ">车主</th>
+                                            <th class="table-title ">客户类别</th>
                                             <th class="table-title">维修类别</th>
-                                            <th class="table-title">服务车辆数</th>
-                                            <th class="table-title">工时费</th>
-                                            <th class="table-title ">产值</th>
+                                            <th class="table-title">服务顾问</th>
+                                            <th class="table-title">服务技师</th>
+                                            <th class="table-title ">服务态度</th>
+                                            <th class="table-title ">服务质量</th>
+                                            <th class="table-title ">评论内容</th>
                                         </tr>
                                     </thead>
-                                    <tbody> 
+                                    <tbody>
                                         <volist name="yelist" id="item">
                                             <tr>
-                                                <td>{pigcms:$item.主修人}</td>
-                                                <td>{pigcms:$item.时间}</td>
+                                                <td>{pigcms:$item.制单日期|strtotime|date='Y-m-d',###}</td>
+                                                <td>{pigcms:$item.车牌号码}</td>
+                                                <td>{pigcms:$item.车主}</td>
+                                                <td>{pigcms:$item.客户类别}</td>
                                                 <td>{pigcms:$item.维修类别}</td>
-                                                <td>{pigcms:$item.服务车辆数}</td>
-                                                <td>{pigcms:$item.工时费}</td>
-                                                <td>{pigcms:$item.产值}</td>
+                                                <td>{pigcms:$item.接车人}</td>
+                                                <td>{pigcms:$item.主修人}</td>
+                                                <td>{pigcms:$item.服务态度}分</td>
+                                                <td>{pigcms:$item.服务质量}分</td>
+                                                <td>{pigcms:$item.评论内容}</td>
                                             </tr>
 
                                         </volist>
@@ -114,7 +121,7 @@
                             </form>
                         </div>
                     </div>
-                </div>
+                    </div>
             </div>
         <!-- content end -->
     </div>
@@ -124,43 +131,21 @@
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         $(document).ready(function () {
-            var startDate = new Date(2014, 11, 20);
-            var endDate = new Date(2014, 11, 25);
-            var d = new Date();
-            var end = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
-            var start = d.getFullYear() + "-" + (d.getMonth() + 1) + "-01";
-            $('#my-startDate').text();
-            $('#my-endDate').text();
-            $('#my-start').datepicker().
-              on('changeDate.datepicker.amui', function (event) {
-                startDate = new Date(event.date);
-                $('#my-startDate').text($('#my-start').data('date'));
-                $(this).datepicker('close');
-              });
-
-            $('#my-end').datepicker().
-              on('changeDate.datepicker.amui', function (event) {
-                  endDate = new Date(event.date);
-                  $('#my-endDate').text($('#my-end').data('date'));
-                  $(this).datepicker('close');
-              });
+            var $alert = $('#my-alert');
             $('#search').click(function () {
-                var url = '/index.php?g=Query&m=Consume&a=persons';
-                var endDate = $('#my-endDate').text();
+                var url = '/index.php?g=Query&m=Consume&a=comment';
+                var endDate = $('#my-end').val();
                 if (endDate != '')
                     url += '&endDate=' + endDate;
-                var startDate = $('#my-startDate').text();
+                var startDate = $('#my-start').val();
                 if (startDate != '')
                     url += '&startDate=' + startDate;
+                var shop = $('#shop').val();
+                if (shop != '')
+                    url += '&shop=' + lb;
                 var lb = $('#lb').val();
-                if (lb!='')
+                if (lb != '')
                     url += '&lb=' + lb;
-                var bm = $('#bumen').val();
-                if (bm != '')
-                    url += '&bm=' + bm;
-                var zhuxiu = $('#zhuxiu').val();
-                if (zhuxiu != '')
-                    url += '&zhuxiu=' + zhuxiu;
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     url += '&searchkey=' + searchkey;

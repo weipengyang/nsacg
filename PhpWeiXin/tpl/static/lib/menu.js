@@ -15,7 +15,8 @@ var indexdata =
     { text: '业绩查询', isexpand: false, children: [
        { url: "/index.php?g=Query&m=Consume&a=purchase", text: "录单员业绩" },
        { url: "/index.php?g=Query&m=Consume&a=fwgw", text: "服务顾问业绩" },
-       { url: "/index.php?g=Query&m=Consume&a=persons", text: "个人业绩" } 
+       { url: "/index.php?g=Query&m=Consume&a=persons", text: "个人业绩" }, 
+       { url: "/index.php?g=Query&m=Consume&a=comment", text: "客户评价" } 
     ]
     },
     { text: '配件库存查询', url: "/index.php?g=Query&m=Consume&a=products"},

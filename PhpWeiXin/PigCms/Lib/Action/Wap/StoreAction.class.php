@@ -1972,6 +1972,27 @@ public function check(){
         exit;
 		
 	}
+	public function wxcomment()
+	{
+		$id = isset($_GET['orid']) && intval($_GET['orid'])? intval($_GET['orid']) : 0;
+        $wx=M("维修",'dbo.','difo')->where(array('流水号' =>$id))->find();
+        $this->assign('wxinfo',$wx);
+		$this->display();
+	}
+	public function wxcommentSave()
+	{
+		$id = isset($_POST['orid']) && intval($_POST['orid'])? intval($_POST['orid']):0;
+        $commnet=$_POST['comment'];		
+        $data['是否评论'] = '是';
+        $data['服务态度'] = $commnet['fwtd'];
+        $data['服务质量'] = $commnet['fwzl'];
+        $data['评论内容'] = htmlspecialchars($commnet['content']);
+        $wx=M("维修",'dbo.','difo')->where(array('流水号' =>$id))->find();
+        M("维修",'dbo.','difo')->where(array('流水号' =>$id))->save($data);
+	    echo U('Store/carinfo',array('carno' =>$wx['车牌号码'] ));
+        exit;
+		
+	}
 	public function deleteOrder()
 	{
 		$product_model = M('product');

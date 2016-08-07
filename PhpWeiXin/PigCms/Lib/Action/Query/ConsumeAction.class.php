@@ -710,6 +710,59 @@ class ConsumeAction extends Action{
             $this->display();
         }
     }
+    public function comment()
+    {   
+            $parms=$_GET;
+            $where['是否评论']='是';
+            if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+                $searchkey='%'.trim($_GET['searchkey']).'%';
+            }
+            if($_GET['lb']&&trim($_GET['lb'])!='')
+            {
+                $where['维修类别']=trim($_GET['lb']);
+                
+            }
+            if($_GET['startDate']&&trim($_GET['startDate'])!='')
+            {
+                $where['制单日期']=array('egt',trim($_GET['startDate']));
+                
+            }
+            if($_GET['endDate']&&trim($_GET['endDate'])!='')
+            {
+                $where['制单日期']=array('elt',trim($_GET['endDate']));
+                
+            }
+            if(trim($_GET['startDate'])!=''&&trim($_GET['endDate'])!='')
+            {
+                $where['制单日期']=array('BETWEEN',array(trim($_GET['startDate']),trim($_GET['endDate'])));
+                
+            }
+            $where['车牌号码']=array('neq','0000');
+            if($searchkey){       
+                $searchwhere['品牌']=array('like',$searchkey);
+                $searchwhere['运输证号']=array('like',$searchkey);
+                $searchwhere['车架号']=array('like',$searchkey);
+                $searchwhere['车主']=array('like',$searchkey);
+                $searchwhere['车牌号码']=array('like',$searchkey);
+                $searchwhere['客户类别']=array('like',$searchkey);
+                $searchwhere['联系人']=array('like',$searchkey);
+                $searchwhere['联系电话']=array('like',$searchkey);
+                $searchwhere['保险公司']=array('like',$searchkey);
+                $searchwhere['发动机号']=array('like',$searchkey);
+                $searchwhere['_logic']='OR';
+                $where['_complex']=$searchwhere;
+                
+            }
+            $count=M('客户评价','dbo.','difo')->where($where)->count();
+            $Page = new Page($count,15,$parms);
+            $show = $Page->show();
+            $yelist=M('客户评价','dbo.','difo')->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('流水号 desc')->select();
+            $this->assign('page',$show);
+            $this->assign('count',$count);
+            $this->assign('yelist',$yelist);
+            $this->display();
+        
+    }
   public function purchase()
     {
          $parms=$_GET;
@@ -785,7 +838,7 @@ class ConsumeAction extends Action{
          }
          if($_GET['bm']&&trim($_GET['bm'])!='')
          {
-             $where['部门']=trim($_GET['bm']);
+             $where['班组']=array('like','%'.trim($_GET['bm'].'%'));
              
          }
          if($_GET['startDate']&&trim($_GET['startDate'])!='')
@@ -818,12 +871,7 @@ class ConsumeAction extends Action{
          $count=M('个人业绩表','dbo.','difo')->join('员工目录 on 个人业绩表.主修人=员工目录.姓名')->where($where)->count();
          $Page = new Page($count,15,$parms);
          $show = $Page->show();
-         if(S('yglist')){
-             $zxlist=S('yglist');
-         }else{
-             $zxlist=M('员工目录','dbo.','difo')->where(array('部门'=>array('in',array('区府店美容部','区府店维修部','塘坑店美容部','塘坑店维修部'))))->order('姓名')->select();
-             S('yglist',$zxlist);
-         }
+         $zxlist=M('员工目录','dbo.','difo')->where(array('部门'=>array('in',array('区府店','塘坑店'))))->order('姓名')->select();
          $yelist=M('个人业绩表','dbo.','difo')->join('员工目录 on 个人业绩表.主修人=员工目录.姓名')->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('时间 desc,服务车辆数 desc')->select();
          $this->assign('page',$show);
          $this->assign('count',$count);

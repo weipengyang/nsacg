@@ -36,15 +36,6 @@
       <span class="icon icon-home"></span>
       <span class="tab-label">首页</span>
     </a>
-      <a class="tab-item" href="{pigcms::U('Store/cart',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid, 'cid' => $cid))}">
-     <span class="icon icon-cart"></span>
-     <if condition="$productcount neq 0">
-        <span class="badge" id='badge'>{pigcms:$productcount}</span>
-        <else/>
-        <span class="badge" id='badge' style="display:none">{pigcms:$productcount}</span>
-    </if>
-    <span class="tab-label">购物车</span>
-   </a>
     <a class="tab-item" href="{pigcms::U('Store/myinfo',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
       <span class="icon icon-me"></span>
       <span class="tab-label">我</span>

@@ -70,9 +70,11 @@
                                             <th class="table-title">名称</th>
                                             <th class="table-title">规格</th>
                                             <th class="table-title">库存</th>
-                                            <th class="table-title ">入库数</th>
-                                            <th class="table-title ">出库数</th>
-                                            <th class="table-title ">一级批发价</th>
+                                            <if condition="$_GET['key'] neq '39099139'">
+                                                <th class="table-title ">入库数</th>
+                                                <th class="table-title ">出库数</th>
+                                             </if>
+                                                <th class="table-title ">批发价</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -82,10 +84,12 @@
                                                 <td>{pigcms:$item.名称}</td>
                                                 <td>{pigcms:$item.规格}</td>
                                                 <td>{pigcms:$item.库存}</td>
-                                                <td>{pigcms:$item.入库数量}</td>
-                                                <td>{pigcms:$item.出库数量}</td>
-                                                <td>{pigcms:$item.一级批发价}</td>
-                                            </tr>
+                                                <if condition="$_GET['key'] neq '39099139'">
+                                                    <td>{pigcms:$item.入库数量}</td>
+                                                    <td>{pigcms:$item.出库数量}</td>
+                                                 </if>
+                                                    <td>{pigcms:$item.一级批发价}</td>
+</tr>
 
                                         </volist>
                                     </tbody>

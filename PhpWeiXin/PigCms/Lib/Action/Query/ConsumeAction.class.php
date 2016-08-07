@@ -612,102 +612,103 @@ class ConsumeAction extends Action{
     {   
         if(IS_POST)
         {
-             $carno=$_POST['carno'];
-             if($_POST['pinpai']!='')
-             {
+            $carno=$_POST['carno'];
+            if($_POST['pinpai']!='')
+            {
                 $data['品牌']=$_POST['pinpai'];
-             }
-             if($_POST['luntai']!='')
-             {
+            }
+            if($_POST['luntai']!='')
+            {
                 $data['运输证号']=$_POST['luntai'];
-             }
-             if($_POST['jiyou']!='')
-             {
+            }
+            if($_POST['jiyou']!='')
+            {
                 $data['车架号']=$_POST['jiyou'];
-             }
-              if($_POST['kongqi']!='')
-             {
+            }
+            if($_POST['kongqi']!='')
+            {
                 $data['发动机号']=$_POST['kongqi'];
-             }
-               if($_POST['baoxian']!='')
-             {
+            }
+            if($_POST['baoxian']!='')
+            {
                 $data['保险公司']=$_POST['baoxian'];
-             }
-                 if($_POST['bxrq']!='')
-             {
+            }
+            if($_POST['bxrq']!='')
+            {
                 $data['交保到期']=$_POST['bxrq'];
-             }
-                    if($_POST['nianshen']!='')
-             {
+            }
+            if($_POST['nianshen']!='')
+            {
                 $data['年检到期']=$_POST['nianshen'];
-             }
-             if($_POST['lengqi']!='')
-             {
+            }
+            if($_POST['lengqi']!='')
+            {
                 $data['发动机型号']=$_POST['lengqi'];
-             }
+            }
             if($_POST['sftp']!='')
-             {
+            {
                 $data['车辆图片']=$_POST['sftp'];
-             }
-              if(M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->save($data))
-              {
-                  M('维修','dbo.','difo')->where(array('车牌号码'=>$carno))->save($data);
-                  echo '保存成功';
-                  exit();
-              }
-              else{
-                  echo '保存失败';
-                  exit();
-              }
+            }
+            if(M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->save($data))
+            {
+                M('维修','dbo.','difo')->where(array('车牌号码'=>$carno))->save($data);
+                echo '保存成功';
+                exit();
+            }
+            else{
+                echo '保存失败';
+                exit();
+            }
+        }else{
+            $parms=$_GET;
+            if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+                $searchkey='%'.trim($_GET['searchkey']).'%';
+            }
+            if($_GET['lb']&&trim($_GET['lb'])!='')
+            {
+                $where['维修类别']=trim($_GET['lb']);
+                
+            }
+            if($_GET['startDate']&&trim($_GET['startDate'])!='')
+            {
+                $where['制单日期']=array('egt',trim($_GET['startDate']));
+                
+            }
+            if($_GET['endDate']&&trim($_GET['endDate'])!='')
+            {
+                $where['制单日期']=array('elt',trim($_GET['endDate']));
+                
+            }
+            if(trim($_GET['startDate'])!=''&&trim($_GET['endDate'])!='')
+            {
+                $where['制单日期']=array('BETWEEN',array(trim($_GET['startDate']),trim($_GET['endDate'])));
+                
+            }
+            $where['车牌号码']=array('neq','0000');
+            if($searchkey){       
+                $searchwhere['品牌']=array('like',$searchkey);
+                $searchwhere['运输证号']=array('like',$searchkey);
+                $searchwhere['车架号']=array('like',$searchkey);
+                $searchwhere['车主']=array('like',$searchkey);
+                $searchwhere['车牌号码']=array('like',$searchkey);
+                $searchwhere['客户类别']=array('like',$searchkey);
+                $searchwhere['联系人']=array('like',$searchkey);
+                $searchwhere['联系电话']=array('like',$searchkey);
+                $searchwhere['保险公司']=array('like',$searchkey);
+                $searchwhere['发动机号']=array('like',$searchkey);
+                $searchwhere['_logic']='OR';
+                $where['_complex']=$searchwhere;
+                
+            }
+            $count=M('维修','dbo.','difo')->where($where)->count();
+            $Page = new Page($count,15,$parms);
+            $show = $Page->show();
+            $yelist=M('维修','dbo.','difo')->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('流水号 desc')->select();
+            $this->assign('page',$show);
+            $this->assign('count',$count);
+            $this->assign('yelist',$yelist);
+            $this->display();
         }
-        $parms=$_GET;
-        if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
-            $searchkey='%'.trim($_GET['searchkey']).'%';
-        }
-        if($_GET['lb']&&trim($_GET['lb'])!='')
-        {
-            $where['维修类别']=trim($_GET['lb']);
-            
-        }
-        if($_GET['startDate']&&trim($_GET['startDate'])!='')
-        {
-            $where['制单日期']=array('egt',trim($_GET['startDate']));
-            
-        }
-        if($_GET['endDate']&&trim($_GET['endDate'])!='')
-        {
-            $where['制单日期']=array('elt',trim($_GET['endDate']));
-            
-        }
-        if(trim($_GET['startDate'])!=''&&trim($_GET['endDate'])!='')
-        {
-            $where['制单日期']=array('BETWEEN',array(trim($_GET['startDate']),trim($_GET['endDate'])));
-            
-        }
-        $where['车牌号码']=array('neq','0000');
-        if($searchkey){       
-            $searchwhere['品牌']=array('like',$searchkey);
-            $searchwhere['运输证号']=array('like',$searchkey);
-            $searchwhere['车架号']=array('like',$searchkey);
-            $searchwhere['车主']=array('like',$searchkey);
-            $searchwhere['车牌号码']=array('like',$searchkey);
-            $searchwhere['客户类别']=array('like',$searchkey);
-            $searchwhere['联系人']=array('like',$searchkey);
-            $searchwhere['联系电话']=array('like',$searchkey);
-            $searchwhere['保险公司']=array('like',$searchkey);
-            $searchwhere['发动机号']=array('like',$searchkey);
-            $searchwhere['_logic']='OR';
-            $where['_complex']=$searchwhere;
-            
-        }
-         $count=M('维修','dbo.','difo')->where($where)->count();
-         $Page = new Page($count,15,$parms);
-         $show = $Page->show();
-         $yelist=M('维修','dbo.','difo')->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('流水号 desc')->select();
-         $this->assign('page',$show);
-         $this->assign('count',$count);
-         $this->assign('yelist',$yelist);
-         $this->display();
     }
   public function purchase()
     {

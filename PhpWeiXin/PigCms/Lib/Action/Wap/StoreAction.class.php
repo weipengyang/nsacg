@@ -500,8 +500,7 @@ private function washcar($price,$carno,$type='AYC0002',$wxlb='蜡水洗车'){
         M('维修项目','dbo.','difo')->add($row);
     }
 } 
-  public function check()
-  {
+public function check(){
         $card=M('member_card_create')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
         $user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
         $wxlist=M('维修','dbo.','difo')->where(array('制单人'=>array('neq','系统录单'),'客户ID'=>$user['ID'],'当前状态'=>'结算','维修类别'=>array('neq','蜡水洗车')))->order('流水号 desc')->select();
@@ -703,7 +702,12 @@ private function washcar($price,$carno,$type='AYC0002',$wxlb='蜡水洗车'){
                $arr["time"] = time();
                $arr["cat"] = 99;
                $arr["staffid"] = 0;
-               $arr["score"] = intval($set_exchange["reward"]) * $arr["expense"];
+               if(strpos($ordername, '保险') === 0){
+                   $arr["score"] = 0;
+
+               }else{
+                   $arr["score"] = intval($set_exchange["reward"]) * $arr["expense"];
+               }
                $thisUser = M('Userinfo')->where(array("token" => $thisCard["token"], "wecha_id" => $arr["wecha_id"]))->find();
                $userArr = array();
                $userArr["total_score"] = $thisUser["total_score"] + $arr["score"];//积分

@@ -26936,6 +26936,7 @@
     <Content Include="tpl\Wap\default\Index_content_share.html" />
     <Content Include="tpl\Wap\default\Index_content_twxx.html" />
     <Content Include="tpl\Wap\default\Index_flash_index.html" />
+    <Content Include="tpl\Wap\default\Index_footer.html" />
     <Content Include="tpl\Wap\default\Index_kcdh.html" />
     <Content Include="tpl\Wap\default\Index_kcdh1.html" />
     <Content Include="tpl\Wap\default\Index_kcdh2.html" />
@@ -27095,6 +27096,7 @@
     <Content Include="tpl\Wap\default\Shake_index.html" />
     <Content Include="tpl\Wap\default\Signscore_expend.html" />
     <Content Include="tpl\Wap\default\Signscore_index.html" />
+    <Content Include="tpl\Wap\default\Store_wxcomment.html" />
     <Content Include="tpl\Wap\default\Store_weixiu.html" />
     <Content Include="tpl\Wap\default\Store_check.html" />
     <Content Include="tpl\Wap\default\Store_getcoupon.html" />

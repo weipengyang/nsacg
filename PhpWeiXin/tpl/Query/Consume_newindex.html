@@ -9,15 +9,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="renderer" content="webkit">
     <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.7.0/css/amazeui.min.css" />
+
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" type="text/css" id="mylink" />
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
-    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
-    <script src="/tpl/static/lib/ligerUI/js/plugins/ligerTab.js"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
+    <!--<script src="/tpl/static/lib/ligerUI/js/plugins/ligerTab.js"></script>-->
     <script src="/tpl/static/lib/jquery.cookie.js"></script>
     <script src="/tpl/static/lib/json2.js"></script>
     <script src="/tpl/static/lib/menu.js" type="text/javascript"></script>
-    <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.7.0/css/amazeui.min.css" />
     <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
 
     <script type="text/javascript">
@@ -40,7 +41,7 @@
         }
         $(function () {
             //布局
-            $("#layout1").ligerLayout({ leftWidth: 210, height: '100%',heightDiff:-32, space: 2, onHeightChanged: f_heightChanged });
+            $("#layout1").ligerLayout({ leftWidth: 210, height: '100%', heightDiff: -30, space: 2, onHeightChanged: f_heightChanged });
             var height = $(".l-layout-center").height();
             //Tab
             $("#framecenter").ligerTab({
@@ -275,13 +276,14 @@
 </head>
 <body>
     <div id="pageloading"></div>
+
     <header class="am-topbar am-topbar-inverse admin-header l-topmenu">
         <div class="am-topbar-brand">
             <strong>爱养车</strong> <small>汽车服务管理</small>
         </div>
         <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
             <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
-                <li><a href="javascript:;"><span class="am-icon-envelope-o"></span> 代办事项 <span class="am-badge am-badge-warning">5</span></a></li>
+                <li class="am-dropdown"><a href="javascript:;"><span class="am-icon-envelope-o"></span> 代办事项 <span class="am-badge am-badge-warning">5</span></a></liclass="am-dropdown">
                 <li class="am-dropdown" data-am-dropdown>
                     <a class="am-dropdown-toggle" data-am-dropdown-toggle href="javascript:;">
                         <span class="am-icon-users"></span> {pigcms:$username} <span class="am-icon-caret-down"></span>
@@ -292,24 +294,24 @@
                         <li><a href="#"><span class="am-icon-power-off"></span> 退出</a></li>
                     </ul>
                 </li>
-                <li class="am-hide-sm-only"><a href="javascript:;" id="admin-fullscreen"><span class="am-icon-arrows-alt"></span> <span class="admin-fullText">开启全屏</span></a></li>
+                <li class="am-dropdown"><a href="javascript:;" id="admin-fullscreen"><span class="am-icon-arrows-alt"></span> <span class="admin-fullText">开启全屏</span></a></li>
             </ul>
         </div>
     </header>
-    <div id="layout1" style="font-size:1.2rem">
-        <div position="left" title="主菜单" id="accordion1" style="font-size:0.6rem">
+    <div id="layout1" >
+        <div position="left" title="主菜单" id="accordion1" >
             <div title="功能列表" class="l-scroll">
                 <ul id="tree1" style="margin-top:3px;"/>
             </div>
         </div>
-        <div position="center" id="framecenter" style="font-size:0.6rem">
+        <div position="center" id="framecenter" >
             <div tabid="home" title="我的主页">
                 <iframe frameborder="0" name="home" id="home" src="/index.php?g=Query&m=Consume&a=members"></iframe>
             </div>
         </div>
 
     </div>
-    <div  style="height:32px; line-height:32px;text-align:center;">
+    <div style="height:30px; line-height:30px;text-align:center;">
         <p style="text-align:center">广州市爱养车汽车服务公司(c)版权所有 <a href="http://www.miibeian.gov.cn" target="_blank">粤ICP备16029128号-1</a></p>
     </div>
     <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>

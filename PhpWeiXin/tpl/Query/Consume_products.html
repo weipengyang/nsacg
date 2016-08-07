@@ -35,9 +35,13 @@
                                 配件分类
                                 <select data-am-selected="{btnSize: 'sm'}" id="yjml">
                                     <option value="">所有分类</option>
-                                    <volist name="pjlist" id="item">
-                                        <option value="{pigcms:$item.名称}">{pigcms:$item.名称}</option>
-                                    </volist>
+                                    <if condition="$_GET['key'] eq '39099139'">
+                                       <option value="轮胎">轮胎</option>
+                                     <else/>
+                                        <volist name="pjlist" id="item">
+                                            <option value="{pigcms:$item.名称}">{pigcms:$item.名称}</option>
+                                        </volist>
+                                    </if>
                                 </select>
                                 <select data-am-selected="{btnSize: 'sm'}" id="ejml">
                                     <option value="">所有分类</option>
@@ -110,6 +114,7 @@
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         $(document).ready(function () {
+            var key={pigcms:$_GET['key']};
             $('#search').click(function () {
                 var yjml = $('#yjml').val();
                 var ejml = $('#ejml').val();
@@ -125,7 +130,14 @@
                 if (sjml != '') {
                     lb += '>>' + sjml;
                 }
-                var url = '/index.php?g=Query&m=Consume&a=products&searchkey=' + $('#searchkey').val() + "&lb="+lb;
+                var url = '/index.php?g=Query&m=Consume&a=products';
+                if (key)
+                    url += '&key=' + key;
+                if($('#searchkey').val()!='')
+                    url += '&searchkey=' + $('#searchkey').val();
+                if (lb)
+                    url += '&lb=' + lb;
+               
                 location.href = url;
             });
             $("#yjml").change(function () {
@@ -134,7 +146,7 @@
                     code: code
                 };
                 if (code != '') {
-                    $.post('index.php?g=Query&m=Consume&a=products', submitData,
+                    $.post('index.php?g=Query&m=Consume&a=products&key=' + key, submitData,
                      function (data) {
                          if (data) {
                              $('#ejml').empty();
@@ -156,7 +168,7 @@
                     code: code
                 };
                 if (code != '') {
-                    $.post('index.php?g=Query&m=Consume&a=products', submitData,
+                    $.post('index.php?g=Query&m=Consume&a=products&key=' + key, submitData,
                      function (data) {
                          if (data) {
                              $('#sjml').empty();

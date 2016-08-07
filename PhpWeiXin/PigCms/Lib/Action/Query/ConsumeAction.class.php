@@ -13,7 +13,12 @@ class ConsumeAction extends Action{
         $this->token='rlydsv1453614397';
         if(!in_array(ACTION_NAME, array('register', 'login'))){
             if(!cookie('username')){
-                $this->redirect(U('Consume/login', array('token' => $this->token)));
+                if(ACTION_NAME=='products' and $_GET['key']=='39099139'){
+                
+                }
+                else{
+                     $this->redirect(U('Consume/login', array('token' => $this->token)));
+                }
             }
             else{
                 $username=cookie('username');
@@ -962,6 +967,10 @@ class ConsumeAction extends Action{
                $searchwhere['_logic']='OR';
                $where['_complex']=$searchwhere;
 
+           }
+           if($_GET['key']=='39099139')
+           {
+                 $where['类别']=array('like','%'.trim('轮胎%'));
            }
            $parms=$_GET;
            $pjlist=M('配件分类','dbo.','difo')->where(array('级别'=>'0'))->select();

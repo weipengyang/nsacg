@@ -84,6 +84,11 @@
                             </div>
                         </div>
                     </notempty>
+                    <div class="card-content">
+                        <div class="card-content-inner" style="font-size:0.6rem;">
+                           
+                        </div>
+                    </div>
                     <div class="card-footer" style="font-size:0.6rem;color:white">当前状态:{pigcms:$item.当前状态}
                         <if condition="$item['是否评论'] eq '否'">
                             <a href="{pigcms::U('Store/wxcomment', array('orid' => $item['流水号']))}" class="button  button-success" style="color:white">评价</a>

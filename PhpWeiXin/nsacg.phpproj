@@ -26949,6 +26949,7 @@
     <Content Include="tpl\Wap\default\Company_drive.html" />
     <Content Include="tpl\Wap\default\Company_map.html" />
     <Content Include="tpl\Wap\default\Company_walk.html" />
+    <Content Include="tpl\Wap\default\Consume_newindex.html" />
     <Content Include="tpl\Wap\default\Coupon_index.html" />
     <Content Include="tpl\Wap\default\Crowdfunding_detail.html" />
     <Content Include="tpl\Wap\default\Crowdfunding_footer.html" />
@@ -27216,6 +27217,7 @@
     <Content Include="tpl\Wap\default\Shake_index.html" />
     <Content Include="tpl\Wap\default\Signscore_expend.html" />
     <Content Include="tpl\Wap\default\Signscore_index.html" />
+    <Content Include="tpl\Wap\default\Store_modifyinfo.html" />
     <Content Include="tpl\Wap\default\Store_wxcomment.html" />
     <Content Include="tpl\Wap\default\Store_weixiu.html" />
     <Content Include="tpl\Wap\default\Store_check.html" />

@@ -644,7 +644,7 @@ class ConsumeAction extends Action{
             }
             if($_POST['nianshen']!='')
             {
-                $data['年检到期']=$_POST['nianshen'];
+                $data['年检日期']=$_POST['nianshen'];
             }
             if($_POST['lengqi']!='')
             {
@@ -656,6 +656,8 @@ class ConsumeAction extends Action{
             }
             if(M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->save($data))
             {
+                unset($data['年检日期']);
+                unset($data['交保到期']);
                 M('维修','dbo.','difo')->where(array('车牌号码'=>$carno))->save($data);
                 echo '保存成功';
                 exit();

@@ -1993,6 +1993,11 @@ public function check(){
         exit;
 		
 	}
+    public function modifyinfo(){
+        $useinfo=M('userinfo')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
+        $this->assign('userinfo',$useinfo);
+        $this->display();
+    }
 	public function deleteOrder()
 	{
 		$product_model = M('product');

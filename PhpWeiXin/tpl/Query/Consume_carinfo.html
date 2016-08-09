@@ -11,25 +11,36 @@
     <script type="text/javascript">
         $(function ()
         {
-            $("#form1").ligerForm();
+           
             form = $("#form2").ligerForm({
-                inputWidth: 170, labelWidth: 90, space: 40,
+                inputWidth: 160, labelWidth: 85, space: 20,
                 validate: true,
-                tab: {
+                buttons: [                    { text: "保存", width: 60, click: submitForm }                ],                tab: {
                     items: [
                         {
                             title: '基本信息',
                             fields: [
-                                { display: "车牌号码", name: "车牌号码", newline: false, type: "number", validate: { required: true } },
-                                { display: "品牌", name: "品牌", newline: false, type: "select", validate: { required: true } },
-                                { display: "车系", name: "车系", newline: false, type: "digits" },
+                                { display: "车牌号码", name: "车牌号码", newline: true, type: "number", group:'基本信息' },
+                                {
+                                    display: "品牌", name: "品牌", newline: false, type: "combobox",
+                                    options: {
+                                        autocomplete: true,
+                                        keySupport: true,
+                                    },
+                                    validate: { required: true }
+                                },
+                                {
+                                    display: "车系", name: "车系", newline: false, type: "combobox",
+                                    options: { keySupport: true },
+
+                                },
                                 { display: "车俩类型", name: "车俩类型", newline: true, type: "digits" },
                                 { display: "年份 ", name: "年份", newline: false, type: "date", validate: { required: true } },
                                 { display: "排量", name: "排量", newline: false, type: "digits" },
                                 { display: "颜色", name: "颜色", newline: true, type: "digits" },
                                 { display: "外观", name: "外观", newline: false, type: "digits" },
                                 { display: "座位数", name: "座位数", newline: false, type: "digits" },
-                                { display: "车架号", name: "车架号", newline: true, type: "digits" },
+                                { display: "车架号", name: "车架号", newline: true, type: "text"},
                                 { display: "轮胎规格", name: "轮胎规格", newline: false, type: "digits" },
                                 { display: "机油格", name: "机油格", newline: false, type: "digits" },
                                 { display: "空气格", name: "空气格", newline: true, type: "digits" },
@@ -38,8 +49,8 @@
                                 { display: "刹车皮", name: "刹车皮", newline: true, type: "digits" },
                                 { display: "合格证号", name: "合格证号", newline: false, type: "digits" },
                                 { display: "发动机号", name: "发动机号", newline: false, type: "digits" },
-                                 { display: "燃料类别", name: "燃料类别", newline: true, type: "digits" },
-                               { display: "运输证号", name: "运输证号", newline: false, type: "digits" },
+                                { display: "燃料类别", name: "燃料类别", newline: true, type: "digits" },
+                                { display: "运输证号", name: "运输证号", newline: false, type: "digits" },
                                 {
                                     display: "车主", name: "车主", newline: false, type: "popup", options: {
                                         condition: {
@@ -50,19 +61,19 @@
                                         valueField: 'CustomerID',
                                         textField: 'CustomerID',
                                         width: 600
-                                    }
+                                    }, group: '车主信息'
                                 },
-                                { display: "客户类别", name: "客户类别", newline: true, type: "select" },
-                                { display: "联系人", name: "联系人", newline: false, type: "digits" },
-                                { display: "联系电话", name: "联系电话", newline: false, type: "digits" },
-                                { display: "手机号", name: "手机号", newline: true, type: "digits" },
-                                { display: "地址", name: "地址", newline: false, type: "digits" },
-                                { display: "驾驶员", name: "驾驶员", newline: false, type: "text" },
-                                { display: "出生日期", name: "出生日期", newline: true, type: "date" },
-                                { display: "驾驶员电话", name: "驾驶员电话", newline: false, type: "text" },
-                                { display: "驾驶证号", name: "驾驶证号", newline: false, type: "text" },
-                                { display: "准驾车型", name: "准驾车型", newline: true, type: "text" },
-                                { display: "档案编号", name: "档案编号", newline: false, type: "text" },
+                                { display: "客户类别", name: "客户类别", newline: true, type: "select", group: '车主信息' },
+                                { display: "联系人", name: "联系人", newline: false, type: "digits", group: '车主信息' },
+                                { display: "联系电话", name: "联系电话", newline: false, type: "digits", group: '车主信息' },
+                                { display: "手机号", name: "手机号", newline: true, type: "digits", group: '车主信息' },
+                                { display: "地址", name: "地址", newline: false, type: "digits", group: '车主信息' },
+                                { display: "驾驶员", name: "驾驶员", newline: false, type: "text", group: '驾驶员信息' },
+                                { display: "出生日期", name: "出生日期", newline: true, type: "date", group: '驾驶员信息' },
+                                { display: "驾驶员电话", name: "驾驶员电话", newline: false, type: "text", group: '驾驶员信息' },
+                                { display: "驾驶证号", name: "驾驶证号", newline: false, type: "text", group: '驾驶员信息' },
+                                { display: "准驾车型", name: "准驾车型", newline: true, type: "text", group: '驾驶员信息' },
+                                { display: "档案编号", name: "档案编号", newline: false, type: "text", group: '驾驶员信息' },
                                 { display: "领证日期 ", name: "领证日期", newline: false, type: "date", validate: { required: true } },
                                 { display: "换证日期 ", name: "换证日期", newline: true, type: "date", validate: { required: true } },
                                 { display: "上牌日期 ", name: "上牌日期", newline: false, type: "date", validate: { required: true } },
@@ -84,6 +95,7 @@
                                 { display: "备注 ", name: "备注", newline: true, type: "textarea", validate: { required: true } },
 
                             ]
+
                         },
                         {
                             title: '车俩图片',
@@ -93,6 +105,7 @@
                         }
                     ]
                 }
+
             });
 
             function getGridOptions(checkbox) {
@@ -153,7 +166,8 @@
 </head>
 
 <body style="padding:10px">
-    <div id="form2"></div> 
+    <div id="form2"></div><div id="form1"></div>
+ 
     <!--<div id="form1">
         <table>
             <tr>
@@ -312,16 +326,16 @@
 
      function submitForm()
      {
-
-         var data = {};
-         $("input,select,textarea").each(function ()
-         {
-             var name = $(this).attr("name");
-             if (name && name.indexOf('ligerui') == -1)
-             {
-                 data[name] = this.value;
-             }
-         });
+         var form = liger.get("form2");
+         var data = form.getData();
+         //$("input,select,textarea").each(function ()
+         //{
+         //    var name = $(this).attr("name");
+         //    if (name && name.indexOf('ligerui') == -1)
+         //    {
+         //        data[name] = this.value;
+         //    }
+         //});
          alert(JSON.stringify(data));
 
      }

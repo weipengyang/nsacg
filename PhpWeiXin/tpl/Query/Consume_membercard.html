@@ -189,12 +189,15 @@
         });
         function carinfo(carno) {
             $.ligerDialog.open({
-                height: 700, url: '/index.php?g=Query&m=Consume&a=carinfo',
-                width: 1000, showMax: false, showToggle: true,
-                showMin: true, isResize: true, modal: false, title: '车俩信息编辑', buttons: [
-                    { text: '确定', onclick: function (item, dialog) { alert(item.text); } },
-                    { text: '取消', onclick: function (item, dialog) { dialog.close(); } }
-                ]
+                height: 500,
+                url: '/index.php?g=Query&m=Consume&a=carinfo',
+                width: 900,
+                showMax: true,
+                showToggle: true,
+                showMin: true,
+                isResize: true,
+                modal: false,
+                title: '车俩信息编辑'
             });
         }
         function bingCard(wecha_id) {

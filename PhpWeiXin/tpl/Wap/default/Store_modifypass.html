@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+</head>
+<body>
+    <div class="page">
+        <header class="bar bar-nav">
+            <h1 class='title'>修改密码</h1>
+        </header>
+        <div class="content">
+            <div class="list-block" style="margin-top:5px;padding-top:2px">
+                <ul>
+                    <!-- Text inputs -->
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-password"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">原始密码</div>
+                                <div class="item-input">
+                                    <input type="password" id='password' onblur="check5(this)" placeholder="原始支付密码" class="">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-password"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">新密码</div>
+                                <div class="item-input">
+                                    <input type="password" id='password1' onblur="check5(this)" placeholder="新支付密码" class="">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                   <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-password"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">确认密码</div>
+                                <div class="item-input">
+                                    <input type="password" id="password2" onblur="check6(this)" placeholder="确认新密码" class="">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="content-block">
+                <div class="row">
+                    <div class="col-50"><a href="#" id="cancle" class="button button-big button-fill button-danger">取消</a></div>
+                    <div class="col-50"><a href="#" id="showcard" class="button button-big button-fill button-success">提交</a></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="meituan_check" style="margin:0 0 55px 0"><br><br><br></div>
+    </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <script type="text/javascript">
+        function check5(obj) {
+            if (obj.value == '') {
+                $.alert("请输入您的支付密码.");
+                document.getElementById(obj.id).style.background = "red";
+                return;
+            }
+            document.getElementById(obj.id).style.background = "";
+
+        }
+        function check6(obj) {
+            if (obj.value == '') {
+                $.alert("请确认您的支付密码.");
+                document.getElementById(obj.id).style.background = "red";
+                return;
+            }
+            if (obj.value != $("#password1").val())
+            {
+                $.alert("两次输入的密码不一致");
+                document.getElementById(obj.id).style.background = "red";
+                document.getElementById(obj.id).value = "";
+                return;
+            }
+            document.getElementById(obj.id).style.background = "";
+
+        }
+        $(document).on('click', '#cancle', function () {
+            history.go(-1);
+        });
+
+        $(document).on('click', '#showcard',
+        function (e) {
+            var password = $("#password").val();
+            var password1 = $("#password1").val();
+            var password2 = $("#password2").val();
+            var address = $("#address").val();
+            if (password1 == '') {
+                $.alert(" 请设置支付密码");
+                return;
+            }
+            var submitData = {
+                password: password,
+                password1: password1,
+                password2: password2,
+                action: "index"
+            };
+            $("#showcard").hide();
+            $.post('index.php?g=Wap&m=Store&a=modifypass&token={pigcms:$Think.get.token}&wecha_id={pigcms:$Think.get.wecha_id}', submitData,
+           function (data) {
+               if(data==1){			 
+                   $.alert('修改支付密码成功');
+               }else if(data==2){
+                   $.alert('原始支付密码不正确');
+               }else{
+			 
+                   $.alert('修改支付密码失败，请联系管理员.');
+               }
+               location.href = "{pigcms::U('Store/myinfo',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id']))}";
+           
+        });
+        });
+
+    </script>
+
+    <script type="text/javascript">
+        window.shareData = {
+            "moduleName": "Store",
+            "moduleID": "",
+            "imgUrl": "",
+            "timeLineLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/products',array('token' => $_GET['token'], 'twid' => $mytwid, 'cid' => $cid))}",
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/products',array('token' => $_GET['token'], 'twid' => $mytwid, 'cid' => $cid))}",
+            "weiboLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/products',array('token' => $_GET['token'], 'twid' => $mytwid, 'cid' => $cid))}",
+            "tTitle": "{pigcms:$metaTitle}",
+            "tContent": "{pigcms:$metaTitle}"
+        };
+    </script>
+</body>
+    {pigcms:$shareScript}
+</html>

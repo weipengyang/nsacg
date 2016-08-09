@@ -358,6 +358,28 @@ class StoreAction extends WapAction{
 
     }
     #endregion
+    
+    #region 修改密码
+    function modifypass(){
+        if(IS_POST){
+            $update['wecha_id']=$this->wecha_id;
+            $update['token']=$this->_get('token');
+            $userinfo=M('Userinfo')->where($update)->find();
+            if($userinfo['paypass']!=md5($this->_post('password'))){
+                echo 2;exit ;
+            }
+            if($this->_post('password1') != ''){
+				$data['paypass'] = md5($this->_post('password1'));
+			}
+            if(M('Userinfo')->where($update)->save($data)){
+                echo 1;exit;
+            }else{
+                echo 0;exit;
+            }
+        }
+		$this->display();
+	}
+    #endregion
 
     #region 生成随机字符串方法
     /**

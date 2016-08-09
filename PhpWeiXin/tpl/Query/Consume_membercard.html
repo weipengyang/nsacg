@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>爱养车</title>
+    <title>会员管理</title>
     <meta name="description" content="爱养车">
     <meta name="keywords" content="index">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,8 +12,13 @@
     <link rel="icon" type="image/png" href="/tpl/static/assets/i/favicon.png">
     <link rel="apple-touch-icon-precomposed" href="/tpl/static/assets/i/app-icon72x72@2x.png">
     <meta name="apple-mobile-web-app-title" content="爱养车" />
+    <link rel="stylesheet" type="text/css" id="mylink" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
     <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.7.0/css/amazeui.min.css" />
     <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+
 </head>
 <body>
     <!--[if lte IE 9]>
@@ -63,7 +68,9 @@
                                         <TR>
                                             <TD style='font-size:10px'>{pigcms:$list.number}</TD>
                                             <TD style='font-size:10px'>{pigcms:$list.wechaname}</TD>
-                                            <TD style='font-size:10px'>{pigcms:$list.carno}</TD>
+                                            <TD style='font-size:10px'>
+                                             <a href="javascript:void(0);" onclick="carinfo('{pigcms:$list.carno}')">{pigcms:$list.carno}</a>
+                                            </TD>
                                             <TD style='font-size:10px'>{pigcms:$list.carno1}</TD>
                                             <TD style='font-size:10px'>{pigcms:$list.carno2}</TD>
                                             <TD style='font-size:10px'>{pigcms:$list.tel}</TD>
@@ -171,7 +178,6 @@
         <!-- content end -->
     </div>
     <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
-    <script src="/tpl/static/assets/js/jquery.min.js"></script>
     <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
@@ -181,6 +187,16 @@
 
             });
         });
+        function carinfo(carno) {
+            $.ligerDialog.open({
+                height: 700, url: '/index.php?g=Query&m=Consume&a=carinfo',
+                width: 1000, showMax: false, showToggle: true,
+                showMin: true, isResize: true, modal: false, title: '车俩信息编辑', buttons: [
+                    { text: '确定', onclick: function (item, dialog) { alert(item.text); } },
+                    { text: '取消', onclick: function (item, dialog) { dialog.close(); } }
+                ]
+            });
+        }
         function bingCard(wecha_id) {
             $('#doc-modal-2').modal({
                 relatedTarget: this,

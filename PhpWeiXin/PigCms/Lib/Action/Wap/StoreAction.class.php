@@ -2261,7 +2261,11 @@ public function check(){
                 $model->sendTempMsg($dataKey,$dataArr);
                 if(strpos($couponname['title'], '打蜡') === 0){
                  $this->washcar(0,$arr['carno'],'AYC0001','汽车美容');
-                }else{
+                }
+                elseif(strpos($couponname['title'], '救援') === 0){
+                    $this->washcar(0,$arr['carno'],'AYC0001','普通快修');
+                }
+                else{
                  $this->washcar(0,$arr['carno'],'AYC0001','蜡水洗车');
                } 
                 echo "线下消费成功";	

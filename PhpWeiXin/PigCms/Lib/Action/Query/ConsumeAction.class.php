@@ -28,6 +28,53 @@ class ConsumeAction extends Action{
         }
     }
 
+    public  function getcarinfo(){
+    
+        $carno=$_GET['carno'];
+        $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
+
+        echo json_encode($carinfo);
+    
+    }
+    public  function getuserinfo(){
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $where['1']=1;
+        $conditions=json_decode($_POST['condition']);
+        $condition=$conditions[0];
+        $searchkey=$condition->value;
+        $searchkey='%'.trim($searchkey).'%';
+        if($searchkey){       
+            $searchwhere['名称']=array('like',$searchkey);
+            $searchwhere['会员编号']=array('like',$searchkey);
+            $searchwhere['联系人']=array('like',$searchkey);
+            $searchwhere['联系电话']=array('like',$searchkey);
+            $searchwhere['手机号码']=array('like',$searchkey);
+            $searchwhere['业务员']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $userinfo=M('往来单位','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->select();
+        $count=M('往来单位','dbo.','difo')->where($where)->count();
+        $data['Rows']=$userinfo;
+        $data['Total']=$count;
+        echo json_encode($data);
+    
+    }
+    public  function getpinpai(){
+    
+         $pinpai=M('常见品牌','dbo.','difo')->select();
+         echo json_encode($pinpai);
+    
+    }
+   public function carinfo()
+    {
+        $carno=$_GET['carno'];
+        $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
+        $this->assign('carinfo',json_encode($carinfo));
+        $this->display();
+    }
     public function member_del(){
 		$card_create_db=M('Member_card_create');
 		$thisUser=M('Userinfo')->where(array('id'=>intval($_GET['id'])))->find();

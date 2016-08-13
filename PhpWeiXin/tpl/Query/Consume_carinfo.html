@@ -137,7 +137,13 @@
                                 },
                                 { display: "换证日期 ", name: "换证日期", newline: false, type: "date", group: '行驶证信息' },
                                 { display: "上牌日期 ", name: "上牌日期", newline: false, type: "date", group: '行驶证信息' },
-                                { display: "保险公司 ", name: "保险公司", newline: true, type: "text", group: '保险信息' },
+                                { display: "保险公司 ", name: "保险公司", newline: true, type: "combobox",
+                                    options: {
+                                        valueField: '名称',
+                                        textField: '名称',
+                                        autocomplete: true,
+                                        url: '/index.php?g=Query&m=Consume&a=baoxian',
+                                    }, group: '保险信息' },
                                 { display: "首保日期 ", name: "首保日期", newline: false, type: "date", group: '保险信息' },
                                 { display: "交保到期 ", name: "交保到期", newline: false, type: "date", group: '保险信息' },
                                 { display: "交保单号 ", name: "交保单号", newline: true, type: "text", group: '保险信息' },
@@ -224,6 +230,7 @@
                     $("input[ligeruiid='车辆类别']").val(carinfo['车辆类别']);
                     $("input[ligeruiid='颜色']").val(carinfo['颜色']);
                     $("input[ligeruiid='外观']").val(carinfo['外观']);
+                    $("input[ligeruiid='保险公司']").val(carinfo['保险公司']);
                     $("div[data-index='1']").html(
                       '<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=fileupload&carno='+ carinfo['流水号']+ '"></iframe></div>'
                      );

@@ -72,7 +72,13 @@ class ConsumeAction extends Action{
         echo json_encode($pinpai);
     
    }
-    public  function getkhlb(){
+     public  function baoxian(){
+         
+        $pinpai=M('往来单位','dbo.','difo')->where(array('保险公司'=>'1','名称'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($pinpai);
+    
+   }
+   public  function getkhlb(){
          
         $pinpai=M('客商分类','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
         echo json_encode($pinpai);

@@ -81,7 +81,8 @@
                                 { display: "发动机号", name: "发动机号", newline: false, type: "text" },
                                 { display: "燃料类别", name: "燃料类别", newline: true, type: "text" },
                                 { display: "运输证号", name: "运输证号", newline: false, type: "text" },
-                                {
+                                 { display: "发动机型号", name: "发动机型号", newline: false, type: "text" },
+                               {
                                     display: "车主", name: "车主", newline: true, type: "popup", options: {
                                         condition: {
                                             prefixID: 'condtion_',
@@ -157,16 +158,13 @@
 
                         },
                         {
-                            title: '车辆图片',
-                            fields: [
-                                    { display: "图片", name: "车辆图片", newline: true, type: "file", width: 470 }
-                            ]
+                            title: '车辆图片'
                         }
                     ]
                 }
 
             });
-           
+
             setdata();
             function submitForm() {
 
@@ -213,6 +211,7 @@
             }
             function setdata()
             {
+               
                 var carinfo ={pigcms:$carinfo};
                 if (carinfo && carinfo != '') {
                     carinfo = JSON2.stringify(carinfo);
@@ -225,6 +224,9 @@
                     $("input[ligeruiid='车辆类别']").val(carinfo['车辆类别']);
                     $("input[ligeruiid='颜色']").val(carinfo['颜色']);
                     $("input[ligeruiid='外观']").val(carinfo['外观']);
+                    $("div[data-index='1']").html(
+                      '<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=fileupload&carno='+ carinfo['流水号']+ '"></iframe></div>'
+                     );
                 }
             }
         });
@@ -236,9 +238,5 @@
 <body style="padding:10px">
     <div id="form1">
     </div>
-    <form enctype="multipart/form-data" method="post" action="/index.php?g=Query&m=Consume&a=upload">
-        <input type="file" multiple  name="photo[]" />
-        <input type="submit" value="上传" />
-    </form>
 </body>
 </html>

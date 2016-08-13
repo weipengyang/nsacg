@@ -90,7 +90,20 @@ class ConsumeAction extends Action{
         $pinpai=M('车辆颜色','dbo.','difo')->where(array('颜色'=>array('like','%'.$_POST['key'].'%')))->select();
         echo json_encode($pinpai);
     }
-
+   public function fileupload(){
+        $carno=$_GET['carno'];
+        $path='./uploads/'.$this->token.'/cars/'.$carno.'/';
+        $files=scandir($path);
+        foreach($files as $key=>$value){
+            if(!in_array($files[$key],array('.','..')))
+                $files[$key]='http://www.nsayc.com/uploads/rlydsv1453614397/cars/'.$carno.'/'.$value;
+            else
+                $files[$key]=null;
+        }
+        $this->assign('files',json_encode($files));
+        $this->assign('carno',$carno);
+        $this->display();
+    }
    function upload($filetypes=''){
        import('ORG.Net.UploadFile');
        $upload = new UploadFile();
@@ -100,10 +113,12 @@ class ConsumeAction extends Action{
        }else {
            $upload->allowExts  = $filetypes;
        }
+       $carno=$_GET['carno'];
        $upload->autoSub=0;
        $upload->saveRule=null;
        $upload->thumbRemoveOrigin=true;
-       $upload->savePath =  './uploads/'.$this->token.'/cars/';// 设置附件上传目录
+       
+       $upload->savePath =  './uploads/'.$this->token.'/cars/'.$carno.'/';// 设置附件上传目录
        //
        if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/uploads')||!is_dir($_SERVER['DOCUMENT_ROOT'].'/uploads')){
            mkdir($_SERVER['DOCUMENT_ROOT'].'/uploads',0777);
@@ -114,6 +129,9 @@ class ConsumeAction extends Action{
        }
        if (!file_exists($firstLetterDir.'/cars')||!is_dir($firstLetterDir.'/cars')){
            mkdir($firstLetterDir.'/cars',0777);
+       }
+       if (!file_exists($firstLetterDir.'/cars/'.$carno)||!is_dir($firstLetterDir.'/cars/'.$carno)){
+           mkdir($firstLetterDir.'/cars/'.$carno,0777);
        }
        //
        

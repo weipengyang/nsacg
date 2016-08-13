@@ -886,10 +886,9 @@
                 return isFinite(this.valueOf()) ?
                    this.getUTCFullYear() + '-' +
                  f(this.getUTCMonth() + 1) + '-' +
-                 f(this.getUTCDate()) + 'T' +
+                 f(this.getUTCDate()) + ' ' +
                  f(this.getUTCHours()) + ':' +
-                 f(this.getUTCMinutes()) + ':' +
-                 f(this.getUTCSeconds()) + 'Z' : null;
+                 f(this.getUTCMinutes()): null;
             }
             var pairs = [];
             if (o.constructor === Array)

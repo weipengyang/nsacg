@@ -40,9 +40,7 @@ class ConsumeAction extends Action{
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
         $where['1']=1;
-        $conditions=json_decode($_POST['condition']);
-        $condition=$conditions[0];
-        $searchkey=$condition->value;
+        $searchkey=$_POST['searchkey'];
         $searchkey='%'.trim($searchkey).'%';
         if($searchkey){       
             $searchwhere['名称']=array('like',$searchkey);
@@ -63,13 +61,99 @@ class ConsumeAction extends Action{
     
     }
     public  function getpinpai(){
+         
+        $pinpai=M('常见品牌','dbo.','difo')->where(array('品牌'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($pinpai);
     
-         $pinpai=M('常见品牌','dbo.','difo')->select();
-         echo json_encode($pinpai);
+   }
+    public  function getchexing(){
+         
+        $pinpai=M('常见车型','dbo.','difo')->where(array('车型'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($pinpai);
     
+   }
+    public  function getkhlb(){
+         
+        $pinpai=M('客商分类','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($pinpai);
+    
+   }
+    public function getcllb(){
+        $pinpai=M('车辆类别','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($pinpai);
     }
+    public function waiguan(){
+        $pinpai=M('车辆外观','dbo.','difo')->where(array('外观'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($pinpai);
+    }
+    public function yanse(){
+        $pinpai=M('车辆颜色','dbo.','difo')->where(array('颜色'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($pinpai);
+    }
+
+   function upload($filetypes=''){
+       import('ORG.Net.UploadFile');
+       $upload = new UploadFile();
+       $upload->maxSize  = intval(C('up_size'))*1024 ;
+       if (!$filetypes){
+           $upload->allowExts  = explode(',',C('up_exts'));
+       }else {
+           $upload->allowExts  = $filetypes;
+       }
+       $upload->autoSub=0;
+       $upload->saveRule=null;
+       $upload->thumbRemoveOrigin=true;
+       $upload->savePath =  './uploads/'.$this->token.'/cars/';// 设置附件上传目录
+       //
+       if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/uploads')||!is_dir($_SERVER['DOCUMENT_ROOT'].'/uploads')){
+           mkdir($_SERVER['DOCUMENT_ROOT'].'/uploads',0777);
+       }
+       $firstLetterDir=$_SERVER['DOCUMENT_ROOT'].'/uploads/'.$this->token;
+       if (!file_exists($firstLetterDir)||!is_dir($firstLetterDir)){
+           mkdir($firstLetterDir,0777);
+       }
+       if (!file_exists($firstLetterDir.'/cars')||!is_dir($firstLetterDir.'/cars')){
+           mkdir($firstLetterDir.'/cars',0777);
+       }
+       //
+       
+       $upload->hashLevel=4;
+       if(!$upload->upload()) {// 上传错误提示错误信息
+           $msg=$upload->getErrorMsg();
+           echo $msg;
+           exit;
+
+       }else{// 上传成功 获取上传文件信息
+           $info =  $upload->getUploadFileInfo();
+           $this->siteUrl=$this->siteUrl?$this->siteUrl:C('site_url');
+           $msg=$this->siteUrl.substr($upload->savePath,1).$info[0]['savename'];
+           echo json_encode($info);
+           exit;
+
+       }
+      
+   }
+
    public function carinfo()
     {
+        if(IS_POST){
+            $carinfo=$_POST;
+            unset($carinfo['流水号']);
+            unset($carinfo['车辆图片']);
+            foreach($carinfo as $key=>$value){
+                if($carinfo[$key]==null||$carinfo[$key]=='null')
+                    unset($carinfo[$key]);
+            }
+            if(M('车辆档案','dbo.','difo')->where(array('流水号'=>$_POST['流水号']))->save($carinfo)){
+                echo '保存成功';
+            }
+            else{
+                  echo '保存失败';
+            
+            }
+            exit();
+
+        }
         $carno=$_GET['carno'];
         $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
         $this->assign('carinfo',json_encode($carinfo));
@@ -497,7 +581,7 @@ class ConsumeAction extends Action{
             exit;
         }
     }
-    public function setprice()
+   public function setprice()
     {
         $this->display();
     }
@@ -671,11 +755,11 @@ class ConsumeAction extends Action{
             }
             if($_POST['luntai']!='')
             {
-                $data['运输证号']=$_POST['luntai'];
+                $data['轮胎规格']=$_POST['luntai'];
             }
             if($_POST['jiyou']!='')
             {
-                $data['车架号']=$_POST['jiyou'];
+                $data['机油格']=$_POST['jiyou'];
             }
             if($_POST['kongqi']!='')
             {

@@ -12,8 +12,11 @@
     <link rel="icon" type="image/png" href="assets/i/favicon.png">
     <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
     <meta name="apple-mobile-web-app-title" content="Amaze UI" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
     <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.7.0/css/amazeui.min.css" />
     <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <!--[if lte IE 9]>
@@ -209,15 +212,15 @@
                                                 <td>{pigcms:$item.车牌号码}</td>
                                                 <td>{pigcms:$item.车主}</td>
                                                 <td>{pigcms:$item.品牌}</td>
-                                                <td>{pigcms:$item.运输证号}</td>
-                                                <td>{pigcms:$item.车架号}</td>
-                                                <td>{pigcms:$item.发动机号}</td>
-                                                <td>{pigcms:$item.发动机型号}</td>
+                                                <td>{pigcms:$item.轮胎规格}</td>
+                                                <td>{pigcms:$item.机油格}</td>
+                                                <td>{pigcms:$item.空气格}</td>
+                                                <td>{pigcms:$item.冷气格}</td>
                                                 <td>{pigcms:$item.保险公司}</td>
                                                 <td>{pigcms:$item.交保到期}</td>
                                                 <td>{pigcms:$item.年检日期}</td>
                                                 <td>{pigcms:$item.车辆图片}</td>
-                                                <td><a href="javascript:void(0);" onclick="modifycarinfo('{pigcms:$item.车牌号码}');"><strong>编辑</strong></a></td>
+                                                <td><a href="javascript:void(0);" onclick="carinfo('{pigcms:$item.车牌号码}');"><strong>编辑</strong></a></td>
                                             </tr>
 
                                         </volist>
@@ -242,10 +245,23 @@
         <!-- content end -->
     </div>
     <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
-    <script src="/tpl/static/assets/js/jquery.min.js"></script>
     <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
+        function carinfo(carno) {
+            $.ligerDialog.open({
+                height: 500,
+                url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
+                width: 900,
+                showMax: true,
+                showToggle: true,
+                showMin: true,
+                isResize: true,
+                modal: false,
+                title: '车俩信息编辑'
+            });
+        }
+
         function modifycarinfo(carno) {
             var submitData = {
                 carno: carno
@@ -256,13 +272,13 @@
                          $('#chezhu').val(data.车主);
                          $('#carno').val(data.车牌号码);
                          $('#pinpai').val(data.品牌);
-                         $('#luntai').val(data.运输证号);
-                         $('#jiyou').val(data.车架号);
-                         $('#kongqi').val(data.发动机号);
+                         $('#luntai').val(data.轮胎规格);
+                         $('#jiyou').val(data.机油格);
+                         $('#kongqi').val(data.空气格);
+                         $('#lengqi').val(data.冷气格);
                          $('#baoxian').val(data.保险公司);
-                         //$('#bxrq').val(data.交保到期);
-                         $('#lengqi').val(data.发动机型号);
                          $('#sftp').val(data.车辆图片);
+                         //$('#bxrq').val(data.交保到期);
                          //$('#nianshen').val(data.年检到期);
                      }
                      

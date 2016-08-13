@@ -1,4 +1,4 @@
-/*
+﻿/*
     http://www.JSON.org/json2.js
     2010-11-17
 
@@ -179,10 +179,11 @@ if (!this.JSON2)
             return isFinite(this.valueOf()) ?
                    this.getUTCFullYear()   + '-' +
                  f(this.getUTCMonth() + 1) + '-' +
-                 f(this.getUTCDate())      + 'T' +
+                 f(this.getUTCDate())      + ' ' +
                  f(this.getUTCHours())     + ':' +
-                 f(this.getUTCMinutes())   + ':' +
-                 f(this.getUTCSeconds())   + 'Z' : null;
+                 f(this.getUTCMinutes()):null;  
+                 //+ ':' +
+                 //f(this.getUTCSeconds())   + 'Z' : null;
         };
 
         String.prototype.toJSON =
@@ -209,7 +210,15 @@ if (!this.JSON2)
 
 
     function quote(string) {
-
+        if (string.split(" ").length >=4){
+            if( string.indexOf('AM')>0|| string.indexOf('PM')>0)
+            {
+                string = todate(string);
+            }
+            else{
+               string = todate2(string);
+            }
+        }
         escapable.lastIndex = 0;
         return escapable.test(string) ?
             '"' + string.replace(escapable, function (a) {
@@ -219,7 +228,35 @@ if (!this.JSON2)
             }) + '"' :
             '"' + string + '"';
     }
-
+    function todate(num) {
+        num = num + "";
+        var date = "";
+        var month = new Array();
+        month["Jan"] = '1'; month["Feb"] = '2'; month["Mar"] = '3'; month["Apr"] = '4'; month["May"] = '5'; month["Jun"] = '6';
+        month["Jul"] = '7'; month["Aug"] = '8'; month["Sep"] = '9'; month["Oct"] = '10'; month["Nov"] = '11'; month["Dec"] = '12';
+        var str1 = num.split(" ");
+        if (str1.length > 4) {
+            date = str1[3] + "-";
+            date = date + month[str1[0]] + "-" + str1[2];
+        } else {
+            date = str1[2] + "-";
+            date = date + month[str1[0]] + "-" + str1[1];
+        }
+        return date;
+    }
+    function todate2(num) { 
+        num = num + "";
+        var date = "";
+        var month = new Array();
+        month["Jan"] = '1'; month["Feb"] = '2'; month["Mar"] = '3'; month["Apr"] = '4'; month["May"] = '5'; month["Jun"] = '6';
+        month["Jul"] = '7'; month["Aug"] = '8'; month["Sep"] = '9'; month["Oct"] = '10'; month["Nov"] = '11'; month["Dec"] = '12';
+        var week = new Array();
+        week["Mon"] = "一"; week["Tue"] = "二"; week["Wed"] = "三"; week["Thu"] = "四"; week["Fri"] = "五"; week["Sat"] = "六"; week["Sun"] = "日";
+        var str2 = num.split(" ");
+        date = str2[3] + "-";
+        date = date + month[str2[1]] + "-" + str2[2];
+        return date;
+    }
     function str(key, holder) {
         var i,          // The loop counter.
             k,          // The member key.
@@ -230,7 +267,7 @@ if (!this.JSON2)
             value = holder[key];
         if (value && typeof value === 'object' &&
                 typeof value.toJSON === 'function') {
-            value = value.toJSON(key);
+            value = value.toString();
         }
         if (typeof rep === 'function') {
             value = rep.call(holder, key, value);

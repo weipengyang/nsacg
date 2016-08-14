@@ -2667,7 +2667,8 @@ public function check(){
     		$data[$k]['count'] 	= 1;
     		$cwhere = array('token'=>$this->token,'cardid'=>$thisCard['id'],'coupon_type'=>$type,'coupon_id'=>$n['id']);
     		$count 	= M('Member_card_coupon_record')->where($cwhere)->count();
-            $data[$k]['get_count'] 	= $n['people']-$count;//剩余多少张
+            $leftcount=$n['people']-$count;
+            $data[$k]['get_count'] 	= $leftcount>0?$leftcount:0;//剩余多少张
     		$data[$k]['count'] 	= $n['people'];//总共多少张
     	}
     	$this->assign('firstItemID',$data[0]['id']);

@@ -24,8 +24,10 @@
             allowedFileExtensions: ["jpg", "png", "gif"],
             initialPreview:{pigcms:$files},
             initialPreviewAsData: true,
-            overwriteInitial: false
-        }).on('fileuploaded', function(event, data) {
+            overwriteInitial: false,
+            initialPreviewConfig:{pigcms:$attrs},
+            deleteUrl: '/index.php?g=Query&m=Consume&a=deletefile'
+        }).on('filebatchpreupload', function (event, data) {
             $('#kv-success-box').append('上传完成');
             $('#kv-success-modal').modal('show');
         });;

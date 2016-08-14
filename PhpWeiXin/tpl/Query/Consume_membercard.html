@@ -71,8 +71,12 @@
                                             <TD style='font-size:10px'>
                                              <a href="javascript:void(0);" onclick="carinfo('{pigcms:$list.carno}')">{pigcms:$list.carno}</a>
                                             </TD>
-                                            <TD style='font-size:10px'>{pigcms:$list.carno1}</TD>
-                                            <TD style='font-size:10px'>{pigcms:$list.carno2}</TD>
+                                            <TD style='font-size:10px'>
+                                                <a href="javascript:void(0);" onclick="carinfo('{pigcms:$list.carno1}')">{pigcms:$list.carno1}</a>
+                                            </TD>
+                                            <TD style='font-size:10px'>
+                                                <a href="javascript:void(0);" onclick="carinfo('{pigcms:$list.carno2}')">{pigcms:$list.carno2}</a>
+                                            </TD>
                                             <TD style='font-size:10px'>{pigcms:$list.tel}</TD>
                                             <TD style='font-size:10px'>
                                                 <if condition="$list['getcardtime'] gt 0">

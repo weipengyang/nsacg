@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>车俩信息编辑</title>
+    <title>车主信息编辑</title>
     <meta name="description" content="爱养车" />
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
@@ -12,6 +12,69 @@
     <script type="text/javascript">
         $(function ()
         {
+                  ,[联系电话]
+                  ,[手机号码]
+                  ,[备用电话]
+                  ,[传真]
+                  ,[Email]
+                  ,[通讯地址]
+                  ,[邮编]
+                  ,[登记时间]
+                  ,[备注]
+                  ,[助记码]
+                  ,[会员编号]
+                  ,[类别]
+                  ,[客户]
+                  ,[供应商]
+                  ,[发票类别]
+                  ,[结算方式]
+                  ,[区域]
+                  ,[销售折扣]
+                  ,[信用金额]
+                  ,[送货地址]
+                  ,[开户银行]
+                  ,[税号]
+                  ,[账号]
+                  ,[业务员]
+                  ,[货运方式]
+                  ,[等级]
+                  ,[网址]
+                  ,[预收款]
+                  ,[应收款]
+                  ,[应付款]
+                  ,[往来余款]
+                  ,[预付款]
+                  ,[来源]
+                  ,[跟踪周期]
+                  ,[采购数量]
+                  ,[采购金额]
+                  ,[采购税额]
+                  ,[最近交易]
+                  ,[交易类别]
+                  ,[单据编号]
+                  ,[制单人]
+                  ,[总金额]
+                  ,[销售数量]
+                  ,[销售实际货款]
+                  ,[销售实际税额]
+                  ,[销售虚增货款]
+                  ,[销售虚增税额]
+                  ,[销售毛利]
+                  ,[保险公司]
+                  ,[车管单位]
+                  ,[服务折扣]
+                  ,[会费]
+                  ,[当前积分]
+                  ,[会员到期]
+                  ,[会员]
+                  ,[入会日期]
+                  ,[退会日期]
+                  ,[性别]
+                  ,[出生日期]
+                  ,[QQ号码]
+                  ,[对账摘要]
+                  ,[身份证号]
+            FROM [qxqpt2009].[dbo].[往来单位]
             var form = $("#form1").ligerForm({
                 inputWidth: 160, labelWidth: 85, space: 20,
                 validate: true,
@@ -21,9 +84,10 @@
                             title: '基本信息',
                             fields: [
                                 { display: "流水号", name: "流水号", newline: true, type: "hidden", group: '车辆信息'},
-                                { display: "车牌号码", name: "车牌号码", newline: true, type: "text", group: '车辆信息' },
-                               {
-                                    display: "品牌", name: "品牌", newline: false, type: "combobox",
+                                { display: "会员名称", name: "名称", newline: true, type: "text", group: '车辆信息' },
+                                { display: "联系人", name: "联系人", newline: true, type: "text", group: '车辆信息' },
+                                {
+                                    display: "性别", name: "性别", newline: false, type: "combobox",
                                     options: {
                                         valueField: '品牌',
                                         textField: '品牌',
@@ -81,16 +145,7 @@
                                 { display: "发动机号", name: "发动机号", newline: false, type: "text" },
                                 { display: "燃料类别", name: "燃料类别", newline: true, type: "text" },
                                 { display: "运输证号", name: "运输证号", newline: false, type: "text" },
-                                { display: "发动机型号", name: "发动机型号", newline: false, type: "text" },
-                                { display: "电池", name: "电池", newline: true, type: "text" },
-                                { display: "服务顾问", name: "服务顾问", newline: false, type: "combobox",
-                                    options: {
-                                        valueField: '姓名',
-                                        textField: '姓名',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=getfwgw',
-                                    }
-                                },
+                                 { display: "发动机型号", name: "发动机型号", newline: false, type: "text" },
                                {
                                     display: "车主", name: "车主", newline: true, type: "popup", options: {
                                         condition: {
@@ -240,7 +295,6 @@
                     $("input[ligeruiid='颜色']").val(carinfo['颜色']);
                     $("input[ligeruiid='外观']").val(carinfo['外观']);
                     $("input[ligeruiid='保险公司']").val(carinfo['保险公司']);
-                    $("input[ligeruiid='服务顾问']").val(carinfo['服务顾问']);
                     $("div[data-index='1']").html(
                       '<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=fileupload&carno='+ carinfo['流水号']+ '"></iframe></div>'
                      );

@@ -30,7 +30,9 @@
         <div class="content" style="margin:0px">
             <volist name="carlist" id="item">
                 <div class="card" style="background-color:#0065EE;">
-                    <div class="card-header" style="color:#FFFFFF;font-size:1rem">{pigcms:$item.carno}</div>
+                    <div class="card-header" style="color:#FFFFFF;font-size:1rem">
+                        <span>{pigcms:$item.carno}</span><span style="float:right;color:darkorange;font-size:0.6rem">服务顾问:{pigcms:$item.carinfo.服务顾问}</span>
+                    </div>
                     <div class="card-content">
                         <div class="card-content-inner">
                             <div class="row" style="margin:0px;color:#FFFFFF;font-size:0.6rem">

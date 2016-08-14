@@ -14641,6 +14641,7 @@
     <Content Include="tpl\Query\admin-table.html" />
     <Content Include="tpl\Query\admin-user.html" />
     <Content Include="tpl\Query\blog.html" />
+    <Content Include="tpl\Query\Consume_memberinfo.html" />
     <Content Include="tpl\Query\Consume_carinfo.html" />
     <Content Include="tpl\Query\Consume_comment.html" />
     <Content Include="tpl\Query\Consume_fileupload.html" />

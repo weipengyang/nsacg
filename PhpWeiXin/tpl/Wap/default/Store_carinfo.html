@@ -31,7 +31,7 @@
             <volist name="list" id="item">
                 <span style="width:100%;text-align:center;font-size:0.6rem">{pigcms:$item.进厂时间|strtotime|date="Y-m-d H:i",###}</span>
                 <div class="card" style="background-color:#016FC4;color:white">
-                    <div class="card-header" ><span>{pigcms:$item.维修类别}</span><span style="float:right;color:darkorange;font-size:0.8rem">服务顾问:{pigcms:$item.接车人}</span></div>
+                    <div class="card-header" ><span>{pigcms:$item.维修类别}</span><span style="float:right;color:darkorange;font-size:0.6rem">接车人:{pigcms:$item.接车人}</span></div>
                     <div class="card-content">
                         <div class="card-content-inner" style="font-size:0.6rem;">
                             <div class="row">
@@ -84,11 +84,13 @@
                             </div>
                         </div>
                     </notempty>
-                    <div class="card-content">
-                        <div class="card-content-inner" style="font-size:0.6rem;">
-                           
+                    <if condition="$item['备注'] neq ''">
+                        <div class="card-content">
+                            <div class="card-content-inner" style="font-size:0.6rem;">
+                                {pigcms:$item.备注}
+                            </div>
                         </div>
-                    </div>
+                    </if>
                     <div class="card-footer" style="font-size:0.6rem;color:white">当前状态:{pigcms:$item.当前状态}
                         <if condition="$item['是否评论'] neq '是'">
                             <a href="{pigcms::U('Store/wxcomment', array('orid' => $item['流水号']))}" class="button  button-success" style="color:white">评价</a>

@@ -202,14 +202,13 @@
                                             <th class="table-title ">保险到期</th>
                                             <th class="table-title ">年审到期</th>
                                             <th class="table-title ">是否拍照</th>
-                                            <th class="table-title ">操作</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <volist name="yelist" id="item">
                                             <tr>
                                                 <td>{pigcms:$item.制单日期|strtotime|date='Y-m-d',###}</td>
-                                                <td>{pigcms:$item.车牌号码}</td>
+                                                <td><a href="javascript:void(0);" onclick="carinfo('{pigcms:$item.车牌号码}');"><strong>{pigcms:$item.车牌号码}</strong></a></td>
                                                 <td>{pigcms:$item.车主}</td>
                                                 <td>{pigcms:$item.品牌}</td>
                                                 <td>{pigcms:$item.轮胎规格}</td>
@@ -217,10 +216,9 @@
                                                 <td>{pigcms:$item.空气格}</td>
                                                 <td>{pigcms:$item.冷气格}</td>
                                                 <td>{pigcms:$item.保险公司}</td>
-                                                <td>{pigcms:$item.交保到期}</td>
-                                                <td>{pigcms:$item.年检日期}</td>
+                                                <td>{pigcms:$item.交保到期|strtotime|date='Y-m-d',###}</td>
+                                                <td>{pigcms:$item.年检日期|strtotime|date='Y-m-d',###}</td>
                                                 <td>{pigcms:$item.车辆图片}</td>
-                                                <td><a href="javascript:void(0);" onclick="carinfo('{pigcms:$item.车牌号码}');"><strong>编辑</strong></a></td>
                                             </tr>
 
                                         </volist>

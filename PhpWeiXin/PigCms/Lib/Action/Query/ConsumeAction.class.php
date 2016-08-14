@@ -66,6 +66,12 @@ class ConsumeAction extends Action{
         echo json_encode($pinpai);
     
    }
+    public  function getfwgw(){
+         
+        $zxlist=M('员工目录','dbo.','difo')->where(array('接车员'=>'1','姓名'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($zxlist);
+    
+   }
     public  function getchexing(){
          
         $pinpai=M('常见车型','dbo.','difo')->where(array('车型'=>array('like','%'.$_POST['key'].'%')))->select();
@@ -96,17 +102,40 @@ class ConsumeAction extends Action{
         $pinpai=M('车辆颜色','dbo.','difo')->where(array('颜色'=>array('like','%'.$_POST['key'].'%')))->select();
         echo json_encode($pinpai);
     }
+   public function deletefile(){
+       $key=$_POST['key'];
+       $file='./uploads/rlydsv1453614397/cars/'.$key;
+       if(unlink($file)){
+           echo 1;
+           exit;
+       } 
+       echo 0;
+       exit;
+   }
    public function fileupload(){
         $carno=$_GET['carno'];
         $path='./uploads/'.$this->token.'/cars/'.$carno.'/';
         $files=scandir($path);
+        $attrs=array();
         foreach($files as $key=>$value){
-            if(!in_array($files[$key],array('.','..')))
+            if(!in_array($files[$key],array('.','..'))){
                 $files[$key]='http://www.nsayc.com/uploads/rlydsv1453614397/cars/'.$carno.'/'.$value;
+                $attr['key']=$carno.'/'.$value;
+                $attr['showDelete']=true;
+                $attr['showZoom']=true;
+                $attr['width']='120px';
+                array_push($attrs,$attr);
+                
+            }
             else
-                $files[$key]=null;
+                unset($files[$key]);
+          }
+        if($files){
+         $this->assign('files',json_encode(array_values($files)));
+       }else{
+           $this->assign('files','[]');
         }
-        $this->assign('files',json_encode($files));
+        $this->assign('attrs',json_encode(array_values($attrs)));
         $this->assign('carno',$carno);
         $this->display();
     }
@@ -543,6 +572,9 @@ class ConsumeAction extends Action{
             $searchwhere['carno']=array('like',$searchkey);
             $searchwhere['carno1']=array('like',$searchkey);
             $searchwhere['carno2']=array('like',$searchkey);
+            $searchwhere['orderid']=array('like',$searchkey);
+            $searchwhere['number']=array('like',$searchkey);
+            $searchwhere['ordername']=array('like',$searchkey);
             $searchwhere['truename']=array('like',$searchkey);
             $searchwhere['wechaname']=array('like',$searchkey);
             $searchwhere['_logic']='OR';
@@ -862,10 +894,10 @@ class ConsumeAction extends Action{
                 $where['_complex']=$searchwhere;
                 
             }
-            $count=M('维修','dbo.','difo')->where($where)->count();
+            $count=M('车辆资料','dbo.','difo')->where($where)->count();
             $Page = new Page($count,15,$parms);
             $show = $Page->show();
-            $yelist=M('维修','dbo.','difo')->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('流水号 desc')->select();
+            $yelist=M('车辆资料','dbo.','difo')->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('序号 desc')->select();
             $this->assign('page',$show);
             $this->assign('count',$count);
             $this->assign('yelist',$yelist);

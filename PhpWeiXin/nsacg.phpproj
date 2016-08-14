@@ -1024,6 +1024,7 @@
     <Compile Include="PigCms\Lib\Action\Wap\CzzAction.class.php" />
     <Compile Include="PigCms\Lib\Action\Wap\DaofuAction.class.php" />
     <Compile Include="PigCms\Lib\Action\Wap\DianfuAction.class.php" />
+    <Compile Include="PigCms\Lib\Action\Wap\DingdingAction.class.php" />
     <Compile Include="PigCms\Lib\Action\Wap\DiningAction.class.php" />
     <Compile Include="PigCms\Lib\Action\Wap\DishOutAction.class.php" />
     <Compile Include="PigCms\Lib\Action\Wap\EstateAction.class.php" />
@@ -1200,6 +1201,7 @@
     <Compile Include="PigCms\Lib\ORG\checkZend.class.php" />
     <Compile Include="PigCms\Lib\ORG\cont.Tpl.php" />
     <Compile Include="PigCms\Lib\ORG\CrowdfundingReply.class.php" />
+    <Compile Include="PigCms\Lib\ORG\DingtalkSDK.class.php" />
     <Compile Include="PigCms\Lib\ORG\DishOutReply.class.php" />
     <Compile Include="PigCms\Lib\ORG\Email.class.php" />
     <Compile Include="PigCms\Lib\ORG\EstateReply.class.php" />
@@ -27314,6 +27316,7 @@
     <Content Include="tpl\Wap\default\Custom_maps.html" />
     <Content Include="tpl\Wap\default\Custom_spoor.html" />
     <Content Include="tpl\Wap\default\Czz_index.html" />
+    <Content Include="tpl\Wap\default\Dingding_index.html" />
     <Content Include="tpl\Wap\default\Dining_Ajax.html" />
     <Content Include="tpl\Wap\default\Dining_header.html" />
     <Content Include="tpl\Wap\default\Dining_index.html" />

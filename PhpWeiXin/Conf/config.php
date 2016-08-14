@@ -15,5 +15,9 @@ return array(
 	/*定义模版标签*/
 	'TMPL_L_DELIM'   		=>'{pigcms:',			//模板引擎普通标签开始标记
 	'TMPL_R_DELIM'			=>'}',				//模板引擎普通标签结束标记
+    'CORPID'                =>'ding36884f8a82159575',//企业CORPID
+    'CORPSECRET'            =>'tBwwroDNnnRDkC3k5Cqf3CHtVBdPAt0xvnBLqCz0FidKYDWT-Xdz9kPwHySB4Zx_',
+    'SSOsecret'               =>'iP0pnIqnEpo1l0v3CuTXU1fD4NapwA-oH3UB8Opryd1-fZmF-hXDQ0t6SgUt3o2i',//微应用id
+    'AGENTID'               =>'14147381',//微应用id
 );
 ?>

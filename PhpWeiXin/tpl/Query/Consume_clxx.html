@@ -33,39 +33,7 @@
                     </div>
                     <hr>
                     <div class="am-g">
-                        <div class="am-u-sm-6 am-u-md-3">
-                            <div class="am-form-group">
-                                类别
-                                <select data-am-selected="{btnSize: 'sm'}" id="lb">
-                                    <option value="">所有分类</option>
-                                    <option value="蜡水洗车">蜡水洗车</option>
-                                    <option value="蜡水洗车">汽车美容</option>
-                                    <option value="普通快修">普通快修</option>
-                                    <option value="常规保养">常规保养</option>
-                                    <option value="保险理赔">保险理赔</option>
-                                    <option value="汽车维修">汽车维修</option>
-                                </select>
-                           </div>
-                        </div>
-                        <div class="am-u-sm-2 am-u-md-3">
-                            <div class="am-form-group">
-                                <div class="am-input-group am-datepicker-date" data-am-datepicker="{format: 'yyyy-mm-dd'}">
-                                    <input type="text" class="am-form-field" id="my-start" placeholder="开始日期" readonly>
-                                    <span class="am-input-group-btn am-datepicker-add-on">
-                                        <button class="am-btn am-btn-default" type="button"><span class="am-icon-calendar"></span> </button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="am-u-sm-2 am-u-md-3">
-                            <div class="am-input-group am-datepicker-date" data-am-datepicker="{format: 'yyyy-mm-dd'}">
-                                <input type="text" class="am-form-field" id="my-end" placeholder="结束日期" readonly>
-                                <span class="am-input-group-btn am-datepicker-add-on">
-                                    <button class="am-btn am-btn-default" type="button"><span class="am-icon-calendar"></span> </button>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="am-u-sm-2 am-u-md-3">
+                        <div class="am-u-sm-12 am-u-md-3">
                             <div class="am-input-group am-input-group-sm">
                                 <input type="text" id="searchkey" class="am-form-field">
                                 <span class="am-input-group-btn">
@@ -74,126 +42,17 @@
                             </div>
                         </div>
                     </div>
-                    <div class="am-modal am-modal-prompt"  tabindex="-1" id="doc-modal-1">
-                            <div class="am-modal-dialog">
-                                <div class="am-modal-hd">
-                                    车辆信息
-                                    <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
-                                </div>
-                                <div class="am-modal-bd">
-                                    <div class="am-form">
-                                        <div class="am-g am-margin-top">
-                                            <div class="am-u-sm-4 am-u-md-2 am-text-right">
-                                                车牌号码
-                                            </div>
-                                            <div class="am-u-sm-8 am-u-md-4">
-                                                <input type="text" name="carno" id="carno" readonly="readonly" class="am-input-sm">
-                                            </div>
-                                            <div class="am-u-sm-4 am-u-md-2 am-text-right">
-                                                车主
-                                            </div>
-                                            <div class="am-u-sm-8 am-u-md-4">
-                                                <input type="text" name="chezhu" id="chezhu" readonly="readonly" class="am-input-sm">
-                                            </div>
-                                        </div>
-                                        <div class="am-g am-margin-top">
-                                            <div class="am-u-sm-4 am-u-md-2 am-text-right">
-                                                品牌型号
-                                            </div>
-                                            <div class="am-u-sm-8 am-u-md-4">
-                                                <input type="text" name="pinpai" id="pinpai" class="am-input-sm">
-                                            </div>
-                                            <div class="am-u-sm-4 am-u-md-2 am-text-right">
-                                                轮胎规格
-                                            </div>
-                                            <div class="am-u-sm-8 am-u-md-4">
-                                                <input type="text" name="luntai" id="luntai" class="am-input-sm">
-                                            </div>
-                                        </div>
-                                        <div class="am-g am-margin-top">
-                                            <div class="am-u-sm-4 am-u-md-2 am-text-right">
-                                                机油格
-                                            </div>
-                                            <div class="am-u-sm-8 am-u-md-4">
-                                                <input type="text" name="jiyou" id="jiyou" class="am-input-sm">
-                                            </div>
-                                            <div class="am-u-sm-4 am-u-md-2 am-text-right">
-                                                空气格
-                                            </div>
-                                            <div class="am-u-sm-8 am-u-md-4">
-                                                <input type="text" name="kongqi" id="kongqi" class="am-input-sm">
-                                            </div>
-                                        </div>
-                                        <div class="am-g am-margin-top">
-                                            <div class="am-u-sm-4 am-u-md-2 am-text-right">
-                                                冷气格
-                                            </div>
-                                            <div class="am-u-sm-8 am-u-md-4">
-                                                <input type="text" name="lengqi" id="lengqi" class="am-input-sm">
-                                            </div>
-                                            <div class="am-u-sm-4 am-u-md-2 am-text-right">
-                                                年审到期
-                                            </div>
-                                            <div class="am-u-sm-8 am-u-md-4">
-                                                <div class="am-input-group am-datepicker-date" data-am-datepicker="{format: 'yyyy-mm-dd'}">
-                                                    <input type="text" id="nianshen" class="am-form-field" placeholder="年审到期" readonly>
-                                                    <span class="am-input-group-btn am-datepicker-add-on">
-                                                        <button class="am-btn am-btn-default" type="button"><span class="am-icon-calendar"></span> </button>
-                                                    </span>
-                                                </div>
-                                                  </div>
-                                        </div>
-                                        <div class="am-g am-margin-top">
-                                            <div class="am-u-sm-4 am-u-md-2 am-text-right">
-                                                保险公司
-                                            </div>
-                                            <div class="am-u-sm-8 am-u-md-4">
-                                                <input type="text" name="baoxian" id="baoxian" class="am-input-sm">
-                                            </div>
-                                            <div class="am-u-sm-4 am-u-md-2 am-text-right">
-                                                保险到期
-                                            </div>
-                                            <div class="am-u-sm-8 am-u-md-4">
-                                                <div class="am-input-group am-datepicker-date" data-am-datepicker="{format: 'yyyy-mm-dd'}">
-                                                    <input type="text"  class="am-form-field" id="bxrq" placeholder="保险到期" readonly>
-                                                    <span class="am-input-group-btn am-datepicker-add-on">
-                                                        <button class="am-btn am-btn-default" type="button"><span class="am-icon-calendar"></span> </button>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="am-g am-margin-top">
-                                            <div class="am-u-sm-8 am-text-right">
-                                                是否已上传图片
-                                            </div>
-                                            <div class="am-u-sm-4 ">
-                                                <select data-am-selected name="sftp" id="sftp">
-                                                  <option value="" >请选择</option>
-                                                  <option value="是">是</option>
-                                                  <option value="否">否</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div class="am-modal-footer">
-                                    <span class="am-modal-btn" data-am-modal-cancel>取消</span>
-                                    <span class="am-modal-btn" data-am-modal-confirm>提交</span>
-                                </div>
-                            </div>
-                        </div>
-                  
                     <div class="am-g">
                         <div class="am-u-sm-12">
                             <form class="am-form">
                                 <table class="am-table am-table-striped am-table-hover table-main">
                                     <thead>
                                         <tr>
-                                            <th class="table-title">最近维修</th>
-                                            <th class="table-title">车牌号码</th>
                                             <th class="table-title">车主</th>
+                                            <th class="table-title">联系电话</th>
+                                            <th class="table-title">车牌号码</th>
                                             <th class="table-title">品牌型号</th>
+                                            <th class="table-title">车架号</th>
                                             <th class="table-title">轮胎规格</th>
                                             <th class="table-title">机油格</th>
                                             <th class="table-title ">空气格</th>
@@ -201,16 +60,16 @@
                                             <th class="table-title ">保险公司</th>
                                             <th class="table-title ">保险到期</th>
                                             <th class="table-title ">年审到期</th>
-                                            <th class="table-title ">是否拍照</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <volist name="yelist" id="item">
                                             <tr>
-                                                <td>{pigcms:$item.制单日期|strtotime|date='Y-m-d',###}</td>
-                                                <td><a href="javascript:void(0);" onclick="carinfo('{pigcms:$item.车牌号码}');"><strong>{pigcms:$item.车牌号码}</strong></a></td>
                                                 <td>{pigcms:$item.车主}</td>
+                                                <td>{pigcms:$item.联系电话}</td>
+                                                <td><a href="javascript:void(0);" onclick="carinfo('{pigcms:$item.车牌号码}');"><strong>{pigcms:$item.车牌号码}</strong></a></td>
                                                 <td>{pigcms:$item.品牌}</td>
+                                                <td>{pigcms:$item.车架号}</td>
                                                 <td>{pigcms:$item.轮胎规格}</td>
                                                 <td>{pigcms:$item.机油格}</td>
                                                 <td>{pigcms:$item.空气格}</td>
@@ -218,7 +77,6 @@
                                                 <td>{pigcms:$item.保险公司}</td>
                                                 <td>{pigcms:$item.交保到期|strtotime|date='Y-m-d',###}</td>
                                                 <td>{pigcms:$item.年检日期|strtotime|date='Y-m-d',###}</td>
-                                                <td>{pigcms:$item.车辆图片}</td>
                                             </tr>
 
                                         </volist>
@@ -313,18 +171,6 @@
             var $alert = $('#my-alert');
             $('#search').click(function () {
                 var url = '/index.php?g=Query&m=Consume&a=clxx';
-                var endDate = $('#my-end').val();
-                if (endDate != '')
-                    url += '&endDate=' + endDate;
-                var startDate = $('#my-start').val();
-                if (startDate != '')
-                    url += '&startDate=' + startDate;
-                var shop = $('#shop').val();
-                if (shop != '')
-                    url += '&shop=' + lb;
-                var lb = $('#lb').val();
-                if (lb != '')
-                    url += '&lb=' + lb;
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     url += '&searchkey=' + searchkey;

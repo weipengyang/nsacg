@@ -4,6 +4,7 @@ class DingdingAction extends BaseAction {
 		 
 		$url='https://oapi.dingtalk.com/gettoken?corpid='.C('CORPID').'&corpsecret='.C('CORPSECRET');
 		$result=$this->dingtalkcurl($url);
+        Log::write(json_encode($result));
 		if($result['errcode']!==0){
 			$this->error('获取token失败'.$result['errmsg']);
 		}else{
@@ -13,16 +14,13 @@ class DingdingAction extends BaseAction {
 	}
 
 	public function index(){
-		//判断是否存在session,不存在就获取code
-		session(null);//使用时请删除这句
-	  if(session('?userid')){
-	     $this -> redirect(U('dingtalk/dd_nav_bgcolor=FFFF6600'));
-	  }else{
-		  $this->assign('corpId',C('CORPID'));
-		  $this->assign('second',C('SECOND')); 
-		  $this->display();
-	  }
-		
+	 
+        $jsapi=$this->getConfig('29443806');
+        $this->getuser();
+        $this->assign('jsapi',$jsapi);
+		$this->assign('corpId',C('CORPID'));
+		$this->assign('second',C('SECOND')); 
+		$this->display();
 	  
 	}
 	
@@ -32,9 +30,10 @@ class DingdingAction extends BaseAction {
 			
 		}else{
 			//换取用户资料
-			$dingtalkf=$result['access_token'];
 			$url="https://oapi.dingtalk.com/user/getuserinfo?access_token=".$this->token."&code=".$_GET['code'];
 			$result=$this->dingtalkcurl($url);
+            Log::write(json_encode('用户信息'.$result));
+
 			if($result['errcode']!==0){
 			  $this->error('获取个人资料失败'.$result['errmsg']);
 			  exit();
@@ -51,14 +50,19 @@ class DingdingAction extends BaseAction {
 	}
 	
 	
-	
+	public function getuser($mobile='')
+    {
+        $url='https://oapi.dingtalk.com/user/get_by_mobile?access_token='.$this->token.'&mobile=18824160215';
+        $result=$this->dingtalkcurl($url);
+        Log::write(json_encode('手机号码'.json_encode($result)));
+
+    }
 	public function getConfig($agen)
     {
         $corpId = C('CORPID');
         $agentId = $agen;
         $nonceStr = '123456';
         $timeStamp = (String)time();
-        
         
         //获取jsapi
 		$url='https://oapi.dingtalk.com/get_jsapi_ticket?access_token='.$this->token;
@@ -120,37 +124,14 @@ class DingdingAction extends BaseAction {
 	
 	public function sendoa(){
 		$url='https://oapi.dingtalk.com/message/send?access_token='.$this->token;
-		$data['touser']=session('userid');//收件人
-		$data['agentid']=C('AGENTID');//微应用id
-		$data['msgtype']="oa";
-		
-		$datau['message_url']='http://www.yemxing.com/index.php/Home/Index/index?dd_nav_bgcolor=FFFF6600';//点击跳转地址
-	
-		$datas['head']=array('bgcolor'=>'FFff6600','text'=>'测试OA消息');
-		
-		
-		$datasb['title']='这是测试消息';
-		$datasb['form']=array(
-		                array('key'=>'消息类型：',
-						      'value'=>'OA'),
-						array('key'=>'userid：',
-						      'value'=>session('userid')),
-						array('key'=>'作者QQ：',
-						      'value'=>'773477953'),
-						array('key'=>'群号：',
-						      'value'=>'560364185'),
-						array('key'=>'欢迎：',
-						      'value'=>'入群交流'));
-		$datasb['content']='如需开发更多功能，请找联系QQ';
-		$datab['body']=$datasb;
-		
-		$data['oa']=array_merge($datau,$datas,$datab);
+		//$data['touser']=session('userid');//收件人
+		$data['agentid']='29443806';//微应用id
+		$data['msgtype']="text";		
+		$datasb['content']='测试消息';
+		$data['text']=$datasb;
 		$send=$this->dingtalkcurl($url,json_encode($data));
-		if($send['errcode']!==0){
-			$this->error('发送失败！原因：'.$send['errmsg']);
-		}else{
-			$this->success('发送成功，请注意查收');
-		}
+        Log::write(json_encode('发送消息'.json_encode($send)));
+
 	}
 
 }

@@ -36,15 +36,17 @@ function selectall(name) {
     <div class="msgWrap">
         <form method="post" action="" id="info">
             <input name="delall" type="hidden" value="del">
-            <input name="wxid" type="hidden" value="gh_423dwjkewad">
             <table class="ListProduct" border="0" cellspacing="0" cellpadding="0" width="100%">
                 <thead>
                     <tr>
                         <th class="select"><input type="checkbox" value="" id="check_box" onclick="selectall('id[]');"></th>
-                        <th>优惠券兑换码</th>
+                        <th>编号</th>
+                        <th>兑换码名称</th>
+                        <th>兑换码</th>
                         <th>生成时间</th>
                         <th>过期时间</th>
                         <th>兑换时间</th>
+                        <th>是否激活</th>
                         <th class="edit norightborder">状态</th>
                         <th>会员资料</th>
                         <th>操作</th>
@@ -54,12 +56,17 @@ function selectall(name) {
                     <volist name="lottery" id="data">
                         <tr>
                             <td><input type="checkbox" value="{pigcms:$data.id}" class="cbitem" name="id_{pigcms:$i}"></td>
+                            <td><div>{pigcms:$data.lottery_num}</div></td>
+                            <td><div>{pigcms:$data.name}</div></td>
                             <td><div>{pigcms:$data.coupon_num}</div></td>
                             <td><div>{pigcms:$data.addtime|date="Y-m-d",###}</div></td>
                             <td><div>{pigcms:$data.overtime|date="Y-m-d",###}</div></td>
                             <td><div>
                                  <if condition="$data.usetime gt 0">{pigcms:$data.usetime|date="Y-m-d",###}</if>
                                 </div>
+                            </td>
+                            <td>
+                                <if condition="$data['isactived'] eq 1">已激活<else /><strong>未激活</strong></if>
                             </td>
                             <td>
                                 <!--a href="">使用统计</a-->

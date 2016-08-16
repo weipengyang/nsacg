@@ -103,14 +103,18 @@ class ConsumeAction extends Action{
         echo json_encode($pinpai);
     }
    public function deletefile(){
-       $key=$_POST['key'];
-       $file='./uploads/rlydsv1453614397/cars/'.$key;
-       if(unlink($file)){
-           echo 1;
+       
+       $user=M('用户管理','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();
+       if($user['权限']=='超级用户'){
+           $key=$_POST['key'];
+           $file='./uploads/rlydsv1453614397/cars/'.$key;
+           if(unlink($file)){
+               echo 1;
+               exit;
+           } 
+           echo 0;
            exit;
-       } 
-       echo 0;
-       exit;
+       }
    }
    public function fileupload(){
         $carno=$_GET['carno'];
@@ -1192,7 +1196,7 @@ class ConsumeAction extends Action{
             $data['结算日期']=date('Y-m-d',time());
             $data['下次保养']=null;
             $data['报价金额']=0;
-            $data['应收金额']=0;
+            $data['应收金额']=0; 
             if(strpos($data['车主'], 'ACG') === 0||(strpos($data['车主'], 'AYC') === 0)){
                 $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0001'))->find();
             }elseif($carinfo['客户类别']=='VIP客户'){

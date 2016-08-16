@@ -10,9 +10,21 @@
         <table class="userinfoArea" border="0" cellspacing="0" cellpadding="0" width="100%">
             <tbody>
                 <tr>
+                    <th>兑换券名称：</th>
+                    <td>
+                        <input type="text" class="px" id="name" value="" name="name">
+                    </td>
+                </tr>
+                <tr>
                     <th>兑换券位数：</th>
                     <td>
-                        <input type="text" class="px" id="weishu" value="10" name="weishu">&nbsp;位
+                        <input type="text" class="px" id="weishu" value="20" name="weishu">&nbsp;位
+                    </td>
+                </tr>
+                <tr>
+                    <th>类型标示：</th>
+                    <td>
+                        <input type="text" class="px" id="type" value="20" name="type">
                     </td>
                 </tr>
                 <tr>
@@ -67,6 +79,8 @@
       var couponlist = [];
       var weishu = $("#weishu").val();
       var num = $("#num").val();
+      var name = $("#name").val();
+      var type = $("#type").val();
       var days = $("#days").val();
       $("#couponlist :text").each(function (i, a) {
           var coupon = {};
@@ -78,7 +92,9 @@
           couponlist: couponlist,
           weishu: weishu,
           num: num,
-          days:days
+          name: name,
+          type: type,
+          days: days
       };
       $.post('/index.php?g=User&m=Member_card&a=lottery_add&token={pigcms:$token}', submitData,
       function (data) {

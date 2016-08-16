@@ -193,12 +193,15 @@ class Member_cardAction extends UserAction{
           $weishu=intval($_POST['weishu']);
           $num=intval($_POST['num']);
           $days=intval($_POST['days']);
+          $data['name']=$_POST['name'];
+          $type=$_POST['type'];
           $data['token']=$this->token;
           $data['addtime']=time();
           $data['overtime']=strtotime(date('Y-m-d',time())."+$days day");
           for($i=0;$i<$num;$i++)
           {
                $couponnum=$this->getcode($weishu,0,1);
+               $data['lottery_num']=date('Ymd',time()).trim($type,' ').str_pad($i+1,5,'0',STR_PAD_LEFT);
                $data['coupon_num']=$couponnum;
                $db->add($data);
               foreach($couponlist as $c)

@@ -459,67 +459,97 @@ private function sellbill($price,$name){
 
 }
 
-private function washcar($price,$carno,$type='AYC0002',$wxlb='蜡水洗车'){
+private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车'){
     //if($this->wecha_id=='ohD3dviFloHSvcl9ieoXFibqPFJM')
     {
-        $data=M('维修','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
-        $data['流水号']=null;
-        unset( $data['流水号']);
-        unset($data['ROW_NUMBER']);
-
-        $code=M('编号单','dbo.','difo')->where(array('类别'=>'WX','日期'=>date('Y-m-d', time())))->max('队列');
-        $bianhao='WX-'.date('ymd', time()).'-'.str_pad(($code+1),3,'0',STR_PAD_LEFT);
-        M('编号单','dbo.','difo')->add(array('单据编号'=>$bianhao,'队列'=>($code+1),'类别'=>'WX','日期'=>date('Y-m-d', time())));
-        $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
-        $data['车牌号码']=$carno;
-        $data['送修人']=$carinfo['手机号码'];
-        foreach($data as $key=>$value){
-            $data[$key]=$carinfo[$key];
-        }
-        $data['接车人']='系统自动';
-        $data['ID']=$this->getcode(10,0,1);
-        $data['制单日期']=date('Y-m-d',time());
-        $data['制单人']='系统录单';
-        $data['保修类别']='保外';
-        $data['单据类别']='快修单';
-        $data['当前主修人']='';
-        $data['结算客户']=$carinfo['车主'];;
-        $data['结算客户ID']=$carinfo['客户ID'];
-        $data['当前状态']='结算';
-        $data['维修状态']='结算';
-        $data['进厂时间']=date('Y-m-d',time());
-        $data['结算日期']=date('Y-m-d',time());
-        $data['下次保养']=null;
-        $data['维修类别']=$wxlb;
-        $data['报价金额']=$price;
-        $data['应收金额']=$price;
-        $data['业务编号']=$bianhao;
-        M('维修','dbo.','difo')->add($data);
-        $row=array();
-        $row['ID']=$data['ID'];
-        if($price==0)
-        {
-            $row['项目编号']='AYC0001';
-            $row['项目名称']='会员券消费';
-            
+        $carinfo=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'当前状态'=>array('neq','结束')))->find();
+        if($carinfo){
+            $row=array();
+            $row['ID']=$carinfo['ID'];
+            if($price==0){
+                    $row['项目编号']='AYC0001';
+                    $row['项目名称']='会员券消费';
+                    
+                }
+            else{
+                $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>$type))->find();
+                $row['项目编号']=$xm['项目编号'];
+                $row['项目名称']=$xm['项目名称'];
+            }
+            $row['维修工艺']='';
+            $row['结算方式']='客付';
+            $row['工时']=1;
+            $row['单价']=$price;
+            $row['金额']=$price;
+            $row['折扣']=1;
+            $row['提成工时']=1;
+            $row['提成金额']=0;
+            $row['开工时间']=date('Y-m-d H:i',time());
+            $row['完工时间']=date('Y-m-d H:i',time());
+            $row['是否同意']=1;
+            $row['已维修']='0小时'; 
+            M('维修项目','dbo.','difo')->add($row);
+        
         }else{
-            $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>$type))->find();
-            $row['项目编号']=$xm['项目编号'];
-            $row['项目名称']=$xm['项目名称'];
+            $data=M('维修','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
+            $data['流水号']=null;
+            unset( $data['流水号']);
+            unset($data['ROW_NUMBER']);
+
+            $code=M('编号单','dbo.','difo')->where(array('类别'=>'WX','日期'=>date('Y-m-d', time())))->max('队列');
+            $bianhao='WX-'.date('ymd', time()).'-'.str_pad(($code+1),3,'0',STR_PAD_LEFT);
+            M('编号单','dbo.','difo')->add(array('单据编号'=>$bianhao,'队列'=>($code+1),'类别'=>'WX','日期'=>date('Y-m-d', time())));
+            $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
+            $data['车牌号码']=$carno;
+            $data['送修人']=$carinfo['手机号码'];
+            foreach($data as $key=>$value){
+                $data[$key]=$carinfo[$key];
+            } 
+            $data['接车人']='系统自动';
+            $data['ID']=$this->getcode(10,0,1);
+            $data['制单日期']=date('Y-m-d',time());
+            $data['制单人']='系统录单';
+            $data['保修类别']='保外';
+            $data['单据类别']='快修单';
+            $data['当前主修人']='';
+            $data['结算客户']=$carinfo['车主'];;
+            $data['结算客户ID']=$carinfo['客户ID'];
+            $data['当前状态']='结算';
+            $data['维修状态']='结算';
+            $data['进厂时间']=date('Y-m-d',time());
+            $data['结算日期']=date('Y-m-d',time());
+            $data['下次保养']=null;
+            $data['维修类别']=$wxlb;
+            $data['报价金额']=$price;
+            $data['应收金额']=$price;
+            $data['业务编号']=$bianhao;
+            M('维修','dbo.','difo')->add($data);
+            $row=array();
+            $row['ID']=$data['ID'];
+            if($price==0)
+            {
+                $row['项目编号']='AYC0001';
+                $row['项目名称']='会员券消费';
+                
+            }else{
+                $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>$type))->find();
+                $row['项目编号']=$xm['项目编号'];
+                $row['项目名称']=$xm['项目名称'];
+            }
+            $row['维修工艺']='';
+            $row['结算方式']='客付';
+            $row['工时']=1;
+            $row['单价']=$price;
+            $row['金额']=$price;
+            $row['折扣']=1;
+            $row['提成工时']=1;
+            $row['提成金额']=0;
+            $row['开工时间']=date('Y-m-d H:i',time());
+            $row['完工时间']=date('Y-m-d H:i',time());
+            $row['是否同意']=1;
+            $row['已维修']='0小时'; 
+            M('维修项目','dbo.','difo')->add($row);
         }
-        $row['维修工艺']='';
-        $row['结算方式']='客付';
-        $row['工时']=1;
-        $row['单价']=$price;
-        $row['金额']=$price;
-        $row['折扣']=1;
-        $row['提成工时']=1;
-        $row['提成金额']=0;
-        $row['开工时间']=date('Y-m-d H:i',time());
-        $row['完工时间']=date('Y-m-d H:i',time());
-        $row['是否同意']=1;
-        $row['已维修']='0小时'; 
-        M('维修项目','dbo.','difo')->add($row);
     }
 } 
 public function check(){
@@ -724,7 +754,7 @@ public function check(){
                $arr["time"] = time();
                $arr["cat"] = 99;
                $arr["staffid"] = 0;
-               if(strpos($ordername, '保险') === 0){
+               if(strpos($ordername, '保险') !== false){
                    $arr["score"] = 0;
 
                }else{
@@ -2108,11 +2138,14 @@ public function check(){
                       $this->sellbill($va['price'],$product['name']);
                    }
                    else{
-                       if(strpos($product['name'], '打蜡') === 0){
-                            $this->washcar($va['price'],$carno,$product['project'],'汽车美容');
+                       if(strpos($product['name'], '打蜡') !== false){
+                            $this->genwxrecord($va['price'],$carno,$product['project'],'汽车美容');
+                       }
+                       elseif(strpos($product['name'], '洗车') !== false){
+                           $this->genwxrecord($va['price'],$carno,$product['project'],'蜡水洗车');
                        }
                        else{
-                            $this->washcar($va['price'],$carno,$product['project'],'蜡水洗车');
+                            $this->genwxrecord($va['price'],$carno,$product['project'],'普通快修');
                        }
                    }
                    M('Product')->where(array('id' => $va['id']))->setInc('salecount', $salecount);
@@ -2259,14 +2292,14 @@ public function check(){
                 );
                 //Log::write(json_encode($r),Log::DEBUG);
                 $model->sendTempMsg($dataKey,$dataArr);
-                if(strpos($couponname['title'], '打蜡') === 0){
-                 $this->washcar(0,$arr['carno'],'AYC0001','汽车美容');
+                if(strpos($couponname['title'], '打蜡') !== false){
+                 $this->genwxrecord(0,$arr['carno'],'AYC0001','汽车美容');
                 }
-                elseif(strpos($couponname['title'], '救援') === 0){
-                    $this->washcar(0,$arr['carno'],'AYC0001','普通快修');
+                elseif(strpos($couponname['title'], '救援') !== false){
+                    $this->genwxrecord(0,$arr['carno'],'AYC0001','普通快修');
                 }
                 else{
-                 $this->washcar(0,$arr['carno'],'AYC0001','蜡水洗车');
+                 $this->genwxrecord(0,$arr['carno'],'AYC0001','蜡水洗车');
                } 
                 echo "线下消费成功";	
                 exit;
@@ -2371,14 +2404,14 @@ public function check(){
                 $db->where(array('id'=>$itemid))->setInc('usetime',1);
                 //优惠劵使用记录
                 M('Member_card_coupon_record')->where($rwhere)->save(array('use_time'=>time(),'is_use'=>'1'));
-                if(strpos($couponname['title'], '打蜡') === 0){
-                    $this->washcar(0,$arr['carno'],'AYC0001','汽车美容');
+                if(strpos($couponname['title'], '打蜡') !== false){
+                    $this->genwxrecord(0,$arr['carno'],'AYC0001','汽车美容');
                 }
-                elseif(strpos($couponname['title'], '救援') === 0){
-                     $this->washcar(0,$arr['carno'],'AYC0001','普通快修');
+                elseif(strpos($couponname['title'], '救援') !== false){
+                     $this->genwxrecord(0,$arr['carno'],'AYC0001','普通快修');
                  }
                 else{
-                    $this->washcar(0,$arr['carno'],'AYC0001','蜡水洗车');
+                    $this->genwxrecord(0,$arr['carno'],'AYC0001','蜡水洗车');
                 } 
                 echo '兑换成功';
             }

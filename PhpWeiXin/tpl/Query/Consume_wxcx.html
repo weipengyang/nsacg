@@ -280,7 +280,7 @@
                                 </thead>
                                 <tbody>
                                     <volist name="yelist" id="item">
-                                        <tr onclick="wxinfo('{pigcms:$item.车牌号码}');;">
+                                        <tr onclick="wxinfo('{pigcms:$item.序号}');;">
                                             <td>{pigcms:$item.当前状态}</td>
                                             <td>{pigcms:$item.制单日期|strtotime|date='Y-m-d',###}</td>
                                             <td>{pigcms:$item.制单人}</td>
@@ -299,7 +299,7 @@
                                             <td>{pigcms:$item.年检日期|strtotime|date='Y-m-d',###}</td>
                                             <td>
                                                 <if condition="$item['制单人'] eq '系统录单' and $item['当前主修人'] eq ''">
-                                                    <a href="javascript:void(0);" onclick="assigntask('{pigcms:$item.序号}','{pigcms:$item.ID}');"><strong>派工</strong></a>
+                                                    <a href="javascript:void(0);" onclick="assigntask('{pigcms:$item.序号}');"><strong>派工</strong></a>
                                                 </if>
                                             </td>
                                         </tr>
@@ -329,11 +329,11 @@
     <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
-        function wxinfo(carno) {
+        function wxinfo(xh) {
             stopBubble(event);
             $.ligerDialog.open({
                 height: 500,
-                url: '/index.php?g=Query&m=Consume&a=wxinfo&carno=' + carno,
+                url: '/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh,
                 width: 900,
                 showMax: true,
                 showToggle: true,
@@ -377,7 +377,8 @@
                 window.event.returnValue = false;
             return false;
         }
-        function assigntask(itemid,id) {
+        function assigntask(itemid) {
+            stopBubble(event);
             $('#doc-modal-3').modal({
                 relatedTarget: this,
                 width: 380,
@@ -387,7 +388,6 @@
                     var data = {
                         zhuxiu: zhuxiu,
                         itemid: itemid,
-                        id:id
                     };
                     $.post('/index.php?g=Query&m=Consume&a=wxcx', data,
                       function (msg) {

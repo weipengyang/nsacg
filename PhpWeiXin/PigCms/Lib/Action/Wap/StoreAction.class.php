@@ -459,7 +459,7 @@ private function sellbill($price,$name){
 
 }
 
-private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车'){
+private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',$shop=''){
     //if($this->wecha_id=='ohD3dviFloHSvcl9ieoXFibqPFJM')
     {
         $carinfo=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'当前状态'=>array('neq','结束')))->find();
@@ -512,6 +512,7 @@ private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车')
             $data['保修类别']='保外';
             $data['单据类别']='快修单';
             $data['当前主修人']='';
+            $data['门店']=$shop;
             $data['结算客户']=$carinfo['车主'];;
             $data['结算客户ID']=$carinfo['客户ID'];
             $data['当前状态']='结算';
@@ -1503,6 +1504,7 @@ public function check(){
             exit;
         }
         $carno=$_GET['carno'];
+        $shop=$_GET['shop'];
 		$row = array();
 		$wecha_id = $this->wecha_id ? $this->wecha_id : session('twid');
 		$row['token'] = $this->token;
@@ -1608,10 +1610,10 @@ public function check(){
 			}
         }
         
-        $this->gotopay($orderid,$totalprice,'Store',$ordername,$carno);
+        $this->gotopay($orderid,$totalprice,'Store',$ordername,$carno,$shop);
        
 	}
-    private function gotopay($orderid,$price,$from,$orderName,$carno,$redirect=NULL){
+    private function gotopay($orderid,$price,$from,$orderName,$carno,$shop='',$redirect=NULL){
         
         $userinfo = M('Userinfo');
         $payrecord = M('Member_card_pay_record');
@@ -1667,7 +1669,7 @@ public function check(){
                 $this->redirect(U($urlinfo[0],$parms));
                 
             }else{
-                $this->redirect(U("$from/payReturn",array('orderid'=>$orderid,'carno'=>$carno,'token'=>$this->token,'wecha_id'=>$this->wecha_id,'paytype'=>'CardPay')));
+                $this->redirect(U("$from/payReturn",array('orderid'=>$orderid,'carno'=>$carno,'shop'=>$shop,'token'=>$this->token,'wecha_id'=>$this->wecha_id,'paytype'=>'CardPay')));
             }
             
         }else{
@@ -2085,6 +2087,7 @@ public function check(){
 	public function payReturn() {
 	   $orderid = $_GET['orderid'];
        $carno=$_GET['carno'];
+       $shop=$_GET['shop'];
 	   if ($order = M('Product_cart')->where(array('orderid' => $orderid, 'token' => $this->token))->find()) {
            if (intval($order['paid'])==1) {
                if($order['score']>0)
@@ -2139,13 +2142,13 @@ public function check(){
                    }
                    else{
                        if(strpos($product['name'], '打蜡') !== false){
-                            $this->genwxrecord($va['price'],$carno,$product['project'],'汽车美容');
+                            $this->genwxrecord($va['price'],$carno,$product['project'],'汽车美容',$shop);
                        }
                        elseif(strpos($product['name'], '洗车') !== false){
-                           $this->genwxrecord($va['price'],$carno,$product['project'],'蜡水洗车');
+                           $this->genwxrecord($va['price'],$carno,$product['project'],'蜡水洗车',$shop);
                        }
                        else{
-                            $this->genwxrecord($va['price'],$carno,$product['project'],'普通快修');
+                            $this->genwxrecord($va['price'],$carno,$product['project'],'普通快修',$shop);
                        }
                    }
                    M('Product')->where(array('id' => $va['id']))->setInc('salecount', $salecount);
@@ -2293,13 +2296,13 @@ public function check(){
                 //Log::write(json_encode($r),Log::DEBUG);
                 $model->sendTempMsg($dataKey,$dataArr);
                 if(strpos($couponname['title'], '打蜡') !== false){
-                 $this->genwxrecord(0,$arr['carno'],'AYC0001','汽车美容');
+                    $this->genwxrecord(0,$arr['carno'],'AYC0001','汽车美容',$arr['shop']);
                 }
                 elseif(strpos($couponname['title'], '救援') !== false){
-                    $this->genwxrecord(0,$arr['carno'],'AYC0001','普通快修');
+                    $this->genwxrecord(0,$arr['carno'],'AYC0001','普通快修',$arr['shop']);
                 }
                 else{
-                 $this->genwxrecord(0,$arr['carno'],'AYC0001','蜡水洗车');
+                    $this->genwxrecord(0,$arr['carno'],'AYC0001','蜡水洗车',$arr['shop']);
                } 
                 echo "线下消费成功";	
                 exit;
@@ -2405,13 +2408,13 @@ public function check(){
                 //优惠劵使用记录
                 M('Member_card_coupon_record')->where($rwhere)->save(array('use_time'=>time(),'is_use'=>'1'));
                 if(strpos($couponname['title'], '打蜡') !== false){
-                    $this->genwxrecord(0,$arr['carno'],'AYC0001','汽车美容');
+                    $this->genwxrecord(0,$arr['carno'],'AYC0001','汽车美容',$arr['shop']);
                 }
                 elseif(strpos($couponname['title'], '救援') !== false){
-                     $this->genwxrecord(0,$arr['carno'],'AYC0001','普通快修');
+                    $this->genwxrecord(0,$arr['carno'],'AYC0001','普通快修',$arr['shop']);
                  }
                 else{
-                    $this->genwxrecord(0,$arr['carno'],'AYC0001','蜡水洗车');
+                    $this->genwxrecord(0,$arr['carno'],'AYC0001','蜡水洗车',$arr['shop']);
                 } 
                 echo '兑换成功';
             }

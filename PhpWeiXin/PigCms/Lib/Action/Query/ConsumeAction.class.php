@@ -210,12 +210,32 @@ class ConsumeAction extends Action{
             exit();
 
         }
-        $carno=$_GET['carno'];
-        $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
+        $xh=$_GET['xh'];
+        $carinfo=M('维修','dbo.','difo')->where(array('流水号'=>$xh))->find();
         $this->assign('carinfo',json_encode($carinfo));
         $this->display();
     }
-
+   public function getlog(){
+       $id=$_GET['id'];
+       $carinfo=M('系统日志','dbo.','difo')->where(array('单据编号'=>$id))->select();
+       $data['Rows']=$carinfo;
+       $data['Total']=count($carinfo);
+       echo json_encode($data);
+   }
+   public function getproject(){
+       $id=$_GET['id'];
+       $carinfo=M('维修项目','dbo.','difo')->where(array('ID'=>$id))->select();
+       $data['Rows']=$carinfo;
+       $data['Total']=count($carinfo);
+       echo json_encode($data);
+   }
+   public function getproduct(){
+       $id=$_GET['id'];
+       $carinfo=M('维修配件','dbo.','difo')->where(array('ID'=>$id))->select();
+       $data['Rows']=$carinfo;
+       $data['Total']=count($carinfo);
+       echo json_encode($data);
+   }
    public function carinfo()
     {
         if(IS_POST){
@@ -753,16 +773,19 @@ class ConsumeAction extends Action{
    public function wxcx()
     {  
        if(IS_POST){
-           $id=$_POST['id'];
            $zhuxiu=$_POST['zhuxiu'];
-           $data['当前主修人']=$zhuxiu;
            $itemid=$_POST['itemid'];
            $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>$zhuxiu))->find();
-           M('维修项目','dbo.','difo')->where(array('ID'=>$id))->save(array('主修人'=>$zhuxiu,'班组'=>$yg['班组']));
 
            $wx=M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->find();
+
+           M('维修项目','dbo.','difo')->where(array('ID'=>$wx['ID']))->save(array('主修人'=>$zhuxiu,'班组'=>$yg['班组']));
+
            $this->genbill($wx['应收金额'],$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID']);
-           M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save(array('当前状态'=>'结束'));
+
+           $data['当前主修人']=$zhuxiu;
+           $data['当前状态']='结束';
+           $data['门店']=$yg['部门'];
            $data['出厂时间']=date('Y-m-d H:i',time());
            $data['实际完工']=date('Y-m-d H:i',time());
            $data['结算日期']=date('Y-m-d',time());

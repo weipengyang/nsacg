@@ -67,8 +67,8 @@
                 <div class="am-g">
                     <div class="am-u-sm-12 am-u-md-12">
                         <button type="button" class="am-btn am-btn-primary" data-am-modal="{target: '#doc-modal-1', closeViaDimmer: 0,width:650}">洗车</button>
-                        <button type="button" class="am-btn am-btn-primary" data-am-modal="{target: '#doc-modal-2', closeViaDimmer: 0,width:850}">快修</button>
-                        <button type="button" class="am-btn am-btn-primary" data-am-modal="{target: '#doc-modal-3', closeViaDimmer: 0,width:650}">维修</button>
+                        <button type="button" class="am-btn am-btn-primary" data-am-modal="{target: '#doc-modal-2', closeViaDimmer: 0,width:500}">美容</button>
+                        <button type="button" class="am-btn am-btn-primary" data-am-modal="{target: '#doc-modal-3', closeViaDimmer: 0,width:500}">维修</button>
                     </div>
                 </div>
                 <div class="am-modal am-modal-no-btn" tabindex="-1" id="doc-modal-1">
@@ -149,56 +149,50 @@
                 <div class="am-modal am-modal-no-btn" tabindex="1" id="doc-modal-2">
                     <div class="am-modal-dialog">
                         <div class="am-modal-hd">
-                            快修录入
+                            美容录入
                             <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
                         </div>
                         <div class="am-modal-bd">
                             <div class="am-form">
                                 <div class="am-g am-margin-top">
-                                    <div class="am-u-sm-4 am-u-md-2 am-text-right">
+                                    <div class="am-u-sm-4  am-text-right">
                                         车牌号码
                                     </div>
-                                    <div class="am-u-sm-8 am-u-md-4">
-                                        <input type="text" name="carno" id="carno" class="am-input-sm">
-                                    </div>
-                                    <div class="am-hide-sm-only am-u-md-6">*必填</div>
-                                </div>
-                                <div class="am-g am-margin-top">
-                                    <div class="am-u-sm-4 am-u-md-2 am-text-right">
-                                        车主
-                                    </div>
-                                    <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
-                                        <div id="chezhu"></div>
+                                    <div class="am-u-sm-8 ">
+                                        <input type="text" name="carno1" id="carno1" class="am-input-sm">
                                     </div>
                                 </div>
                                 <div class="am-g am-margin-top">
-                                    <div class="am-u-sm-4 am-u-md-2 am-text-right">
-                                        客户类别
-                                     </div>
-                                    <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
-                                        <select data-am-selected name="group" id="group">
-                                            <volist name="lblist" id="item">
-                                                <option value="{pigcms:$item.客户类别}">{pigcms:$item.客户类别}</option>
+                                    <div class="am-u-sm-4  am-text-right">
+                                        美容项目
+                                    </div>
+                                    <div class="am-u-sm-8  am-u-end col-end">
+                                        <select data-am-selected name="project" id="project">
+                                            <option value="">选择项目</option>
+                                            <volist name="pjlist" id="item">
+                                                <option value="{pigcms:$item.项目编号}">{pigcms:$item.项目名称}</option>
                                             </volist>
-                                            <option value="临时客户">临时客户</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div id="qianyue" class="am-g am-margin-top" style="display:none">
-                                    <div class="am-u-sm-4 am-u-md-2 am-text-right">
-                                        定点金额
+                                <div class="am-g am-margin-top">
+                                    <div class="am-u-sm-4  am-text-right">
+                                        接车人
                                     </div>
-                                    <div class="am-u-sm-8 am-u-md-4">
-                                        <input type="text" name="money" id="money" value="25" class="am-input">
+                                    <div class="am-u-sm-8  am-u-end col-end">
+                                        <select data-am-selected name="fwgw" id="fwgw">
+                                            <volist name="fwlist" id="item">
+                                                <option value="{pigcms:$item.姓名}">{pigcms:$item.姓名}</option>
+                                            </volist>
+                                        </select>
                                     </div>
-                                    <div class="am-hide-sm-only am-u-md-6">元</div>
                                 </div>
                                 <div class="am-g am-margin-top">
-                                    <div class="am-u-sm-4 am-u-md-2 am-text-right">
+                                    <div class="am-u-sm-4  am-text-right">
                                         美容师傅
                                     </div>
-                                    <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
-                                        <select data-am-selected name="person" id="person">
+                                    <div class="am-u-sm-8  am-u-end col-end">
+                                        <select data-am-selected name="mrperson" id="mrperson">
                                             <volist name="list" id="item">
                                                 <option value="{pigcms:$item.姓名}">{pigcms:$item.姓名}</option>
                                             </volist>
@@ -206,11 +200,11 @@
                                     </div>
                                 </div>
                                 <div class="am-g am-margin-top">
-                                    <div class="am-u-sm-4 am-u-md-2 am-text-right">
+                                    <div class="am-u-sm-4 am-text-right">
                                         操作
                                     </div>
-                                    <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
-                                        <button class="am-btn am-btn-primary" id="reflash">
+                                    <div class="am-u-sm-8  am-u-end col-end">
+                                        <button class="am-btn am-btn-primary" id="mrsubmit">
                                             <i class="am-icon-submit"></i>
                                             提交
                                         </button>
@@ -221,33 +215,73 @@
                         </div>
                     </div>
                 </div>
-                <div class="am-modal am-modal-prompt" tabindex="-1" id="doc-modal-3">
+                <div class="am-modal am-modal-no-btn" tabindex="2" id="doc-modal-3">
                     <div class="am-modal-dialog">
                         <div class="am-modal-hd">
-                            派工
+                            维修录入
                             <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
                         </div>
                         <div class="am-modal-bd">
                             <div class="am-form">
-                                <input type="hidden" name="uid" id='uid' value="{pigcms:$uinfo.id}" />
-                                <input type="hidden" name="cardid" id='cardid' value="{pigcms:$cardid}" />
                                 <div class="am-g am-margin-top">
-                                    <div class="am-u-sm-4 am-u-md-4 am-text-right">
-                                        <span class="red">*</span>主修人
+                                    <div class="am-u-sm-4  am-text-right">
+                                        车牌号码
                                     </div>
-                                    <div class="am-u-sm-8 am-u-md-8">
-                                        <select data-am-selected name="zhuxiu" id="zhuxiu">
-                                            <volist name="list" id="item">
+                                    <div class="am-u-sm-8 ">
+                                        <input type="text" name="carno2" id="carno2" class="am-input-sm">
+                                    </div>
+                                </div>
+                                <div class="am-g am-margin-top">
+                                    <div class="am-u-sm-4  am-text-right">
+                                        维修类型
+                                    </div>
+                                    <div class="am-u-sm-8  am-u-end col-end">
+                                        <select data-am-selected name="wxtype" id="wxtype">
+                                            <option value="">选择维修类型</option>
+                                            <option value="常规保养">常规保养</option>
+                                            <option value="汽车维修">汽车维修</option>
+                                            <option value="保险理赔">保险理赔</option>
+                                            <option value="普通快修">普通快修</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="am-g am-margin-top">
+                                    <div class="am-u-sm-4  am-text-right">
+                                        接车人
+                                    </div>
+                                    <div class="am-u-sm-8  am-u-end col-end">
+                                        <select data-am-selected name="fwgw1" id="fwgw1">
+                                            <volist name="fwlist" id="item">
                                                 <option value="{pigcms:$item.姓名}">{pigcms:$item.姓名}</option>
                                             </volist>
                                         </select>
                                     </div>
                                 </div>
+                                <div class="am-g am-margin-top">
+                                    <div class="am-u-sm-4  am-text-right">
+                                        维修师傅
+                                    </div>
+                                    <div class="am-u-sm-8  am-u-end col-end">
+                                        <select data-am-selected name="wxperson" id="wxperson">
+                                            <volist name="wxlist" id="item">
+                                                <option value="{pigcms:$item.姓名}">{pigcms:$item.姓名}</option>
+                                            </volist>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="am-g am-margin-top">
+                                    <div class="am-u-sm-4 am-text-right">
+                                        操作
+                                    </div>
+                                    <div class="am-u-sm-8  am-u-end col-end">
+                                        <button class="am-btn am-btn-primary" id="wxsubmit">
+                                            <i class="am-icon-submit"></i>
+                                            提交
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="am-modal-footer">
-                            <span class="am-modal-btn" data-am-modal-cancel>取消</span>
-                            <span class="am-modal-btn" data-am-modal-confirm>提交</span>
+
                         </div>
                     </div>
                 </div>
@@ -267,14 +301,11 @@
                                         <th class="table-title ">车牌号码</th>
                                         <th class="table-title ">客户类别</th>
                                         <th class="table-title ">联系人</th>
-                                        <th class="table-title">品牌型号</th>
                                         <th class="table-title">轮胎规格</th>
                                         <th class="table-title">机油格</th>
                                         <th class="table-title ">空气格</th>
                                         <th class="table-title ">冷气格</th>
-                                        <th class="table-title ">保险公司</th>
                                         <th class="table-title ">保险到期</th>
-                                        <th class="table-title ">年审到期</th>
                                         <th class="table-title ">操作</th>
                                     </tr>
                                 </thead>
@@ -289,14 +320,11 @@
                                             <td>{pigcms:$item.车主}</td>
                                             <td><a href="javascript:void(0);" onclick="carinfo('{pigcms:$item.车牌号码}');"><strong>{pigcms:$item.车牌号码}</strong></a></td>                                            <td>{pigcms:$item.客户类别}</td>
                                             <td>{pigcms:$item.送修人}</td>
-                                            <td>{pigcms:$item.品牌}</td>
                                             <td>{pigcms:$item.轮胎规格}</td>
                                             <td>{pigcms:$item.机油格}</td>
                                             <td>{pigcms:$item.空气格}</td>
                                             <td>{pigcms:$item.冷气格}</td>
-                                            <td>{pigcms:$item.保险公司}</td>
                                             <td>{pigcms:$item.交保到期|strtotime|date='Y-m-d',###}</td>
-                                            <td>{pigcms:$item.年检日期|strtotime|date='Y-m-d',###}</td>
                                             <td>
                                                 <if condition="$item['制单人'] eq '系统录单' and $item['当前主修人'] eq ''">
                                                     <a href="javascript:void(0);" onclick="assigntask('{pigcms:$item.序号}');"><strong>派工</strong></a>
@@ -325,6 +353,7 @@
         </div>
         <!-- content end -->
     </div>
+    <div id="maingrid4" style="margin:0; padding:0"></div>
     <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
     <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
@@ -400,6 +429,40 @@
                 }
             });
         }
+        var grid = null;
+        $(function () {
+            grid = $("#maingrid4").ligerGrid({
+                columns: [
+                { display: '主键', name: 'CustomerID', align: 'left', width: 120 },
+                { display: '公司名', name: 'CompanyName', minWidth: 60 },
+                { display: '联系名', name: 'ContactName', width: 50, align: 'left' },
+                { display: '联系名', name: 'ContactName', minWidth: 140 },
+                { display: '联系名', name: 'ContactName', minWidth: 140 },
+                { display: '联系名', name: 'ContactName', minWidth: 140 },
+                { display: '联系名', name: 'ContactName', minWidth: 140 },
+                { display: '城市', name: 'City' }
+                ],
+                pageSize: 10,
+                where: f_getWhere(),
+                data: $.extend(true, {}, CustomersData),
+                width: '100%', height: '100%'
+            });
+
+
+            $("#pageloading").hide();
+        });
+        function f_search() {
+            grid.options.data = $.extend(true, {}, CustomersData);
+            grid.loadData(f_getWhere());
+        }
+        function f_getWhere() {
+            if (!grid) return null;
+            var clause = function (rowdata, rowindex) {
+                var key = $("#txtKey").val();
+                return rowdata.CustomerID.indexOf(key) > -1;
+            };
+            return clause;
+        }
         $(document).ready(function () {
 
             $('#carno').blur(function () {
@@ -432,6 +495,10 @@
                 }
             });
             $('#reflash').click(function () {
+                if ($('#carno').val() == '') {
+                    alert('请输入车牌号码');
+                    return;
+                }
                 var submitData = {
                     carno: $('#carno').val(),
                     person: $('#person').val(),
@@ -443,6 +510,50 @@
                       location.href = location.href;
                   });
             });
+            $('#mrsubmit').click(function () {
+                if ($('#carno1').val() == '') {
+                    alert('请输入车牌号码');
+                    return;
+                }
+                if ($('#project').val() == '')
+                {
+                    alert('请选择美容项目');
+                    return;
+                }
+                var submitData = {
+                    carno: $('#carno1').val(),
+                    person: $('#mrperson').val(),
+                    fwgw: $('#fwgw').val(),
+                    project: $('#project').val()
+                };
+                $.post('index.php?g=Query&m=Consume&a=mrrecord', submitData,
+                  function (data) {
+                      alert(data);
+                      location.href = location.href;
+                  });
+            });
+            $('#wxsubmit').click(function () {
+                if ($('#carno2').val() == '') {
+                    alert('请输入车牌号码');
+                    return;
+                }
+                if ($('#wxtype').val()=='') {
+                    alert('请选择维修类型');
+                    return;
+                }
+                var submitData = {
+                    carno: $('#carno2').val(),
+                    person: $('#wxperson').val(),
+                    fwgw: $('#fwgw1').val(),
+                    wxtype: $('#wxtype').val()
+                };
+                $.post('index.php?g=Query&m=Consume&a=wxrecord', submitData,
+                  function (data) {
+                      alert(data);
+                      location.href = location.href;
+                  });
+            });
+
             var startDate = new Date(2014, 11, 20);
             var endDate = new Date(2014, 11, 25);
             var $alert = $('#my-alert');

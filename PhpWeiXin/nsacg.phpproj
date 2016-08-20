@@ -14633,6 +14633,9 @@
     <Content Include="tpl\Other\default\style\js\email.js" />
     <Content Include="tpl\Other\default\style\js\registerSSO.js" />
     <Content Include="tpl\Other\index.html" />
+    <Content Include="tpl\Query\Consume_addproject.html" />
+    <Content Include="tpl\Query\Consume_days - Copy.html" />
+    <Content Include="tpl\Query\Consume_maintenance.html" />
     <Content Include="tpl\Query\Consume_wxinfo.html" />
     <Content Include="tpl\Query\Consume_memberinfo.html" />
     <Content Include="tpl\Query\Consume_carinfo.html" />

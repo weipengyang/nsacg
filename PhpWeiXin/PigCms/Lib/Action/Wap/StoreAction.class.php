@@ -462,10 +462,10 @@ private function sellbill($price,$name){
 private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',$shop=''){
     //if($this->wecha_id=='ohD3dviFloHSvcl9ieoXFibqPFJM')
     {
-        $carinfo=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'当前状态'=>array('neq','结束')))->find();
-        if($carinfo){
+        $wxrecord=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'当前状态'=>array('neq','结束')))->find();
+        if($wxrecord){
             $row=array();
-            $row['ID']=$carinfo['ID'];
+            $row['ID']=$wxrecord['ID'];
             if($price==0){
                     $row['项目编号']='AYC0001';
                     $row['项目名称']='会员券消费';

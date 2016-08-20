@@ -172,7 +172,7 @@
         }
         function checkCarNo(obj) {
             if (obj.value != '') {
-                reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i
+                reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i;
                 if (!reg.test(obj.value)) {
                     $.alert("请输入完整的车牌号码，格式如粤T83G5NB");
                     document.getElementById(obj.id).style.background = "red";
@@ -188,11 +188,12 @@
                 document.getElementById(obj.id).style.background = "red";
                 return;
             }
-            reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i
-            if (!reg.test(obj.value)) {
-                $.alert("请输入完整的车牌号码，格式如粤T83G5NB");
-                document.getElementById(obj.id).style.background = "red";
-                return;
+            reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i;
+            reg2 = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{4}[\u4e00-\u9fa5]$/i;
+            if (!reg.test(obj.value) && !reg2.test(obj.value)) {
+                    $.alert("请输入完整的车牌号码，格式如粤T83G5NB");
+                    document.getElementById(obj.id).style.background = "red";
+                    return;
             }
             document.getElementById(obj.id).style.background = "";
 
@@ -224,11 +225,10 @@
                 $.alert("请输入车牌号码");
                 return;
             }
-            reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i
-            if (!reg.test(carno)) {
-                $.alert("请输入完整的车牌号码，格式如粤T83G5NB");
-                document.getElementById(obj.id).style.background = "red";
-                return;
+            reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i;
+            reg2 = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{4}[\u4e00-\u9fa5]$/i;
+            if (!reg.test(carno)&&!reg2.test(carno)) {
+                    $.alert("请输入完整的车牌号码，格式如粤T83G5NB");
             }
             if (tel == '') {
                 $.alert("请认真输入手机号");

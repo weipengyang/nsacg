@@ -48,11 +48,13 @@
                                 <table class="am-table am-table-striped am-table-hover table-main">
                                     <thead>
                                         <tr>
-                                            <th class="table-title">车主</th>
-                                            <th class="table-title">联系电话</th>
                                             <th class="table-title">车牌号码</th>
+                                            <th class="table-title">联系人</th>
+                                            <th class="table-title">联系电话</th>
                                             <th class="table-title">品牌型号</th>
-                                            <th class="table-title">车架号</th>
+                                            <th class="table-title">年份排量</th>
+                                           <th class="table-title">车架号</th>
+                                            <th class="table-title">发动机型号</th>
                                             <th class="table-title">轮胎规格</th>
                                             <th class="table-title">机油格</th>
                                             <th class="table-title ">空气格</th>
@@ -65,11 +67,13 @@
                                     <tbody>
                                         <volist name="yelist" id="item">
                                             <tr>
-                                                <td>{pigcms:$item.车主}</td>
-                                                <td>{pigcms:$item.联系电话}</td>
                                                 <td><a href="javascript:void(0);" onclick="carinfo('{pigcms:$item.车牌号码}');"><strong>{pigcms:$item.车牌号码}</strong></a></td>
-                                                <td>{pigcms:$item.品牌}</td>
+                                                <td>{pigcms:$item.联系人}</td>
+                                                <td>{pigcms:$item.联系电话}</td>
+                                                <td>{pigcms:$item.品牌}/{pigcms:$item.车型}</td>
+                                                <td>{pigcms:$item.排量}</td>
                                                 <td>{pigcms:$item.车架号}</td>
+                                                <td>{pigcms:$item.发动机型号}</td>
                                                 <td>{pigcms:$item.轮胎规格}</td>
                                                 <td>{pigcms:$item.机油格}</td>
                                                 <td>{pigcms:$item.空气格}</td>

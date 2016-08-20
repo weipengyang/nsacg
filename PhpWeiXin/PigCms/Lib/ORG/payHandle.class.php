@@ -121,6 +121,8 @@ final class payHandle
 					$arr["time"] = time();
 					$arr["cat"] = 99;
 					$arr["staffid"] = 0;
+					$arr["shop"] =$_GET['shop'];
+					$arr["carno"] = $_GET['carno'];
 
                     if(isset($_GET['redirect'])) {
 						$infoArr = explode("|", $_GET["redirect"]);
@@ -142,7 +144,6 @@ final class payHandle
                         $thisUser = $userinfo_db->where(array("token" => $thisCard["token"], "wecha_id" => $arr["wecha_id"]))->find();
                         $userArr = array();
                         $userArr["expensetotal"] = $thisUser["expensetotal"] + $arr["expense"];
-                        Log::write('dddd'.$_GET['orderName']);
                         if($_GET['orderName']!='代办服务支付'){
                             $userArr["total_score"] = $thisUser["total_score"] + $arr["score"];
   					        M("Member_card_use_record")->add($arr);

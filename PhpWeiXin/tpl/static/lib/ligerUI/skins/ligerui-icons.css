@@ -1,4 +1,4 @@
-﻿.l-icon{ width:16px; height:16px; overflow:hidden;}
+﻿.l-icon{ width:16px; height:16px; overflow:hidden;margin-bottom:2px}
 .l-icon-add{ background:url('icons/add.gif') no-repeat center;}
 .l-icon-edit{ background:url('icons/edit.gif') no-repeat center;}
 .l-icon-view{ background:url('icons/view.gif') no-repeat center;}

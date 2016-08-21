@@ -6,6 +6,7 @@
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
 
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
@@ -338,18 +339,29 @@
                         ],
                         url: '/index.php?g=Query&m=Consume&a=getproject',
                         pageSize: 10,
-                        isScroll: true,
                         delayLoad: true,
                         checkbox:true,
                         urlParms: { id: carinfo['ID'] },
                         rownumbers: true,
+                        isScroll:true,
                         toolbar: {
                             items: [
                             {
                                 text: '增加',
                                 click: function () {
-                                    alert('1');
-                                }, icon: 'add'
+                                    $.ligerDialog.open({
+                                        height: 600,
+                                        url: 'index.php?&g=Query&m=Consume&a=addproject',
+                                        width: 900,
+                                        showMax: true,
+                                        showToggle: true,
+                                        showMin: true,
+                                        isResize: true,
+                                        modal: false,
+                                        title: '增加维修项目'
+                                    });
+                                   
+                                }, icon: 'ad icon iconfont icon-dingdanguanli'
                             },
                             { line: true },
                             { text: '派工', click: null, icon: 'memeber' },

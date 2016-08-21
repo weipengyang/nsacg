@@ -28,6 +28,17 @@ class ConsumeAction extends Action{
         }
     }
 
+    public function addproject(){
+        if(IS_POST){
+            $result=M('','dbo','difo')->query("SELECT 类别 [text],'true' isexpand FROM 项目分类");
+            echo json_encode($result);
+            exit;
+        }
+        else{
+            $this->display();
+        }
+    }
+
     public  function getcarinfo(){
     
         $carno=$_GET['carno'];
@@ -55,6 +66,31 @@ class ConsumeAction extends Action{
         }
         $userinfo=M('往来单位','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->select();
         $count=M('往来单位','dbo.','difo')->where($where)->count();
+        $data['Rows']=$userinfo;
+        $data['Total']=$count;
+        echo json_encode($data);
+    
+    }
+    public  function getprojectbyname(){
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $where['1']=1;
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){       
+            $searchwhere['名称']=array('like',$searchkey);
+            $searchwhere['会员编号']=array('like',$searchkey);
+            $searchwhere['联系人']=array('like',$searchkey);
+            $searchwhere['联系电话']=array('like',$searchkey);
+            $searchwhere['手机号码']=array('like',$searchkey);
+            $searchwhere['业务员']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $userinfo=M('项目目录','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->select();
+        $count=M('项目目录','dbo.','difo')->where($where)->count();
         $data['Rows']=$userinfo;
         $data['Total']=$count;
         echo json_encode($data);
@@ -300,14 +336,13 @@ class ConsumeAction extends Action{
 		$where['tp_member_card_create.wecha_id']=array('neq','');
         $parms=$_GET;
 		if (IS_POST){
-			if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
+			if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
                 $searchkey='%'.trim($_POST['searchkey']).'%';
-                $parms['searchkey']=$_POST['searchkey'];
 			}
 		}
         else
         {
-            if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+            if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])!=''){
                 $searchkey='%'.trim($_GET['searchkey']).'%';
 			}
         }

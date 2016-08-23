@@ -139,9 +139,9 @@ class StoreAction extends WapAction{
             $user['carno']=str_replace(' ','',$user['carno']);
             M('member_card_car')->where(array('token' => $this->token,wecha_id=>$this->wecha_id))->delete();
             $count=M('member_card_car')->where(array('token' => $this->token,'carno'=>$user['carno']))->count();
-            if($count>=2)
+            if($count>=1)
             {
-                echo $user['carno'].'车牌已经绑定两个微信，每个车牌最多绑定两个微信';exit;
+                echo $user['carno'].'车牌已经绑定，每个车牌最多绑定一个微信';exit;
             }
 			if (empty($user['tel'])) {
 				echo "电话号码不能为空!"; exit;

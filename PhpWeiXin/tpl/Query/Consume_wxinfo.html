@@ -261,22 +261,32 @@
                     checkbox: checkbox                   
                 };
                 return options;
-            }            function todate(num) {
+            }            function todate(num, istime) {
                 if (num && num.length > 8) {
                     num = num + "";
                     var date = "";
                     var month = new Array();
-                    month["Jan"] = '01'; month["Feb"] = '02'; month["Mar"] = '03'; month["Apr"] = '04'; month["May"] = '05'; month["Jan"] = '06';
+                    month["Jan"] = '01'; month["Feb"] = '02'; month["Mar"] = '03'; month["Apr"] = '04'; month["May"] = '05'; month["Jun"] = '06';
                     month["Jul"] = '07'; month["Aug"] = '08'; month["Sep"] = '09'; month["Oct"] = '10'; month["Nov"] = '11'; month["Dec"] = '12';
-                    str = num.split(" ");
-                    date = str[2] + "-";
-                    date = date + month[str[0]] + "-" + str[1];
-                    var times = str[3].split(':');
-                    time = times[0] + ':' + times[1];
-                    if (times[2].indexOf('PM')) {
-                        time = (parseInt(time[0]) + 12) + ':' + times[1];
+                    var str = num.split(" ");
+                    var times = '';
+                    if (str.length > 4) {
+                        date = str[3] + "-";
+                        date = date + month[str[0]] + "-" + str[2];
+                        times = str[4].split(':');
+                    } else {
+                        date = str[2] + "-";
+                        date = date + month[str[0]] + "-" + str[1];
+                        times = str[3].split(':');
                     }
-                    return date + ' ' + time;
+                    if (istime) {
+                        time = times[0] + ':' + times[1];
+                        if (times[2].indexOf('PM')) {
+                            time = (parseInt(time[0]) + 12) + ':' + times[1];
+                        }
+                        return date + ' ' + time;
+                    }
+                    return date;
                 }
                 return num;
             }
@@ -319,8 +329,16 @@
                         { display: '项目名称', name: '项目名称', minWidth: 120 },
                         { display: '主修人', name: '主修人', minWidth: 120 },
                         { display: '班组', name: '班组', minWidth: 120 },
-                        { display: '开工时间', name: '开工时间', type: 'date', minWidth: 120, render: format },
-                        { display: '完工时间', name: '完工时间', type: 'date', minWidth: 120, render: format },
+                        {
+                            display: '开工时间', name: '开工时间', type: 'date', minWidth: 120, render: function (rowdata, index, value) {
+                                return todate(value, true);
+                            }
+                        },
+                        {
+                            display: '完工时间', name: '完工时间', type: 'date', minWidth: 120, render: function (rowdata, index, value) {
+                                return todate(value, true);
+                            }
+                        },
                         { display: '维修工艺', name: '维修工艺', minWidth: 120 },
                         { display: '结算方式', name: '结算方式', minWidth: 120 },
                         { display: '工时', name: '工时', minWidth: 120 },
@@ -341,7 +359,7 @@
                         pageSize: 10,
                         delayLoad: true,
                         checkbox:true,
-                        urlParms: { id: carinfo['ID'] },
+                        urlParms: { ID: carinfo['ID'] },
                         rownumbers: true,
                         isScroll:true,
                         toolbar: {
@@ -351,22 +369,58 @@
                                 click: function () {
                                     $.ligerDialog.open({
                                         height: 600,
-                                        url: 'index.php?&g=Query&m=Consume&a=addproject',
+                                        url: 'index.php?&g=Query&m=Consume&a=addproject&itemID=' + carinfo['流水号']+'&ID='+carinfo['ID'],
                                         width: 900,
                                         showMax: true,
                                         showToggle: true,
                                         showMin: true,
                                         isResize: true,
-                                        modal: false,
+                                        modal: true,
                                         title: '增加维修项目'
                                     });
                                    
                                 }, icon: 'ad icon iconfont icon-dingdanguanli'
                             },
                             { line: true },
-                            { text: '派工', click: null, icon: 'memeber' },
+                            {
+                                text: '派工', click: function () {
+                                    $.ligerDialog.open({
+                                        height: 400,
+                                        url: 'index.php?&g=Query&m=Consume&a=assigntask&id=' + row['流水号'],
+                                        width: 600,
+                                        showMax: true,
+                                        showToggle: true,
+                                        showMin: true,
+                                        isResize: true,
+                                        modal: true,
+                                        title: '修改维修项目'
+                                    });
+
+                                }, icon: 'memeber'
+                            },
                             { line: true },
-                            { text: '修改', click: null, icon: 'modify' },
+                            {
+                                text: '修改', click: function () {
+                                    var row = project.getSelectedRow();
+                                    if (row) {
+                                        $.ligerDialog.open({
+                                            height: 400,
+                                            url: 'index.php?&g=Query&m=Consume&a=modifyproject&id=' + row['流水号'],
+                                            width: 600,
+                                            showMax: true,
+                                            showToggle: true,
+                                            showMin: true,
+                                            isResize: true,
+                                            modal: true,
+                                            title: '修改维修项目'
+                                        });
+                                    }
+                                    else {
+                                        $.ligerDialog.alert('请选择要修改的项目');
+                                    }
+
+                                }, icon: 'modify'
+                            },
                             { line: true },
                             { text: '删除', click: null, icon: 'delete' }
                             ]

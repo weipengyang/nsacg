@@ -135,7 +135,7 @@
         function pages_init() {
             var tabJson = $.cookie('liger-home-tab');
             if (tabJson) {
-                var tabitems = JSON2.parse(tabJson);
+                var tabitems = JSON.parse(tabJson);
                 for (var i = 0; tabitems && tabitems[i]; i++) {
                     f_addTab(tabitems[i].tabid, tabitems[i].text, tabitems[i].url);
                 }

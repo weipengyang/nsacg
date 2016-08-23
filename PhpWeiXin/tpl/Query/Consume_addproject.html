@@ -21,8 +21,25 @@
                 nodeWidth: 120,
                 attribute: ['nodename', 'url'],
                 onSelect: function (node) {
-                    alert(node);
+                    var key=node.data['text'];
+                    if (key == '全部')
+                        key = '';
+                    project.set('parms', { searchkey: key });
+                    project.reload();
                 }
+            });
+            var lastTime;
+            $("#txtKey").keyup(function (event) {
+                //我们可以用jQuery的event.timeStamp来标记时间，这样每次的keyup事件都会修改lastTime的值，lastTime必需是全局变量
+                lastTime = event.timeStamp;
+                setTimeout(function () {
+                    //如果时间差为0，也就是你停止输入0.5s之内都没有其它的keyup事件产生，这个时候就可以去请求服务器了
+                    if (lastTime - event.timeStamp == 0) {
+                        var key = $("#txtKey").val();
+                        project.set('parms', { searchkey: key });
+                        project.reload();
+                    }
+                }, 500);
             });
             var project = $("#projectgrid").ligerGrid({
                 height: '42%',
@@ -47,26 +64,37 @@
                 ],
                 url: '/index.php?g=Query&m=Consume&a=getprojectbyname',
                 pageSize: 4,
+                pageSizeOptions: [3, 4, 5, 6, 8],
                 rownumbers: true,
                 isScroll: true,
-                toolbar: {
-                    items: [
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    var flag = false;
+                    for (var i = 0; i < haveproject.rows.length; i++)
                     {
-                        text: '增加',
-                        click: function () {
-                            alert('1');
-                        }, icon: 'ad icon iconfont icon-dingdanguanli'
-                    },
-                    { line: true },
-                    { text: '派工', click: null, icon: 'memeber' },
-                    { line: true },
-                    { text: '修改', click: null, icon: 'modify' },
-                    { line: true },
-                    { text: '删除', click: null, icon: 'delete' }
-                    ]
+                        if (haveproject.rows[i]['项目编号'] == data['项目编号']) {
+                            flag = true;
+                            haveproject.select(haveproject.rows[i]);
+                        }
+                    }
+                    if (!flag) {
+                        var row = {};
+                        row['ID'] =$("#ID").val();
+                        row['项目编号'] = data['项目编号'];
+                        row['项目名称'] = data['项目名称'];
+                        row['结算方式'] = '客付';
+                        row['工时'] = data['标准工时'];
+                        row['金额'] = data['标准金额'];
+                        row['折扣'] = 1;
+                        row['税率'] = 1;
+                        row['备注'] = data['备注'];
+                        form.setData(row);
+                        haveproject.add(row);
+                        haveproject.select(row);
+                    }
+                   
                 }
             });            var haveproject = $("#haveproject").ligerGrid({
-                height: '32%',
+                height: '34%',
                 width: '100%',
                 columns: [
                 { display: '项目编号', name: '项目编号', minWidth: 140 },
@@ -80,14 +108,43 @@
                 { display: '虚增金额', name: '虚增金额', minWidth: 120 },
                 { display: '备注', name: '备注', minWidth: 240 }
                 ],
-                url: '/index.php?g=Query&m=Consume&a=getproject',
-                pageSize: 6,
+                url: '/index.php?g=Query&m=Consume&a=getproject&ID='+$("#ID").val(),
+                //pageSize: 4,
+                //pageSizeOptions: [ 4, 5, 6, 8,10],
                 rownumbers: true,
                 isScroll: true,
+                usePager:false,
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    haveproject.deleteSelectedRow();
+                },
+                onSelectRow: function (rowdata, rowid, rowobj) {
+                    form.setData(rowdata);
+                }
             });            var form = $("#form1").ligerForm({
                 inputWidth: 90, labelWidth: 65, space:3,
                 validate: true,
-                buttons: [                    { text: "更新", width: 60 }                ],                fields: [
+                buttons: [                    {
+                        text: "更新", width: 80, click: function () {
+                            var data = form.getData();
+                            var selected = haveproject.getSelected();
+                            if (!selected) { alert('请选择行'); return; }
+                            haveproject.updateRow(selected, data);
+                        }
+                    },                    {
+                        text: "保存", width: 80, click: function () {
+                            var data = haveproject.getChanges();
+                            var submitData = {
+                                projects:data
+                            };
+                            $.post('index.php?g=Query&m=Consume&a=saveproject', submitData,
+                              function (data) {
+                                  alert(data);
+                                  $('#doc-modal-1').modal('close');
+                                  haveproject.reload();
+                              });
+                            alert(JSON.stringify(data));
+                        }
+                    }                ],                fields: [
                     { display: "流水号", name: "流水号", newline: true, type: "hidden" },
                     { display: "结算方式 ", name: "结算方式", newline: true, type: "text" },
                     { display: "工时 ", name: "工时", newline: false, type: "text" },
@@ -104,7 +161,6 @@
                         },
 
                     },
-
                     { display: "虚增金额", name: "虚增金额", newline: false, type: "text" },
                     { display: "备注", name: "备注", newline: false, type: "text" },
 
@@ -127,16 +183,20 @@
 </head>
 
 <body style="padding:0;margin:0">
+    <input type="hidden" id="ID" value="{pigcms:$ID}" />
+    <input type="hidden" id="itemID" value="{pigcms:$itemID}" />
     <div id="layout1" style="padding:0;margin:0">
         <div position="left" title="项目类别"  style="padding:0;margin:0" >
             <ul id="tree1" style="margin-top:3px;" />
         </div>
         <div position="center" id="framecenter"  style="padding:0;margin:0">
+            <div id="searchbar">
+                模糊查询(支持拼音首字母)：<input id="txtKey" type="text" />
+            </div>
          <div id="projectgrid" style="margin:0; padding:0"></div>
          <div id="form1" style="margin:0; padding:0;height:24%"></div>
          <div id="haveproject" style="margin:0;margin-bottom:2px; padding:0"></div>
         </div>
-
     </div>
 
 </body>

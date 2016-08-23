@@ -31,10 +31,17 @@ class ConsumeAction extends Action{
     public function addproject(){
         if(IS_POST){
             $result=M('','dbo','difo')->query("SELECT 类别 [text],'true' isexpand FROM 项目分类");
-            echo json_encode($result);
+            $project['text']='全部';
+            $project['isexpand']='true';
+            $project['children']=$result;
+            $projects=array();
+            array_push($projects,$project);
+            echo json_encode($projects);
             exit;
         }
         else{
+            $this->assign('ID',$_GET['ID']);
+            $this->assign('itemID',$_GET['itemID']);
             $this->display();
         }
     }
@@ -78,13 +85,11 @@ class ConsumeAction extends Action{
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
             $searchkey='%'.trim($_POST['searchkey']).'%';
         }
-        if($searchkey){       
-            $searchwhere['名称']=array('like',$searchkey);
-            $searchwhere['会员编号']=array('like',$searchkey);
-            $searchwhere['联系人']=array('like',$searchkey);
-            $searchwhere['联系电话']=array('like',$searchkey);
-            $searchwhere['手机号码']=array('like',$searchkey);
-            $searchwhere['业务员']=array('like',$searchkey);
+        if($searchkey){
+            $searchwhere['类别']=array('like',$searchkey);
+            $searchwhere['项目编号']=array('like',$searchkey);
+            $searchwhere['项目名称']=array('like',$searchkey);
+            $searchwhere['助记码']=array('like',$searchkey);
             $searchwhere['_logic']='OR';
             $where['_complex']=$searchwhere;
 
@@ -258,8 +263,35 @@ class ConsumeAction extends Action{
        $data['Total']=count($carinfo);
        echo json_encode($data);
    }
-   public function getproject(){
+   public function saveproject(){
+       $projects=$_POST['projects'];
+       Log::write(json_encode($projects));
+       foreach($projects as $project)
+       {
+          if($project['__status']=='add')
+          {
+            unset($project['__status']);
+            M('维修项目','dbo.','difo')->add($project);
+          }
+          elseif($project['__status']=='update'){
+              unset($project['__status']);
+              unset($project['ROW_NUMBER']);
+              $num=$project['流水号'];
+              unset($project['流水号']);
+              M('维修项目','dbo.','difo')->where(array('流水号'=>$num))->save($project);
+          }
+       }
+       echo '保存成功';
+   }
+   public function modifyproject()
+   {
        $id=$_GET['id'];
+       $projectinfo=M('维修项目','dbo.','difo')->where(array('流水号'=>$id))->find();
+       $this->assign('projectinfo',json_encode($projectinfo));
+       $this->display();
+   }
+   public function getproject(){
+       $id=$_GET['ID'];
        $carinfo=M('维修项目','dbo.','difo')->where(array('ID'=>$id))->select();
        $data['Rows']=$carinfo;
        $data['Total']=count($carinfo);

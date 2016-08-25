@@ -26,8 +26,8 @@
                     var key = node.data['text'];
                     if (key == '全部')
                         key = '';
-                    project.set('parms', { searchkey: key });
-                    project.reload();
+                    product.set('parms', { searchkey: key });
+                    product.reload();
                 }
             });
             var lastTime;
@@ -38,8 +38,8 @@
                     //如果时间差为0，也就是你停止输入0.5s之内都没有其它的keyup事件产生，这个时候就可以去请求服务器了
                     if (lastTime - event.timeStamp == 0) {
                         var key = $("#txtKey").val();
-                        project.set('parms', { searchkey: key });
-                        project.reload();
+                        product.set('parms', { searchkey: key });
+                        product.reload();
                     }
                 }, 500);
             });
@@ -67,16 +67,16 @@
                 ],
                 url: '/index.php?g=Query&m=Consume&a=getproductbyname',
                 pageSize: 4,
-                pageSizeOptions: [3, 4, 5, 6, 8],
+                pageSizeOptions: [4, 5, 6, 8],
                 rownumbers: true,
                 isScroll: true,
                 onDblClickRow: function (data, rowindex, rowobj) {
                     var flag = false;
-                    for (var i = 0; i < haveproject.rows.length; i++)
+                    for (var i = 0; i < haveproduct.rows.length; i++)
                     {
-                        if (haveproject.rows[i]['项目编号'] == data['项目编号']) {
+                        if (haveproduct.rows[i]['项目编号'] == data['项目编号']) {
                             flag = true;
-                            haveproject.select(haveproject.rows[i]);
+                            haveproduct.select(haveproduct.rows[i]);
                         }
                     }
                     if (!flag) {
@@ -91,12 +91,12 @@
                         row['税率'] = 1;
                         row['备注'] = data['备注'];
                         form.setData(row);
-                        haveproject.add(row);
-                        haveproject.select(row);
+                        haveproduct.add(row);
+                        haveproduct.select(row);
                     }
                    
                 }
-            });            var haveproject = $("#haveproject").ligerGrid({
+            });            var haveproduct = $("#haveproduct").ligerGrid({
                 height: '34%',
                 width: '100%',
                 columns: [
@@ -118,7 +118,7 @@
                 isScroll: true,
                 usePager:false,
                 onDblClickRow: function (data, rowindex, rowobj) {
-                    haveproject.deleteSelectedRow();
+                    haveproduct.deleteSelectedRow();
                 },
                 onSelectRow: function (rowdata, rowid, rowobj) {
                     form.setData(rowdata);
@@ -129,13 +129,13 @@
                 buttons: [                    {
                         text: "更新", width: 80, click: function () {
                             var data = form.getData();
-                            var selected = haveproject.getSelected();
+                            var selected = haveproduct.getSelected();
                             if (!selected) { alert('请选择行'); return; }
-                            haveproject.updateRow(selected, data);
+                            haveproduct.updateRow(selected, data);
                         }
                     },                    {
                         text: "保存", width: 80, click: function () {
-                            var data = haveproject.getChanges();
+                            var data = haveproduct.getChanges();
                             var submitData = {
                                 projects:data
                             };
@@ -143,7 +143,7 @@
                               function (data) {
                                   alert(data);
                                   $('#doc-modal-1').modal('close');
-                                  haveproject.reload();
+                                  haveproduct.reload();
                               });
                             alert(JSON.stringify(data));
                         }
@@ -196,9 +196,9 @@
             <div id="searchbar">
                 模糊查询(支持拼音首字母)：<input id="txtKey" type="text" />
             </div>
-         <div id="projectgrid" style="margin:0; padding:0"></div>
+         <div id="productgrid" style="margin:0; padding:0"></div>
          <div id="form1" style="margin:0; padding:0;height:24%"></div>
-         <div id="haveproject" style="margin:0;margin-bottom:2px; padding:0"></div>
+         <div id="haveproduct" style="margin:0;margin-bottom:2px; padding:0"></div>
         </div>
     </div>
 

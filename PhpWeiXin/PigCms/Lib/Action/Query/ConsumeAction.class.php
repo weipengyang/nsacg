@@ -160,6 +160,30 @@ class ConsumeAction extends Action{
         echo json_encode($data);
     
     }
+    public  function getproductbyname(){
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $where['1']=1;
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){
+            $searchwhere['品牌']=array('like',$searchkey);
+            $searchwhere['名称']=array('like',$searchkey);
+            $searchwhere['编号']=array('like',$searchkey);
+            $searchwhere['原厂编号']=array('like',$searchkey);
+            $searchwhere['助记码']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $product=M('配件目录','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->select();
+        $count=M('配件目录','dbo.','difo')->where($where)->count();
+        $data['Rows']=$product;
+        $data['Total']=$count;
+        echo json_encode($data);
+    
+    }
     public  function getpinpai(){
          
         $pinpai=M('常见品牌','dbo.','difo')->where(array('品牌'=>array('like','%'.$_POST['key'].'%')))->select();

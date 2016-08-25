@@ -14633,6 +14633,7 @@
     <Content Include="tpl\Other\default\style\js\email.js" />
     <Content Include="tpl\Other\default\style\js\registerSSO.js" />
     <Content Include="tpl\Other\index.html" />
+    <Content Include="tpl\Query\Consume_addproduct.html" />
     <Content Include="tpl\Query\Consume_assigntask.html" />
     <Content Include="tpl\Query\Consume_addproject.html" />
     <Content Include="tpl\Query\Consume_modifyproject.html" />

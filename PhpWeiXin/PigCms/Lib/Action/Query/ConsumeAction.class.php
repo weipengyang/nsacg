@@ -45,6 +45,65 @@ class ConsumeAction extends Action{
             $this->display();
         }
     }
+    public function addproduct(){
+        if(IS_POST){
+            $parentname=$_POST['parentname'];
+            if(isset($parentname)){
+                $result=M('配件分类','dbo.','difo')->query("SELECT 名称 [text],'false' isexpand,'true' children FROM 配件分类 where 父项='$parentname'");
+                
+            }else{
+                
+            }
+            $projects=M('配件分类','dbo.','difo')->query("SELECT 名称 [text],'false' isexpand, 有无子节点 haschildren FROM 配件分类 where 父项=''");
+            foreach($projects as $key=>$c)
+            {    
+                if($c['haschildren']=='1')
+                {
+                   $children=M('配件分类','dbo.','difo')->query("SELECT 名称 [text],'false' isexpand, 有无子节点 haschildren FROM 配件分类 where 父项='".$c['text']."'");
+                   foreach($children as $k=>$s)
+                    {
+                        if($c['haschildren']=='1'){
+                            $sun=M('配件分类','dbo.','difo')->query("SELECT 名称 [text],'false' isexpand, 有无子节点 haschildren FROM 配件分类 where 父项='".$s['text']."'");
+                            $s['children']=$sun;
+                            $children[$k]['children']=$sun;
+                        }
+                        else{
+                            $children[$k]['children']=null;
+                        }
+
+                    }
+                   $projects[$key]['children']=$children;
+                   
+                }
+                else{
+                    $projects[$key]['children']=null;
+                }
+            }
+            //$project['text']='全部';
+            //$project['isexpand']='true';
+            //$project['children']=$result;
+            //$projects=array();
+            //array_push($projects,$project);
+            echo json_encode($projects);
+            exit;
+        }
+        else{
+            $this->assign('ID',$_GET['ID']);
+            $this->assign('itemID',$_GET['itemID']);
+            $this->display();
+        }
+    }
+
+    public function getzhuxiu()
+    {
+        $shop=$_GET['shop'];
+        if($shop&&$shop!=''&&$shop!='NULL'){
+            $zhuxiu=M('员工目录','dbo.','difo')->where(array('部门'=>$shop,'职务'=>'维修技工'))->select();
+        }else{
+             $zhuxiu=M('员工目录','dbo.','difo')->where(array('职务'=>'维修技工'))->select();       
+        }        
+            echo json_encode($zhuxiu);
+    }
 
     public  function getcarinfo(){
     
@@ -253,6 +312,17 @@ class ConsumeAction extends Action{
         }
         $xh=$_GET['xh'];
         $carinfo=M('维修','dbo.','difo')->where(array('流水号'=>$xh))->find();
+        $shop=$carinfo['门店'];
+        $zhiwu='维修技工';
+        if(in_array($carinfo['维修类别'],array('蜡水洗车','汽车美容'))){
+            $zhiwu='美容技工'; 
+        }
+        if($shop&&$shop!=''&&$shop!='NULL'){
+            $zhuxiu=M('员工目录','dbo.','difo')->where(array('部门'=>$shop,'职务'=>$zhiwu))->select();
+           }else{
+               $zhuxiu=M('员工目录','dbo.','difo')->where(array('职务'=>$zhiwu))->select();       
+           }        
+        $this->assign('list',$zhuxiu);
         $this->assign('carinfo',json_encode($carinfo));
         $this->display();
     }
@@ -975,7 +1045,28 @@ class ConsumeAction extends Action{
        echo json_encode($data);
        
    }
-
+   public function assigntask(){
+       if(IS_POST){
+           $zhuxiu=$_POST['zhuxiu'];
+           $itemid=$_POST['itemid'];
+           $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>$zhuxiu))->find();
+           M('维修项目','dbo.','difo')->where(array('ID'=>$itemid))->save(array('主修人'=>$zhuxiu,'班组'=>$yg['班组']));
+           $data['当前主修人']=$zhuxiu;
+           //$data['当前状态']='结束'; 
+           $data['门店']=$yg['部门'];
+           //$data['出厂时间']=date('Y-m-d H:i',time());
+           //$data['实际完工']=date('Y-m-d H:i',time());
+           //$data['结算日期']=date('Y-m-d',time());
+           //$data['结束日期']=date('Y-m-d',time());
+           //$data['挂账金额']=0;
+           //$data['现收金额']=0;
+           //$data['标志']='已结算';
+           M('维修','dbo.','difo')->where(array('ID'=>$itemid))->save($data);
+           //$this->genbill($wx['应收金额'],$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID']);
+           echo '派工完成';
+           exit;
+       }
+   }
    public function maintenance()
     {  
        if(IS_POST){

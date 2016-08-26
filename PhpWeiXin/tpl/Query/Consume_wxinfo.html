@@ -234,7 +234,7 @@
                 var form = liger.get("form1");
                 var data = form.getData();
                 data = JSON2.stringify(data);
-                alert(data);
+                $.ligerDialog.alert(data);
                 data = JSON2.parse(data);
 
                 //$.post('/index.php?g=Query&m=Consume&a=carinfo', data,
@@ -370,7 +370,7 @@
                                 click: function () {
                                     $.ligerDialog.open({
                                         height: 600,
-                                        url: 'index.php?&g=Query&m=Consume&a=addproject&itemID=' + carinfo['流水号']+'&ID='+carinfo['ID'],
+                                        url: 'index.php?&g=Query&m=Consume&a=addproject&itemID=' + carinfo['流水号']+'&ID='+carinfo['ID']+ "&discount=" +{pigcms:$discount['服务折扣1']},
                                         width: 900,
                                         showMax: true,
                                         showToggle: true,
@@ -426,7 +426,7 @@
                         { display: '名称', name: '名称', minWidth: 120},
                         { display: '规格', name: '规格', minWidth: 120 },
                         { display: '单位', name: '单位', minWidth: 120 },
-                        { display: '结算类别', name: '结算类别', minWidth: 120},
+                        { display: '结算类别', name: '结算方式', minWidth: 120},
                         { display: '数量', name: '数量', type: 'date', minWidth: 120},
                         { display: '已领料数量', name: '已领料数量', minWidth: 120 },
                         { display: '已退料数量', name: '已退料数量', minWidth: 120 },
@@ -454,7 +454,7 @@
                             text: '增加', click: function () {
                                 $.ligerDialog.open({
                                     height: 600,
-                                    url: 'index.php?&g=Query&m=Consume&a=addproduct&itemID=' + carinfo['流水号'] + '&ID=' + carinfo['ID'],
+                                    url: 'index.php?&g=Query&m=Consume&a=addproduct&itemID=' + carinfo['流水号'] + '&ID=' + carinfo['ID'] + "&shop=" + carinfo['门店'] + "&discount=" +{pigcms:$discount['销售折扣1']},
                                     width: 900,
                                     showMax: true,
                                     showToggle: true,

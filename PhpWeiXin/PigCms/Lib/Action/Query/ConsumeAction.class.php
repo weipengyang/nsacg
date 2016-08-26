@@ -47,13 +47,6 @@ class ConsumeAction extends Action{
     }
     public function addproduct(){
         if(IS_POST){
-            $parentname=$_POST['parentname'];
-            if(isset($parentname)){
-                $result=M('配件分类','dbo.','difo')->query("SELECT 名称 [text],'false' isexpand,'true' children FROM 配件分类 where 父项='$parentname'");
-                
-            }else{
-                
-            }
             $projects=M('配件分类','dbo.','difo')->query("SELECT 名称 [text],'false' isexpand, 有无子节点 haschildren FROM 配件分类 where 父项=''");
             foreach($projects as $key=>$c)
             {    
@@ -62,21 +55,14 @@ class ConsumeAction extends Action{
                    $children=M('配件分类','dbo.','difo')->query("SELECT 名称 [text],'false' isexpand, 有无子节点 haschildren FROM 配件分类 where 父项='".$c['text']."'");
                    foreach($children as $k=>$s)
                     {
-                        if($c['haschildren']=='1'){
+                        if($s['haschildren']=='1'){
                             $sun=M('配件分类','dbo.','difo')->query("SELECT 名称 [text],'false' isexpand, 有无子节点 haschildren FROM 配件分类 where 父项='".$s['text']."'");
                             $s['children']=$sun;
                             $children[$k]['children']=$sun;
                         }
-                        else{
-                            $children[$k]['children']=null;
-                        }
-
                     }
                    $projects[$key]['children']=$children;
                    
-                }
-                else{
-                    $projects[$key]['children']=null;
                 }
             }
             //$project['text']='全部';
@@ -164,21 +150,30 @@ class ConsumeAction extends Action{
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
         $where['1']=1;
+        $shop=$_GET['shop'];
+        $cangku='塘坑门店仓库';
+        if($shop=='区府店')
+            $cangku='区府门店仓库';
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
             $searchkey='%'.trim($_POST['searchkey']).'%';
         }
         if($searchkey){
             $searchwhere['品牌']=array('like',$searchkey);
             $searchwhere['名称']=array('like',$searchkey);
-            $searchwhere['编号']=array('like',$searchkey);
+            $searchwhere['配件目录.编号']=array('like',$searchkey);
             $searchwhere['原厂编号']=array('like',$searchkey);
             $searchwhere['助记码']=array('like',$searchkey);
             $searchwhere['_logic']='OR';
             $where['_complex']=$searchwhere;
 
         }
-        $product=M('配件目录','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->select();
-        $count=M('配件目录','dbo.','difo')->where($where)->count();
+        $product=M('配件目录','dbo.','difo')
+            ->join('left join 配件仓位 on 配件目录.编号=配件仓位.编号  and  配件仓位.仓库=\''.$cangku.'\'')
+            ->field('配件目录.*,配件仓位.仓库,配件仓位.库存 分库存')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->select();
+        $count=M('配件目录','dbo.','difo')
+            ->join('left join 配件仓位 on 配件目录.编号=配件仓位.编号  and  配件仓位.仓库=\''.$cangku.'\'')
+            ->where($where)->count();
         $data['Rows']=$product;
         $data['Total']=$count;
         echo json_encode($data);
@@ -345,8 +340,11 @@ class ConsumeAction extends Action{
             $zhuxiu=M('员工目录','dbo.','difo')->where(array('部门'=>$shop,'职务'=>$zhiwu))->select();
            }else{
                $zhuxiu=M('员工目录','dbo.','difo')->where(array('职务'=>$zhiwu))->select();       
-           }        
+           }    
+        $discount=M('会员详细信息','dbo.','difo')->where(array('ID'=>$carinfo['客户ID']))->find();
+
         $this->assign('list',$zhuxiu);
+        $this->assign('discount',$discount);
         $this->assign('carinfo',json_encode($carinfo));
         $this->display();
     }
@@ -359,7 +357,6 @@ class ConsumeAction extends Action{
    }
    public function saveproject(){
        $projects=$_POST['projects'];
-       Log::write(json_encode($projects));
        foreach($projects as $project)
        {
           if($project['__status']=='add')
@@ -373,6 +370,25 @@ class ConsumeAction extends Action{
               $num=$project['流水号'];
               unset($project['流水号']);
               M('维修项目','dbo.','difo')->where(array('流水号'=>$num))->save($project);
+          }
+       }
+       echo '保存成功';
+   }
+   public function saveproduct(){
+       $products=$_POST['products'];
+       foreach($products as $product)
+       {
+           if($product['__status']=='add')
+          {
+              unset($product['__status']);
+              M('维修配件','dbo.','difo')->add($product);
+          }
+          elseif($product['__status']=='update'){
+              unset($product['__status']);
+              unset($product['ROW_NUMBER']);
+              $num=$product['流水号'];
+              unset($product['流水号']);
+              M('维修配件','dbo.','difo')->where(array('流水号'=>$num))->save($product);
           }
        }
        echo '保存成功';

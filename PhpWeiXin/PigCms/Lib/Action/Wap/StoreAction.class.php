@@ -462,10 +462,10 @@ private function sellbill($price,$name){
 private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',$shop=''){
     //if($this->wecha_id=='ohD3dviFloHSvcl9ieoXFibqPFJM')
     {
-        $wxrecord=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'当前状态'=>array('neq','结束')))->find();
+        $wxrecord=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'当前状态'=>array('notin',array('结束','取消'))))->find();
         if($wxrecord){
             $row=array();
-            $row['ID']=$wxrecord['ID'];
+            //$row['ID']=$wxrecord['ID'];
             if($price==0){
                     $row['项目编号']='AYC0001';
                     $row['项目名称']='会员券消费';
@@ -488,7 +488,7 @@ private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',
             $row['完工时间']=date('Y-m-d H:i',time());
             $row['是否同意']=1;
             $row['已维修']='0小时'; 
-            M('维修项目','dbo.','difo')->add($row);
+            M('维修项目','dbo.','difo')->where(array('ID'=>$wxrecord['ID']))->save($row);
         
         }else{
             $data=M('维修','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
@@ -2299,7 +2299,7 @@ public function check(){
                     $this->genwxrecord(0,$arr['carno'],'AYC0001','汽车美容',$arr['shop']);
                 }
                 elseif(strpos($couponname['title'], '救援') !== false){
-                    $this->genwxrecord(0,$arr['carno'],'AYC0001','普通快修',$arr['shop']);
+                    $this->genwxrecord(0,$arr['carno'],'AYC2023','普通快修',$arr['shop']);
                 }
                 else{
                     $this->genwxrecord(0,$arr['carno'],'AYC0001','蜡水洗车',$arr['shop']);

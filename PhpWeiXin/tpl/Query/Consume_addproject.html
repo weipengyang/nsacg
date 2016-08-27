@@ -93,7 +93,8 @@
                         row['项目名称'] = data['项目名称'];
                         row['结算方式'] = '客付';
                         row['工时'] = data['标准工时'];
-                        row['金额'] = data['标准金额'];
+                        row['单价'] = data['标准金额'];
+                        row['金额'] = row['工时'] * row['单价'];
                         row['折扣'] = getQueryString('discount');
                         row['税率'] = 1;
                         row['备注'] = data['备注'];
@@ -107,12 +108,13 @@
                 height: '34%',
                 width: '100%',
                 columns: [
-                { display: '项目编号', name: '项目编号', minWidth: 140 },
+                { display: '项目编号', name: '项目编号', minWidth: 100 },
                 { display: '项目名称', name: '项目名称', minWidth: 160 },
-                { display: '结算方式', name: '结算方式', minWidth: 120 },
-                { display: '工时', name: '工时', minWidth: 120 },
-                { display: '金额', name: '金额', minWidth: 120 },
-                { display: '折扣', name: '折扣', minWidth: 120 },
+                { display: '工时', name: '工时', minWidth: 80 },
+                { display: '单价', name: '单价', minWidth: 80 },
+                { display: '金额', name: '金额', minWidth: 80 },
+                { display: '折扣', name: '折扣', minWidth: 80 },
+                { display: '结算方式', name: '结算方式', minWidth: 80 },
                 { display: '税率', name: '税率', minWidth: 120 },
                 { display: '虚增类别', name: '虚增类别', minWidth: 120 },
                 { display: '虚增金额', name: '虚增金额', minWidth: 120 },
@@ -138,6 +140,7 @@
                             var data = form.getData();
                             var selected = haveproject.getSelected();
                             if (!selected) { alert('请选择行'); return; }
+                            data['金额'] = data['工时'] * data['单价'];
                             haveproject.updateRow(selected, data);
                         }
                     },                    {
@@ -164,7 +167,7 @@
                          }
                      },
                     { display: "工时 ", name: "工时", newline: false, type: "text" },
-                    { display: "金额 ", name: "金额", newline: false, type: "text" },
+                    { display: "单价 ", name: "单价", newline: false, type: "text" },
                     { display: "折扣", name: "折扣", newline: false, type: "text" },
                     { display: "税率", name: "税率", newline: true, type: "text" },
                     {

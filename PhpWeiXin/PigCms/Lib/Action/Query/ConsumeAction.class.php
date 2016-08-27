@@ -79,7 +79,40 @@ class ConsumeAction extends Action{
             $this->display();
         }
     }
+    private function calprice($id){
+        $projectprice=0;
+        $totalproject=0;
+        $projects=M('维修项目','dbo.','difo')->where(array('ID'=>$id))->select();
+        if($projects){
+           foreach($projects as $project){
+               $projectprice+=$project['金额'];
+               $totalproject+=$project['金额']*$project['折扣'];
+           }
+        }
+        $productprice=0;
+        $totalproduct=0;
+        $products=M('维修配件','dbo.','difo')->where(array('ID'=>$id,'仅内部核算成本'=>'0'))->select();
+        if($products){
+            foreach($products as $product){
+                $productprice+=$product['金额'];
+                $totalproduct+=$product['金额']*$product['折扣'];
+            }
+        }
+        $appendprice=M('附加费用','dbo.','difo')->where(array('ID'=>$id))->sum('金额');
+        $totalprice=$projectprice+$productprice+$appendprice;
+        $data['报价金额']=$totalprice;
+        $data['报价人']=cookie('username');
+        $data['材料费']=$productprice;
+        $data['工时费']=$projectprice;
+        $data['附加费']=$appendprice;
+        $data['款项总额']=$totalprice;
+        $data['客付金额']=$totalproduct+$totalproject+$appendprice;
+        $data['应收金额']=$totalproduct+$totalproject+$appendprice;
+        //$data['材料成本']=;
+        $data['人工成本']=0;
 
+        M('维修','dbo.','difo')->where(array('ID'=>$id))->save($data);
+    }
     public function getzhuxiu()
     {
         $shop=$_GET['shop'];
@@ -371,6 +404,8 @@ class ConsumeAction extends Action{
               unset($project['流水号']);
               M('维修项目','dbo.','difo')->where(array('流水号'=>$num))->save($project);
           }
+          $this->calprice($projects[0]['ID']);
+
        }
        echo '保存成功';
    }
@@ -390,6 +425,7 @@ class ConsumeAction extends Action{
               unset($product['流水号']);
               M('维修配件','dbo.','difo')->where(array('流水号'=>$num))->save($product);
           }
+           $this->calprice($products[0]['ID']);
        }
        echo '保存成功';
    }

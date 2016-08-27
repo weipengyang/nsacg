@@ -105,8 +105,9 @@
                         row['结算方式'] = '客付';
                         row['单位'] = data['库存单位'];
                         row['单价'] = data['参考售价'];
-                        row['折扣'] =getQueryString('discount');
+                        row['折扣'] = getQueryString('discount');
                         row['数量'] = 1;
+                        row['金额'] = row['数量'] * row['单价'];
                         row['税率'] = 0;
                         row['备注'] = data['备注'];
                         form.setData(row);
@@ -120,22 +121,23 @@
                 width: '100%',
                 columns: [
                 { display: '仓库', name: '仓库', minWidth: 140 },
-                { display: '编号', name: '编号', minWidth: 140 },
-                { display: '名称', name: '名称', minWidth: 160 },
-                { display: '规格', name: '规格', minWidth: 160 },
-                { display: '结算方式', name: '结算方式', minWidth: 120 },
-                { display: '单位', name: '单位', minWidth: 120 },
-                { display: '数量', name: '数量', minWidth: 120 },
-                { display: '单价', name: '单价', minWidth: 120 },
-                { display: '折扣', name: '折扣', minWidth: 120 },
-                { display: '税率', name: '税率', minWidth: 120 },
-                { display: '虚增类别', name: '虚增类别', minWidth: 120 },
-                { display: '虚增金额', name: '虚增金额', minWidth: 120 },
-                { display: '急件金额', name: '急件金额', minWidth: 120 },
-                { display: '适用车型', name: '适用车型', minWidth: 120 },
-                { display: '内部核算', name: '仅内部核算成本', minWidth: 120 },
-                { display: '产地', name: '产地', minWidth: 120 },
-                { display: '备注', name: '备注', minWidth: 240 }
+                { display: '编号', name: '编号', minWidth: 120 },
+                { display: '名称', name: '名称', minWidth: 120 },
+                { display: '规格', name: '规格', minWidth: 100 },
+                { display: '结算方式', name: '结算方式', minWidth: 100 },
+                { display: '数量', name: '数量', minWidth: 60 },
+                { display: '单价', name: '单价', minWidth: 100 },
+                { display: '金额', name: '金额', minWidth: 100 },
+                { display: '单位', name: '单位', minWidth: 60 },
+                { display: '折扣', name: '折扣', minWidth: 80 },
+                { display: '税率', name: '税率', minWidth: 80 },
+                { display: '虚增类别', name: '虚增类别', minWidth: 80 },
+                { display: '虚增金额', name: '虚增金额', minWidth: 80 },
+                { display: '急件金额', name: '急件金额', minWidth: 80 },
+                { display: '适用车型', name: '适用车型', minWidth: 100 },
+                { display: '内部核算', name: '仅内部核算成本', minWidth: 80 },
+                { display: '产地', name: '产地', minWidth: 100 },
+                { display: '备注', name: '备注', minWidth: 200 }
                 ],
                 url: '/index.php?g=Query&m=Consume&a=getproduct&id='+$("#ID").val(),
                 //pageSize: 4,
@@ -160,6 +162,7 @@
                             var data = form.getData();
                             var selected = haveproduct.getSelected();
                             if (!selected) { $.ligerDialog.alert('请选择行'); return; }
+                            data['金额'] = data['数量'] * data['单价'];
                             haveproduct.updateRow(selected, data);
                         }
                     },                    {

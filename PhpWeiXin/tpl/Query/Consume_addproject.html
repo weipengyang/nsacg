@@ -94,6 +94,7 @@
                         row['结算方式'] = '客付';
                         row['工时'] = data['标准工时'];
                         row['单价'] = data['标准金额'];
+                        row['主修人'] = getQueryString('zhuxiu');
                         row['金额'] = row['工时'] * row['单价'];
                         row['折扣'] = getQueryString('discount');
                         row['税率'] = 1;
@@ -151,11 +152,11 @@
                             };
                             $.post('index.php?g=Query&m=Consume&a=saveproject', submitData,
                               function (data) {
-                                  alert(data);
-                                  $('#doc-modal-1').modal('close');
                                   haveproject.reload();
+                                  window.parent.liger.get('projectgrid').reload();
+                                  $.ligerDialog.alert(data);
                               });
-                            alert(JSON.stringify(data));
+                            //alert(JSON.stringify(data));
                         }
                     }                ],                fields: [
                     { display: "流水号", name: "流水号", newline: true, type: "hidden" },
@@ -192,7 +193,7 @@
             for (var i = 0; i < q_array.length; i++) {
                 var v_array = q_array[i].split('=');
                 if (v_array[0] == name) {
-                    return v_array[1];
+                    return decodeURI(v_array[1]);
                 }
             }
             return false;

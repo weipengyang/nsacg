@@ -18,12 +18,10 @@
         var data = [
                { id: 1, name: '客付' },
                { id: 2, name: '保险' },
-               { id: 3, name: '三包' },
-               { id: 4, name: '计次' },
                { id: 5, name: '免费' }
         ];
         var data1 = [
-          { id: 1, name: '项目' },
+          { id: 1, name: '配件' },
           { id: 2, name: '价格' }
         ];
         $(function () {
@@ -81,7 +79,7 @@
                 { display: '参考进价', name: '参考进价', minWidth: 120 },
                 { display: '备注', name: '备注', minWidth: 240 }
                 ],
-                url: '/index.php?g=Query&m=Consume&a=getproductbyname',
+                url: '/index.php?g=Query&m=Consume&a=getproductbyname&shop='+getQueryString('shop'),
                 pageSize: 4,
                 pageSizeOptions: [4, 5, 6, 8],
                 rownumbers: true,
@@ -104,6 +102,7 @@
                         row['规格'] = data['规格'];
                         row['结算方式'] = '客付';
                         row['单位'] = data['库存单位'];
+                        row['虚增类别'] ='';
                         row['单价'] = data['参考售价'];
                         row['折扣'] = getQueryString('discount');
                         row['数量'] = 1;
@@ -173,10 +172,11 @@
                             };
                             $.post('index.php?g=Query&m=Consume&a=saveproduct', submitData,
                               function (data) {
-                                 $.ligerDialog.alert(data);
+                                  window.parent.liger.get('productgrid').reload();
                                   haveproduct.reload();
+                                  $.ligerDialog.alert(data);
                               });
-                            alert(JSON.stringify(data));
+                            //alert(JSON.stringify(data));
                         }
                     }                ],                fields: [
                     { display: "流水号", name: "流水号", newline: true, type: "hidden" },

@@ -193,6 +193,7 @@ class ConsumeAction extends Action{
         if($searchkey){
             $searchwhere['品牌']=array('like',$searchkey);
             $searchwhere['名称']=array('like',$searchkey);
+            $searchwhere['类别']=array('like',$searchkey);
             $searchwhere['配件目录.编号']=array('like',$searchkey);
             $searchwhere['原厂编号']=array('like',$searchkey);
             $searchwhere['助记码']=array('like',$searchkey);
@@ -388,6 +389,28 @@ class ConsumeAction extends Action{
        $data['Total']=count($carinfo);
        echo json_encode($data);
    }
+   public function deleteproject(){
+       $projects=$_POST['projects'];
+       foreach($projects as $project)
+       {
+              $num=$project['流水号'];
+              M('维修项目','dbo.','difo')->where(array('流水号'=>$num))->delete();
+       }
+       $this->calprice($projects[0]['ID']);
+
+       echo '删除成功';
+   }
+    public function deleteproduct(){
+        $products=$_POST['products'];
+        foreach($products as $product)
+       {
+           $num=$product['流水号'];
+              M('维修配件','dbo.','difo')->where(array('流水号'=>$num))->delete();
+       }
+        $this->calprice($products[0]['ID']);
+
+       echo '删除成功';
+   }
    public function saveproject(){
        $projects=$_POST['projects'];
        foreach($projects as $project)
@@ -395,7 +418,13 @@ class ConsumeAction extends Action{
           if($project['__status']=='add')
           {
             unset($project['__status']);
+            if(isset($project['主修人'])&&$project['主修人']!=''){
+                $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>$project['主修人']))->field('班组')->find();
+                $project['班组']=$yg['班组'];
+            }
             M('维修项目','dbo.','difo')->add($project);
+            M('维修','dbo.','difo')->where(array('ID'=>$project['ID']))->save(array('当前状态'=>'派工'));
+
           }
           elseif($project['__status']=='update'){
               unset($project['__status']);
@@ -409,7 +438,7 @@ class ConsumeAction extends Action{
        }
        echo '保存成功';
    }
-   public function saveproduct(){
+  public function saveproduct(){
        $products=$_POST['products'];
        foreach($products as $product)
        {
@@ -417,6 +446,8 @@ class ConsumeAction extends Action{
           {
               unset($product['__status']);
               M('维修配件','dbo.','difo')->add($product);
+              M('维修','dbo.','difo')->where(array('ID'=>$product['ID']))->save(array('当前状态'=>'领料'));
+
           }
           elseif($product['__status']=='update'){
               unset($product['__status']);
@@ -1601,7 +1632,7 @@ class ConsumeAction extends Action{
                $data['单据类别']='快修单';
                $data['当前状态']='结算';
                $data['维修状态']='结算';
-               if(!in_array($wxlb,array('蜡水洗车','汽车美容'))){
+               if(!in_array($wxlb,array('蜡水洗车','汽车美容','普通快修'))){
                    $data['单据类别']='普通单';
                    $data['当前状态']='报价';
                    $data['维修状态']='报价';
@@ -1652,7 +1683,12 @@ class ConsumeAction extends Action{
            }
        
    } 
-
+   private function writeLog($id,$ywbh,$type,$content)
+   {
+       $username=cookie('username');
+       $sql="exec [dbo].[Proc_WriteLog] '$id','$ywbh','$type','$username','$content'";
+       M('维修项目','dbo.','difo')->execute($sql);
+   }
     public function record()
     {
         $list=M('员工目录','dbo.','difo')->where(array('部门'=>array('like','%美容部')))->select();
@@ -1736,6 +1772,7 @@ class ConsumeAction extends Action{
             }
             $data['业务编号']=$bianhao;
             M('维修','dbo.','difo')->add($data);
+            $this->writeLog($data['ID'],$bianhao,'维修','前台接车');
             $row=array();
             $row['ID']=$data['ID'];
             $row['项目编号']=$xm['项目编号'];

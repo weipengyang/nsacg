@@ -423,6 +423,16 @@
                        return todate(value,false);
                     }
                 },
+                {
+                    display: '客户确认', name: '确认维修', align: 'center', minWidth: 50, render:function (rowdata, index, value) {
+                        if (value==null||value == '')
+                            value = '<span style="color:red">否</span>';
+                        else
+                            value = '<span style="color:blue">是</span>';
+
+                        return value;
+                    }
+                },
                 { display: '制单人', name: '制单人', width: 60, align: 'left' },
                 { display: '接车人', name: '接车人', minWidth: 60 },
                 { display: '维修类别', name: '维修类别', minWidth: 80 },
@@ -580,7 +590,7 @@
         });
         function reflash() {
             grid.reload();
-            setTimeout("reflash()", 20*1000);
+            setTimeout("reflash()", 30*1000);
 
         }
     </script>

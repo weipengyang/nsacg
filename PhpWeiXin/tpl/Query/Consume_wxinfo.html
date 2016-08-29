@@ -85,25 +85,6 @@
                                 },
                                 { display: "年份 ", name: "年份", newline: true, type: "text" },
                                 { display: "排量", name: "排量", newline: false, type: "text" },
-                                {
-                                    display: "颜色", name: "颜色", newline: false, type: "combobox",
-                                    options: {
-                                        valueField: '颜色',
-                                        textField: '颜色',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=yanse',
-                                    },
-                                },
-                                {
-                                    display: "外观", name: "外观", newline: true, type: "combobox",
-                                    options: {
-                                        valueField: '外观',
-                                        textField: '外观',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=waiguan',
-                                    },
-                                },
-                                { display: "座位数", name: "座位数", newline: false, type: "text" },
                                 { display: "车架号", name: "车架号", newline: false, type: "text" },
                                 { display: "轮胎规格", name: "轮胎规格",newline: true, type: "text" },
                                 { display: "机油格", name: "机油格", newline: false, type: "text" },
@@ -309,8 +290,6 @@
                     $("input[ligeruiid='客户类别']").val(carinfo['客户类别']);
                     $("input[ligeruiid='品牌']").val(carinfo['品牌']);
                     $("input[ligeruiid='车辆类别']").val(carinfo['车辆类别']);
-                    $("input[ligeruiid='颜色']").val(carinfo['颜色']);
-                    $("input[ligeruiid='外观']").val(carinfo['外观']);
                     $("input[ligeruiid='保险公司']").val(carinfo['保险公司']);
                     $("input[ligeruiid='服务顾问']").val(carinfo['服务顾问']);
 
@@ -374,9 +353,9 @@
                             {
                                 text: '增加',
                                 click: function () {
-                                    $.ligerDialog.open({
+                                   var dialog=$.ligerDialog.open({
                                         height: 600,
-                                        url: 'index.php?&g=Query&m=Consume&a=addproject&itemID=' + carinfo['流水号']+'&ID='+carinfo['ID']+ "&discount=" +{pigcms:$discount['服务折扣1']},
+                                        url: 'index.php?&g=Query&m=Consume&a=addproject&itemID=' + carinfo['流水号'] + '&ID=' + carinfo['ID'] + "&discount="+{pigcms:$discount['服务折扣1']} + "&zhuxiu=" + carinfo['当前主修人'],
                                         width: 900,
                                         showMax: true,
                                         showToggle: true,
@@ -385,7 +364,7 @@
                                         modal: true,
                                         title: '增加维修项目'
                                     });
-                                   
+                                   project.reload();
                                 }, icon: 'ad icon iconfont icon-dingdanguanli'
                             },
                             { line: true },
@@ -416,7 +395,26 @@
                                 }, icon: 'modify'
                             },
                             { line: true },
-                            { text: '删除', click: null, icon: 'delete' }
+                            {
+                                text: '删除', click: function () {
+                                    $.ligerDialog.confirm('确定要删除?', function (yes) {
+                                        if (yes){
+                                            var rows = project.getSelectedRows();
+                                            if (rows.length > 0) {
+                                                var data = {
+                                                    projects: rows
+                                                }
+                                                $.post('/index.php?g=Query&m=Consume&a=deleteproject', data,
+                                                  function (msg) {
+                                                      alert(msg);
+                                                      project.reload();
+                                                  });
+                                            } else {
+                                                $.ligerDialog.alert('请选择要删除项目');
+                                            }
+                                        }
+                                    });                                }, icon: 'delete'
+                            }
                             ]
                         }
                     });                    $("li[data-index='1']").live('click', function () {
@@ -460,6 +458,7 @@
                         delayLoad: true,
                         urlParms:{id:carinfo['ID']},
                         rownumbers: true,
+                        checkbox:true,
                         toolbar: {
                         items: [
                         {
@@ -480,8 +479,30 @@
                         },
                         { line: true },
                         { text: '修改', click:null , icon: 'modify' },
+                        { text: '领料', click: null, icon: 'modify' },
                         { line: true },
-                        { text: '删除', click:null , icon: 'delete' }
+                        {
+                            text: '删除',
+                            click: function () {
+                                $.ligerDialog.confirm('确定要删除?', function (yes) {
+                                    if (yes) {
+                                        var rows = product.getSelectedRows();
+                                        if (rows.length > 0) {
+                                            var data = {
+                                                products: rows
+                                            }
+                                            $.post('/index.php?g=Query&m=Consume&a=deleteproduct', data,
+                                              function (msg) {
+                                                  alert(msg);
+                                                  product.reload();
+                                              });
+                                        } else {
+                                            $.ligerDialog.alert('请选择要删除项目');
+                                        }
+                                    }
+                                });
+                            }, icon: 'delete'
+                        }
                         ]
                     }
                     });                    $("li[data-index='2']").live('click', function () {

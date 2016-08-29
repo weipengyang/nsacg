@@ -62,6 +62,7 @@
                                             <th class="table-title ">保险公司</th>
                                             <th class="table-title ">保险到期</th>
                                             <th class="table-title ">年审到期</th>
+                                            <th class="table-title ">查看图片</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -81,6 +82,7 @@
                                                 <td>{pigcms:$item.保险公司}</td>
                                                 <td>{pigcms:$item.交保到期|strtotime|date='Y-m-d',###}</td>
                                                 <td>{pigcms:$item.年检日期|strtotime|date='Y-m-d',###}</td>
+                                                <td><a href="javascript:void(0);" onclick="picnfo('{pigcms:$item.流水号}');"><strong>查看照片</strong></a></td>
                                             </tr>
 
                                         </volist>
@@ -119,6 +121,19 @@
                 isResize: true,
                 modal: false,
                 title: '车俩信息编辑'
+            });
+        }
+        function picnfo(carno) {
+            $.ligerDialog.open({
+                height: 500,
+                url: '/index.php?g=Query&m=Consume&a=fileupload&carno=' + carno,
+                width: 900,
+                showMax: true,
+                showToggle: true,
+                showMin: true,
+                isResize: true,
+                modal: false,
+                title: '车辆图片查看'
             });
         }
 

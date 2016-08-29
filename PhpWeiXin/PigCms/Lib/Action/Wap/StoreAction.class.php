@@ -462,7 +462,7 @@ private function sellbill($price,$name){
 private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',$shop=''){
     //if($this->wecha_id=='ohD3dviFloHSvcl9ieoXFibqPFJM')
     {
-        $wxrecord=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'当前状态'=>array('notin',array('结束','取消'))))->find();
+        $wxrecord=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'当前状态'=>array('neq','结束')))->find();
         if($wxrecord){
             $row=array();
             //$row['ID']=$wxrecord['ID'];
@@ -585,6 +585,11 @@ public function check(){
        {
            $id=$_POST['id'];
            M('维修','dbo.','difo')->where(array('流水号'=>$id))->save(array('确认维修'=>'是'));
+           $wx=M('维修','dbo.','difo')->where(array('流水号'=>$id))->find();
+           $wxid=$wx['ID'];
+           M('维修配件','dbo.','difo')->where(array('ID'=>$wxid))->save(array('是否同意'=>'1'));
+           M('维修项目','dbo.','difo')->where(array('ID'=>$wxid))->save(array('是否同意'=>'1'));
+           M('附加费用','dbo.','difo')->where(array('ID'=>$wxid))->save(array('是否同意'=>'1'));
            echo '确认成功';
            exit();
         }

@@ -51,25 +51,6 @@
                                 },
                                 { display: "年份 ", name: "年份", newline: false, type: "text", group: '车辆信息' },
                                 { display: "排量", name: "排量", newline: false, type: "text", group: '车辆信息' },
-                                {
-                                    display: "颜色", name: "颜色", newline: true, type: "combobox",
-                                    options: {
-                                        valueField: '颜色',
-                                        textField: '颜色',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=yanse',
-                                    }, group: '车辆信息'
-                                },
-                                {
-                                    display: "外观", name: "外观", newline: false, type: "combobox",
-                                    options: {
-                                        valueField: '外观',
-                                        textField: '外观',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=waiguan',
-                                    }, group: '车辆信息'
-                                },
-                                { display: "座位数", name: "座位数", newline: false, type: "text", group: '车辆信息' },
                                 { display: "车架号", name: "车架号", newline: true, type: "text", group: '车辆信息' },
                                 { display: "轮胎规格", name: "轮胎规格", newline: false, type: "text", group: '车辆信息' },
                                 { display: "机油格", name: "机油格", newline: false, type: "text", group: '车辆信息' },
@@ -225,8 +206,6 @@
                     $("input[ligeruiid='客户类别']").val(carinfo['客户类别']);
                     $("input[ligeruiid='品牌']").val(carinfo['品牌']);
                     $("input[ligeruiid='车辆类别']").val(carinfo['车辆类别']);
-                    $("input[ligeruiid='颜色']").val(carinfo['颜色']);
-                    $("input[ligeruiid='外观']").val(carinfo['外观']);
                     $("input[ligeruiid='保险公司']").val(carinfo['保险公司']);
                     $("input[ligeruiid='服务顾问']").val(carinfo['服务顾问']);
                     $("div[data-index='1']").html(

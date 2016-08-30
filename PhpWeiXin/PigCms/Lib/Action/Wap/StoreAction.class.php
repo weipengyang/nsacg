@@ -260,8 +260,8 @@ class StoreAction extends WapAction{
              }
             //修改笛佛系统中的会员资料
             $car=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$user['carno']))->find();
-            $lb='4星客户';
-            $czinfo['等级']='★★★★';
+            $lb='3星客户';
+            $czinfo['等级']='★★★';
             if($card['cardid']==5){
                 $lb='1星客户';
                 $czinfo['等级']='★';

@@ -701,7 +701,7 @@ class ConsumeAction extends Action{
    private function changecarinfo($user,$number)
    {
        $car=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$user['carno']))->find();
-       $lb='4星客户';
+       $lb='3星客户';
        if(!empty($car)){
            $item['车主']=$number;
            $item['联系人']=$user['truename'];
@@ -713,7 +713,7 @@ class ConsumeAction extends Action{
            
            $czinfo['名称']=$number;
            $czinfo['会员']=1;
-           $czinfo['等级']='★★★★';
+           $czinfo['等级']='★★★';
            $czinfo['会员编号']=$number;
            $czinfo['入会日期']=date('Y-m-d',time());
            $czinfo['联系人']=$user['truename'];

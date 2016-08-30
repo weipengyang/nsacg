@@ -14636,6 +14636,7 @@
     <Content Include="tpl\Query\Consume_addproduct.html" />
     <Content Include="tpl\Query\Consume_assigntask.html" />
     <Content Include="tpl\Query\Consume_addproject.html" />
+    <Content Include="tpl\Query\Consume_carsinfo.html" />
     <Content Include="tpl\Query\Consume_modifyproject.html" />
     <Content Include="tpl\Query\Consume_days - Copy.html" />
     <Content Include="tpl\Query\Consume_maintenance.html" />

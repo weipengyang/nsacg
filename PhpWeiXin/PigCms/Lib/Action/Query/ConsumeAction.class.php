@@ -1103,6 +1103,48 @@ class ConsumeAction extends Action{
          $this->assign('yelist',$yelist);
          $this->display();
     }
+   public function getcarsinfo()
+   {   
+       $page=$_POST['page'];
+       $pagesize=$_POST['pagesize'];
+       $sortname=$_POST['sortname'];
+       $sortorder=$_POST['sortorder'];
+       if(!isset($sortname)){
+        $sortname='流水号';
+        $sortorder='desc';
+       }
+       if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+           $searchkey='%'.trim($_POST['searchkey']).'%';
+       }
+       $where['车牌号码']=array('neq','0000');
+       if($searchkey){       
+           $searchwhere['品牌']=array('like',$searchkey);
+           $searchwhere['轮胎规格']=array('like',$searchkey);
+           $searchwhere['车型']=array('like',$searchkey);
+           $searchwhere['运输证号']=array('like',$searchkey);
+           $searchwhere['车架号']=array('like',$searchkey);
+           $searchwhere['机油格']=array('like',$searchkey);
+           $searchwhere['空气格']=array('like',$searchkey);
+           $searchwhere['冷气格']=array('like',$searchkey);
+           $searchwhere['汽油格']=array('like',$searchkey);
+           $searchwhere['车主']=array('like',$searchkey);
+           $searchwhere['车牌号码']=array('like',$searchkey);
+           $searchwhere['客户类别']=array('like',$searchkey);
+           $searchwhere['联系人']=array('like',$searchkey);
+           $searchwhere['联系电话']=array('like',$searchkey);
+           $searchwhere['保险公司']=array('like',$searchkey);
+           $searchwhere['发动机号']=array('like',$searchkey);
+           $searchwhere['_logic']='OR';
+           $where['_complex']=$searchwhere;
+           
+       }
+       $count=M('车辆档案','dbo.','difo')->where($where)->count();
+       $yelist=M('车辆档案','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+       $data['Rows']=$yelist;
+       $data['Total']=$count;
+       echo json_encode($data);
+       
+   }
 
    public  function getwxinfo(){
        $page=$_POST['page'];
@@ -1139,6 +1181,7 @@ class ConsumeAction extends Action{
            $searchwhere['车牌号码']=array('like',$searchkey);
            $searchwhere['客户类别']=array('like',$searchkey);
            $searchwhere['联系人']=array('like',$searchkey);
+           $searchwhere['送修人']=array('like',$searchkey);
            $searchwhere['联系电话']=array('like',$searchkey);
            $searchwhere['当前状态']=array('like',$searchkey);
            $searchwhere['_logic']='OR';

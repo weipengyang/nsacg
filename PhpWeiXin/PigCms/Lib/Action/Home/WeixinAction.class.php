@@ -70,8 +70,6 @@ class WeixinAction extends Action{
 		$this->fun=$open['queryname'];
 		if (!$this->ali){
 			list($content, $type) = $this->reply($data);
-            Log::write('测试22222');
-
 			$weixin->response($content, $type);
 		}else {
 			$data=array();
@@ -81,7 +79,6 @@ class WeixinAction extends Action{
 			}
 			$data['FromUserName']=$this->_get('fromUserName');
 			$this->data=$data;
-            Log::write('测试1111');
 			echo json_encode($this->reply($data));
 		}
 	}
@@ -453,36 +450,59 @@ class WeixinAction extends Action{
 		if(strpos(strtoupper($data['Content']), '@') === 0){
             $arr = explode("@",$data['Content']);
             $key=$arr[1];
-            $serch['类别']=array('like','轮胎%');
-            $serch['库存']=array('gt',0);
-            $serch['助记码']=array('like',"$key%");
-            $list=M('配件目录','dbo.','difo')->where($serch)->limit(0,20)->select();
-            $content="";
-            foreach($list as $item){
-                $content.="规格:".$item['名称']."\r\n";
-                $content.="品牌:".$item['品牌']."\r\n";
-                $content.="花纹:".$item['规格']."\r\n";
-                $content.="库存:".$item['库存']."\r\n";
-                $content.="价格:".$item['参考售价']."\r\n\r\n\r\n";
+            if($key&&strlen($key)>4){
+                $serch['类别']=array('like','轮胎%');
+                $serch['库存']=array('gt',0);
+                $serch['助记码']=array('like',"%$key%");
+                $list=M('配件目录','dbo.','difo')->where($serch)->limit(0,20)->select();
+                $content="";
+                foreach($list as $item){
+                    $content.="规格:".$item['名称']."\r\n";
+                    $content.="品牌:".$item['品牌']."\r\n";
+                    $content.="花纹:".$item['规格']."\r\n";
+                    $content.="库存:".$item['库存']."\r\n";
+                    $content.="价格:".$item['一级批发价']."\r\n\r\n";
+                }
+                return array($content,'text');
             }
-            return array($content,'text');
         }
         if(strpos(strtoupper($data['Content']), '*') === 0){
             $arr = explode("*",$data['Content']);
             $key=$arr[1];
-            $serch['车牌号码']=array('like',"$key%");
-            $carinfo=M('车辆档案','dbo.','difo')->where($serch)->find();
-            $content="车牌号码:".$carinfo['车牌号码']."\r\n";
-            $content.="车主:".$carinfo['车主']."\r\n";
-            $content.="联系人:".$carinfo['联系人']."\r\n";
-            $content.="联系电话:".$carinfo['联系电话']."\r\n";
-            $content.="轮胎规格:".$carinfo['轮胎规格']."\r\n";
-            $content.="机油格:".$carinfo['机油格']."\r\n";
-            $content.="空气格:".$carinfo['空气格']."\r\n";
-            $content.="冷气格:".$carinfo['冷气格']."\r\n";
-            
-                //$content.="轮胎规格:".$item['参考售价']."\r\n\r\n\r\n";
-            return array($content,'text');
+            if($key&&strlen($key)>2){
+                $serch['车牌号码']=array('like',"%$key%");
+                $carinfo=M('车辆档案','dbo.','difo')->where($serch)->find();
+                $content="车牌号码:".$carinfo['车牌号码']."\r\n";
+                $content.="车主:".$carinfo['车主']."\r\n";
+                $content.="客户类别:".$carinfo['客户类别']."\r\n";
+                $content.="联系人:".$carinfo['联系人']."\r\n";
+                $content.="联系电话:".$carinfo['联系电话']."\r\n";
+                $content.="轮胎规格:".$carinfo['轮胎规格']."\r\n";
+                $content.="机油格:".$carinfo['机油格']."\r\n";
+                $content.="空气格:".$carinfo['空气格']."\r\n";
+                $content.="冷气格:".$carinfo['冷气格']."\r\n";
+                if(isset($carinfo['最近保养'])){
+                    $content.="最近保养:".date('Y-m-d',strtotime($carinfo['最近保养']))."\r\n";
+                }
+                if($carinfo['下次保养']){
+                    $content.="下次保养:".date('Y-m-d',strtotime($carinfo['下次保养']))."\r\n";
+                }
+                if($carinfo['商保到期']){
+                    $content.="保险到期:".date('Y-m-d',strtotime($carinfo['商保到期']))."\r\n";
+                }
+                if($carinfo['年检日期']){
+                    $content.="年检到期:".date('Y-m-d',strtotime($carinfo['年检日期']))."\r\n";
+                }
+
+                $content.="\r\n最近维修记录:\r\n";
+                $wxlist=M('维修','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'当前状态'=>'结束'))->limit(0,20)->order('流水号 desc')->select();
+                foreach($wxlist as $item){
+                    $content.="维修日期:".date('Y-m-d',strtotime($item['制单日期']))."\r\n";
+                    $content.="维修类别:".$item['维修类别']."\r\n";
+                    $content.="金额:".$item['应收金额']."元\r\n\r\n";
+                }
+                return array($content,'text');
+            }
         }
 		/**欢仔**/
         if ($this -> fans['wallopen'] && !$this -> knwxs['knwxopen']){

@@ -108,18 +108,18 @@
                         { display: '联系电话', name: '联系电话', minWidth: 60 },
                         { display: '会员等级', name: '客户类别', minWidth: 60 },
                         {
-                            display: '品牌型号', name: '品牌', minWidth: 80, render: function (rowdata, index, value) {
+                            display: '品牌型号', name: '品牌', width: 90, render: function (rowdata, index, value) {
 
                                 return rowdata['品牌'] + '/' + rowdata['车型'];
                             }
                         },
-                        { display: '年份排量', name: '排量', minWidth: 140 },
-                        { display: '车架号', name: '车架号', minWidth: 100},
-                        { display: '发动机型号', name: '发动机型号', minWidth: 140 },
+                        { display: '年份排量', name: '排量', minWidth: 120 },
+                        { display: '车架号', name: '车架号', width: 150},
+                        { display: '发动机型号', name: '发动机型号', minWidth: 60 },
                         { display: '轮胎规格', name: '轮胎规格', minWidth: 60 },
-                        { display: '机油格', name: '机油格', minWidth: 60 },
-                        { display: '空气格', name: '空气格', minWidth: 60 },
-                        { display: '冷气格', name: '冷气格', minWidth: 60 },
+                        { display: '机油格', name: '机油格', width: 50 },
+                        { display: '空气格', name: '空气格', width: 50 },
+                        { display: '冷气格', name: '冷气格', width: 50 },
                         { display: '保险公司', name: '保险公司', minWidth: 60 },
                         {
                             display: '保险到期', name: '交保到期', minWidth: 100, render: function (rowdata, index, value) {

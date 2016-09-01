@@ -286,6 +286,7 @@ class ConsumeAction extends Action{
            exit;
        }
    }
+   #region 上传文件
    public function fileupload(){
         $carno=$_GET['carno'];
         $path='./uploads/'.$this->token.'/cars/'.$carno.'/';
@@ -360,7 +361,9 @@ class ConsumeAction extends Action{
        }
       
    }
-   public function wxinfo()
+   #endregion
+
+  public function wxinfo()
     {
         if(IS_POST){
             $carinfo=$_POST;

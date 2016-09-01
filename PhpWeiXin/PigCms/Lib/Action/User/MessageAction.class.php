@@ -294,6 +294,25 @@ class MessageAction extends UserAction{
 		}
 		$this->display();
 	}
+	public function img(){
+		$db=M('Img');
+		$where=array('token'=>$this->token);
+		$count      = $db->where($where)->count();
+		$Page       = new Page($count,5);
+		$show       = $Page->show();
+		$list=$db->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('id DESC')->select();
+		//
+		$items=array();
+		if ($list){
+			foreach ($list as $item){
+				array_push($items,array('id'=>$item['id'],'name'=>$item['title'],'pic'=>$item['pic'],'info'=>str_replace(array("&#039;",'\'',"\r\n","\r","\n",'"'),'',$item['text']),'linkcode'=>'{siteUrl}/index.php?g=Wap&m=Index&a=content&token='.$this->token.'&wecha_id={wechat_id}&id='.$item['id'],'linkurl'=>'','keyword'=>$item['keyword']));
+			}
+		}
+		//
+		$this->assign('list',$items);
+		$this->assign('page',$show);
+		$this->display();
+	}
 
 	public function send(){
 		$fans=M('Wechat_group_list')->where(array('token'=>$this->token))->order('id ASC')->select();
@@ -357,25 +376,6 @@ class MessageAction extends UserAction{
 		}
 	}
 	
-	public function img(){
-		$db=M('Img');
-		$where=array('token'=>$this->token);
-		$count      = $db->where($where)->count();
-		$Page       = new Page($count,5);
-		$show       = $Page->show();
-		$list=$db->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('id DESC')->select();
-		//
-		$items=array();
-		if ($list){
-			foreach ($list as $item){
-				array_push($items,array('id'=>$item['id'],'name'=>$item['title'],'pic'=>$item['pic'],'info'=>str_replace(array("&#039;",'\'',"\r\n","\r","\n",'"'),'',$item['text']),'linkcode'=>'{siteUrl}/index.php?g=Wap&m=Index&a=content&token='.$this->token.'&wecha_id={wechat_id}&id='.$item['id'],'linkurl'=>'','keyword'=>$item['keyword']));
-			}
-		}
-		//
-		$this->assign('list',$items);
-		$this->assign('page',$show);
-		$this->display();
-	}
 	
 	function curlPost($url, $data,$showError=1){
 		$ch = curl_init();

@@ -45,6 +45,23 @@ class ConsumeAction extends Action{
             $this->display();
         }
     }
+    public function stat()
+    {
+        $jy=M('车辆档案','dbo.','difo')->query("select  机油格,count(1) 数量 from  车辆档案 where 机油格 is not null group by 机油格 ");
+        $keys=array_column($jy,'机油格');
+        $values=array_column($jy,'数量');;
+        $this->assign('keys',json_encode($keys));
+        $this->assign('values',json_encode($values));
+        $this->display();
+    }
+    public function getstatdata()
+    {
+        $type=$_GET['type'];
+        $jy=M('车辆档案','dbo.','difo')->query("select  $type,count(1) 数量 from  车辆档案 where $type is not null and $type !='' group by $type ");
+        $data['keys']=array_column($jy,"$type");
+        $data['values']=array_column($jy,'数量');;
+        echo json_encode($data);
+    }
     public function addproduct(){
         if(IS_POST){
             $projects=M('配件分类','dbo.','difo')->query("SELECT 名称 [text],'false' isexpand, 有无子节点 haschildren FROM 配件分类 where 父项=''");

@@ -14636,6 +14636,7 @@
     <Content Include="tpl\Query\Consume_addproduct.html" />
     <Content Include="tpl\Query\Consume_assigntask.html" />
     <Content Include="tpl\Query\Consume_addproject.html" />
+    <Content Include="tpl\Query\Consume_stat.html" />
     <Content Include="tpl\Query\Consume_carsinfo.html" />
     <Content Include="tpl\Query\Consume_modifyproject.html" />
     <Content Include="tpl\Query\Consume_days - Copy.html" />
@@ -14664,6 +14665,7 @@
     <Content Include="tpl\Query\Consume_setprice.html" />
     <Content Include="tpl\Query\Consume_record.html" />
     <Content Include="tpl\Query\Consume_index.html" />
+    <Content Include="tpl\Query\Store_yangchebao.html" />
     <Content Include="tpl\static\alert.js" />
     <Content Include="tpl\static\applegame\2000.png" />
     <Content Include="tpl\static\applegame\640.png" />

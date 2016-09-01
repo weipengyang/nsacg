@@ -1,0 +1,439 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <script type='text/javascript' src='http://libs.baidu.com/jquery/1.11.1/jquery.min.js' charset='utf-8'></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script>var Zepto = jQuery</script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/0.4.1/weui.min.css" />
+    <link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+    <title>{pigcms:$metaTitle}</title>
+    <style>
+        .logo {
+            display: block;
+            width: 2.5rem;
+            height: 2.5rem;
+            color: white;
+            text-align: center;
+            line-height: 2rem;
+            margin: 2px;
+            border-radius: 100%;
+        }
+
+        .line {
+            width: 100%;
+            height: 2.5rem;
+            line-height: 2.5rem;
+            overflow: hidden;
+            margin: 0px;
+            text-align: center;
+            padding: 0px;
+            color: #FF6600;
+            font-size: 1.4rem;
+            background: #333333;
+            z-index: 9999;
+            font-weight: bold;
+            filter: alpha(opacity=40);
+            opacity: 0.4;
+        }
+
+        .bg {
+            margin-top: 0.5rem;
+            padding:0;
+            color: white;
+            background: #fcecfc; /* Old browsers */
+            background: -moz-linear-gradient(left, #fcecfc 0%, #fd89d7 33%, #fba6e1 53%, #fd89d7 61%, #ff7cd8 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, right top, color-stop(0%,#fcecfc), color-stop(33%,#fd89d7), color-stop(53%,#fba6e1), color-stop(61%,#fd89d7), color-stop(100%,#ff7cd8)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,#FF6600 0%,#FF4900 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top, #FF6600 0%,#FF6600 33%,#FF6600 53%,#FF6600 61%,#FF6600 100%); /* Opera11.10+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcecfc', endColorstr='#ff7cd8',GradientType=1 ); /* IE6-9 */
+            background: linear-gradient(left, #fcecfc 0%,#fd89d7 33%,#fba6e1 53%,#fd89d7 61%,#ff7cd8 100%); /* W3C */ 
+            filter: alpha(opacity=50);
+            opacity: 0.8;
+        }
+    </style>
+    <script type="text/javascript">
+    $(function () {
+        'use strict';
+        //对话框
+        $.init();
+        $(document).on('click', '#turnin', function () {
+           $('#zhuanru').find('#money').val('');
+           $('#zhuanru').find('#password').val('');
+            $('#zhuanru').show().on('click', '.default ', function () {
+                $('.weui_dialog_confirm').off('click').hide();
+            }).on('click', '.primary', function () {
+                $('.weui_dialog_confirm').off('click').hide();
+                var money = $('#zhuanru').find('#money').val();
+                var reg =/^\d+(\.\d+)?$/i;
+                if (!reg.test(money)) {
+                    myalert("请输入有效的金额");
+                    return;
+                }
+                if (money < 500) {
+                    myalert("转入金额不能少于500元");
+                    return;
+                }
+                var password = $('#zhuanru').find('#password').val();
+                if (password == '')
+                {
+                    myalert("请输入密码");
+                    return;
+                }
+                var submitData = {
+                    password: password,
+                    money: money,
+                };
+                
+                $.post('/index.php?g=Wap&m=Store&a=turnin&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData,
+                function (data) {
+                    myalert("提示", data);
+                    location.href = location.href;
+                });
+            });
+        });
+        $(document).on('click', '#turnout', function () {
+            $('#zhuanchu').find('#money').val('');
+            $('#zhuanchu').find('#password').val('');
+            $('#zhuanchu').show().on('click', '.default ', function () {
+                $('.weui_dialog_confirm').off('click').hide();
+            }).on('click', '.primary', function () {
+                $('.weui_dialog_confirm').off('click').hide();
+                var money = $('#zhuanchu').find('#money').val();
+                var password = $('#zhuanchu').find('#password').val();
+                var reg = /^\d+(\.\d+)?$/i;
+                if (!reg.test(money)) {
+                    myalert("请输入有效的金额");
+                    return;
+                }
+                if (password == '') {
+                    myalert("请输入密码");
+                    return;
+                }
+                var submitData = {
+                    password: password,
+                    money: money,
+                };
+
+                $.post('/index.php?g=Wap&m=Store&a=turnout&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData,
+                function (data) {
+                    myalert("提示", data);
+                    location.href = location.href;
+                });
+            });
+        });
+        $(document).on('click', '#withdraw', function () {
+            
+            $('#tixian').find('#type').change(function () {
+                if ($('#tixian').find('#type').val() == 3) {
+                    $('#tixian').find('#user').css("display",'');
+                }
+                else {
+                    $('#tixian').find('#user').css("display", 'none');
+                }
+            });
+            $('#tixian').show().on('click', '.default ', function () {
+                $('.weui_dialog_confirm').off('click').hide();
+                $('#tixian').find('#money').val('');
+                $('#tixian').find('#password').val('');
+                $('#tixian').find('#account').val('');
+                $('#tixian').find('#username').val('');
+            }).on('click', '.primary', function () {
+                $('.weui_dialog_confirm').off('click').hide();
+                var money = $('#tixian').find('#money').val();
+                var password = $('#tixian').find('#password').val();
+                var account=$('#tixian').find('#account').val();
+                var type = $('#tixian').find('#type').val();
+                var username = $('#tixian').find('#username').val();
+                var reg = /^\d+(\.\d+)?$/i;
+                if (!reg.test(money)) {
+                    myalert("提示", "请输入有效的金额");
+                    return;
+                }
+                if (password == '') {
+                    myalert("提示", "请输入密码");
+                    return;
+                }
+                if (account == '') {
+                    myalert("提示", "请输入账号");
+                    return;
+                }
+                if (type == 3 && username == '')
+                {
+                    myalert("提示", "请输入用户名");
+                    return;
+                }
+                var submitData = {
+                    password: password,
+                    money: money,
+                    type: type,
+                    account:account,
+                    username:username
+                };
+
+                $.post('/index.php?g=Wap&m=Store&a=withdraw&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData,
+                function (data) {
+                    myalert("提示", data);
+                    location.href = location.href;
+                });
+            });
+        });
+        
+        $('#container').highcharts({
+                title: {
+                    text: '七日年化收益率(%)',
+                    //x: -20 //center
+                },
+                //chart: {
+                //    zoomType: 'x'
+                //},
+                xAxis: {
+                    //type: 'datetime'
+                    categories:{pigcms:$revenuetime}
+                },
+                yAxis: {
+                    title: {
+                        enabled: false,
+                        text: '日利率(%)'
+                    }
+                },
+                exporting: {
+                    enabled: false
+                },
+                credits: {
+                    enabled: false
+                },
+                tooltip: {
+                    valueSuffix: '%'
+                },
+                legend: {
+                    enabled: false
+                },
+                series: [{
+                    name: '利率',
+                    //type: 'area',
+                    data:{pigcms:$revenuerate}
+                }]
+            });
+    });
+    function GetRevenueUnit() {
+        location.href = '/index.php?g=Wap&m=Store&a=revenueunit&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}';
+    }
+    function GetRevenue() {
+        location.href = '/index.php?g=Wap&m=Store&a=revenue&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}';
+    }
+    function myalert(title,content,callback) {
+        $('#dialog2').find('.weui_dialog_title').text(title);
+        $('#dialog2').find('.weui_dialog_bd').text('');
+        $('#dialog2').find('.weui_dialog_bd').text(content);
+        $('#dialog2').show().on('click', '.default ', function () {
+            $('.weui_dialog_alert').off('click').hide();
+        }).on('click', '.primary', function () {
+            $('.weui_dialog_alert').off('click').hide();
+            if (callback)
+            {
+                callback();
+            }
+        });
+    }
+    </script>
+
+</head>
+<body>
+    <div class="page" style="margin:0px;padding:0px">
+
+        <div class="weui_dialog_alert" id="dialog2" style="display: none;">
+            <div class="weui_mask"></div>
+            <div class="weui_dialog">
+                <div class="weui_dialog_hd"><strong class="weui_dialog_title">弹窗标题</strong></div>
+                <div class="weui_dialog_bd">弹窗内容，告知当前页面信息等</div>
+                <div class="weui_dialog_ft">
+                    <a href="javascript:;" class="weui_btn_dialog primary">确定</a>
+                </div>
+            </div>
+        </div>
+        <header class="bar bar-nav">
+            <a class="button button-link button-nav pull-left" href="#" onclick="history.go(-1);" data-transition='slide-out'>
+                <span class="icon icon-left"></span>
+                返回
+            </a>
+            <h1 class="title">{pigcms:$metaTitle}</h1>
+        </header>
+        <nav class="bar bar-tab">
+            <a href="#" id="turnin" class="tab-item" style="color:#006AFF">转入</a>
+            <a href="#" id="turnout" class="tab-item" style="color:#006AFF">转出</a>
+            <a href="#" id="withdraw" class="tab-item" style="color:#006AFF">提现</a>
+        </nav>
+        <div class="content" style="margin:0px;padding:0px">
+            <div class="card bg"  style="padding:0px;margin:0px">
+                <div class="card-content" style="margin:0px;padding:0px;">
+                    <div class="card-content-inner" style="margin:0px;padding:0px;">
+                        <div class="item-title" style="margin:0px;padding:0px;height:50px">
+                            <div class="row" style="padding:0px;">
+                                <div class="col-100" style="text-align:center;margin-top:1rem">昨日收益(元)</div>
+                            </div>
+                        </div>
+                        <div class="item-title" style="margin:0px;padding:0px;height:60px">
+                            <div class="row" style="top:20px;padding:0px;">
+                                <div class="col-100" style="text-align:center;font-size:2.5rem" onclick="GetRevenue();">{pigcms:$myrevenue}</div>
+                            </div>
+                        </div>
+                        <div class="item-title" style="margin:0px;padding:0px;height:50px">
+                            <div class="row" style="margin-top:2rem">
+                                <div class="col-100" style="text-align:center;font-size:0.5rem">总金额(元)</div>
+                                <div class="col-100" style="text-align:center;font-size:1rem">{pigcms:$userinfo['yc_balance']}</div>
+                            </div>
+                            <div class="row" style="margin:0px;">
+                            </div>
+                        </div>
+                   </div>
+                </div>
+            </div>
+            <div class="card"  style="padding:0px;margin:0px">
+                <div class="card-content">
+                    <div class="card-content-inner">
+                        <div class="item-title">
+                            <div class="row">
+                                <div class="col-50" >万份收益(元)</div>
+                                <div class="col-50">累计收益(元)</div>
+                                <!--<div class="col-33"> <a href="#" id="withdraw" class="button button-big button-round button-fill button-success" >提现</a></div>-->
+                            </div>
+                            <div class="row">
+                                <div class="col-50" style="color:#FF6600;font-size:1rem;border-left:1px;" onclick="GetRevenueUnit();">{pigcms:$revenueunit}</div>
+                                <div class="col-50" style="color:#FF6600;font-size:1rem" onclick="GetRevenue();">{pigcms:$sumrevenue}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card" style="padding:0px;margin:0px">
+                <div class="card-content">
+                    <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+              </div>
+        </div>
+            <div id="zhuanru" class="weui_dialog_confirm" style="display: none;">
+                <div class="weui_mask"></div>
+                <div class="weui_dialog">
+                    <div class="weui_dialog_hd" style="height:1rem;margin-top:0.5rem;padding:0px"><strong class="weui_dialog_title">转入到养车宝</strong></div>
+                    <div class="weui_cells weui_cells_form">
+                        <div class="weui_cell">
+                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">可转金额</label></div>
+                            <div class="weui_cell_bd weui_cell_primary">
+                                <label class="weui_label" style="white-space:nowrap;">{pigcms:$userinfo['balance']}元</label>
+                            </div>
+                        </div>
+                        <div class="weui_cell">
+                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap; ">转入金额</label></div>
+                            <div class="weui_cell_bd weui_cell_primary">
+                                <input placeholder="请输入金额" class="weui_input" id="money" name="money"/>
+                            </div>
+                        </div>
+                        <div class="weui_cell">
+                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">密码</label></div>
+                            <div class="weui_cell_bd weui_cell_primary">
+                                <input name="password" class="weui_input" id="password" value="" type="password" placeholder="请输入密码">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="weui_dialog_ft">
+                        <a href="javascript:;" class="weui_btn_dialog default">取消</a>
+                        <a href="javascript:;" class="weui_btn_dialog primary">确定</a>
+                    </div>
+                </div>
+            </div>
+            <div id="zhuanchu" class="weui_dialog_confirm" style="display: none;">
+                <div class="weui_mask"></div>
+                <div class="weui_dialog">
+                    <div class="weui_dialog_hd" style="height:1rem;margin-top:0.5rem;padding:0px"><strong class="weui_dialog_title">转出到余额</strong></div>
+                        <div class="weui_cells weui_cells_form">
+                            <div class="weui_cell">
+                                <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">可转金额</label></div>
+                                <div class="weui_cell_bd weui_cell_primary">
+                                    <label class="weui_label" style="white-space:nowrap;">{pigcms:$userinfo['yc_balance']}元</label>
+                                </div>
+                            </div>
+                            <div class="weui_cell">
+                                <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap; ">转出金额</label></div>
+                                <div class="weui_cell_bd weui_cell_primary">
+                                    <input placeholder="请输入转出金额" class="weui_input" id="money" name="money" />
+                                </div>
+                            </div>
+                            <div class="weui_cell">
+                                <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">密码</label></div>
+                                <div class="weui_cell_bd weui_cell_primary">
+                                    <input name="password" class="weui_input" id="password" value="" type="password" placeholder="请输入密码">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="weui_dialog_ft">
+                            <a href="javascript:;" class="weui_btn_dialog default">取消</a>
+                            <a href="javascript:;" class="weui_btn_dialog primary">确定</a>
+                        </div>
+                    </div>
+            </div>
+            <div id="tixian" class="weui_dialog_confirm" style="display: none">
+                <div class="weui_mask"></div>
+                <div class="weui_dialog">
+                    <div class="weui_dialog_hd" style="height:1rem;margin-top:0.5rem;padding:0px"><strong class="weui_dialog_title">提现申请</strong></div>
+                    <div class="weui_cells weui_cells_form">
+                        <div class="weui_cell">
+                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">可提现金额</label></div>
+                            <div class="weui_cell_bd weui_cell_primary">
+                                <label class="weui_label" style="white-space:nowrap;">{pigcms:$userinfo['balance']}元</label>
+                            </div>
+                        </div>
+                        <div class="weui_cell">
+                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap; ">提现金额</label></div>
+                            <div class="weui_cell_bd weui_cell_primary">
+                                <input placeholder="请输入提现金额" class="weui_input" id="money" name="money" />
+                            </div>
+                        </div>
+                        <!--<div class="weui_cell">
+                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">提现方式</label></div>
+                            <div class="weui_cell_bd weui_cell_primary">
+                                <select name="type" id="type" class="weui_input">
+                                    <option value="1">微信</option>-->
+                                    <!--<option value="2">支付宝</option>
+                                    <option value="3">银行</option>
+                                    <option value="4">现金</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="weui_cell" id="user" name="user" style="display:none">
+                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap; ">用户名</label></div>
+                            <div class="weui_cell_bd weui_cell_primary">
+                                <input placeholder="请输入用户名" class="weui_input" id="username" name="useername" />
+                            </div>
+                        </div>
+                        <div class="weui_cell">
+                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap; ">账号</label></div>
+                            <div class="weui_cell_bd weui_cell_primary">
+                                <input placeholder="请输入账号" class="weui_input" id="account" name="account" />
+                            </div>
+                        </div>-->
+                        <div class="weui_cell">
+                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">支付密码</label></div>
+                            <div class="weui_cell_bd weui_cell_primary">
+                                <input name="password" class="weui_input" id="password" value="" type="password" placeholder="请输入支付密码">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="weui_dialog_ft">
+                        <a href="javascript:;" class="weui_btn_dialog default">取消</a>
+                        <a href="javascript:;" class="weui_btn_dialog primary">确定</a>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+        </div>
+</body>
+{pigcms:$shareScript}
+</html>

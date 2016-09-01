@@ -447,6 +447,8 @@ class WeixinAction extends Action{
             S('fans_' . $this -> token . '_' . $this -> data['FromUserName'], NULL);
             return array('成功退出微信墙对话模式', 'text');
         }
+        $weixin = new Wechat($this->token,$this->wxuser);
+
 		if(strpos(strtoupper($data['Content']), '@') === 0){
             $arr = explode("@",$data['Content']);
             $key=$arr[1];
@@ -463,7 +465,9 @@ class WeixinAction extends Action{
                     $content.="库存:".$item['库存']."\r\n";
                     $content.="价格:".$item['一级批发价']."\r\n\r\n";
                 }
-                return array($content,'text');
+                $weixin->send($content,$data['FromUserName']);
+                return array('turn on transfer_customer_service','transfer_customer_service');
+
             }
         }
         if(strpos(strtoupper($data['Content']), '*') === 0){
@@ -501,8 +505,38 @@ class WeixinAction extends Action{
                     $content.="维修类别:".$item['维修类别']."\r\n";
                     $content.="金额:".$item['应收金额']."元\r\n\r\n";
                 }
-                return array($content,'text');
+                $weixin->send($content,$data['FromUserName']);
+                return array('turn on transfer_customer_service','transfer_customer_service');
             }
+        }
+        if(strpos(strtoupper($data['Content']), '#') === 0){
+            $arr = explode("#",$data['Content']);
+            $key=$arr[1];
+            if($key&&strlen($key)>2){
+                $wxlist=M('维修','dbo.','difo')->where(array('车牌号码'=>array('like',"%$key%"),'当前状态'=>array('neq','结束')))->order('流水号 desc')->select();
+                $content="";
+                foreach($wxlist as $item){
+                    $content.="维修日期:".date('Y-m-d',strtotime($item['制单日期']))."\r\n";
+                    $content.="维修类别:".$item['维修类别']."\r\n";
+                    $content.="当前状态:".$item['当前状态']."\r\n";
+                    $content.="报价金额:".$item['报价金额']."元\r\n\r\n";
+                    $content.="维修项目:\r\n";
+                    $xmlist=M('维修项目','dbo.','difo')->where(array('ID'=>$item['ID']))->order('流水号 desc')->select();
+                    foreach($xmlist as $xm){
+                        $content.=$xm['项目名称']."    ".$xm['金额']."元\r\n";
+                    }
+                    $content.="\r\n维修配件:\r\n";
+                    $content.="配件名称    数量    金额\r\n";
+                    $pjlist=M('维修配件','dbo.','difo')->where(array('ID'=>$item['ID']))->order('流水号 desc')->select();
+                    foreach($pjlist as $pj){
+                        $content.=$pj['名称']."    x".$pj['数量']."    ".$pj['金额']."元\r\n";
+
+                    }
+                }
+                $weixin->send($content,$data['FromUserName']);
+                return array('turn on transfer_customer_service','transfer_customer_service');
+            }
+
         }
 		/**欢仔**/
         if ($this -> fans['wallopen'] && !$this -> knwxs['knwxopen']){

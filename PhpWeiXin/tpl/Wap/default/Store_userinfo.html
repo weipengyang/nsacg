@@ -191,7 +191,7 @@
             reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i;
             reg2 = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{4}[\u4e00-\u9fa5]$/i;
             if (!reg.test(obj.value) && !reg2.test(obj.value)) {
-                    $.alert("请输入完整的车牌号码，格式如粤T83G5NB");
+                    $.alert("请输入完整的车牌号码，格式如粤T83G5N");
                     document.getElementById(obj.id).style.background = "red";
                     return;
             }
@@ -228,7 +228,8 @@
             reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i;
             reg2 = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{4}[\u4e00-\u9fa5]$/i;
             if (!reg.test(carno)&&!reg2.test(carno)) {
-                    $.alert("请输入完整的车牌号码，格式如粤T83G5NB");
+                $.alert("请输入完整的车牌号码，格式如粤T83G5N");
+                return;
             }
             if (tel == '') {
                 $.alert("请认真输入手机号");

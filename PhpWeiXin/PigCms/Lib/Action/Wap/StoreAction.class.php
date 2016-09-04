@@ -130,6 +130,9 @@ class StoreAction extends WapAction{
             $carno=isset($_POST['carno']) ? htmlspecialchars(strtoupper($_POST['carno'])) : '';
             //如果原来有用户就迁移数据
             $user = M('Userinfo','','acg')->where(array('token'=>'jifbjv1429543374','tel'=>$tel))->find();
+            if(isset($user)&&$user['carno']!=$carno){
+                echo '车牌号码与原来注册车牌不一致';exit;
+            }
             $password = isset($_POST['password']) ? htmlspecialchars($_POST['password']) : '';
 			$password2 = isset($_POST['password2']) ? htmlspecialchars($_POST['password2']) : '';
 			$user['truename'] = isset($_POST['truename']) ? htmlspecialchars($_POST['truename']) : '';
@@ -197,6 +200,7 @@ class StoreAction extends WapAction{
                     $pay_record[$key]['wecha_id']=$this->wecha_id;
 
                 }
+
                 M('member_card_pay_record')->addall($pay_record);
                 //会员卡使用记录转换
                 $use_record=M('member_card_use_record','','acg')->where(array('token'=>'jifbjv1429543374','wecha_id'=>$user['wecha_id']))->select();
@@ -221,7 +225,8 @@ class StoreAction extends WapAction{
                 M('member_card_sign')->addall($sign_record);
                 //获取新卡
                 $card=M('Member_card_create','','ayc')->field('cardid,id,number')->where("token='".$this->_get('token')."' and cardid=".$oldcard['cardid']." and wecha_id = ''")->order('id ASC')->find();
-
+                //修改转卡标志
+                M('Userinfo','','acg')->where(array('token'=>'jifbjv1429543374','tel'=>$tel))->save(array('isconvert'=>'1'));
             }else{
                 //新用户获取新卡，取积分卡
                 $card=M('Member_card_create','','ayc')->field('cardid,id,number')->where("token='".$this->_get('token')."' and cardid=5 and wecha_id = ''")->order('id ASC')->find();

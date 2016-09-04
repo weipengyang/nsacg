@@ -567,7 +567,7 @@ class Member_cardAction extends UserAction{
 	//会员优惠卷
 	public function coupon(){
 		$member_card_coupon_db=M('Member_card_coupon');
-		$data=$member_card_coupon_db->where("(token='".$this->token."' and cardid='".$this->thisCard['id']."') or attr='2"."'")->order('id desc')->select();
+		$data=$member_card_coupon_db->where("token='".$this->token."'")->order('id desc')->select();
         foreach ($data as $k=>$n){
             $data[$k]['count']= M('member_card_coupon_record')->where(array('coupon_id'=>$n['id'],'coupon_type'=>$n['type']==1?1:2))->count();
         }
@@ -862,17 +862,18 @@ class Member_cardAction extends UserAction{
       }
     }
     public function change()
-    {
+    { 
 		//$uid = (int)$_GET['uid'];
         if(IS_POST){
            $member_card_set_db=M('Member_card_set'); 
            $cardid=$_POST['newcardid'];
            $thisCard=$member_card_set_db->where(array('token'=>$this->token,'id'=>$cardid))->find();  
+           $oldCard=$member_card_set_db->where(array('token'=>$this->token,'id'=>$_GET['cardid']))->find();  
            $card=M('Member_card_create')->field('id,number')->where("token='".$this->token."' and cardid=".intval($thisCard['id'])." and wecha_id = ''")->order('id ASC')->find();
            $now=time();
            if($card)
            {
-
+               if($thisCard['grade']>$oldCard['grade']){
                $gwhere = array('token'=>$this->token,'cardid'=>$cardid,'is_open'=>'1','start'=>array('lt',$now),'end'=>array('gt',$now));
 			   $gifts 	= M('Member_card_gifts')->where($gwhere)->select();
                foreach($gifts as $key=>$value){
@@ -912,9 +913,18 @@ class Member_cardAction extends UserAction{
                            M('Member_card_coupon_record')->add($data);
                        }
                    }
-               }                 
+               }
+               }else{
+                   M('Userinfo')->where(array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id']))->save(array('total_score'=>0));
+               }
                M('Member_card_create')->where(array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id']))->delete();
                M('Member_card_create')->where(array('id'=>$card['id']))->save(array('wecha_id'=>$_GET['wecha_id']));
+               $car=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$_GET['carno']))->find();
+               if(isset($car)){
+                 M('车辆档案','dbo.','difo')->where(array('客户ID'=>$car['客户ID']))->save(array('车主'=>$card['number']));
+                 M('往来单位','dbo.','difo')->where(array('ID'=>$car['客户ID']))->save(array('名称'=>$card['number'],'会员编号'=>$card['number']));
+                 M('维修','dbo.','difo')->where(array('客户ID'=>$car['客户ID']))->save(array('车主'=>$card['number']));
+               }
                echo "操作成功";
            }else{
                echo "会员卡数量不够";
@@ -1018,7 +1028,7 @@ class Member_cardAction extends UserAction{
         $db = M('member_card_coupon');
 		//$uid = (int)$_GET['uid'];
 		$cardid = $this->_get('cardid','intval');
-		$list= $db->where(array('token'=>$this->token,'cardid'=>$cardid,'attr'=>'1','ispublic'=>'1'))->field('id,title,type,days')->select();
+		$list= $db->where(array('token'=>$this->token,'attr'=>'1','ispublic'=>'1'))->field('id,title,type,days')->select();
         if(IS_POST){
             if ($list){
                 foreach ($list as $item){

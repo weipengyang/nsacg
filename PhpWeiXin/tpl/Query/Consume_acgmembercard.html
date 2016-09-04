@@ -196,7 +196,7 @@
             if (confirm("您确认要删除？")) {
                 $.post('/index.php?g=Query&m=Consume&a=acgmember_del&id=' + id, null,
                 function (data) {
-                   alert(data.msg);
+                   alert(data);
                 });
             }
         }

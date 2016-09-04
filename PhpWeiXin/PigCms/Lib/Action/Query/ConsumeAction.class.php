@@ -140,7 +140,6 @@ class ConsumeAction extends Action{
         }        
             echo json_encode($zhuxiu);
     }
-
     public  function getcarinfo(){
     
         $carno=$_GET['carno'];
@@ -579,8 +578,8 @@ class ConsumeAction extends Action{
             $searchwhere['number']=array('like',$searchkey);
             $searchwhere['tel']=array('like',$searchkey);
             $searchwhere['carno']=array('like',$searchkey);
-            $searchwhere['carno2']=array('like',$searchkey);
             $searchwhere['carno1']=array('like',$searchkey);
+            $searchwhere['carno2']=array('like',$searchkey);
             $searchwhere['truename']=array('like',$searchkey);
             $searchwhere['wechaname']=array('like',$searchkey);
             $searchwhere['_logic']='OR';
@@ -738,7 +737,7 @@ class ConsumeAction extends Action{
            $czinfo['入会日期']=date('Y-m-d',time());
            $czinfo['联系人']=$user['truename'];
            $czinfo['联系电话']=$user['tel'];
-           $czinfo['手机号码']=$user['tel'];
+           $czinfo['手机号码']=$user['tel']; 
            $czinfo['类别']=$lb;
            M('往来单位','dbo.','difo')->where(array('ID'=>$car['客户ID']))->save($czinfo);
        }
@@ -787,16 +786,29 @@ class ConsumeAction extends Action{
         $carno = isset($_POST['carno']) ? htmlspecialchars($_POST['carno']) : '';
         $wecha_id = isset($_POST['wecha_id']) ? htmlspecialchars($_POST['wecha_id']) : '';
         $carno=strtoupper($carno);
-        $carinfo=M('member_card_car')->where(array('token' => $this->token,wecha_id=>$wecha_id,'carno'=>$carno))->find();
+        $cardno=$_POST['cardno'];
+        $carinfo=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$wecha_id,'carno'=>$carno))->find();
         if(empty($carinfo))
         {   
-            $user=M('userinfo')->where(array('token' => $this->token,wecha_id=>$wecha_id))->find();
+            $user=M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->find();
             if($user['carno1']==""){
-                M('userinfo')->where(array('token' => $this->token,wecha_id=>$wecha_id))->save(array('carno1'=>$carno));
+                M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno1'=>$carno));
+            }elseif($user['carno2']==""){
+                M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno2'=>$carno));
             }else{
-                M('userinfo')->where(array('token' => $this->token,wecha_id=>$wecha_id))->save(array('carno2'=>$carno));
+                echo '最多绑定三辆车';
+                exit();
             }
-            M('member_card_car')->add(array('token' => $this->token,wecha_id=>$wecha_id,'carno'=>$carno,'optuser'=>cookie('username'),'bindtime'=>time()));
+            M('member_card_car')->add(array('token' => $this->token,'wecha_id'=>$wecha_id,'carno'=>$carno,'optuser'=>cookie('username'),'bindtime'=>time()));
+            $czinfo=M('往来单位','dbo.','difo')->where(array('名称'=>$cardno))->find();
+            $item['车主']=$cardno;
+            $item['车牌号码']=$carno;
+            $item['客户ID']=$czinfo['ID'];
+            $item['手机号码']=$user['tel'];
+            $item['联系人']=$user['truename'];
+            $item['联系电话']=$user['tel'];
+            $item['客户类别']=$czinfo['类别'];
+            M('车辆档案','dbo.','difo')->add($item);
             echo '添加成功';
             exit();
         }
@@ -808,7 +820,65 @@ class ConsumeAction extends Action{
         }
 
     }
+    public function modifycar(){
+        $carno = isset($_POST['carno']) ? htmlspecialchars($_POST['carno']) : '';
+        $oldcarno = isset($_POST['oldcarno']) ? htmlspecialchars($_POST['oldcarno']) : '';
+        $wecha_id = isset($_POST['wecha_id']) ? htmlspecialchars($_POST['wecha_id']) : '';
+        $carno=strtoupper($carno);
+        $carinfo=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$wecha_id,'carno'=>$carno))->find();
+        if(empty($carinfo)){
+            M('member_card_car')->where(array('wecha_id'=>$wecha_id,'carno'=>$oldcarno))->save(array('carno'=>$carno));
+            $user=M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->find();
+            if($user['carno1']==$oldcarno){
+                M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno1'=>$carno));
+            }
+            if($user['carno2']==$oldcarno){
+                M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno2'=>$carno));
+            }
+            if($user['carno']==$oldcarno){
+                M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno'=>$carno));
+            }
+            $item['车牌号码']=$carno;
+            M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$oldcarno))->save($item);
+            echo '保存成功';
+            exit();
+        }
+        else
+        {
+            echo '车牌号码已存在';
+            exit();
+        }
+        
 
+    }
+   public function delcar(){
+        $carno = isset($_POST['carno']) ? htmlspecialchars($_POST['carno']) : '';
+        $wecha_id = isset($_POST['wecha_id']) ? htmlspecialchars($_POST['wecha_id']) : '';
+        $carno=strtoupper($carno);
+        $user=M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->find();
+        if($user['carno1']==$carno){
+            M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno1'=>''));
+        }
+        if($user['carno2']==$carno){
+            M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno2'=>''));
+        }
+        if($user['carno']==$carno){
+            M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno'=>''));
+        }
+        M('member_card_car')->where(array('wecha_id'=>$wecha_id,'carno'=>$carno))->delete();
+        M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->delete();
+        echo '删除成功';
+        exit();
+       
+
+    }
+   public function getcarno(){
+    
+        $wecha_id = isset($_GET['wecha_id']) ? htmlspecialchars($_GET['wecha_id']) : '';
+        $carinfo=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->select();
+        echo json_encode($carinfo);
+        exit();
+    }
     public function left()
     {
         //$user=M('用户管理','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();

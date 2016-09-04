@@ -100,12 +100,17 @@
                                                 <a href="{pigcms::U('User/Member_card/member',array('token'=>$token,'wecha_id'=>$list['wecha_id'],'id'=>$thisCard['id']))}"><strong>消费记录</strong></a>
                                                 |
                                                 <a href="javascript:void(0);" onclick="RestPassWord('{pigcms:$list.wecha_id}');"><strong>密码重置</strong></a>
-                                                |
                                                 <if condition="$right eq '超级用户'">
-                                                    <a href="javascript:void(0);" onclick="bingCard('{pigcms:$list.wecha_id}');"><strong>绑定车牌</strong></a>
+                                                    | <a href="javascript:void(0);" onclick="bingCard('{pigcms:$list.wecha_id}','{pigcms:$list.number}');"><strong>绑定车牌</strong></a>
                                                 </if>
                                                 <if condition="$right eq '超级用户'">
-                                                    <a href="javascript:void(0);" onclick="deletemember('{pigcms:$list.id}');"><strong>删除</strong></a>
+                                                    | <a href="javascript:void(0);" onclick="delcar('{pigcms:$list.wecha_id}');"><strong>删除车牌</strong></a>
+                                                </if>
+                                                <if condition="$right eq '超级用户'">
+                                                    | <a href="javascript:void(0);" onclick="modifycar('{pigcms:$list.wecha_id}');"><strong>修改车牌</strong></a>
+                                                </if>
+                                                <if condition="$right eq '超级用户'">
+                                                    |<a href="javascript:void(0);" onclick="deletemember('{pigcms:$list.id}');"><strong>删除会员</strong></a>
                                                 </if></TD>
                                         </TR>
                                     </volist>
@@ -178,6 +183,64 @@
                     </div>
                 </div>
             </div>
+            <div class="am-modal am-modal-prompt" tabindex="-1" id="doc-modal-3">
+                <div class="am-modal-dialog">
+                    <div class="am-modal-hd">
+                        删除车牌
+                        <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+                    </div>
+                    <div class="am-modal-bd">
+                        <div class="am-form">
+                            <div class="am-g am-margin-top">
+                                <div class="am-u-sm-4 ">
+                                    <span class="red">*</span>车牌号码
+                                </div>
+                                <div class="am-u-sm-8 ">
+                                    <select data-am-selected name="carlist" id="carlist"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="am-modal-footer">
+                        <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                        <span class="am-modal-btn" data-am-modal-confirm>提交</span>
+                    </div>
+                </div>
+            </div>
+            <div class="am-modal am-modal-prompt" tabindex="-1" id="doc-modal-4">
+                <div class="am-modal-dialog">
+                    <div class="am-modal-hd">
+                        修改车牌
+                        <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+                    </div>
+                    <div class="am-modal-bd">
+                        <div class="am-form">
+                            <div class="am-g am-margin-top">
+                                <div class="am-u-sm-4 ">
+                                    <span class="red">*</span>原车牌号码
+                                </div>
+                                <div class="am-u-sm-8">
+                                    <select data-am-selected name="carlist1" id="carlist1">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="am-g am-margin-top">
+                                <div class="am-u-sm-4">
+                                    <span class="red">*</span>新车牌号码
+                                </div>
+                                <div class="am-u-sm-8">
+                                    <input type="text" name="carno1" id="carno1" value="" class="am-input-sm" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="am-modal-footer">
+                        <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                        <span class="am-modal-btn" data-am-modal-confirm>提交</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
         <!-- content end -->
     </div>
@@ -204,21 +267,100 @@
                 title: '车俩信息编辑'
             });
         }
-        function bingCard(wecha_id) {
+        function bingCard(wecha_id,cardno) {
             $('#doc-modal-2').modal({
                 relatedTarget: this,
-                width: 350,
+                width: 400,
                 closeOnConfirm: false,
                 onConfirm: function (e) {
                     var carno = $('#carno').val();
+                    reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i;
+                    reg2 = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{4}[\u4e00-\u9fa5]$/i;
+                    if (!reg.test(carno) && !reg2.test(carno)) {
+                        $.alert("请输入完整的车牌号码，格式如粤T83G5NB");
+                        return;
+                    }
                     var data = {
                         wecha_id: wecha_id,
+                        cardno: cardno,
                         carno: carno
                     };
                     $.post('/index.php?g=Query&m=Consume&a=bindcar', data,
                       function (msg) {
                           alert(msg);
                           $('#doc-modal-2').modal('close');
+                          location.href = location.href;
+                      });
+                },
+                onCancel: function (e) {
+                }
+            });
+
+        }
+        function delcar(wecha_id, cardno){
+            $.get('/index.php?g=Query&m=Consume&a=getcarno&wecha_id=' + wecha_id,
+                      function (data) {
+                          data = JSON.parse(data);
+                          $('#carlist').empty();
+                          $(data).each(function () {
+                              var option = "<option value='" + this.carno + "'>" + this.carno + "</option>";
+                              $('#carlist').append(option);
+                          });
+                      }
+               );
+            $('#doc-modal-3').modal({
+                relatedTarget: this,
+                width: 400,
+                closeOnConfirm: false,
+                onConfirm: function (e) {
+                    var carno = $('#carlist').val();
+                    var data = {
+                        wecha_id: wecha_id,
+                        carno: carno
+                    };
+                    $.post('/index.php?g=Query&m=Consume&a=delcar', data,
+                      function (msg) {
+                          alert(msg);
+                          $('#doc-modal-3').modal('close');
+                          location.href = location.href;
+                      });
+                },
+                onCancel: function (e) {
+                }
+            });
+
+        }
+        function modifycar(wecha_id, cardno) {
+            $.get('/index.php?g=Query&m=Consume&a=getcarno&wecha_id=' + wecha_id,
+                      function (data) {
+                          data = JSON.parse(data);
+                          $('#carlist1').empty();
+                          $(data).each(function () {
+                              var option = "<option value='" + this.carno + "'>" + this.carno + "</option>";
+                              $('#carlist1').append(option);
+                          });
+                      }
+               );
+            $('#doc-modal-4').modal({
+                relatedTarget: this,
+                width: 400,
+                closeOnConfirm: false,
+                onConfirm: function (e) {
+                    var carno = $('#carno1').val();
+                    reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i;
+                    reg2 = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{4}[\u4e00-\u9fa5]$/i;
+                    if (!reg.test(carno) && !reg2.test(carno)) {
+                        $.alert("请输入完整的车牌号码，格式如粤T83G5NB");
+                    }
+                    var data = {
+                        wecha_id: wecha_id,
+                        oldcarno: $('#carlist1').val(),
+                        carno: carno
+                    };
+                    $.post('/index.php?g=Query&m=Consume&a=modifycar', data,
+                      function (msg) {
+                          alert(msg);
+                          $('#doc-modal-4').modal('close');
                           location.href = location.href;
                       });
                 },

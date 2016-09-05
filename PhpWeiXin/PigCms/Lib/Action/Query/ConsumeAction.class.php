@@ -57,7 +57,7 @@ class ConsumeAction extends Action{
     public function getstatdata()
     {
         $type=$_GET['type'];
-        $jy=M('车辆档案','dbo.','difo')->query("select  $type,count(1) 数量 from  车辆档案 where $type is not null and $type !='' group by $type ");
+        $jy=M('车辆档案','dbo.','difo')->query("select  $type,count(1) 数量 from  车辆档案 where $type is not null and $type !='' group by $type order by  $type ");
         $data['keys']=array_column($jy,"$type");
         $data['values']=array_column($jy,'数量');;
         echo json_encode($data);

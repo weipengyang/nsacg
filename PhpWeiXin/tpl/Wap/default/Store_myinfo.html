@@ -9,7 +9,7 @@
     <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
     <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
     <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/0.4.1/weui.min.css" />
-    <link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+    <link href="//at.alicdn.com/t/font_1473075050_6251314.css" rel="stylesheet" type="text/css" />
     <title>{pigcms:$metaTitle}</title>
     <script type="text/javascript">
     $(function () {
@@ -43,15 +43,23 @@
                         <ul>
                             <li>
                                 <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Store/yangchebao',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id']))}">
-                                    <div class="item-media"><i class="icon iconfont icon-wodezhanghu" style='color:green;font-size:1rem'></i></div>
+                                    <div class="item-media"><i class="icon iconfont icon-wodezhanghu" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
                                         <div class="item-title">养车宝</div>
                                     </div>
                                 </a>
                             </li>
                             <li>
+                                <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Store/scoreprofit',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id']))}">
+                                    <div class="item-media"><i class="icon iconfont icon-jifen" style='color:#56abe4;font-size:1.2rem'></i></div>
+                                    <div class="item-inner">
+                                        <div class="item-title">积分奖励</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
                                 <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Store/my',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid))}">
-                                    <div class="item-media"><i class="icon iconfont icon-dingdanguanli" style='color:green;font-size:1rem'></i></div>
+                                    <div class="item-media"><i class="icon iconfont icon-dingdanguanli" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
                                         <div class="item-title">我的订单</div>
                                         <if condition="$orderscount neq 0">
@@ -64,7 +72,7 @@
                             </li>
                             <li>
                                 <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Store/withdrawrecord',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id']))}">
-                                    <div class="item-media"><i class="icon iconfont icon-yinxingqiarenzheng" style='color:green;font-size:1rem'></i></div>
+                                    <div class="item-media"><i class="icon iconfont icon-yinxingqiarenzheng" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
                                         <div class="item-title">提现申请</div>
                                         <if condition="$withrawcount neq 0">
@@ -77,7 +85,7 @@
                             </li>
                             <li>
                                 <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Store/coupon',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cardid' => 5, 'type' => 1))}">
-                                    <div class="item-media"><i class="icon iconfont icon-wofabude" style='color:green;font-size:1rem'></i></div>
+                                    <div class="item-media"><i class="icon iconfont icon-wofabude" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
                                         <div class="item-title">我的优惠券</div>
                                         <if condition="$couponCount1 neq 0">
@@ -90,7 +98,7 @@
                             </li>
                             <li>
                                 <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Store/integral',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid))}">
-                                    <div class="item-media"><i class="icon iconfont icon-552cc5b4659c9" style='color:green;font-size:1rem'></i></div>
+                                    <div class="item-media"><i class="icon iconfont icon-552cc5b4659c9" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
                                         <div class="item-title">我的兑换券</div>
                                         <if condition="$couponCount2 neq 0">
@@ -103,7 +111,7 @@
                             </li>
                             <li>
                                 <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Store/mycar',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid))}">
-                                    <div class="item-media"><i class="icon iconfont icon-meirong" style='color:green;font-size:1rem'></i></div>
+                                    <div class="item-media"><i class="icon iconfont icon-meirong" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
                                         <div class="item-title">我的维修</div>
                                     </div>
@@ -111,7 +119,7 @@
                             </li>
                             <li>
                                 <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Store/modifypass',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id']))}">
-                                    <div class="item-media"><i class="icon iconfont icon-gerenziliao" style='color:green;font-size:1rem'></i></div>
+                                    <div class="item-media"><i class="icon iconfont icon-gerenziliao" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
                                         <div class="item-title">密码修改</div>
                                     </div>
@@ -119,7 +127,7 @@
                             </li>
                             <li>
                                 <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Store/getcoupon',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid))}">
-                                    <div class="item-media"><i class="icon iconfont icon-huangou" style='color:green;font-size:1rem'></i></div>
+                                    <div class="item-media"><i class="icon iconfont icon-huangou" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
                                         <div class="item-title">券码兑换</div>
                                     </div>
@@ -127,7 +135,7 @@
                             </li>
                             <li>
                                 <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Card/signscore',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid))}">
-                                    <div class="item-media"><i class="icon iconfont icon-huangou" style='color:green;font-size:1rem'></i></div>
+                                    <div class="item-media"><i class="icon iconfont icon-qiandao" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
                                         <div class="item-title">签到</div>
                                     </div>
@@ -137,13 +145,13 @@
                                 <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Store/my',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid))}">
                             <li>
                                 <a class="item-link item-content" data-no-cache="true" href="#">
-                                    <div class="item-media"><i class="icon iconfont icon-xxi" style='color:green;font-size:1rem'></i></div>
+                                    <div class="item-media"><i class="icon iconfont icon-xxi" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
                                         <div class="item-title">我的消息</div>
                                     </div>
                                 </a>
                             </li>
-                                    <div class="item-media"><i class="icon iconfont icon-huangou" style='color:green;font-size:1rem'></i></div>
+                                    <div class="item-media"><i class="icon iconfont icon-huangou" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
                                         <div class="item-title">积分兑换</div>
                                     </div>
@@ -151,7 +159,7 @@
                             </li>
                             <li>
                                 <a class="item-link item-content" data-no-cache="true" href="#">
-                                    <div class="item-media"><i class="icon iconfont icon-gerenziliao" style='color:green;font-size:1rem'></i></div>
+                                    <div class="item-media"><i class="icon iconfont icon-gerenziliao" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
                                         <div class="item-title">密码修改</div>
                                     </div>
@@ -159,7 +167,7 @@
                             </li>
                             <li>
                                 <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Store/mysetting',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid))}">
-                                    <div class="item-media"><i class="icon iconfont icon-shezhi" style='color:green;font-size:1rem'></i></div>
+                                    <div class="item-media"><i class="icon iconfont icon-shezhi" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
                                         <div class="item-title">设置</div>
                                     </div>

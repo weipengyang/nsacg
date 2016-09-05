@@ -522,7 +522,7 @@ class CardAction extends WapAction{
     	$lastday = date('Y-m-d', strtotime("$firstday +1 month -1 day"));
     	$firstSecondOfMonth=mktime(0,0,0,$month,1,$year);
     	$lastSecondOfMonth=mktime(23,59,59,$month,$lastday,$year);
-    	$signRecords=$cardsign_db->where('token=\''.$this->token.'\' AND wecha_id=\''.$this->wecha_id.'\' AND sign_time>'.$firstSecondOfMonth.' AND sign_time<'.$lastSecondOfMonth)->order('sign_time DESC')->select();
+    	$signRecords=$cardsign_db->where('token=\''.$this->token.'\' AND score_type=1 AND wecha_id=\''.$this->wecha_id.'\' AND sign_time>'.$firstSecondOfMonth.' AND sign_time<'.$lastSecondOfMonth)->order('sign_time DESC')->select();
     	$this->assign('signRecords',$signRecords);
     	//
     	$this->display();

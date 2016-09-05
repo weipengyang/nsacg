@@ -2838,10 +2838,22 @@ public function check(){
         $this->assign('sumrevenue',$sumrevenue);
         $this->display();
     }
-    public function revenueunit(){
-        $revenuelist=M('yangchebao_revenue')->where(array('token' => $this->token,wecha_id=>$this->wecha_id,'revenue_time'=>array('gt',date("y-m-d",strtotime('-30 day')))))->order('revenue_time desc')->select();
+    public function scoreprofit(){
+        $revenuelist=M('member_card_sign')->where(array('score_type'=>5,'token' => $this->token,'wecha_id'=>$this->wecha_id,'sign_time'=>array('gt',date("y-m-d",strtotime('-30 day')))))->order('sign_time desc')->select();
         $this->assign('revenuelist',$revenuelist);
-        $avgrevenue=round(M('yangchebao_revenue')->where(array('token' => $this->token,wecha_id=>$this->wecha_id,'revenue_time'=>array('gt',date("y-m-d",strtotime('-30 day')))))->avg('revenueunit'),2);
+        $balance=M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->getField('balance');
+        $setting=M('member_card_create')->join('left join tp_member_card_set on tp_member_card_create.cardid=tp_member_card_set.id')->where(array('wecha_id'=>$this->wecha_id))->getField('profitunit');
+        $sumscore=M('member_card_sign')->where(array('score_type'=>5,'token' => $this->token,'wecha_id'=>$this->wecha_id))->sum('expense');
+        $this->assign('profitunit',$setting);
+        $this->assign('balance',$balance);
+        $this->assign('sumscore',$sumscore);
+        $this->display();
+    }
+
+    public function revenueunit(){
+        $revenuelist=M('yangchebao_revenue')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'revenue_time'=>array('gt',date("y-m-d",strtotime('-30 day')))))->order('revenue_time desc')->select();
+        $this->assign('revenuelist',$revenuelist);
+        $avgrevenue=round(M('yangchebao_revenue')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'revenue_time'=>array('gt',date("y-m-d",strtotime('-30 day')))))->avg('revenueunit'),2);
         $this->assign('avgrevenue',$avgrevenue);
         
         $this->display();

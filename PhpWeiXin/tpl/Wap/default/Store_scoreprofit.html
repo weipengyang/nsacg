@@ -93,8 +93,26 @@
                     <volist name="revenuelist" id="item">
                         <li class="item-content">
                             <div class="item-inner">
-                                <div class="item-title">{pigcms:$item.sign_time|date='Y-m-d',###}</div>
-                                <div class="item-after">+{pigcms:$item.expense}分</div>
+                                    <div class="item-title" style="font-size:0.7rem">{pigcms:$item.sign_time|date='Y-m-d',###}</div>
+                                    <div class="item-title" style="font-size:0.7rem;left:150px;position:absolute">
+                                        <if condition="$item['score_type'] eq 1">
+                                            签到
+                                            <elseif condition="$item['score_type'] eq 2" />
+                                            消费
+                                            <elseif condition="$item['score_type'] eq 3" />
+                                            评价
+                                            <elseif condition="$item['score_type'] eq 5" />
+                                            收益
+                                            <else />兑换
+                                        </if>
+                                    </div>
+                                    <div class="item-after" style="font-size:0.7rem">
+                                        <if condition="$item['score_type'] eq 6">
+                                            -{pigcms:$item.expense}分
+                                            <else />
+                                            +{pigcms:$item.expense}分
+                                        </if>
+                                    </div>
                             </div>
                         </li>
                     </volist>

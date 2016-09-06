@@ -109,7 +109,7 @@ class templateNews{
 			array(
 				'name'=>'保养已过期通知',
 				'vars'=>array('first','keynote1','keynote2','keynote3','remark'),
-                 'keys'=>'X3RtPAaf9Aw3CVwX9l_ox1mtUwdLosGcQCKqw73NHJg',
+                 'keys'=>'KX9qFkupqOQo1VFIFAFjI2sLgu6uSs77_iWYXwPyL70',
 				'content'=>'{{first.DATA}}
 
                         保养到期时间：{{keynote1.DATA}}
@@ -121,7 +121,7 @@ class templateNews{
 			array(
 				'name'=>'车辆保险到期提醒',
 				'vars'=>array('first','keyword1','keyword2','keyword3','keyword4','remark'),
-                 'keys'=>'KX9qFkupqOQo1VFIFAFjI2sLgu6uSs77_iWYXwPyL70',
+                 'keys'=>'JWgG--5sUt2Y4B5RXFrYy6q8m7pern7Y0yhV_6sA6r8',
 				'content'=>'{{{first.DATA}}
                             会员姓名：{{keyword1.DATA}}
                             车牌号码：{{keyword2.DATA}}

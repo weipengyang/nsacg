@@ -949,11 +949,11 @@ class Member_cardAction extends UserAction{
            $card=M('Member_card_create')->where(array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id']))->find();
            $cardid=$card['cardid'];
            $user=M('userinfo')->where(array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id']))->find();
-           $carinfo = $_POST['carinfo'];
+           $carinfo =M('车辆资料','dbo.','difo')->where(array('车牌号码'=>$user['carno']))->find();
            switch($_POST['mtype']){
                case '1'://维修服务完成
                    $dataKey    = 'TM151213';
-                   $wxinfo=$_POST['wxinfo'];
+                   $wxinfo=M('维修','dbo.','difo')->where(array('车牌号码'=>$user['carno']))->order('流水号 desc')->find();
                    $dataArr    = array(
                        'first'         => '尊敬的车主，您的爱车已经维修完毕。',
                        'keyword1'      =>$user['carno'],//车牌号
@@ -962,20 +962,20 @@ class Member_cardAction extends UserAction{
                        'keyword4'      => $wxinfo['应收金额'].'元',//维修费用
                        'wecha_id'      => $_GET['wecha_id'],
                        'remark'        => '请您安排时间到店取车，如有疑问，请致电020-39099139联系我们,或发消息到微信平台上进行咨询。',
-                       'url'      => U('wap/Card/wallet',array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id'],'cardid'=>$cardid),true,false,true),
+                       'url'      => U('Wap/Store/cats',array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id'],'cardid'=>$cardid),true,false,true),
                    );
                    break;
                case '2'://保险到期通知
                    $dataKey    = 'TM151126';
                    $dataArr    = array(
-                       'first'         => '车辆保险到期时间提前一个月通知您',
+                       'first'         => '尊敬的['.$user['carno'].']车主您好，您的爱车保险即将到期',
                        'keyword1'      => $user['truename'],
                        'keyword2'      =>$user['carno'],
                        'keyword3'      =>$carinfo['车型'],
-                       'keyword4'      => $carinfo['交保到期'],
+                       'keyword4'      =>date('Y-m-d',strtotime($carinfo['商保到期'])),
                        'wecha_id'      => $_GET['wecha_id'],
-                       'remark'        => '您的车辆保险这个月到期,如您有需要，请致电020-39099139联系我们,或发消息到微信平台上进行咨询。',
-                       'url'      => U('wap/Card/wallet',array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id'],'cardid'=>$cardid),true,false,true),
+                       'remark'        => '买保险送保养，如您有需要，请致电020-39099139联系我们,或发消息到微信平台上进行咨询。',
+                       'url'      => U('Wap/Store/cats',array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id'],'cardid'=>$cardid),true,false,true),
                    );
                    break;
                case '3'://年检通知
@@ -983,10 +983,10 @@ class Member_cardAction extends UserAction{
                    $dataArr    = array(
                        'first'         => '尊敬的['.$user['carno'].']车主您好，您的车辆年检即将到期。',
                        'keyword1'      =>$user['truename'],
-                       'keyword2'      => $carinfo['年检日期'],
+                       'keyword2'      =>date('Y-m-d',strtotime($carinfo['年检日期'])),
                        'wecha_id'      => $_GET['wecha_id'],
-                       'remark'        => '在办理年检之前，请确认无任何未处理违法记录。我们提供待办年检业务，可以立刻在微信平台上进行预约,或致电020-39099139进行电话预约。',
-                       'url'      => U('wap/Card/wallet',array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id'],'cardid'=>$cardid),true,false,true),
+                       'remark'        => '在办理年检之前，请确认无任何未处理违法记录。我们提供代办年检业务，可以立刻在微信平台上进行预约,或致电020-39099139进行电话预约。',
+                       'url'      => U('Wap/Store/cats',array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id'],'cardid'=>$cardid),true,false,true),
                    );
                    break;
                case '4':
@@ -1004,12 +1004,12 @@ class Member_cardAction extends UserAction{
                    $dataKey    = 'TM151215';
                    $dataArr    = array(
                        'first'         => '尊敬的车主您好，您车牌为'.$user['carno'].'的汽车保养已到期。',
-                       'keynote1'      =>$carinfo['下次保养'],//保养到期时间
-                       'keynote2'      => $carinfo['最近保养'],//上次保养时间
+                       'keynote1'      =>date('Y-m-d',strtotime($carinfo['下次保养'])),//保养到期时间
+                       'keynote2'      =>date('Y-m-d',strtotime($carinfo['最近保养'])),//上次保养时间
                        'keynote3'      => $carinfo['保养里程'].'公里',//上次保养里程
                        'wecha_id'      => $_GET['wecha_id'],
                        'remark'        => '如有需要，致电020-39099139联系我们,或发消息到微信平台上进行咨询。',
-                       'url'      => U('wap/Card/wallet',array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id'],'cardid'=>$cardid),true,false,true),
+                       'url'      => U('Wap/Store/cats',array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id'],'cardid'=>$cardid),true,false,true),
                    );
                    break;
 

@@ -1,6 +1,6 @@
 <?php
 
-final class payHandle
+final  class payHandle
 {
 	public $from;
 	public $db;
@@ -144,10 +144,15 @@ final class payHandle
                         $thisUser = $userinfo_db->where(array("token" => $thisCard["token"], "wecha_id" => $arr["wecha_id"]))->find();
                         $userArr = array();
                         $userArr["expensetotal"] = $thisUser["expensetotal"] + $arr["expense"];
-                        if($_GET['orderName']!='代办服务支付'){
-                            $userArr["total_score"] = $thisUser["total_score"] + $arr["score"];
-  					        M("Member_card_use_record")->add($arr);
-                       }
+                        $userArr["total_score"] = $thisUser["total_score"] + $arr["score"];
+                        $sign['token'] = $this->token;
+                        $sign['wecha_id'] = $wecha_id;
+                        $sign['sign_time'] = time();
+                        $sign['is_sign'] = 0;
+                        $sign['score_type'] = 2;
+                        $sign['expense'] =$arr["score"];
+                        M('Member_card_sign')->add($sign);
+  					    M("Member_card_use_record")->add($arr);
                         $userinfo_db->where(array("token" => $this->token, "wecha_id" => $arr["wecha_id"]))->save($userArr);
                    }
 				}

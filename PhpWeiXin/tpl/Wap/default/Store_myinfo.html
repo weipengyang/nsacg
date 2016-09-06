@@ -51,7 +51,7 @@
                             </li>
                             <li>
                                 <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Store/scoreprofit',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id']))}">
-                                    <div class="item-media"><i class="icon iconfont icon-jifen" style='color:#56abe4;font-size:1.2rem'></i></div>
+                                    <div class="item-media"><i class="icon iconfont icon-star" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
                                         <div class="item-title">积分奖励</div>
                                     </div>
@@ -87,26 +87,13 @@
                                 <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Store/coupon',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cardid' => 5, 'type' => 1))}">
                                     <div class="item-media"><i class="icon iconfont icon-wofabude" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
-                                        <div class="item-title">我的优惠券</div>
+                                        <div class="item-title">我的服务券</div>
                                         <if condition="$couponCount1 neq 0">
                                             <span class="badge" style='background:red;color:white'>{pigcms:$couponCount1}</span>
                                             <else />
                                             <span class="badge" style='display:none' >{pigcms:$couponCount1}</span>
                                          </if>
                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Store/integral',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid))}">
-                                    <div class="item-media"><i class="icon iconfont icon-552cc5b4659c9" style='color:#56abe4;font-size:1.2rem'></i></div>
-                                    <div class="item-inner">
-                                        <div class="item-title">我的兑换券</div>
-                                        <if condition="$couponCount2 neq 0">
-                                            <span class="badge" style='background:red;color:white'>{pigcms:$couponCount2}</span>
-                                            <else />
-                                            <span class="badge" style='display:none'>{pigcms:$couponCount2}</span>
-                                        </if>
-                                    </div>
                                 </a>
                             </li>
                             <li>
@@ -135,7 +122,7 @@
                             </li>
                             <li>
                                 <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Card/signscore',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid))}">
-                                    <div class="item-media"><i class="icon iconfont icon-qiandao" style='color:#56abe4;font-size:1.2rem'></i></div>
+                                    <div class="item-media"><i class="icon iconfont icon-fabu" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
                                         <div class="item-title">签到</div>
                                     </div>

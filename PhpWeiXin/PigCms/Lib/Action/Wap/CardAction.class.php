@@ -923,6 +923,14 @@ class CardAction extends WapAction{
             $arr['cat']		= 2;
             $arr['score']	= 0-intval($integral['integral']);
             M('Member_card_use_record')->add($arr);//积分记录中增加一条记录
+            $sign=array();
+            $sign['token'] = $this->token;
+            $sign['wecha_id'] = $this->wecha_id;
+            $sign['sign_time'] = time();
+            $sign['is_sign'] = 0;
+            $sign['score_type'] = 6;
+            $sign['expense'] =intval($integral['integral']);
+            M('Member_card_sign')->add($sign);
             M('Userinfo')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->setDec('total_score',$integral['integral']);// 修改用户信息表中积分数据
 
             echo  '兑换成功';

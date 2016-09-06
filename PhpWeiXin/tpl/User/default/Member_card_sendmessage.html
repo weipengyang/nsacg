@@ -64,42 +64,10 @@
             var data = {
                 mtype:jQ("#mtype").val()
             };
-            jQ.ajax({
-                url: "http://119.29.84.129:52181/api/Cars/{pigcms:$carno}",
-                   type: "GET",
-                   dataType:'jsonp',
-                   success: function (result) {
-                       data.carinfo = result;
-                       if (jQ("#mtype").val() == "1") {
-                           jQ.ajax({
-                               url: "http://119.29.84.129:52181/api/HYXF/{pigcms:$carno}",
-                               type: "GET",
-                               async: false,
-                               dataType: 'jsonp',
-                               success: function (info) {
-                                   data.wxinfo = info;
-                                   jQ.post(location.href, data,
+            jQ.post(location.href, data,
                                       function (message) {
                                           alert(message);
-                                          top.location.href = top.location.href;
-                                          top.art.dialog({ id: "changegrade" }).close();
                                       });
-                               }
-                           });
-                       } else {
-                           jQ.post(location.href, data,
-                           function (message) {
-                               alert(message);
-                               top.location.href = top.location.href;
-                               top.art.dialog({ id: "changegrade" }).close();
-                           });
-                       }
-                   },
-                   error:function (er) {
-                       jQ("#dd").text('fffff');
-                   } 
-                  });
-            
         }
     </script>
 </body>

@@ -770,6 +770,13 @@ public function check(){
 
                }else{
                    $arr["score"] = intval($set_exchange["reward"]) * $arr["expense"];
+                   $sign['token'] = $this->token;
+                   $sign['wecha_id'] = $this->wecha_id;
+                   $sign['sign_time'] = time();
+                   $sign['is_sign'] = 0;
+                   $sign['score_type'] = 2;
+                   $sign['expense'] =$arr["score"];
+                   M('Member_card_sign')->add($sign);
                }
                $thisUser = M('Userinfo')->where(array("token" => $thisCard["token"], "wecha_id" => $arr["wecha_id"]))->find();
                $userArr = array();
@@ -1688,7 +1695,111 @@ public function check(){
         }
 		
     }
+    /**
+     * 支付成功后的回调函数
+     */
+	public function payReturn() {
+        $orderid = $_GET['orderid'];
+        $carno=$_GET['carno'];
+        $shop=$_GET['shop'];
+        if ($order = M('Product_cart')->where(array('orderid' => $orderid, 'token' => $this->token))->find()) {
+            if (intval($order['paid'])==1) {
+                if($order['score']>0)
+                {
+                    M('userinfo')->where(array('token' => $_GET['token'], 'wecha_id' => $_GET['wecha_id']))->setDec('total_score',$order['score']);
+                }
+                $carts = unserialize($order['info']);
 
+                $tdata = $this->getCat($carts);
+                $list = array();
+                foreach ($tdata[0] as $va) {
+                    $t = array();
+                    $salecount = 0;
+                    if (!empty($va['detail'])) {
+                        foreach ($va['detail'] as $v) {
+                            $t = array('num' => $v['count'], 'colorName' => $v['colorName'], 'formatName' => $v['formatName'], 'price' => $v['price'], 'name' => $va['name']);
+                            $list[] = $t;
+                            $salecount += $v['count'];
+                        }
+                    } else {
+                        $t = array('num' => $va['count'], 'price' => $va['price'], 'name' => $va['name']);
+                        $list[] = $t;
+                        $salecount = $va['count'];
+                    }
+                    $coupon=M("Product_coupon")->where(array('token' => $_GET['token'],'pid'=>$va['id']))->select();
+                    $card=M('member_card_create')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
+                    $product=M('Product')->where(array('id' => $va['id']))->find();
+                    if($product['autosend']==1){
+                        M('Product_cart')->where(array('orderid' => $orderid, 'token' => $this->token))->save(array('sent'=>1));
+                    }
+                    if($coupon&&$product['iscoupon']){
+                        foreach($coupon as $c){
+                            $mycoupon=M("member_card_coupon")->where(array('id'=>$c['cid']))->find();
+                            $data['token']		= $this->token;
+                            $data['wecha_id']	= $this->wecha_id;
+                            $data['coupon_id']	= $c['cid'];
+                            $data['is_use']		= '0';
+                            $data['coupon_type']		= '1';
+                            $data['cardid']		= $card['cardid'];
+                            $data['add_time']	= time(); 
+                            $days=$mycoupon['days'];
+                            $data['over_time']=strtotime(date('Y-m-d',time())."+$days day");
+                            if($c['num']>0){
+                                for($i=0;$i<intval($c['num']);$i++){
+                                    $data['coupon_num']=date('YmdHis',time()).mt_rand(1000,9999);
+                                    M('Member_card_coupon_record')->add($data);
+                                }
+                            }
+                            
+                        }
+                        $this->sellbill($va['price'],$product['name']);
+                    }
+                    else{
+                        if(strpos($product['name'], '打蜡') !== false){
+                            $this->genwxrecord($va['price'],$carno,$product['project'],'汽车美容',$shop);
+                        }
+                        elseif(strpos($product['name'], '洗车') !== false){
+                            $this->genwxrecord($va['price'],$carno,$product['project'],'蜡水洗车',$shop);
+                        }
+                        else{
+                            $this->genwxrecord($va['price'],$carno,$product['project'],'普通快修',$shop);
+                        }
+                    }
+                    M('Product')->where(array('id' => $va['id']))->setInc('salecount', $salecount);
+                }
+                $model  = new templateNews();
+                $dataKey    = 'OPENTM201444641';
+                $dataArr    = array(
+                    'first'         => '您的订单支付成功。',
+                    'keyword1'      => $orderid,
+                    'keyword2'      => $order['price'].'元',
+                    'keyword3'      => $order['paytype']=='CardPay'?'会员卡支付':'微信支付',
+                    'wecha_id'      => $this->wecha_id,
+                    'remark'        => '如有疑问，请致电020-39099139联系我们,或发消息到微信平台上进行咨询。',
+                    'url'      => U('Store/myinfo',array('token'=>$this->token,'wecha_id'=>$this->wecha_id),true,false,true),
+                );
+                $model->sendTempMsg($dataKey,$dataArr);
+                if ($order['twid']) {
+                    $this->savelog(3, $order['twid'], $this->token, $order['cid'], $order['totalprice']);
+                }
+                /*$company = D('Company')->where(array('token' =>$this->token, 'id' => $order['cid']))->find();
+                $op = new orderPrint();
+                $msg = array('companyname' => $company['name'], 'companytel' => $company['tel'], 'truename' => $order['truename'], 'tel' => $order['tel'], 'address' => $order['address'], 'buytime' => $order['time'], 'orderid' => $order['orderid'], 'sendtime' => '', 'price' => $order['price'], 'total' => $order['total'], 'list' => $list);
+                $msg = ArrayToStr::array_to_str($msg, 1);
+                $op->printit($this->token, $this->_cid, 'Store', $msg, 1);
+                $userInfo = D('Userinfo')->where(array('token' => $this->token, 'wecha_id' => $this->wecha_id))->find();
+                Sms::sendSms($this->token, "您的顾客{$userInfo['truename']}刚刚对订单号：{$orderid}的订单进行了支付，请您注意查看并处理");
+                $model = new templateNews();
+                $model->sendTempMsg('TM00820', array('href' => U('Store/my',array('token' => $this->token, 'wecha_id' => $this->wecha_id, 'cid' => $this->_cid, 'twid' => $this->_twid)), 'wecha_id' => $this->wecha_id, 'first' => '购买商品提醒', 'keynote1' => '订单已支付', 'keynote2' => date("Y年m月d日H时i分s秒"), 'remark' => '购买成功，感谢您的光临，欢迎下次再次光临！'));
+                 */
+            }
+			$this->redirect(U('Store/myinfo',array('token' => $this->token,'wecha_id' => $this->wecha_id, 'cid' => $this->_cid, 'twid' => $this->_twid)));
+        }else{
+            exit('订单不存在');
+	    }
+	}
+
+    #region 活动券码兑换
 	public function getcoupon()
     {
         $jssdk = new JSSDK($this->wxuser['appid'],$this->wxuser['appsecret']);
@@ -1747,6 +1858,7 @@ public function check(){
         $this->display();
 
     }
+    #endregion
 	public function orderCart()
 	{
         $count = isset($_GET['count']) ? intval($_GET['count']) : 1;
@@ -1997,6 +2109,7 @@ public function check(){
 		$this->display();
 	}
 	
+    #region 评论
 	/**
 	 * 评论
 	 */
@@ -2057,6 +2170,8 @@ public function check(){
         exit;
 		
 	}
+    #endregion
+
     public function modifyinfo(){
         $useinfo=M('userinfo')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
         $this->assign('userinfo',$useinfo);
@@ -2091,109 +2206,6 @@ public function check(){
 		$this->redirect(U('Store/my', array('token' => $_GET['token'], 'wecha_id' => $_GET['wecha_id'], 'cid' => $this->_cid, 'twid' => $this->_twid)));
 	}
 	
-	/**
-	 * 支付成功后的回调函数
-	 */
-	public function payReturn() {
-	   $orderid = $_GET['orderid'];
-       $carno=$_GET['carno'];
-       $shop=$_GET['shop'];
-	   if ($order = M('Product_cart')->where(array('orderid' => $orderid, 'token' => $this->token))->find()) {
-           if (intval($order['paid'])==1) {
-               if($order['score']>0)
-               {
-                   M('userinfo')->where(array('token' => $_GET['token'], 'wecha_id' => $_GET['wecha_id']))->setDec('total_score',$order['score']);
-               }
-               $carts = unserialize($order['info']);
-
-               $tdata = $this->getCat($carts);
-               $list = array();
-               foreach ($tdata[0] as $va) {
-                   $t = array();
-                   $salecount = 0;
-                   if (!empty($va['detail'])) {
-                       foreach ($va['detail'] as $v) {
-                           $t = array('num' => $v['count'], 'colorName' => $v['colorName'], 'formatName' => $v['formatName'], 'price' => $v['price'], 'name' => $va['name']);
-                           $list[] = $t;
-                           $salecount += $v['count'];
-                       }
-                   } else {
-                       $t = array('num' => $va['count'], 'price' => $va['price'], 'name' => $va['name']);
-                       $list[] = $t;
-                       $salecount = $va['count'];
-                   }
-                   $coupon=M("Product_coupon")->where(array('token' => $_GET['token'],'pid'=>$va['id']))->select();
-                   $card=M('member_card_create')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
-                   $product=M('Product')->where(array('id' => $va['id']))->find();
-                   if($product['autosend']==1){
-                       M('Product_cart')->where(array('orderid' => $orderid, 'token' => $this->token))->save(array('sent'=>1));
-                   }
-                   if($coupon&&$product['iscoupon']){
-                      foreach($coupon as $c){
-                          $mycoupon=M("member_card_coupon")->where(array('id'=>$c['cid']))->find();
-                          $data['token']		= $this->token;
-                          $data['wecha_id']	= $this->wecha_id;
-                          $data['coupon_id']	= $c['cid'];
-                          $data['is_use']		= '0';
-                          $data['coupon_type']		= '1';
-                          $data['cardid']		= $card['cardid'];
-                          $data['add_time']	= time(); 
-                          $days=$mycoupon['days'];
-                          $data['over_time']=strtotime(date('Y-m-d',time())."+$days day");
-                          if($c['num']>0){
-                              for($i=0;$i<intval($c['num']);$i++){
-                                  $data['coupon_num']=date('YmdHis',time()).mt_rand(1000,9999);
-                                  M('Member_card_coupon_record')->add($data);
-                              }
-                          }
-                          
-                      }
-                      $this->sellbill($va['price'],$product['name']);
-                   }
-                   else{
-                       if(strpos($product['name'], '打蜡') !== false){
-                            $this->genwxrecord($va['price'],$carno,$product['project'],'汽车美容',$shop);
-                       }
-                       elseif(strpos($product['name'], '洗车') !== false){
-                           $this->genwxrecord($va['price'],$carno,$product['project'],'蜡水洗车',$shop);
-                       }
-                       else{
-                            $this->genwxrecord($va['price'],$carno,$product['project'],'普通快修',$shop);
-                       }
-                   }
-                   M('Product')->where(array('id' => $va['id']))->setInc('salecount', $salecount);
-               }
-               $model  = new templateNews();
-               $dataKey    = 'OPENTM201444641';
-               $dataArr    = array(
-                   'first'         => '您的订单支付成功。',
-                   'keyword1'      => $orderid,
-                   'keyword2'      => $order['price'].'元',
-                   'keyword3'      => $order['paytype']=='CardPay'?'会员卡支付':'微信支付',
-                   'wecha_id'      => $this->wecha_id,
-                   'remark'        => '如有疑问，请致电020-39099139联系我们,或发消息到微信平台上进行咨询。',
-                   'url'      => U('Store/myinfo',array('token'=>$this->token,'wecha_id'=>$this->wecha_id),true,false,true),
-               );
-               $model->sendTempMsg($dataKey,$dataArr);
-               if ($order['twid']) {
-                   $this->savelog(3, $order['twid'], $this->token, $order['cid'], $order['totalprice']);
-               }
-               /*$company = D('Company')->where(array('token' =>$this->token, 'id' => $order['cid']))->find();
-               $op = new orderPrint();
-               $msg = array('companyname' => $company['name'], 'companytel' => $company['tel'], 'truename' => $order['truename'], 'tel' => $order['tel'], 'address' => $order['address'], 'buytime' => $order['time'], 'orderid' => $order['orderid'], 'sendtime' => '', 'price' => $order['price'], 'total' => $order['total'], 'list' => $list);
-               $msg = ArrayToStr::array_to_str($msg, 1);
-               $op->printit($this->token, $this->_cid, 'Store', $msg, 1);
-               $userInfo = D('Userinfo')->where(array('token' => $this->token, 'wecha_id' => $this->wecha_id))->find();
-               Sms::sendSms($this->token, "您的顾客{$userInfo['truename']}刚刚对订单号：{$orderid}的订单进行了支付，请您注意查看并处理");
-               $model = new templateNews();
-               $model->sendTempMsg('TM00820', array('href' => U('Store/my',array('token' => $this->token, 'wecha_id' => $this->wecha_id, 'cid' => $this->_cid, 'twid' => $this->_twid)), 'wecha_id' => $this->wecha_id, 'first' => '购买商品提醒', 'keynote1' => '订单已支付', 'keynote2' => date("Y年m月d日H时i分s秒"), 'remark' => '购买成功，感谢您的光临，欢迎下次再次光临！'));
-                */
-           }
-			$this->redirect(U('Store/myinfo',array('token' => $this->token,'wecha_id' => $this->wecha_id, 'cid' => $this->_cid, 'twid' => $this->_twid)));
-	   }else{
-	      exit('订单不存在');
-	    }
-	}
     public function _thisCard(){
     	$member_card_set_db=M('Member_card_set');
         $cardinfo=M('Member_card_create')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
@@ -2205,15 +2217,18 @@ public function check(){
     	$this->assign('infoType','coupon');
     	$type 		= $this->_get('type','intval');
     	$now=time();
-		$where 	= array('token'=>$this->token,'wecha_id'=>$this->wecha_id,'coupon_type'=>$type);
+		$where 	= array('token'=>$this->token,'wecha_id'=>$this->wecha_id);
 		$data 	= M('Member_card_coupon_record')->where($where)->field('id,cardid,coupon_num,coupon_id,coupon_type,add_time,is_use,over_time,use_time')->select();	
         $overlist=array();
         $list=array();
         $uselist=array();
         $carinfo=M('member_card_car')->where(array('token' => $this->token,wecha_id=>$this->wecha_id))->select();
 		foreach($data as $key=>$value){
-			$cwhere 		= array('token'=>$this->token,'id'=>$value['coupon_id']);
-			$cinfo			= M('Member_card_coupon')->where($cwhere)->field('useinfo,info,pic,statdate,enddate,title,price')->find();
+			$cwhere = array('token'=>$this->token,'id'=>$value['coupon_id']);
+			$cinfo	= M('Member_card_coupon')->where($cwhere)->field('useinfo,info,pic,statdate,enddate,title,price')->find();
+            if($value['coupon_type']==3){
+                $cinfo= M('Member_card_integral')->where($cwhere)->field('info,pic,statdate,enddate,title,integral price,useinfo')->find();
+            }
 			$cinfo['info'] 	= html_entity_decode($cinfo['info']);
             if($value['is_use']==0){
                 if($value['over_time']-$now>=0){
@@ -2246,7 +2261,7 @@ public function check(){
     	$now=time();
     	if (IS_POST){
             $userinfo=M('Userinfo')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
-    		$rwhere 	= array('token'=>$this->token,'wecha_id'=>$this->wecha_id,'coupon_type'=>$this->_post('coupon_type','intval'),'id'=>$this->_post('record_id','intval'),'is_use'=>'0');
+    		$rwhere 	= array('token'=>$this->token,'wecha_id'=>$this->wecha_id,'id'=>$this->_post('record_id','intval'),'is_use'=>'0');
     		$r_record 	= M('Member_card_coupon_record')->where($rwhere)->find();
     		if (!$r_record){
     			echo'没有找到卷类';
@@ -2273,7 +2288,13 @@ public function check(){
                 exit;
             }
             else {
-                $couponname=M('Member_card_coupon')->where(array('id'=>$itemid))->field('title,cardid')->find();
+                if($r_record['coupon_type']==3){
+                    $couponname=M('member_card_integral')->where(array('id'=>$itemid))->field('title,cardid')->find();
+                    M('member_card_integral')->where(array('id'=>$itemid))->setInc('usetime',1);//优惠券使用次数加1
+                }else{
+                    $couponname=M('Member_card_coupon')->where(array('id'=>$itemid))->field('title,cardid')->find();
+                    M('Member_card_coupon')->where(array('id'=>$itemid))->setInc('usetime',1);//优惠券使用次数加1
+                }
                 $arr=array();
                 $arr['itemid']  	= $itemid;
                 $arr['wecha_id']	= $this->wecha_id;
@@ -2288,8 +2309,7 @@ public function check(){
                 $arr['score'] 		=0;
 
                 M('Member_card_use_record')->add($arr);	//添加消费券使用记录					
-                //优惠劵使用记录
-                M('Member_card_coupon')->where(array('id'=>$itemid))->setInc('usetime',1);//优惠券使用次数加1
+               
                 $couponnum=M('Member_card_coupon_record')->where($rwhere)->find();
                 M('Member_card_coupon_record')->where($rwhere)->save(array('use_time'=>time(),'is_use'=>'1','carno'=>$arr['carno'],'shop'=>$arr['shop']));//会员优惠券记录修改为已使用
                 $model  = new templateNews();
@@ -2297,7 +2317,7 @@ public function check(){
                 $dataArr    = array(
                     'productType'      =>'券名称',
                     'name'      =>$couponname['title'],
-                    'certificateNumber'      =>$couponnum["coupon_num"],
+                    'certificateNumber' =>$couponnum["coupon_num"],
                     'number'      =>'1张',
                     'wecha_id'      => $this->wecha_id,
                     'remark'        => '注意：此消息作为您本次消费凭证，请妥善保存，如有疑问，请致电020-39053199联系我们,或发消息到微信平台上进行咨询。',
@@ -2319,6 +2339,7 @@ public function check(){
 			}                 
         }
 	}
+    #region 我的礼品券（与优惠券合并暂时停用）
     public function integral(){
     	$this->assign('infoType','integral');
     	$thisCard=$this->_thisCard();
@@ -2430,6 +2451,8 @@ public function check(){
             }
     	}
     }
+    #endregion
+
 	public function register()
 	{
 		if (IS_POST) {
@@ -2562,14 +2585,6 @@ public function check(){
                $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$car['carno']))->find();
                $carlist[$key]['carinfo']=$carinfo;
         }
-        //$card=M('member_card_create')->where(array('token' => $this->token,wecha_id=>$this->wecha_id))->find();
-        //$couponCount1=M("member_card_coupon_record")->where(array('token' => $this->token,wecha_id=>$this->wecha_id,'is_use'=>'0','coupon_type'=>'1'))->count();
-        //$couponCount2=M("member_card_coupon_record")->where(array('token' => $this->token,wecha_id=>$this->wecha_id,'is_use'=>'0','coupon_type'=>'3'))->count();
-        //$product_cart_model = M('product_cart');
-        //$orderscount = $product_cart_model->where(array('token' => $this->token, 'wecha_id' => $this->wecha_id, 'groupon' => 0, 'dining' => 0))->count();
-        //$this->assign('orderscount',$orderscount);
-        //$this->assign('couponCount1',$couponCount1);
-        //$this->assign('couponCount2',$couponCount2);
         $this->assign('carinfo',$carinfo);
         $this->assign('carlist',$carlist);
         $this->assign('userinfo',$userinfo);
@@ -2647,21 +2662,21 @@ public function check(){
 			$userinfo = M("Userinfo")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
             $card=M('member_card_create')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
             $cardinfo=M('member_card_set')->where(array('token' => $this->token,'id'=>$card['cardid']))->find();
-            $couponCount1=M("member_card_coupon_record")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'is_use'=>'0','coupon_type'=>'1','over_time'=>array('egt',strtotime(date('Y-m-d',time())))))->count();
-            $couponCount2=M("member_card_coupon_record")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'is_use'=>'0','coupon_type'=>'3','over_time'=>array('egt',strtotime(date('Y-m-d',time())))))->count();
+            $couponCount=M("member_card_coupon_record")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'is_use'=>'0','over_time'=>array('egt',strtotime(date('Y-m-d',time())))))->count();
             $withrawcount=M("yangchebao_withdraw")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'state'=>array('lt',3)))->count();
             $product_cart_model = M('product_cart');
             $orderscount = $product_cart_model->where(array('token' => $this->token, 'wecha_id' => $this->wecha_id, 'paid'=>0,'groupon' => 0, 'dining' => 0))->count();
             $this->assign('card',$card);
             $this->assign('orderscount',$orderscount);
             $this->assign('withrawcount',$withrawcount);
-            $this->assign('couponCount1',$couponCount1);
-            $this->assign('couponCount2',$couponCount2);
+            $this->assign('couponCount1',$couponCount);
             $this->assign('cardinfo',$cardinfo);
             $this->assign('userinfo',$userinfo);
 			$this->assign('metaTitle', '个人中心');
 		    $this->display();
 	}
+
+    #region 提现
     public function withdrawrecord(){
       $records= M('yangchebao_withdraw')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->select();
       $this->assign('records',$records);
@@ -2698,6 +2713,9 @@ public function check(){
         }
     
     }
+    #endregion
+
+    #region 积分兑换
     public function my_coupon(){
     	$this->assign('infoType','coupon');
     	$thisCard=$this->_thisCard();
@@ -2754,7 +2772,7 @@ public function check(){
         $data['coupon_num']=date('YmdHis',time()).mt_rand(1000,9999);
         $rid 	= M('Member_card_coupon_record')->add($data);//会员优惠券表中增加一条记录
 
-        $arr			= array();
+        $arr= array();
         $arr['itemid']	= $rid; //暂取记录id
         $arr['wecha_id']= $this->wecha_id;
         $arr['expense']	= 0;
@@ -2762,15 +2780,22 @@ public function check(){
         $arr['token']	= $this->token;
         $arr['cat']		= 2;
         $arr['score']	= 0-intval($integral['integral']);
+        $sign=array();
+        $sign['token'] = $this->token;
+        $sign['wecha_id'] = $this->wecha_id;
+        $sign['sign_time'] = time();
+        $sign['is_sign'] = 0;
+        $sign['score_type'] = 6;
+        $sign['expense'] =intval($integral['integral']);
+        M('Member_card_sign')->add($sign);
         M('Member_card_use_record')->add($arr);//积分记录中增加一条记录
+      
         M('Userinfo')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->setDec('total_score',$integral['integral']);// 修改用户信息表中积分数据
-
         echo  '兑换成功';
         exit;
-    		
     	
     }
-
+    #endregion
 
     public function turnin()
     {
@@ -2839,11 +2864,11 @@ public function check(){
         $this->display();
     }
     public function scoreprofit(){
-        $revenuelist=M('member_card_sign')->where(array('score_type'=>5,'token' => $this->token,'wecha_id'=>$this->wecha_id,'sign_time'=>array('gt',date("y-m-d",strtotime('-30 day')))))->order('sign_time desc')->select();
+        $revenuelist=M('member_card_sign')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'sign_time'=>array('gt',date("y-m-d",strtotime('-30 day')))))->order('sign_time desc')->select();
         $this->assign('revenuelist',$revenuelist);
         $balance=M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->getField('balance');
         $setting=M('member_card_create')->join('left join tp_member_card_set on tp_member_card_create.cardid=tp_member_card_set.id')->where(array('wecha_id'=>$this->wecha_id))->getField('profitunit');
-        $sumscore=M('member_card_sign')->where(array('score_type'=>5,'token' => $this->token,'wecha_id'=>$this->wecha_id))->sum('expense');
+        $sumscore=M('member_card_sign')->where(array('score_type'=>array('neq',6),'token' => $this->token,'wecha_id'=>$this->wecha_id))->sum('expense');
         $this->assign('profitunit',$setting);
         $this->assign('balance',$balance);
         $this->assign('sumscore',$sumscore);

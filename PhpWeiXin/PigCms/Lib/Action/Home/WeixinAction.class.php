@@ -4,7 +4,7 @@ class WeixinAction extends Action{
 	private $fun;
 	private $data=array();
 	public $fans;
-	private $my='58结盟';
+	private $my='爱养车';
 	public $wxuser;
 	public $apiServer;
 	public $siteUrl;
@@ -448,8 +448,7 @@ class WeixinAction extends Action{
             return array('成功退出微信墙对话模式', 'text');
         }
         $weixin = new Wechat($this->token,$this->wxuser);
-
-		if(strpos(strtoupper($data['Content']), '@') === 0){
+        if(strpos(strtoupper($data['Content']), '@') === 0){
             $arr = explode("@",$data['Content']);
             $key=$arr[1];
             if($key&&strlen($key)>4){
@@ -463,7 +462,7 @@ class WeixinAction extends Action{
                     $content.="品牌:".$item['品牌']."\r\n";
                     $content.="花纹:".$item['规格']."\r\n";
                     $content.="库存:".$item['库存']."\r\n";
-                    $content.="价格:".$item['一级批发价']."\r\n\r\n";
+                    $content.="价格:".$item['参考售价']."\r\n\r\n";
                 }
                 $weixin->send($content,$data['FromUserName']);
                 return array('turn on transfer_customer_service','transfer_customer_service');
@@ -538,6 +537,28 @@ class WeixinAction extends Action{
             }
 
         }
+        /*
+        if(preg_match('/^[1-2][0-9][5][0-9]{2,4}$/i',strtoupper($data['Content']),$m)){
+            $key=$data['Content'];
+            if($key&&strlen($key)>4){
+                $serch['类别']=array('like','轮胎%');
+                $serch['库存']=array('gt',0);
+                $serch['助记码']=array('like',"%$key%");
+                $list=M('配件目录','dbo.','difo')->where($serch)->limit(0,20)->select();
+                $content="订货电话:020-39039139\r\n";
+                $content.="手机号码:18922761908\r\n\r\n";
+                foreach($list as $item){
+                    $content.="规格:".$item['名称']."\r\n";
+                    $content.="品牌:".$item['品牌']."\r\n";
+                    $content.="花纹:".$item['规格']."\r\n";
+                    $content.="库存:".$item['库存']."\r\n";
+                    $content.="价格:".$item['一级批发价']."\r\n\r\n";
+                }
+                $weixin->send($content,$data['FromUserName']);
+                return array('turn on transfer_customer_service','transfer_customer_service');
+
+            }
+        }*/
 		/**欢仔**/
         if ($this -> fans['wallopen'] && !$this -> knwxs['knwxopen']){
             $where = array('token' => $this -> token);

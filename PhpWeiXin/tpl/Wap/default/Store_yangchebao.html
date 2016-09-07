@@ -127,63 +127,6 @@
                 });
             });
         });
-        $(document).on('click', '#withdraw', function () {
-            
-            $('#tixian').find('#type').change(function () {
-                if ($('#tixian').find('#type').val() == 3) {
-                    $('#tixian').find('#user').css("display",'');
-                }
-                else {
-                    $('#tixian').find('#user').css("display", 'none');
-                }
-            });
-            $('#tixian').show().on('click', '.default ', function () {
-                $('.weui_dialog_confirm').off('click').hide();
-                $('#tixian').find('#money').val('');
-                $('#tixian').find('#password').val('');
-                $('#tixian').find('#account').val('');
-                $('#tixian').find('#username').val('');
-            }).on('click', '.primary', function () {
-                $('.weui_dialog_confirm').off('click').hide();
-                var money = $('#tixian').find('#money').val();
-                var password = $('#tixian').find('#password').val();
-                var account=$('#tixian').find('#account').val();
-                var type = $('#tixian').find('#type').val();
-                var username = $('#tixian').find('#username').val();
-                var reg = /^\d+(\.\d+)?$/i;
-                if (!reg.test(money)) {
-                    myalert("提示", "请输入有效的金额");
-                    return;
-                }
-                if (password == '') {
-                    myalert("提示", "请输入密码");
-                    return;
-                }
-                if (account == '') {
-                    myalert("提示", "请输入账号");
-                    return;
-                }
-                if (type == 3 && username == '')
-                {
-                    myalert("提示", "请输入用户名");
-                    return;
-                }
-                var submitData = {
-                    password: password,
-                    money: money,
-                    type: type,
-                    account:account,
-                    username:username
-                };
-
-                $.post('/index.php?g=Wap&m=Store&a=withdraw&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData,
-                function (data) {
-                    myalert("提示", data);
-                    location.href = location.href;
-                });
-            });
-        });
-        
         $('#container').highcharts({
                 title: {
                     text: '七日年化收益率(%)',
@@ -267,7 +210,7 @@
         <nav class="bar bar-tab">
             <a href="#" id="turnin" class="tab-item" style="color:#006AFF">转入</a>
             <a href="#" id="turnout" class="tab-item" style="color:#006AFF">转出</a>
-            <a href="#" id="withdraw" class="tab-item" style="color:#006AFF">提现</a>
+            <a href="{pigcms::U('Store/withdrawrecord',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id']))}" id="withdraw" class="tab-item" style="color:#006AFF">提现</a>
         </nav>
         <div class="content" style="margin:0px;padding:0px">
             <div class="card bg"  style="padding:0px;margin:0px">
@@ -376,60 +319,6 @@
                             <a href="javascript:;" class="weui_btn_dialog primary">确定</a>
                         </div>
                     </div>
-            </div>
-            <div id="tixian" class="weui_dialog_confirm" style="display: none">
-                <div class="weui_mask"></div>
-                <div class="weui_dialog">
-                    <div class="weui_dialog_hd" style="height:1rem;margin-top:0.5rem;padding:0px"><strong class="weui_dialog_title">提现申请</strong></div>
-                    <div class="weui_cells weui_cells_form">
-                        <div class="weui_cell">
-                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">可提现金额</label></div>
-                            <div class="weui_cell_bd weui_cell_primary">
-                                <label class="weui_label" style="white-space:nowrap;">{pigcms:$userinfo['balance']}元</label>
-                            </div>
-                        </div>
-                        <div class="weui_cell">
-                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap; ">提现金额</label></div>
-                            <div class="weui_cell_bd weui_cell_primary">
-                                <input placeholder="请输入提现金额" class="weui_input" id="money" name="money" />
-                            </div>
-                        </div>
-                        <!--<div class="weui_cell">
-                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">提现方式</label></div>
-                            <div class="weui_cell_bd weui_cell_primary">
-                                <select name="type" id="type" class="weui_input">
-                                    <option value="1">微信</option>-->
-                                    <!--<option value="2">支付宝</option>
-                                    <option value="3">银行</option>
-                                    <option value="4">现金</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="weui_cell" id="user" name="user" style="display:none">
-                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap; ">用户名</label></div>
-                            <div class="weui_cell_bd weui_cell_primary">
-                                <input placeholder="请输入用户名" class="weui_input" id="username" name="useername" />
-                            </div>
-                        </div>
-                        <div class="weui_cell">
-                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap; ">账号</label></div>
-                            <div class="weui_cell_bd weui_cell_primary">
-                                <input placeholder="请输入账号" class="weui_input" id="account" name="account" />
-                            </div>
-                        </div>-->
-                        <div class="weui_cell">
-                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">支付密码</label></div>
-                            <div class="weui_cell_bd weui_cell_primary">
-                                <input name="password" class="weui_input" id="password" value="" type="password" placeholder="请输入支付密码">
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="weui_dialog_ft">
-                        <a href="javascript:;" class="weui_btn_dialog default">取消</a>
-                        <a href="javascript:;" class="weui_btn_dialog primary">确定</a>
-                    </div>
-                </div>
             </div>
 
     </div>

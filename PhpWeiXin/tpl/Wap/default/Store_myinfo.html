@@ -53,7 +53,7 @@
                                 <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Store/scoreprofit',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id']))}">
                                     <div class="item-media"><i class="icon iconfont icon-star" style='color:#56abe4;font-size:1.2rem'></i></div>
                                     <div class="item-inner">
-                                        <div class="item-title">积分奖励</div>
+                                        <div class="item-title">我的积分</div>
                                     </div>
                                 </a>
                             </li>
@@ -66,19 +66,6 @@
                                             <span class="badge" style='background:red;color:white'>{pigcms:$orderscount}</span>
                                             <else />
                                             <span class="badge" style='display:none'>{pigcms:$orderscount}</span>
-                                        </if>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="item-link item-content" data-no-cache="true" href="{pigcms::U('Store/withdrawrecord',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id']))}">
-                                    <div class="item-media"><i class="icon iconfont icon-yinxingqiarenzheng" style='color:#56abe4;font-size:1.2rem'></i></div>
-                                    <div class="item-inner">
-                                        <div class="item-title">提现申请</div>
-                                        <if condition="$withrawcount neq 0">
-                                            <span class="badge" style='background:red;color:white'>{pigcms:$withrawcount}</span>
-                                            <else />
-                                            <span class="badge" style='display:none'>{pigcms:$withrawcount}</span>
                                         </if>
                                     </div>
                                 </a>

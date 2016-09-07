@@ -2678,7 +2678,9 @@ public function check(){
 
     #region 提现
     public function withdrawrecord(){
-      $records= M('yangchebao_withdraw')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->select();
+      $records= M('yangchebao_withdraw')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->order('id desc')->select();
+      $userinfo = M("Userinfo")->where(array('token' => $this->token,wecha_id=>$this->wecha_id))->find();
+      $this->assign('userinfo',$userinfo);
       $this->assign('records',$records);
      $this->display();
     }
@@ -2703,9 +2705,6 @@ public function check(){
                 $data['wecha_name']=$userinfo['wechaname'];
                 $data['money']=$money;
                 $data['withdraw_time']=time();
-                $data['account_type']=$this->_post('type');
-                $data['account_user']=$this->_post('username');
-                $data['account']=$this->_post('account');
                 $data['state']=1;
                 M('yangchebao_withdraw')->add($data);
                 echo '申请已提交成功';
@@ -2863,12 +2862,21 @@ public function check(){
         $this->assign('sumrevenue',$sumrevenue);
         $this->display();
     }
+    public function getsignscoe()
+    { 
+        $pagesize=$_POST['pagesize'];
+        $lastIndex=$_POST['lastIndex'];
+        $list=M('member_card_sign')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->limit($lastIndex,$pagesize)->order('sign_time desc')->select();
+        $this->ajaxReturn($list,'JSON');
+    }
     public function scoreprofit(){
         $revenuelist=M('member_card_sign')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'sign_time'=>array('gt',date("y-m-d",strtotime('-30 day')))))->order('sign_time desc')->select();
         $this->assign('revenuelist',$revenuelist);
         $balance=M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->getField('balance');
         $setting=M('member_card_create')->join('left join tp_member_card_set on tp_member_card_create.cardid=tp_member_card_set.id')->where(array('wecha_id'=>$this->wecha_id))->getField('profitunit');
         $sumscore=M('member_card_sign')->where(array('score_type'=>array('neq',6),'token' => $this->token,'wecha_id'=>$this->wecha_id))->sum('expense');
+        $count=M('member_card_sign')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->count();
+        $this->assign('count',$count);
         $this->assign('profitunit',$setting);
         $this->assign('balance',$balance);
         $this->assign('sumscore',$sumscore);
@@ -2886,7 +2894,8 @@ public function check(){
   public function yangchebao()
 	{
 			$userinfo = M("Userinfo")->where(array('token' => $this->token,wecha_id=>$this->wecha_id))->find();
-            $card=M('member_card_create')->where(array('token' => $this->token,wecha_id=>$this->wecha_id))->find();
+            $this->assign('userinfo',$userinfo);
+           $card=M('member_card_create')->where(array('token' => $this->token,wecha_id=>$this->wecha_id))->find();
             $revenue=M('yangchebao_revenue')->where(array('token' => $this->token,wecha_id=>$this->wecha_id,'revenue_time'=>array('gt',date("y-m-d",strtotime('-7 day')))))->order('revenue_time')->select();
             $revenuetime=array();
             $revenuerate=array();
@@ -2908,7 +2917,6 @@ public function check(){
             $this->assign('revenueunit',$revenueunit);
             $this->assign('revenuetime',json_encode($revenuetime));
             $this->assign('revenuerate',json_encode($revenuerate));
-            $this->assign('userinfo',$userinfo);
 			$this->assign('metaTitle', '养车宝');
 		    $this->display();
 	}

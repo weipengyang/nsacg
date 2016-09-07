@@ -66,24 +66,6 @@
                             </div>
                         </div>
                     </notempty>
-                    <notempty name="item.peijian">
-                        <div class="card-content">
-                            <div class="card-content-inner" style="font-size:0.6rem;">
-                                <div class="row">
-                                    <div class="col-33">配件名称</div>
-                                    <div class="col-33">数量</div>
-                                    <div class="col-33">金额</div>
-                                </div>
-                                <volist name="item.peijian" id="pj">
-                                    <div class="row">
-                                        <div class="col-33">{pigcms:$pj.名称}</div>
-                                        <div class="col-33">x{pigcms:$pj.数量}</div>
-                                        <div class="col-33">{pigcms:$pj.金额}</div>
-                                    </div>
-                                </volist>
-                            </div>
-                        </div>
-                    </notempty>
                     <if condition="$item['备注'] neq ''">
                         <div class="card-content">
                             <div class="card-content-inner" style="font-size:0.6rem;">

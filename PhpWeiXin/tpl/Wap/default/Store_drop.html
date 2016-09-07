@@ -1,0 +1,179 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>积分收益</title>
+    <meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+   
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css">
+    <link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/0.4.1/weui.min.css" />
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+
+    <style>
+        .pic {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+         .logo {
+            display: block;
+            width: 2.5rem;
+            height: 2.5rem;
+            color: white;
+            text-align: center;
+            line-height: 2rem;
+            margin: 2px;
+            border-radius: 100%;
+        }
+
+        .line {
+            width: 100%;
+            height: 2.5rem;
+            line-height: 2.5rem;
+            overflow: hidden;
+            margin: 0px;
+            text-align: center;
+            padding: 0px;
+            color: #FF6600;
+            font-size: 1.4rem;
+            background: #333333;
+            z-index: 9999;
+            font-weight: bold;
+            filter: alpha(opacity=40);
+            -moz-opacity: 0.4;
+            -khtml-opacity: 0.4;
+            opacity: 0.4;
+        }
+
+            .bg {
+            margin-top: 0.5rem;
+            padding:0;
+            color: white;
+            background: #fcecfc; /* Old browsers */
+            background: -moz-linear-gradient(left, #fcecfc 0%, #fd89d7 33%, #fba6e1 53%, #fd89d7 61%, #ff7cd8 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, right top, color-stop(0%,#fcecfc), color-stop(33%,#fd89d7), color-stop(53%,#fba6e1), color-stop(61%,#fd89d7), color-stop(100%,#ff7cd8)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,#FF6600 0%,#FF4900 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top, #FF6600 0%,#FF6600 33%,#FF6600 53%,#FF6600 61%,#FF6600 100%); /* Opera11.10+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcecfc', endColorstr='#ff7cd8',GradientType=1 ); /* IE6-9 */
+            background: linear-gradient(left, #fcecfc 0%,#fd89d7 33%,#fba6e1 53%,#fd89d7 61%,#ff7cd8 100%); /* W3C */ 
+            filter: alpha(opacity=50);
+            opacity: 0.8;
+        }
+  .infinite-scroll-preloader {
+        margin-top:-20px;
+      }
+   </style>
+
+</head>
+<body>
+    <div class="page" style="margin:0px">
+        <header class="bar bar-nav">
+            <h1 class="title">底部无限滚动</h1>
+            <div class="list-block" id="test">
+                点击加载
+            </div>
+        </header>
+        <!-- 添加 class infinite-scroll 和 data-distance  向下无限滚动可不加infinite-scroll-bottom类，这里加上是为了和下面的向上无限滚动区分-->
+        <div class="content infinite-scroll infinite-scroll-bottom" id="infinite-scroll-bottom" data-distance="100">
+            <div class="list-block">
+                <ul class="list-container"></ul>
+            </div>
+            <!-- 加载提示符 -->
+            <div class="infinite-scroll-preloader">
+                <div class="preloader"></div>
+            </div>
+        </div>
+        </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <script type="text/javascript">
+        $(function () {
+            'use strict';
+            // 加载flag
+            var loading = false;
+            // 最多可加载的条目
+            var maxItems ={pigcms:$count};
+            // 每次加载添加多少条目
+            var pagesize = 10;
+            // 上次加载的序号
+            var lastIndex = 10;
+            function addItems(pagesize, lastIndex) {
+                var submitData = {
+                    pagesize: pagesize,
+                    lastIndex: lastIndex
+                };
+                $.post('/index.php?g=Wap&m=Store&a=getsignscoe', submitData,
+                function (data) {
+                    // 生成新条目的HTML
+                    var html = '';
+                    $.each(eval(data),function (index,item) {
+                        var title = "";
+                        switch (item.expense) {
+                            case 1:
+                                title='签到';
+                                break;
+                            case 2:
+                                title='消费';
+                                break;
+                            case 3:
+                                title='评价';
+                                break;
+                            case 5:
+                                title='收益';
+                                break;
+                                default:
+                              title='兑换'
+                        }
+                        var expense = '+' + item.expense + '分';
+                        if(this.score_type==6)
+                            expense = '-' + item.expense + '分';
+                        html += '<li class="item-content"><div class="item-inner" ><div class="item-title" style="font-size:0.7rem">' + item.sign_time + '</div>';
+                        html += '<div class="item-title" style="font-size:0.7rem;left:150px;position:absolute">'+title+'</div>';
+                        html += '<div class="item-after" style="font-size:0.7rem">'+expense+'</div>';
+                        html +'</div></li>';
+
+                    });
+                    // 添加新条目
+                    $('.infinite-scroll-bottom .list-container').append(html);
+                });
+               
+
+            }
+            //预先加载20条
+            addItems(pagesize, 0);
+            $(document).on('click', '#test', function () {
+                alert(333);
+                $('#infinite-scroll-bottom').trigger("infinite");
+            })
+            // 注册'infinite'事件处理函数
+            $(document).on('infinite','.infinite-scroll-bottom',function () {
+                // 如果正在加载，则退出
+                if (loading) return;
+                // 设置flag
+                loading = true;
+                //模拟1s的加载过程
+                setTimeout(function () {
+                    // 重置加载flag
+                    loading = false;
+                    if (lastIndex >= maxItems) {
+                        // 加载完毕，则注销无限加载事件，以防不必要的加载
+                        $.detachInfiniteScroll($('.infinite-scroll'));
+                        // 删除加载提示符
+                        $('.infinite-scroll-preloader').remove();
+                        return;
+                    }
+                    // 添加新条目
+                    addItems(pagesize, lastIndex);
+                    // 更新最后加载的序号
+                    lastIndex = $('.list-container li').length;
+                    //容器发生改变,如果是js滚动，需要刷新滚动
+                    $.refreshScroller();
+                }, 1000);
+            });
+            $.init();
+        });
+    </script>
+</body>
+</html>

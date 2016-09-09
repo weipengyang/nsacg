@@ -588,25 +588,37 @@
                     alert('请输入车牌号码');
                     return;
                 }
+                var carno = $('#carno2').val();
+                reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i;
+                reg2 = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{4}[\u4e00-\u9fa5]$/i;
+                if (!reg.test(carno) && !reg2.test(carno)) {
+                    $.alert("请输入完整的车牌号码，格式如粤T83G5N");
+                    return;
+                }
                 if ($('#wxtype').val() == '') {
                     alert('请选择维修类型');
                     return;
                 }
                 if ($('#wxtype').val() != '普通快修') {
-                    if ($('#licheng').val() == '') {
-                        alert('里程数不为空');
-                        return;
-                    }
-                    if ($('#youwei').val() == '') {
-                        alert('油位表不能为空');
-                        return;
-                    }
                     if ($('#lxr').val() == '') {
                         alert('联系人不能为空');
                         return;
                     }
                     if ($('#phone').val() == '') {
                         alert('联系电话不能为空');
+                        return;
+                    }
+                    reg = /^0{0,1}(13[0-9]|145|15[0-9]|18[0-9])[0-9]{8}$/i;
+                    if (!reg.test($('#phone').val())) {
+                        $.alert("请输入11位的手机号码");
+                        return;
+                    }
+                    if ($('#licheng').val() == '') {
+                        alert('里程数不为空');
+                        return;
+                    }
+                    if ($('#youwei').val() == '') {
+                        alert('油位表不能为空');
                         return;
                     }
                 } else {
@@ -616,7 +628,7 @@
                      $('#phone').val('');
                  }
                 var submitData = {
-                    carno: $('#carno2').val(),
+                    carno: carno,
                     licheng: $('#licheng').val(),
                     lxr: $('#lxr').val(),
                     phone: $('#phone').val(),

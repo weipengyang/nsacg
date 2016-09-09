@@ -230,6 +230,21 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="am-g am-margin-top" id="lxrdiv">
+                                    <div class="am-u-sm-2  am-text-right">
+                                        联系人
+                                    </div>
+                                    <div class="am-u-sm-4 ">
+                                        <input type="text" name="lxr" id="lxr" class="am-input-sm">
+                                    </div>
+                                    <div class="am-u-sm-2  am-text-right">
+                                        联系电话
+                                    </div>
+                                    <div class="am-u-sm-4 ">
+                                        <input type="text" name="phone" id="phone" class="am-input-sm">
+                                    </div>
+                                </div>
+
                                 <div class="am-g am-margin-top" id="lcdiv" >
                                     <div class="am-u-sm-2  am-text-right">
                                         里程表
@@ -338,8 +353,9 @@
         $("#wxtype").change(function () {
             if ($("#wxtype").val() == '普通快修') {
                 $('#lcdiv').hide();
+                $('#lxrdiv').hide();
             } else {
-                
+                $('#lxrdiv').show();
                 $('#lcdiv').show();
             }
         });
@@ -506,6 +522,18 @@
                      }
                  }, 'JSON');
             });
+            $('#carno2').blur(function () {
+                var submitData = {
+                    carno: $('#carno2').val()
+                };
+                $.post('index.php?g=Query&m=Consume&a=getgrade', submitData,
+                 function (data) {
+                     if (data) {
+                         $('#lxr').val(data.联系人);
+                         $('#phone').val(data.联系电话);
+                     }
+                 }, 'JSON');
+            });
             $("#group").change(function () {
                 if ($("#group").val() == '定点签约') {
                     $('#qianyue').show();
@@ -573,13 +601,25 @@
                         alert('油位表不能为空');
                         return;
                     }
+                    if ($('#lxr').val() == '') {
+                        alert('联系人不能为空');
+                        return;
+                    }
+                    if ($('#phone').val() == '') {
+                        alert('联系电话不能为空');
+                        return;
+                    }
                 } else {
                      $('#licheng').val('');
                      $('#youwei').val('');
-                }
+                     $('#lxr').val('');
+                     $('#phone').val('');
+                 }
                 var submitData = {
                     carno: $('#carno2').val(),
                     licheng: $('#licheng').val(),
+                    lxr: $('#lxr').val(),
+                    phone: $('#phone').val(),
                     youwei: $('#youwei').val(),
                     person: $('#wxperson').val(),
                     fwgw: $('#fwgw1').val(),

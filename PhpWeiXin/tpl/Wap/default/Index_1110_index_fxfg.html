@@ -165,7 +165,7 @@
                 <span class="icon icon-friends"></span>
                 <span class="tab-label">会员中心</span>
             </a>-->
-            <a class="tab-item" external data-no-cache="true" href="#">
+            <a class="tab-item" external data-no-cache="true"  href="{pigcms::U('Store/index',array('token' => $_GET['token'], 'catid' => $hostlist['id'], 'wecha_id' => $wecha_id, 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
                 <span class="icon icon-message"></span>
                 <span class="tab-label">消息</span>
             </a>
@@ -224,8 +224,8 @@
             <div class="swiper-container" data-space-between='10' style="height:20px">
                 <div class="swiper-wrapper">
                     <volist name="notices" id="item">
-                        <div class="swiper-slide" style="width:100%">
-                            <a href="#"><span class="icon iconfont icon-svg41" style="font-weight:normal">{pigcms:$item.title}</span></a>
+                        <div class="swiper-slide" >
+                           <a href="#"><span class="icon iconfont icon-svg41" >{pigcms:$item.title}—{pigcms:$item.time|date="Y-m-d H:i",###}</span></a>
                         </div>
                    </volist>
             </div>

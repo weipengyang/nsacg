@@ -758,6 +758,7 @@ public function check(){
        if ($userCard) {
            $member_card_set_db = M("Member_card_set");
            $thisCard = $member_card_set_db->where(array("id" => intval($userCard["cardid"])))->find();
+           $userArr = array();
            if ($thisCard) {
                $set_exchange = M("Member_card_exchange")->where(array("cardid" => intval($thisCard["id"])))->find();
                $arr["token"] = $this->token;
@@ -780,7 +781,6 @@ public function check(){
                    M('Member_card_sign')->add($sign);
                }
                $thisUser = M('Userinfo')->where(array("token" => $thisCard["token"], "wecha_id" => $arr["wecha_id"]))->find();
-               $userArr = array();
                $userArr["total_score"] = $thisUser["total_score"] + $arr["score"];//积分
                $userArr["expensetotal"] = $thisUser["expensetotal"] + $arr["expense"];//消费总额
                $userArr['balance'] = $userinfo['balance'] - $balance;//余额
@@ -966,7 +966,60 @@ public function check(){
 	 */
 	public function index() 
 	{
-		$this->redirect(U('Store/cats',array('token' => $this->token, 'wecha_id' => $this->wecha_id, 'twid' => $this->_twid)));
+		$company = M('Company')->where("`token`='{$this->token}' AND `isbranch`=0")->find();
+		$cid = $this->_cid = isset($_GET['cid']) ? intval($_GET['cid']) : $company['id'];
+		if ($this->_isgroup) {
+			$cid = $company['id'];
+			$relation = M("Product_relation")->where(array('token' => $this->token, 'cid' => $this->_cid))->select();
+			if (empty($relation) && $this->_cid != $cid) {
+				$this->error("该店铺暂时没有商品可卖，先逛逛别的", U('Store/select',array('token' => $this->token, 'wecha_id' => $this->wecha_id, 'twid' => $this->_twid)));
+			}
+		}
+		session("session_company_{$this->token}", $this->_cid);
+		$this->assign('cid', $this->_cid);
+		$parentid = isset($_GET['parentid']) ? intval($_GET['parentid']) : 0;
+		$cats = $this->product_cat_model->where(array('token' => $this->token, 'cid' => $cid))->order("sort ASC, id DESC")->select();
+		$info = array();
+		$sub = array();
+		foreach ($cats as &$row) {
+			$row['info'] = $row['des'];
+			$row['img'] = $row['logourl'];
+			if ($row['isfinal'] == 1) {
+				$row['url'] = U('Store/products', array('token' => $this->token, 'catid' => $row['id'], 'wecha_id' => $this->wecha_id, 'cid' => $this->_cid, 'twid' => $this->_twid));
+			} else {
+                $row['url'] = U('Store/products', array('token' => $this->token, 'catid' => $row['id'], 'wecha_id' => $this->wecha_id, 'cid' => $this->_cid, 'twid' => $this->_twid));
+			}
+			$info[$row['id']] = $row;
+			
+			$row['parentid'] && $sub[$row['parentid']][] = $row;
+		}
+		foreach ($sub as $k => $r) {
+			if (isset($info[$k]) && $info[$k]) {
+				$info[$k]['sub'] = $r;
+			}
+		}
+		$result = array();
+		foreach ($info as $kk => $ii) {
+			if ($ii['parentid'] == $parentid) {
+				$result[$kk] = $ii;
+			}
+		}
+        $this->assign('info', $result);
+		$userinfo = M("Userinfo")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
+        $card=M('member_card_create')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
+        $notices=M('member_card_notice')->where(array('token' => $this->token,'cardid'=>$card['cardid'],'endtime'=>array('gt',time())))->select();
+        $cars=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->select();
+        $cardinfo=M('member_card_set')->where(array('token' => $this->token,'id'=>$card['cardid']))->find();
+        $user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
+        $wxcount=M('维修','dbo.','difo')->where(array('车主'=>$card['number'],'维修类别'=>array('neq','蜡水洗车'),'当前状态'=>array('not in',array('结束','取消'))))->count();
+        $this->assign('notices',$notices);
+        $this->assign('card',$card);
+        $this->assign('user',$user);
+        $this->assign('wxcount',$wxcount);
+        $this->assign('cardinfo',$cardinfo);
+        $this->assign('userinfo',$userinfo);
+		$this->display();
+		
 	}
 	
 	/**

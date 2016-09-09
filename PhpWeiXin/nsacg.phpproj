@@ -27568,6 +27568,7 @@
     <Content Include="tpl\Wap\default\Store_modifyinfo.html" />
     <Content Include="tpl\Wap\default\Store_drop.html" />
     <Content Include="tpl\Wap\default\Store_helpscore.html" />
+    <Content Include="tpl\Wap\default\Store_my_coupon - Copy.html" />
     <Content Include="tpl\Wap\default\Store_scoreprofit.html" />
     <Content Include="tpl\Wap\default\Store_wxcomment.html" />
     <Content Include="tpl\Wap\default\Store_weixiu.html" />

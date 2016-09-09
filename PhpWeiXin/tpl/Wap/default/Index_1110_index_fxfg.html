@@ -15,7 +15,7 @@
     <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
     <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css" />
     <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm-extend.min.js' charset='utf-8'></script>
-    <link href="http://at.alicdn.com/t/font_1469182140_7226088.css" rel="stylesheet" type="text/css" />
+    <link href="//at.alicdn.com/t/font_1473305391_5091624.css" rel="stylesheet" type="text/css" />
     <style>
         * {
             margin: 0;
@@ -221,6 +221,15 @@
                     </div>
                 </div>
             </div>
+            <div class="swiper-container" data-space-between='10' style="height:20px">
+                <div class="swiper-wrapper">
+                    <volist name="notices" id="item">
+                        <div class="swiper-slide" style="width:100%">
+                            <a href="#"><span class="icon iconfont icon-svg41" style="font-weight:normal">{pigcms:$item.title}</span></a>
+                        </div>
+                   </volist>
+            </div>
+            </div>
             <div class="card" style="padding:0;margin:0">
                 <div class="device" style="padding:0;margin:0">
                     <ul class="index-nav" >
@@ -251,7 +260,7 @@
                                 <span class="tab-label" style="font-size:0.625rem">历史维修</span>
                             </a>
                         </li>
-                        <li class="index-nav-item">
+                        <!--<li class="index-nav-item">
                             <a class="index-nav-item-link" external href="{pigcms::U('Wap/Store/baoxian')}">
                                 <i class="icon1 iconfont icon-baoyang0"></i>
                                 <span class="tab-label" style="font-size:0.625rem">保险</span>
@@ -268,7 +277,7 @@
                                 <i class="icon1 iconfont icon-shangjia"></i>
                                 <span class="tab-label" style="font-size:0.625rem">服务门店</span>
                             </a>
-                        </li>
+                        </li>-->
                     </ul>
                 </div>
 
@@ -282,9 +291,12 @@
             //对话框
             $.init();
             $(".swiper-container").swiper({
-                speed: 400,
-                spaceBetween: 100,
-                autoplay: 1000
+                speed: 2000,
+                spaceBetween: 1000,
+                autoplay: 1000,
+            });
+            $(document).on('click', '.swiper-slide', function () {
+                alert(1);
             });
         });
     </script>

@@ -97,7 +97,7 @@
                         row['主修人'] = getQueryString('zhuxiu');
                         row['金额'] = row['工时'] * row['单价'];
                         row['折扣'] = getQueryString('discount');
-                        row['税率'] = 1;
+                        row['税率'] = 0;
                         row['备注'] = data['备注'];
                         form.setData(row);
                         haveproject.add(row);
@@ -148,7 +148,8 @@
                         text: "保存", width: 80, click: function () {
                             var data = haveproject.getChanges();
                             var submitData = {
-                                projects:data
+                                projects: data,
+
                             };
                             $.post('index.php?g=Query&m=Consume&a=saveproject', submitData,
                               function (data) {

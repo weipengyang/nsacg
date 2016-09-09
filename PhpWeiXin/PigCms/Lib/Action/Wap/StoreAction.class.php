@@ -464,10 +464,10 @@ private function sellbill($price,$name){
 
 }
 
-private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',$shop=''){
+private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',$shop='',$comment){
     //if($this->wecha_id=='ohD3dviFloHSvcl9ieoXFibqPFJM')
     {
-        $wxrecord=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'当前状态'=>array('neq','结束')))->find();
+        $wxrecord=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'_string'=>"当前状态 not in ('结束','取消')"))->find();
         if($wxrecord){
             $row=array();
             //$row['ID']=$wxrecord['ID'];
@@ -543,6 +543,7 @@ private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',
                 $row['项目名称']=$xm['项目名称'];
             }
             $row['维修工艺']='';
+            $row['备注']=$comment;
             $row['结算方式']='客付';
             $row['工时']=1;
             $row['单价']=$price;
@@ -1029,11 +1030,6 @@ public function check(){
 		
 		include('./PigCms/Lib/ORG/index.Tpl.php');
 		include('./PigCms/Lib/ORG/cont.Tpl.php');
-		$catemenu[0] = array('id' => 0, 'name' => '所有商品', 'picurl' => '/tpl/static/store/m-act-cat.png', 'k' => 0, 'vo' => array(), 'url' => U('Store/cats', array('token'=> $this->token,'wecha_id'=> $this->wecha_id,'cid' => $this->_cid)));
-		$catemenu[1] = array('id' => 1, 'name' => '购物车', 'picurl' => '/tpl/static/store/m-act-cart.png', 'k' => 1, 'vo' => array(), 'url' => U('Store/cart', array('token'=> $this->token,'wecha_id'=> $this->wecha_id,'cid' => $this->_cid)));
-		$catemenu[2] = array('id' => 2, 'name' => '查物流', 'picurl' => '/tpl/static/store/m-act-wuliu.png', 'k' => 2, 'vo' => array(), 'url' => U('Store/my', array('token'=> $this->token,'wecha_id'=> $this->wecha_id,'cid' => $this->_cid)));
-		$catemenu[3] = array('id' => 3, 'name' => '用户中心', 'picurl' => '/tpl/static/store/user2.png', 'k' => 3, 'vo' => array(), 'url' => U('Store/my', array('token'=> $this->token,'wecha_id'=> $this->wecha_id,'cid' => $this->_cid)));
-		$this->assign('catemenu', $catemenu);
 		$set = M("Product_setting")->where(array('token' => $this->token, 'cid' => $this->_cid))->find();
 		if (isset($tpl[$set['tpid'] - 1]['tpltypename'])) {
 			$t = $tpl[$set['tpid'] - 1]['tpltypename'];
@@ -1070,14 +1066,14 @@ public function check(){
 					array_push($flashbg,$af);
 				}
 			}
-			
-			//$allflash=$this->convertLinks($allflash);
 		    $userinfo = M("Userinfo")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
             $card=M('member_card_create')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
+            $notices=M('member_card_notice')->where(array('token' => $this->token,'cardid'=>$card['cardid'],'endtime'=>array('gt',time())))->select();
             $cars=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->select();
             $cardinfo=M('member_card_set')->where(array('token' => $this->token,'id'=>$card['cardid']))->find();
             $user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
             $wxcount=M('维修','dbo.','difo')->where(array('车主'=>$card['number'],'维修类别'=>array('neq','蜡水洗车'),'当前状态'=>array('not in',array('结束','取消'))))->count();
+            $this->assign('notices',$notices);
             $this->assign('card',$card);
             $this->assign('user',$user);
             $this->assign('wxcount',$wxcount);
@@ -2326,14 +2322,18 @@ public function check(){
                 //Log::write(json_encode($r),Log::DEBUG);
                 $model->sendTempMsg($dataKey,$dataArr);
                 if(strpos($couponname['title'], '打蜡') !== false){
-                    $this->genwxrecord(0,$arr['carno'],'AYC0001','汽车美容',$arr['shop']);
+                    $this->genwxrecord(0,$arr['carno'],'AYC0001','汽车美容',$arr['shop'],'会员打蜡');
                 }
                 elseif(strpos($couponname['title'], '救援') !== false){
-                    $this->genwxrecord(0,$arr['carno'],'AYC2023','普通快修',$arr['shop']);
+                    $this->genwxrecord(0,$arr['carno'],'AYC2023','普通快修',$arr['shop'],'会员救援');
                 }
+                elseif(strpos($couponname['title'], '洗车') !== false){
+                    $this->genwxrecord(0,$arr['carno'],'AYC0001','蜡水洗车',$arr['shop'],'蜡水洗车');
+               }
                 else{
-                    $this->genwxrecord(0,$arr['carno'],'AYC0001','蜡水洗车',$arr['shop']);
-               } 
+                    $this->genwxrecord(0,$arr['carno'],'AYC0001','普通快修',$arr['shop'],$couponname['title']);
+
+                }
                 echo "线下消费成功";	
                 exit;
 			}                 

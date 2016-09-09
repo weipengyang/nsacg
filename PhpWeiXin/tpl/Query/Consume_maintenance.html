@@ -56,7 +56,7 @@
                     <div class="am-u-sm-12 am-u-md-12">
                         <button type="button" class="am-btn am-btn-primary" data-am-modal="{target: '#doc-modal-1', closeViaDimmer: 0,width:500}">洗车</button>
                         <button type="button" class="am-btn am-btn-primary" data-am-modal="{target: '#doc-modal-2', closeViaDimmer: 0,width:500}">美容</button>
-                        <button type="button" class="am-btn am-btn-primary" data-am-modal="{target: '#doc-modal-3', closeViaDimmer: 0,width:500}">维修</button>
+                        <button type="button" class="am-btn am-btn-primary" data-am-modal="{target: '#doc-modal-3', closeViaDimmer: 0,width:700}">维修</button>
                     </div>
                 </div>
                 <div class="am-modal am-modal-no-btn" tabindex="-1" id="doc-modal-1">
@@ -211,18 +211,16 @@
                         <div class="am-modal-bd">
                             <div class="am-form">
                                 <div class="am-g am-margin-top">
-                                    <div class="am-u-sm-4  am-text-right">
+                                    <div class="am-u-sm-2  am-text-right">
                                         车牌号码
                                     </div>
-                                    <div class="am-u-sm-8 ">
+                                    <div class="am-u-sm-4 ">
                                         <input type="text" name="carno2" id="carno2" class="am-input-sm">
                                     </div>
-                                </div>
-                                <div class="am-g am-margin-top">
-                                    <div class="am-u-sm-4  am-text-right">
+                                    <div class="am-u-sm-2  am-text-right">
                                         维修类型
                                     </div>
-                                    <div class="am-u-sm-8  am-u-end col-end">
+                                    <div class="am-u-sm-4  am-u-end col-end">
                                         <select data-am-selected name="wxtype" id="wxtype">
                                             <option value="">选择维修类型</option>
                                             <option value="常规保养">常规保养</option>
@@ -232,29 +230,43 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="am-g am-margin-top" id="lcdiv" >
+                                    <div class="am-u-sm-2  am-text-right">
+                                        里程表
+                                    </div>
+                                    <div class="am-u-sm-4 ">
+                                        <input type="text" name="licheng" id="licheng" class="am-input-sm">
+                                    </div>
+                                    <div class="am-u-sm-2  am-text-right">
+                                        油位表
+                                    </div>
+                                    <div class="am-u-sm-4 ">
+                                        <input type="text" name="youwei" id="youwei" class="am-input-sm">
+                                    </div>
+                                </div>
                                 <div class="am-g am-margin-top">
-                                    <div class="am-u-sm-4  am-text-right">
+                                    <div class="am-u-sm-2  am-text-right">
                                         接车人
                                     </div>
-                                    <div class="am-u-sm-8  am-u-end col-end">
+                                    <div class="am-u-sm-4  am-u-end col-end">
                                         <select data-am-selected name="fwgw1" id="fwgw1">
                                             <volist name="fwlist" id="item">
                                                 <option value="{pigcms:$item.姓名}">{pigcms:$item.姓名}</option>
                                             </volist>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="am-g am-margin-top">
-                                    <div class="am-u-sm-4  am-text-right">
+                                    <div class="am-u-sm-2  am-text-right">
                                         维修师傅
                                     </div>
-                                    <div class="am-u-sm-8  am-u-end col-end">
+                                    <div class="am-u-sm-4  am-u-end col-end">
                                         <select data-am-selected name="wxperson" id="wxperson">
+                                            <option value="">选择维修师傅</option>
                                             <volist name="wxlist" id="item">
                                                 <option value="{pigcms:$item.姓名}">{pigcms:$item.姓名}</option>
                                             </volist>
                                         </select>
                                     </div>
+
                                 </div>
                                 <div class="am-g am-margin-top">
                                     <div class="am-u-sm-4 am-text-right">
@@ -262,7 +274,7 @@
                                     </div>
                                     <div class="am-u-sm-8  am-u-end col-end">
                                         <button class="am-btn am-btn-primary" id="wxsubmit">
-                                            <i class="am-icon-submit"></i>
+                                         <i class="am-icon-submit"></i>
                                             提交
                                         </button>
                                     </div>
@@ -310,7 +322,7 @@
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         function wxinfo(xh) {
-            $.ligerDialog.open({
+           var wxdialog= $.ligerDialog.open({
                 height: 540,
                 url: '/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh,
                 width: 950,
@@ -320,10 +332,19 @@
                 isResize: true,
                 modal: false,
                 title: '车辆维修详细信息'
-            });
+           });
+           wxdialog.max();
         }
+        $("#wxtype").change(function () {
+            if ($("#wxtype").val() == '普通快修') {
+                $('#lcdiv').hide();
+            } else {
+                
+                $('#lcdiv').show();
+            }
+        });
         function carinfo(carno) {
-            $.ligerDialog.open({
+            var cardialog=$.ligerDialog.open({
                 height: 500,
                 url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
                 width: 900,
@@ -334,6 +355,7 @@
                 modal: false,
                 title: '车辆信息编辑'
             });
+            cardialog.max();
         }
         function stopBubble(e) {
             //如果提供了事件对象，则这是一个非IE浏览器 
@@ -538,12 +560,27 @@
                     alert('请输入车牌号码');
                     return;
                 }
-                if ($('#wxtype').val()=='') {
+                if ($('#wxtype').val() == '') {
                     alert('请选择维修类型');
                     return;
                 }
+                if ($('#wxtype').val() != '普通快修') {
+                    if ($('#licheng').val() == '') {
+                        alert('里程数不为空');
+                        return;
+                    }
+                    if ($('#youwei').val() == '') {
+                        alert('油位表不能为空');
+                        return;
+                    }
+                } else {
+                     $('#licheng').val('');
+                     $('#youwei').val('');
+                }
                 var submitData = {
                     carno: $('#carno2').val(),
+                    licheng: $('#licheng').val(),
+                    youwei: $('#youwei').val(),
                     person: $('#wxperson').val(),
                     fwgw: $('#fwgw1').val(),
                     wxtype: $('#wxtype').val()

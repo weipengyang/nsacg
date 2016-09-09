@@ -442,7 +442,7 @@ class ConsumeAction extends Action{
                 $project['班组']=$yg['班组'];
             }
             M('维修项目','dbo.','difo')->add($project);
-            M('维修','dbo.','difo')->where(array('ID'=>$project['ID']))->save(array('当前状态'=>'派工'));
+            M('维修','dbo.','difo')->where(array('ID'=>$project['ID'],'单据类别'=>'普通单'))->save(array('当前状态'=>'派工'));
 
           }
           elseif($project['__status']=='update'){
@@ -465,7 +465,7 @@ class ConsumeAction extends Action{
           {
               unset($product['__status']);
               M('维修配件','dbo.','difo')->add($product);
-              M('维修','dbo.','difo')->where(array('ID'=>$product['ID']))->save(array('当前状态'=>'领料'));
+              M('维修','dbo.','difo')->where(array('ID'=>$product['ID'],'单据类别'=>'普通单'))->save(array('当前状态'=>'领料'));
 
           }
           elseif($product['__status']=='update'){
@@ -1710,11 +1710,13 @@ class ConsumeAction extends Action{
        $person=$_POST['person'];
        $fwgw=$_POST['fwgw'];
        $wxtype=$_POST['wxtype'];
-       $result=$this->genwxrecord($carno,'',$wxtype,$person,$fwgw);
+       $licheng=$_POST['licheng'];
+       $youwei=$_POST['youwei'];
+       $result=$this->genwxrecord($carno,'',$wxtype,$person,$fwgw,$licheng,$youwei);
 
        echo $result;
    }
-   private function genwxrecord($carno,$type='AYC0002',$wxlb='蜡水洗车',$person,$fwgw){
+   private function genwxrecord($carno,$type='AYC0002',$wxlb='蜡水洗车',$person,$fwgw,$licheng=null,$youwei=null){
       
            $wxrecord=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'_string'=>"当前状态 not in ('结束','取消')"))->find();
            if($wxrecord)
@@ -1724,7 +1726,7 @@ class ConsumeAction extends Action{
            else{
                $data=M('维修','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
                $data['流水号']=null;
-               unset( $data['流水号']);
+               unset($data['流水号']);
                unset($data['ROW_NUMBER']);
 
                $code=M('编号单','dbo.','difo')->where(array('类别'=>'WX','日期'=>date('Y-m-d', time())))->max('队列');
@@ -1734,25 +1736,73 @@ class ConsumeAction extends Action{
                if($type!=''){
                    $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>$type))->find();
                }
-               $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>$person))->find();
-
+               $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>$fwgw))->find();
+              
                if($carinfo)
                {
-                   $data['车牌号码']=$carno;
-                   $data['送修人']=$carinfo['手机号码'];
+                   $carinfo['最近维修']=date('Y-m-d',time());
+                   $carinfo['服务顾问']=$fwgw;
+                   $carinfo['维修次数']=intval($carinfo['维修次数'])+1;
+                   if(isset($licheng)){
+                       $carinfo['里程']=$licheng;
+                   }
+                   if($wxlb=='常规保养'){
+                       $carinfo['最近保养']=date("Y-m-d",time());
+                       $carinfo['下次保养']=date("Y-m-d",strtotime("+182 day"));
+                       if(isset($licheng)){
+                           $carinfo['保养里程']=$licheng;
+                           $carinfo['下次保养里程']=intval($licheng)+5000;
+                       }
+                   }
+                   unset($carinfo['流水号']);
+                   unset($carinfo['ROW_NUMBER']);
+                   M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->save($carinfo);
                    foreach($data as $key=>$value){
                        $data[$key]=$carinfo[$key];
                    }
                }
-               else{
-                   $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
-                   foreach($data as $key=>$value){
-                       $data[$key]=$carinfo[$key];
+               else{ 
+                   if($wxlb!='普通快修'){
+                       $czinfo['名称']=$carno;
+                       $czinfo['客户']=1;
+                       $czinfo['类别']='1星客户';
+                       $czinfo['ID']=$this->getcode(18,0,0);
+                       M('往来单位','dbo.','difo')->add($czinfo);
+                       $carinfo['车主']=$carno;
+                       $carinfo['车牌号码']=$carno;
+                       $carinfo['客户ID']=$czinfo['ID'];
+                       $carinfo['客户类别']='1星客户';
+                       $carinfo['最近维修']=date('Y-m-d',time());
+                       $carinfo['服务顾问']=$fwgw;
+
+                       $carinfo['维修次数']=1;
+                       if(isset($licheng)){
+                           $carinfo['里程']=$licheng;
+                       }
+                       if($wxlb=='常规保养'){
+                           $carinfo['常规保养数']=5000;
+                           $carinfo['最近保养']=date("Y-m-d",time());
+                           $carinfo['下次保养']=date("Y-m-d",strtotime("+182 day"));
+                           if(isset($licheng)){
+                               $carinfo['保养里程']=$licheng;
+                               $carinfo['下次保养里程']=intval($licheng)+5000;
+                           }
+                       }
+                       M('车辆档案','dbo.','difo')->add($carinfo);
+                       foreach($data as $key=>$value){
+                           $data[$key]=$carinfo[$key];
+                       }
+                   }else{
+                       $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
+                       foreach($data as $key=>$value){
+                           $data[$key]=$carinfo[$key];
+                       }
+                       $data['车牌号码']='0000';
                    }
-                   $data['车牌号码']='0000';
                    $data['联系人']=$carno;
                    $data['送修人']=$carno;
                    $data['联系电话']='';
+
                }
                $data['接车人']=$fwgw;
                $data['ID']=$this->getcode(10,0,1);
@@ -1761,6 +1811,12 @@ class ConsumeAction extends Action{
                $data['保修类别']='保外';
                if($wxlb=='保险理赔'){
                 $data['保修类别']='事故';
+               }
+               if(isset($youwei)){
+                   $data['油表数']=$youwei;
+               }
+               if(isset($licheng)){
+                   $data['进厂里程']=$licheng;
                }
                $data['单据类别']='快修单';
                $data['当前状态']='结算';
@@ -1776,10 +1832,6 @@ class ConsumeAction extends Action{
                $data['结算客户ID']=$carinfo['客户ID'];
                $data['进厂时间']=date('Y-m-d',time());
                $data['结算日期']=date('Y-m-d',time());
-               $data['下次保养']=null;
-               if($wxlb=='常规保养'){
-                   $data['下次保养']=date("Y-m-d",strtotime("+120 day"));
-               }
                $data['维修类别']=$wxlb;
                if(isset($xm))
                     $price=$xm['标准金额'];
@@ -1811,6 +1863,7 @@ class ConsumeAction extends Action{
 
                    M('维修项目','dbo.','difo')->add($row);
                }
+              $this->writeLog($data['ID'],$bianhao,$wxlb,'维修录入');
                return '提交成功';
 
            }
@@ -1819,7 +1872,7 @@ class ConsumeAction extends Action{
    private function writeLog($id,$ywbh,$type,$content)
    {
        $username=cookie('username');
-       $sql="exec [dbo].[Proc_WriteLog] '$id','$ywbh','$type','$username','$content'";
+       $sql="exec [dbo].[Proc_WriteLog] '$id','$ywbh','$type','$content','$username'";
        M('维修项目','dbo.','difo')->execute($sql);
    }
     public function record()

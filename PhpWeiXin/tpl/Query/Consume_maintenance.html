@@ -22,15 +22,15 @@
             <div class="admin-content-body">
                 <div class="am-g">
                     <div class="am-u-sm-10 am-u-md-9">
-                        <div class="am-form-group">
+                        <div class="am-form-group am-form-select">
                             门店
-                            <select data-am-selected="{btnSize: 'sm'}" id="shop">
+                            <select  id="shop">
                                 <option value="">所有门店</option>
                                 <option value="塘坑店">塘坑店</option>
                                 <option value="区府店">区府店</option>
                             </select>
                             类别
-                            <select data-am-selected="{btnSize: 'sm'}" id="lb">
+                            <select  id="lb">
                                 <option value="">所有分类</option>
                                 <option value="蜡水洗车">蜡水洗车</option>
                                 <option value="汽车美容">汽车美容</option>
@@ -52,7 +52,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="am-g">
+                <div class="am-g" style="margin-bottom:10px">
                     <div class="am-u-sm-12 am-u-md-12">
                         <button type="button" class="am-btn am-btn-primary" data-am-modal="{target: '#doc-modal-1', closeViaDimmer: 0,width:500}">洗车</button>
                         <button type="button" class="am-btn am-btn-primary" data-am-modal="{target: '#doc-modal-2', closeViaDimmer: 0,width:500}">美容</button>
@@ -244,7 +244,14 @@
                                         <input type="text" name="phone" id="phone" class="am-input-sm">
                                     </div>
                                 </div>
-
+                                <div class="am-g am-margin-top" id="ltdiv">
+                                    <div class="am-u-sm-2  am-text-right">
+                                        轮胎规格
+                                    </div>
+                                    <div class="am-u-sm-4 ">
+                                        <input type="text" name="luntai" id="luntai" class="am-input-sm">
+                                    </div>
+                                </div>
                                 <div class="am-g am-margin-top" id="lcdiv" >
                                     <div class="am-u-sm-2  am-text-right">
                                         里程表
@@ -353,10 +360,12 @@
         $("#wxtype").change(function () {
             if ($("#wxtype").val() == '普通快修') {
                 $('#lcdiv').hide();
+                $('#ltdiv').hide();
                 $('#lxrdiv').hide();
             } else {
                 $('#lxrdiv').show();
                 $('#lcdiv').show();
+                $('#ltdiv').show();
             }
         });
         function carinfo(carno) {
@@ -435,8 +444,8 @@
                 }
                 if (istime) {
                     time = times[0] + ':' + times[1];
-                    if (times[2].indexOf('PM')) {
-                        time = (parseInt(time[0]) + 12) + ':' + times[1];
+                    if (times[2].indexOf('PM')>0) {
+                        time = (parseInt(times[0]) + 12) + ':' + times[1];
                     }
                     return date + ' ' + time;
                 }
@@ -444,7 +453,6 @@
             }
             return num;
         }
-
         $(document).ready(function () {
             grid = $("#maingrid4").ligerGrid({
                 columns: [
@@ -476,19 +484,19 @@
                     }
                 },
                 { display: '客户类别', name: '客户类别', minWidth: 140 },
-                { display: '联系人', name: '送修人', minWidth: 100 },
+                { display: '联系人', name: '联系人', minWidth: 100 },
                 { display: '轮胎规格', name: '轮胎规格', minWidth: 60 },
                 { display: '机油格', name: '机油格', minWidth: 60 },
                 { display: '空气格', name: '空气格', minWidth: 60 },
                 { display: '冷气格', name: '冷气格', minWidth: 60 },
-                { display: '保险到期', name: '保险到期', minWidth: 100, render: function (rowdata, index, value) {
+                { display: '保险到期', name: '商保到期', minWidth: 100, render: function (rowdata, index, value) {
                     return todate(value,false);
                     }
                 },
                 {
                     display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
                         if (rowdata['制单人'] == '系统录单' && rowdata['当前主修人'] =='')
-                            return '<a href="javascript:void(0);" onclick="assigntask(\'' + rowdata.序号 + '\');"><strong>派工</strong></a>';
+                            return '<a href="javascript:void(0);" onclick="assigntask(\'' + rowdata.流水号 + '\');"><strong>派工</strong></a>';
                         else
                             return '';
                     }
@@ -499,7 +507,7 @@
                 url: '/index.php?g=Query&m=Consume&a=getwxinfo',
                 height: '100%',
                 onDblClickRow: function (data, rowindex, rowobj) {
-                    wxinfo(data['序号']);
+                    wxinfo(data['流水号']);
                 }
             });
             $('#carno').blur(function () {
@@ -531,6 +539,7 @@
                      if (data) {
                          $('#lxr').val(data.联系人);
                          $('#phone').val(data.联系电话);
+                         $('#luntai').val(data.轮胎规格);
                      }
                  }, 'JSON');
             });
@@ -592,33 +601,37 @@
                 reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i;
                 reg2 = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{4}[\u4e00-\u9fa5]$/i;
                 if (!reg.test(carno) && !reg2.test(carno)) {
-                    $.alert("请输入完整的车牌号码，格式如粤T83G5N");
+                    $.ligerDialog.alert("请输入完整的车牌号码，格式如粤T83G5N");
                     return;
                 }
                 if ($('#wxtype').val() == '') {
-                    alert('请选择维修类型');
+                    $.ligerDialog.alert('请选择维修类型');
                     return;
                 }
                 if ($('#wxtype').val() != '普通快修') {
                     if ($('#lxr').val() == '') {
-                        alert('联系人不能为空');
+                        $.ligerDialog.alert('联系人不能为空');
                         return;
                     }
                     if ($('#phone').val() == '') {
-                        alert('联系电话不能为空');
+                        $.ligerDialog.alert('联系电话不能为空');
                         return;
                     }
                     reg = /^0{0,1}(13[0-9]|145|15[0-9]|18[0-9])[0-9]{8}$/i;
                     if (!reg.test($('#phone').val())) {
-                        $.alert("请输入11位的手机号码");
+                        $.ligerDialog.alert("请输入11位的手机号码");
+                        return;
+                    }
+                    if ($('#luntai').val() == '') {
+                        $.ligerDialog.alert('轮胎规格不能为空');
                         return;
                     }
                     if ($('#licheng').val() == '') {
-                        alert('里程数不为空');
+                        $.ligerDialog.alert('里程数不为空');
                         return;
                     }
                     if ($('#youwei').val() == '') {
-                        alert('油位表不能为空');
+                        $.ligerDialog.alert('油位表不能为空');
                         return;
                     }
                 } else {
@@ -626,11 +639,13 @@
                      $('#youwei').val('');
                      $('#lxr').val('');
                      $('#phone').val('');
+                     $('#luntai').val('');
                  }
                 var submitData = {
                     carno: carno,
                     licheng: $('#licheng').val(),
                     lxr: $('#lxr').val(),
+                    luntai: $('#luntai').val(),
                     phone: $('#phone').val(),
                     youwei: $('#youwei').val(),
                     person: $('#wxperson').val(),
@@ -639,7 +654,7 @@
                 };
                 $.post('index.php?g=Query&m=Consume&a=wxrecord', submitData,
                   function (data) {
-                      alert(data);
+                      $.ligerDialog.alert(data);
                       $('#doc-modal-3').modal('close');
                       grid.reload();
                   });
@@ -649,7 +664,6 @@
                 $('#my-startDate').text($('#my-start').data('date'));
                 $(this).datepicker('close');
             });
-
             $('#my-end').datepicker().on('changeDate.datepicker.amui', function(event) {
                endDate = new Date(event.date);
                $('#my-endDate').text($('#my-end').data('date'));

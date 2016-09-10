@@ -437,6 +437,7 @@ class ConsumeAction extends Action{
           if($project['__status']=='add')
           {
             unset($project['__status']);
+            unset($project['流水号']);
             if(isset($project['主修人'])&&$project['主修人']!=''){
                 $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>$project['主修人']))->field('班组')->find();
                 $project['班组']=$yg['班组'];
@@ -464,6 +465,7 @@ class ConsumeAction extends Action{
            if($product['__status']=='add')
           {
               unset($product['__status']);
+              unset($product['流水号']);
               M('维修配件','dbo.','difo')->add($product);
               M('维修','dbo.','difo')->where(array('ID'=>$product['ID'],'单据类别'=>'普通单'))->save(array('当前状态'=>'领料'));
 
@@ -479,6 +481,14 @@ class ConsumeAction extends Action{
        }
        echo '保存成功';
    }
+  public function savewxinfo(){
+      $wxinfo=$_POST;
+      $xh=$_POST['流水号'];
+      unset($wxinfo['流水号']);
+      M('维修','dbo.','difo')->where(array('流水号'=>$xh))->save($wxinfo);
+      echo '保存成功';
+  }
+
    public function modifyproject()
    {
        $id=$_GET['id'];
@@ -1248,6 +1258,11 @@ class ConsumeAction extends Action{
            $where['维修类别']=trim($_POST['lb']);
            
        }
+       if($_POST['shop']&&trim($_POST['shop'])!='')
+       {
+           $where['门店']=trim($_POST['shop']);
+           
+       }
        if($_POST['startDate']&&trim($_POST['startDate'])!='')
        {
            $where['制单日期']=array('egt',trim($_POST['startDate']));
@@ -1271,6 +1286,7 @@ class ConsumeAction extends Action{
            $searchwhere['车牌号码']=array('like',$searchkey);
            $searchwhere['客户类别']=array('like',$searchkey);
            $searchwhere['联系人']=array('like',$searchkey);
+           $searchwhere['门店']=array('like',$searchkey);
            $searchwhere['送修人']=array('like',$searchkey);
            $searchwhere['联系电话']=array('like',$searchkey);
            $searchwhere['当前状态']=array('like',$searchkey);
@@ -1278,8 +1294,16 @@ class ConsumeAction extends Action{
            $where['_complex']=$searchwhere;
 
        }
-       $wxinfo=M('车辆资料','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order('序号 desc')->select();
-       $count=M('车辆资料','dbo.','difo')->where($where)->count();
+       $sortname=$_POST['sortname'];
+       $sortorder=$_POST['sortorder'];
+       if(!isset($sortname)){
+           $order='流水号 desc';
+       }
+       else{
+           $order=$sortname.' '.$sortorder.',流水号 desc';
+       }
+       $wxinfo=M('维修','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+       $count=M('维修','dbo.','difo')->where($where)->count();
        $data['Rows']=$wxinfo;
        $data['Total']=$count;
        echo json_encode($data);
@@ -1746,6 +1770,7 @@ class ConsumeAction extends Action{
                    $carinfo['最近维修']=date('Y-m-d',time());
                    $carinfo['服务顾问']=$fwgw;
                    $carinfo['维修次数']=intval($carinfo['维修次数'])+1;
+                   $carinfo['轮胎规格']=$_POST['luntai'];
                    if(isset($licheng)){
                        $carinfo['里程']=$licheng;
                    }
@@ -1776,11 +1801,15 @@ class ConsumeAction extends Action{
                        M('往来单位','dbo.','difo')->add($czinfo);
                        $carinfo['车主']=$carno;
                        $carinfo['车牌号码']=$carno;
+                       $carinfo['轮胎规格']=$_POST['luntai'];
                        $carinfo['客户ID']=$czinfo['ID'];
                        $carinfo['客户类别']='1星客户';
                        $carinfo['最近维修']=date('Y-m-d',time());
                        $carinfo['服务顾问']=$fwgw;
                        $carinfo['维修次数']=1;
+                       $carinfo['手机号码']=$phone;
+                       $carinfo['联系电话']=$phone;
+                       $carinfo['联系人']=$lxr;
                        if(isset($licheng)){
                            $carinfo['里程']=$licheng;
                        }
@@ -1800,6 +1829,8 @@ class ConsumeAction extends Action{
                        $data['手机号码']=$phone;
                        $data['联系电话']=$phone;
                        $data['联系人']=$lxr;
+                       $data['轮胎规格']=$_POST['luntai'];
+
 
                    }else{
                        $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
@@ -1807,6 +1838,7 @@ class ConsumeAction extends Action{
                            $data[$key]=$carinfo[$key];
                        }
                        $data['车牌号码']='0000';
+                       $data['客户类别']='临时客户';
                        $data['手机号码']='';
                        $data['联系电话']='';
                        $data['联系人']=$carno;
@@ -1920,6 +1952,7 @@ class ConsumeAction extends Action{
                     $data[$key]=$carinfo[$key];
                 }
                 $data['车牌号码']='0000';
+                $data['客户类别']='临时客户';
                 $data['联系人']=$carno;
                 $data['送修人']=$carno;
                 $data['联系电话']='';
@@ -1930,7 +1963,6 @@ class ConsumeAction extends Action{
             if($yg&&strpos($yg['班组'], '塘坑') === 0){
                 $data['接车人']='廖吉洪';
             }
-            //$data['车牌号码']=$carno;
             $data['ID']=$this->getcode(10,0,1);
             $data['制单日期']=date('Y-m-d',time());
             $data['制单人']=cookie('username');
@@ -1985,7 +2017,7 @@ class ConsumeAction extends Action{
             $row['主修人']=$person;
             $row['班组']=$yg['班组'];
             $row['开工时间']=date('Y-m-d H:i',time());
-            $row['完工时间']=date('Y-m-d H:i',time());
+            //$row['完工时间']=date('Y-m-d H:i',time());
             $row['是否同意']=0;
             $row['已维修']='0小时'; 
             M('维修项目','dbo.','difo')->add($row);

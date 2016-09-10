@@ -34,55 +34,30 @@
                         {
                             title: '基本信息',
                             fields: [
-                                { display: "流水号", name: "流水号", newline: true, type: "hidden", },
-                                { display: "业务编号 ", name: "业务编号", newline: true, type: "text" },
-                                { display: "制单日期 ", name: "制单日期", newline: false, type: "text" },
-                                { display: "制单人 ", name: "制单人", newline: false, type: "text" },
-                                {
-                                    display: "服务顾问", name: "接车人", newline: true, type: "combobox",
-                                    options: {
-                                        valueField: '姓名',
-                                        textField: '姓名',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=getfwgw',
-                                    }
-                                },
+                                { display: "流水号", name: "流水号", newline: true, type: "hidden" },
+                                { display: "客户ID", name: "客户ID", newline: true, type: "hidden" },
+                                { display: "业务编号 ", name: "业务编号", newline: true, type: "text",readonly:true},
+                                { display: "制单日期 ", name: "制单日期", newline: false, type: "text", readonly: true },
+                                { display: "制单人 ", name: "制单人", newline: false, type: "text",readonly: true },
+                                { display: "服务顾问", name: "接车人", newline: true, type: "text" },
                                 { display: "维修类别 ", name: "维修类别", newline: false, type: "text" },
                                 { display: "保修类别 ", name: "保修类别", newline: false, type: "text" },
                                 { display: "车牌号码", name: "车牌号码", newline: true, type: "text" },
-                               {
-                                    display: "品牌", name: "品牌", newline: false, type: "combobox",
-                                    options: {
-                                        valueField: '品牌',
-                                        textField: '品牌',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=getpinpai',
+                                { display: "品牌", name: "品牌", newline: false, type: "text", readonly: true },
+                                { display: "车系", name: "车型", newline: false, type: "text", readonly: true },
+                                { display: "进厂里程", name: "进厂里程", newline: true, type: "text" },
+                                {
+                                    display: "进厂时间", name: "进厂时间", newline: false, type: "date", options: {
+                                        showTime:true
                                     }
                                 },
-                                {
-                                    display: "车系", name: "车型", newline: false, type: "combobox",
-                                    options: {
-                                        valueField: '车型',
-                                        textField: '车型',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=getchexing',
-                                    },
-
-                                },
-                                { display: "进厂里程", name: "进厂里程", newline: true, type: "text" },
-                                { display: "进厂时间", name: "进厂时间", newline: false, type: "text" },
                                 { display: "油表数", name: "油表数", newline: false, type: "text" },
-                                { display: "预计完工", name: "预计完工", newline: true, type: "text" },
-                                { display: "下次保养 ", name: "下次保养", newline: false, type: "date" },
-                                {
-                                    display: "车辆类型", name: "车辆类别", newline: false, type: "combobox",
-                                    options: {
-                                        valueField: '类别',
-                                        textField: '类别',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=getcllb',
-                                    },
+                                { display: "预计完工", name: "预计完工", newline: true, type: "date", options: {
+                                    showTime:true
+                                 }
                                 },
+                                { display: "下次保养 ", name: "下次保养", newline: false, type: "date" },
+                                { display: "车辆类型", name: "车辆类别", newline: false, type: "text"  },
                                 { display: "年份 ", name: "年份", newline: true, type: "text" },
                                 { display: "排量", name: "排量", newline: false, type: "text" },
                                 { display: "车架号", name: "车架号", newline: false, type: "text" },
@@ -95,38 +70,8 @@
                                 { display: "发动机号", name: "发动机号", newline: true, type: "text" },
                                 { display: "发动机型号", name: "发动机型号", newline: false, type: "text" },
                                 { display: "电池", name: "电池", newline: false, type: "text" },
-                               {
-                                    display: "车主", name: "车主", newline: true, type: "popup", options: {
-                                        condition: {
-                                            prefixID: 'condtion_',
-                                            fields: [{ name: 'searchkey', type: 'text', width: 120, label: '客户信息', labelWidth: 90 }]
-                                            
-                                        },
-                                        onSelected: function (e) {
-                                            alert(e.value);
-                                            var row = e.data[0];
-                                            $("input[name='联系电话']").val(row['联系电话']);
-                                        },
-                                        searchClick: function (e) {
-                                            e.grid.set('parms', { 'searchkey': e.rules[0]['value'] });
-                                            e.grid.reload();
-                                        },
-                                        grid: getGridOptions(false),
-                                        valueField: '名称',
-                                        textField: '名称',
-                                        width: 600
-                                    }
-                                },
-                                {
-                                    display: "客户类别", name: "客户类别", newline: false, type: "combobox",
-                                    options: {
-                                        valueField: '类别',
-                                        textField: '类别',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=getkhlb',
-                                    }
-
-                                },
+                                { display: "车主", name: "车主", newline: true, type: "text", readonly: true },
+                                { display: "客户类别", name: "客户类别", newline: false, type: "text",readonly: true },
                                 { display: "联系人", name: "联系人", newline: false, type: "text" },
                                 { display: "联系电话", name: "联系电话", newline: true, type: "text" },
                                 { display: "手机号", name: "手机号码", newline: false, type: "text" },
@@ -139,7 +84,11 @@
                                 { display: "审核人", name: "审核人", newline: false, type: "text" },
                                 { display: "出厂里程", name: "出厂里程", newline: true, type: "text" },
                                 { display: "出厂时间", name: "出厂时间", newline: false, type: "text" },
-                                { display: "实际完工", name: "实际完工", newline: false, type: "text" },
+                                {
+                                    display: "实际完工", name: "实际完工", newline: false, type: "date", options: {
+                                        showTime: true
+                                    }
+                                },
                                 { display: "取消原因", name: "取消原因", newline: true, type: "text" },
                                 { display: "维修状态", name: "维修状态", newline: false, type: "text" },
                                 //{
@@ -153,7 +102,7 @@
                                 
                                 { display: "报称故障 ", name: "报称故障", newline: true,width: 300,type: "textarea" },
                                 { display: "重要提示 ", name: "重要提示", newline: false, width: 300, type: "textarea" },
-                                { display: "备注 ", name: "备注", newline: true, width: 300, type: "textarea" },
+                                { display: "备注 ", name: "单据备注", newline: true, width: 300, type: "textarea" },
                             ]
 
                         },
@@ -172,12 +121,12 @@
                                 {display:'结算客户',name:'结算客户',newline:true,type:'text'},
                                 {display:'三包厂商',name:'三包厂商',newline:false,type:'text'},
                                 { display: '保险公司', name: '保险公司', newline: false, type: 'text' },
-                                {display:'服务折扣',name:'服务折扣',newline:true,type:'text'},
-                                { display: '销售折扣', name: '销售折扣', newline: false, type: 'text' },
-                                { display: '费用折扣', name: '费用折扣', newline: false, type: 'text' },
-                                {display:'服务税率',name:'服务税率',newline:true,type:'text'},
-                                { display: '销售税率', name: '销售税率', newline: false, type: 'text' },
-                                { display: '费用税率', name: '费用税率', newline: false, type: 'text' },
+                                { display: '服务折扣', name: '整单服务折扣', newline: true, type: 'text' },
+                                { display: '销售折扣', name: '整单销售折扣', newline: false, type: 'text' },
+                                { display: '费用折扣', name: '整单费用折扣', newline: false, type: 'text' },
+                                { display: '服务税率', name: '整单服务税率', newline: true, type: 'text' },
+                                { display: '销售税率', name: '整单销售税率', newline: false, type: 'text' },
+                                { display: '费用税率', name: '整单费用税率', newline: false, type: 'text' },
                                 {display:'计次金额',name:'计次金额',newline:true,type:'text'},
                                 { display: '材料费', name: '材料费', newline: false, type: 'text' },
                                 { display: '管理费', name: '管理费', newline: false, type: 'text' },
@@ -193,11 +142,11 @@
                                 {display:'优惠金额',name:'优惠金额',newline:true,type:'text'},
                                 { display: '应收金额', name: '应收金额', newline: false, type: 'text' },
                                 { display: '现收金额', name: '现收金额', newline: false, type: 'text' },
-                                { display: '发票类型', name: '发票类型', newline: true, type: 'text' },
+                                { display: '发票类型', name: '发票类别', newline: true, type: 'text' },
                                 { display: '发票号码', name: '发票号码', newline: false, type: 'text' },
                                 {display:'结算日期',name:'结算日期',newline:false,type:'text'},
                                 { display: '结算方式', name: '结算方式', newline: true, type: 'text' },
-                                { display: '结算人', name: '结算人', newline: false, type: 'text' },
+                                { display: '结算人', name: '收款人', newline: false, type: 'text' },
                                 { display: '毛利', name: '毛利', newline: false, type: 'text' },
 
                             ]
@@ -214,21 +163,19 @@
 
             });
             var project;
-            var carinfo={pigcms:$carinfo };
+            var carinfo={pigcms:$carinfo};
             setdata();
             function submitForm() {
 
                 var form = liger.get("form1");
                 var data = form.getData();
-                data = JSON2.stringify(data);
-                $.ligerDialog.alert(data);
+                data = JSON.stringify(data);
                 data = JSON2.parse(data);
-
-                //$.post('/index.php?g=Query&m=Consume&a=carinfo', data,
-                //  function (msg) {
-                //      alert(msg);
-                //      location.href = location.href;
-                //  });
+                $.post('/index.php?g=Query&m=Consume&a=savewxinfo', data,
+                  function (msg) {
+                      $.ligerDialog.alert(msg);
+                      location.href = location.href;
+                  });
 
             }
 
@@ -270,8 +217,8 @@
                     }
                     if (istime) {
                         time = times[0] + ':' + times[1];
-                        if (times[2].indexOf('PM')) {
-                            time = (parseInt(time[0]) + 12) + ':' + times[1];
+                        if (times[2].indexOf('PM')>0) {
+                            time = (parseInt(times[0]) + 12) + ':' + times[1];
                         }
                         return date + ' ' + time;
                     }
@@ -594,7 +541,15 @@
     </script>
 </head>
 
-<body style="padding:10px">
+<body>
+    <div style="margin-top:5px;padding-left:10px">
+        <button type="button" class="am-btn am-btn-default">报价</button>
+        <button type="button" class="am-btn am-btn-primary">派工</button>
+        <button type="button" class="am-btn am-btn-secondary">领料</button>
+        <button type="button" class="am-btn am-btn-success">审核</button>
+        <button type="button" class="am-btn am-btn-warning">结算</button>
+        <button type="button" class="am-btn am-btn-danger">出厂</button>
+    </div>
     <div id="form1">
     </div>
     <div class="am-modal am-modal-prompt" tabindex="-1" id="doc-modal-1">

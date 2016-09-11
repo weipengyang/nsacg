@@ -1021,7 +1021,13 @@ public function check(){
 		$this->display();
 		
 	}
-	
+	public function notice(){
+        $id=$_GET['id'];
+        $notice=M('member_card_notice')->where(array('id' => $id))->find();
+        $this->assign('notice',$notice);
+        $this->display();
+        
+    }
 	/**
 	 * 商城首页
 	 */

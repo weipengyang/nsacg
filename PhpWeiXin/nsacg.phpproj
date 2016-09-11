@@ -27392,6 +27392,7 @@
     <Content Include="tpl\Wap\default\Hotels_order.html" />
     <Content Include="tpl\Wap\default\Hotels_selectdate.html" />
     <Content Include="tpl\Wap\default\index.html" />
+    <Content Include="tpl\Wap\default\Store_notice.html" />
     <Content Include="tpl\Wap\default\Store_index.html" />
     <Content Include="tpl\Wap\default\Index_1110_index_fxfg.html" />
     <Content Include="tpl\Wap\default\Index_content.html" />

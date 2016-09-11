@@ -98,6 +98,7 @@
                         row['金额'] = row['工时'] * row['单价'];
                         row['折扣'] = getQueryString('discount');
                         row['税率'] = 0;
+                        row['税额'] = row['金额'] * row['税率'];
                         row['备注'] = data['备注'];
                         form.setData(row);
                         haveproject.add(row);
@@ -117,6 +118,7 @@
                 { display: '折扣', name: '折扣', minWidth: 80 },
                 { display: '结算方式', name: '结算方式', minWidth: 80 },
                 { display: '税率', name: '税率', minWidth: 120 },
+                { display: '税额', name: '税额', minWidth: 120 },
                 { display: '虚增类别', name: '虚增类别', minWidth: 120 },
                 { display: '虚增金额', name: '虚增金额', minWidth: 120 },
                 { display: '备注', name: '备注', minWidth: 240 }
@@ -142,6 +144,7 @@
                             var selected = haveproject.getSelected();
                             if (!selected) { alert('请选择行'); return; }
                             data['金额'] = data['工时'] * data['单价'];
+                            data['税额'] = data['金额'] * data['税率'];
                             haveproject.updateRow(selected, data);
                         }
                     },                    {

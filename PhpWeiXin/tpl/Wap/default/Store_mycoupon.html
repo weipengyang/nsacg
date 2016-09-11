@@ -32,13 +32,13 @@
                 <ul id="m_list">
                     <volist name="list" id="item">
                         <li>
-                            <a href="{pigcms::U('Store/coupondetail',array('token' => $_GET['token'], 'id' => item['id'], 'wecha_id' => $_GET['wecha_id'], 'twid' => $twid))}" class="item-link item-content" data-no-cache="true">
+                            <a href="{pigcms::U('Store/coupondetail',array('token' =>$_GET['token'], 'id' =>$item['id'], 'wecha_id' =>$_GET['wecha_id'], 'twid' => $twid))}" class="item-link item-content" data-no-cache="true">
                                 <div class="item-media"><img src="{pigcms:$item.pic}" style='width: 120px;height:100px'></div>
                                 <div class="item-inner">
                                     <div class="item-title" style="font-size:15px;">{pigcms:$item.title}(剩余{pigcms:$item.get_count}张)</div>
                                     <div class="item-title" style="color:#0055CC;font-size:12px;"><span>{pigcms:$item.integral}积分兑换一张</span></div>
                                     <div class="item-title" style="color:#0055CC;font-size:12px;"><span>有效期至{pigcms:$item.enddate|date='Y年m月d日',###}</span></div>
-                                    <div class="item-title" style="color:#0055CC;font-size:12px;"><span style="color:#999;font-size:10px;margin-top:15px;">人兑换</span></div>
+                                    <div class="item-title" style="color:#0055CC;font-size:12px;"><span style="color:#999;font-size:10px;margin-top:15px;">{pigcms:$item.count1}人兑换</span></div>
                                 </div>
                             </a>
                         </li>

@@ -215,11 +215,11 @@
                     </div>
                 </div>
             </div>
-            <div class="swiper-container " data-space-between='10' style="height:20px;margin:0 10px ">
+            <div class="swiper-container " data-space-between='10' style="height:20px;margin:10px;background-color:white">
                 <div class="swiper-wrapper">
                     <volist name="notices" id="item">
                         <div class="swiper-slide" >
-                           <a href="#"><span class="icon iconfont icon-svg41" >{pigcms:$item.title}—{pigcms:$item.time|date="Y-m-d H:i",###}</span></a>
+                           <a href="#" style="padding-left:5px"><span class="icon iconfont icon-svg41" >{pigcms:$item.title}—{pigcms:$item.time|date="Y-m-d H:i",###}</span></a>
                         </div>
                    </volist>
             </div>
@@ -237,7 +237,7 @@
                             </li>
                         </volist>
                         <li class="index-nav-item">
-                            <a class="index-nav-item-link" external href="{pigcms::U('Wap/Store/my_coupon')}">
+                            <a class="index-nav-item-link" external href="{pigcms::U('Wap/Store/mycoupon')}">
                                 <i class="icon1 iconfont icon-chanpinguanli"></i>
                                 <span class="tab-label" style="font-size:0.625rem">积分兑换</span>
                             </a>
@@ -285,9 +285,10 @@
             //对话框
             $.init();
             $(".swiper-container").swiper({
-                speed: 2000,
-                spaceBetween: 1000,
+                speed: 3000,
+                spaceBetween: 100,
                 autoplay: 1000,
+                direction: 'vertical'
             });
             $(document).on('click', '.swiper-slide', function () {
                 alert(1);

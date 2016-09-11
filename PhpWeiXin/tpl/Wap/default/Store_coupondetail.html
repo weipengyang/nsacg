@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css">
+    <link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+    <link type="text/css" rel="stylesheet" href="{pigcms::$staticFilePath}/css/style_touch.css">
+    <title>{pigcms:$metaTitle}</title>
+    <style>
+        .infodetail img {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <nav class="bar bar-tab">
+            <a class="tab-item" data-no-cache="true" href="javascript:void(0);" onclick="history.go(-1);">
+                <span class="icon icon-left"></span>
+                <span class="tab-label">返回</span>
+            </a>
+            <a class="tab-item" data-no-cache="true" href="{pigcms::U('Store/cats',array('token' => $_GET['token'], 'catid' => $hostlist['id'], 'wecha_id' => $wecha_id, 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-home"></span>
+                <span class="tab-label">首页</span>
+            </a>
+            <a class="tab-item" data-no-cache="true" href="{pigcms::U('Store/myinfo',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-me"></span>
+                <span class="tab-label">我</span>
+            </a>
+        </nav>
+        <div class="content">
+            <div class="card">
+                <div class="card-content">
+                    <div class="swiper-container" style="height:220px" data-space-between='10'>
+                        <div class="swiper-wrapper">
+                            <if condition="empty($imageList) neq true">
+                                <volist name="imageList" id="img">
+                                    <div class="swiper-slide"><img src="{pigcms:$img.image}" style="width:100%;height:100%"></div>
+                                </volist>
+                                <else />
+                                <div class="swiper-slide"><img src="{pigcms:$coupon.pic}"></div>
+                            </if>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">{pigcms:$coupon.title}<span style="font-size:0.6rem">(总共<span id="stock" style="color:orange">{pigcms:$coupon.people}张</span>)</span></div>
+                <div class="card-content">
+                    <div class="card-content-inner">
+                        <div class="item-title">需要积分:<span style="color:orange">{pigcms:$coupon.integral}</span>分</div>
+                        <div class="item-title">
+                            <span>剩余<span style="color:red">{pigcms:$coupon.get_count}</span>张</span>
+                        </div>
+                        <div class="item-title">
+                            <span id="remainTime" style=""></span>
+                        </div>
+                       
+                        <div class="item-title" style="padding-top:10px">
+                            <div class="row">
+                                <div class="col-50"></div>
+                                <div class="col-50"><a href="#" id="exchange" class="button button-big button-fill ">立即兑换</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="buttons-tab">
+                    <a href="#tab1" class="tab-link active button">兑换说明</a>
+                </div>
+                <div class="tabs">
+                    <div id="tab1" class="tab active" style="width:100%">
+                        <div class="content-block">
+                            <div class="buttons-row">
+                                <ul class="detail-list">
+                                    <div class="infodetail">{pigcms:$coupon.info}</div>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm-extend.min.js' charset='utf-8'></script>
+
+    <script type="text/javascript">
+        $.config = {
+            // 路由功能开关过滤器，返回 false 表示当前点击链接不使用路由
+            routerFilter: function ($link) {
+                // 某个区域的 a 链接不想使用路由功能
+                if ($link.is('.disable-router a')) {
+                    return false;
+                }
+                return true;
+            }
+        };
+        $(function () {
+            'use strict';
+            //对话框
+            $.init();
+            $(".swiper-container").swiper({
+                speed: 400,
+                spaceBetween: 100,
+                autoplay: 1000
+            });
+        });
+        var SysSecond;
+        var InterValObj;
+        var buyDetailId = '';
+        $(document).ready(function () {
+            SysSecond = parseInt('{pigcms:$remainSeconds}'); //这里获取倒计时的起始时间
+            InterValObj = window.setInterval(SetRemainTime, 1000); //间隔函数，1秒执行
+            $(document).on('click', '#exchange', function () {
+                $.confirm('兑换礼品券需要消耗{pigcms:$coupon.integral}点积分，确定兑换吗？', function () {
+                    var submitData = {
+                        id:'{pigcms:$coupon.id}'
+                    };
+                    $.post('/index.php?g=Wap&m=Store&a=action_myCoupon&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData, function (data) {
+                        $.alert(data);
+                    });
+                });
+            });
+        });
+        //将时间减去1秒，计算天、时、分、秒
+        function SetRemainTime() {
+            if (SysSecond > 0) {
+                SysSecond = SysSecond - 1;
+                var second = Math.floor(SysSecond % 60);             // 计算秒
+                var minite = Math.floor((SysSecond / 60) % 60);      //计算分
+                var hour = Math.floor((SysSecond / 3600) % 24);      //计算小时
+                var day = Math.floor((SysSecond / 3600) / 24);        //计算天
+                $("#remainTime").html('还剩' + day + "天" + hour + "小时" + minite + "分" + second + "秒");
+            } else {//剩余时间小于或等于0的时候，就停止间隔函数
+                window.clearInterval(InterValObj);
+                //这里可以添加倒计时时间为0后需要执行的事件
+            }
+        }
+       
+    </script>
+</body>
+</html>

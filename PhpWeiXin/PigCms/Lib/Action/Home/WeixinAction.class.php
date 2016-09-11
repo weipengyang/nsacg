@@ -453,9 +453,18 @@ class WeixinAction extends Action{
             $key=$arr[1];
             if($key&&strlen($key)>4){
                 $serch['类别']=array('like','轮胎%');
-                $serch['库存']=array('gt',0);
-                $serch['助记码']=array('like',"%$key%");
-                $list=M('配件目录','dbo.','difo')->where($serch)->limit(0,20)->select();
+                $serch['停用']=0;
+                if(strlen($key)>5){
+                    $serchkey=substr($key,0,3).'/'.substr($key,3,2).'R';
+                    $serchkey.=substr($key,5,2);
+                    $serch['名称']=array('like',"%$serchkey%");
+                }
+                else{
+                    $serchkey=substr($key,0,3).'/'.substr($key,3,2).'R';
+                    $serchkey1=substr($key,0,3).'R'.substr($key,3,2);
+                    $serch['_string']="(名称 like '%$serchkey%' or  名称 like '%$serchkey1%')";
+                }
+                $list=M('配件目录','dbo.','difo')->where($serch)->limit(0,20)->order('库存 desc')->select();
                 $content="";
                 foreach($list as $item){
                     $content.="规格:".$item['名称']."\r\n";

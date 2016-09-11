@@ -2214,7 +2214,16 @@ public function check(){
         $data['服务质量'] = $commnet['fwzl'];
         $data['评论内容'] = htmlspecialchars($commnet['content']);
         $wx=M("维修",'dbo.','difo')->where(array('流水号' =>$id))->find();
+        $cardid=M('member_card_create')->where(array('wecha_id'=>$this->wecha_id))->getField('cardid');
+        $score=M('member_card_exchange')->where(array('cardid'=>$cardid))->getField('comment');
+        $sign['token'] = $this->token;
+        $sign['wecha_id'] = $this->wecha_id;
+        $sign['sign_time'] = time();
+        $sign['is_sign'] = 0;
+        $sign['score_type'] =3;
+        $sign['expense'] =$score;
         M("维修",'dbo.','difo')->where(array('流水号' =>$id))->save($data);
+        M('member_card_sign')->add($sign);
 	    echo U('Store/carinfo',array('carno' =>$wx['车牌号码'] ));
         exit;
 		
@@ -2795,15 +2804,15 @@ public function check(){
     public function action_myCoupon(){
     	$data['use_time'] 		= '';
     	$data['add_time'] 		= time();
-    	$data['coupon_id'] 		= $this->_post('coupon_id','intval');
-    	$data['cardid'] 		= $this->_post('cardid','intval');
+    	$data['coupon_id'] 		= $this->_post('id','intval');
     	$data['token'] 			= $this->token;
     	$data['wecha_id'] 		= $this->wecha_id;
-    	$data['coupon_type'] 	= $this->_post('type','intval');
+    	$data['coupon_type'] 	= 3;
     	$now 	= time();
-    	$integral 	= M('Member_card_integral')->where(array('token'=>$this->token,'cardid'=>$data['cardid'],'id'=>$data['coupon_id'],'ispublic'=>'1'))->find();
-        $count1=M('Member_card_coupon_record')->where(array('token'=>$this->token,'coupon_id'=>$integral['id'],'coupon_type'=>$data['coupon_type'],'cardid'=>$data['cardid']))->count();
-        if($this->thisUser['total_score']<$integral['integral']){
+        $user=M('userinfo')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
+    	$integral 	= M('Member_card_integral')->where(array('token'=>$this->token,'id'=>$data['coupon_id'],'ispublic'=>'1'))->find();
+        $count1=M('Member_card_coupon_record')->where(array('token'=>$this->token,'coupon_id'=>$integral['id'],'coupon_type'=>$data['coupon_type']))->count();
+        if($user['total_score']<$integral['integral']){
     		echo  '你的积分不足'.$integral['integral'];
     		exit;
     	}
@@ -2812,7 +2821,7 @@ public function check(){
     		echo  '礼品券已经兑换完了';
     		exit;
         }
-        $count=M('Member_card_coupon_record')->where(array('token'=>$this->token,'coupon_id'=>$integral['id'],'wecha_id'=>$data['wecha_id'],'coupon_type'=>$data['coupon_type'],'cardid'=>$data['cardid']))->count();
+        $count=M('Member_card_coupon_record')->where(array('token'=>$this->token,'coupon_id'=>$integral['id'],'wecha_id'=>$data['wecha_id'],'coupon_type'=>$data['coupon_type']))->count();
         $total=$integral['total'];
         if($count>=$total)
         {
@@ -2848,6 +2857,45 @@ public function check(){
     	
     }
     #endregion
+    #region 积分兑换
+    public function mycoupon(){
+    	$this->assign('infoType','coupon');
+    	$thisCard=$this->_thisCard();
+    	$this->assign('thisCard',$thisCard);
+    	$type=3;
+    	$now	= time();
+    	$data 	= array();
+        $now 		= time();
+    	$where 	= array('token'=>$this->token,'cardid'=>$thisCard['id'],'statdate'=>array('lt',$now),'enddate'=>array('gt',$now),'ispublic'=>'1');
+    	$data	= M('Member_card_integral')->where($where)->order('create_time desc')->select();
+        foreach ($data as $k=>$n){
+    		$data[$k]['info']	= html_entity_decode($n['info']);
+    		$cwhere = array('token'=>$this->token,'cardid'=>$thisCard['id'],'coupon_type'=>$type,'coupon_id'=>$n['id']);
+    		$count 	= M('Member_card_coupon_record')->where($cwhere)->count();
+            $leftcount=$n['people']-$count;
+            $data[$k]['get_count'] 	= $leftcount>0?$leftcount:0;//剩余多少张
+    		$data[$k]['count'] 	= $n['people'];//总共多少张
+            $data[$k]['count1'] = $count;//
+
+    	}
+    	$this->assign('list',$data);
+    	$this->display();
+    } 
+     public function coupondetail(){
+    	$data 	= array();
+    	$where 	= array('token'=>$this->token,'id'=>$_GET['id']);
+    	$data= M('Member_card_integral')->where($where)->find();
+    	$data['info']	= html_entity_decode($data['info']);
+    	$cwhere = array('token'=>$this->token,'coupon_type'=>3,'coupon_id'=>$data['id']);
+    	$count 	= M('Member_card_coupon_record')->where($cwhere)->count();
+        $leftcount=$data['people']-$count;
+        $data['get_count'] 	= $leftcount>0?$leftcount:0;//剩余多少张
+        $remainSeconds=$data['enddate']-time();
+    	$this->assign('remainSeconds',$remainSeconds);
+    	$this->assign('coupon',$data);
+    	$this->display();
+    } 
+   #endregion
 
     public function turnin()
     {

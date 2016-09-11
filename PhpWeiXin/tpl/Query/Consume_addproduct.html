@@ -108,6 +108,7 @@
                         row['数量'] = 1;
                         row['金额'] = row['数量'] * row['单价'];
                         row['税率'] = 0;
+                        row['税额'] = row['金额'] * row['税率'];
                         row['备注'] = data['备注'];
                         form.setData(row);
                         haveproduct.add(row);
@@ -162,6 +163,7 @@
                             var selected = haveproduct.getSelected();
                             if (!selected) { $.ligerDialog.alert('请选择行'); return; }
                             data['金额'] = data['数量'] * data['单价'];
+                            data['税额'] = data['金额'] * data['税率'];
                             haveproduct.updateRow(selected, data);
                         }
                     },                    {

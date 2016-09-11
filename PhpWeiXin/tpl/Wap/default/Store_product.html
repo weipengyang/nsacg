@@ -1,5 +1,4 @@
-﻿<!--<include file="Store:header" />-->
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -110,7 +109,6 @@
             <div class="card">
             <div class="buttons-tab">
                 <a href="#tab1" class="tab-link active button">详情</a>
-                <a href="#tab2" class="tab-link button">评论<i>({pigcms:$num})</i></a>
             </div>
             <div class="tabs">
                 <div id="tab1" class="tab active" style="width:100%">
@@ -131,26 +129,6 @@
                             </div>
                             <div class="goods_intro"></div>
                         </div>
-                    </div>
-                </div>
-                <div id="tab2" class="tab">
-                    <div class="detailinfo">
-                        <div class="com-dec"><span class="star"><span class="st-box" style="width:{pigcms:$percent}"><i></i></span></span>评价<b>{pigcms:$score}</b>分，共<b>{pigcms:$num}</b>位参与</div>
-                        <ul class="com-list">
-                            <volist name="comment" id="com">
-                                <li>
-                                    <p>
-                                        {pigcms:$com['wecha_id']}：{pigcms:$com['score']}分　{pigcms:$com['productinfo']}
-                                    </p>
-                                    <p>{pigcms:$com['content']}<i>&nbsp;&nbsp;{pigcms:$com.dateline|date="Y-m-d H:i",###}</i></p>
-                                </li>
-                            </volist>
-                        </ul>
-                        <if condition="$page gt 0">
-                            <div class="m-page more_comment_list">
-                                <div class="com_pg-num pg-num" id="{pigcms:$page}"><a href="javascript:void(0);">查看更多评论</a></div>
-                            </div>
-                        </if>
                     </div>
                 </div>
             </div>
@@ -198,27 +176,6 @@
         var InterValObj;
         var buyDetailId = '';
         $(document).ready(function () {
-            $(".com_pg-num").click(function () {
-                var page = parseInt($(this).attr('id'));
-                $.get("{pigcms::U('Store/getcomment',array('token'=>$token,'pid'=>$product['id'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid,'cid' => $cid))}" + '&page=' + page, function (response) {
-                    if (response.error_code == false) {
-                        var html = '';
-                        $.each(response.data, function (i, data) {
-                            html += '<li><p>' + data.wecha_id + '：' + data.score + '分　' + data.productinfo + '</p>';
-                            html += '<p>' + data.content + '<i>&nbsp;&nbsp;' + data.dateline + '</i></p></li>';
-                        });
-                        if (html != '') {
-                            $(".com-list").append(html);
-                        }
-                        if (response.page > 0) {
-                            $(".com_pg-num").attr('id', response.page);
-                        } else {
-                            $(".m-page").hide();
-                        }
-                    }
-                }, 'json');
-            });
-
             SysSecond = parseInt($("#remainSeconds").html()); //这里获取倒计时的起始时间
             InterValObj = window.setInterval(SetRemainTime, 1000); //间隔函数，1秒执行
             $(".color").click(function () {

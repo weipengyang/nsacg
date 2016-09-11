@@ -5,7 +5,7 @@
         {pigcms:$zd['code']}
     </if>
     <title>{pigcms:$tpl.wxname}</title>
-    <meta name="viewport" content="width=device-width,height=device-height,maximum-scale=1.0,user-scalable=no;" />
+    <meta name="viewport" content="width=device-width,height=device-height,maximum-scale=1.0" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="format-detection" content="telephone=no" />
@@ -224,8 +224,14 @@
             <div class="swiper-container" data-space-between='10' style="height:20px">
                 <div class="swiper-wrapper">
                     <volist name="notices" id="item">
-                        <div class="swiper-slide" >
-                           <a href="#"><span class="icon iconfont icon-svg41" >{pigcms:$item.title}—{pigcms:$item.time|date="Y-m-d H:i",###}</span></a>
+                        <div class="swiper-slide">
+                            <a href="{pigcms::U('Wap/Store/notice',array('id'=>$item['id']))}" style="padding-left:5px">
+                                <span class="icon iconfont icon-svg41" style="color:red">
+                                    <span style="color:rgba(160,180,64,32)">
+                                        {pigcms:$item.title}—{pigcms:$item.time|date="Y-m-d H:i",###}
+                                    </span>
+                                </span>
+                            </a>
                         </div>
                    </volist>
             </div>
@@ -294,9 +300,8 @@
                 speed: 2000,
                 spaceBetween: 1000,
                 autoplay: 1000,
-            });
-            $(document).on('click', '.swiper-slide', function () {
-                alert(1);
+                direction: 'vertical'
+
             });
         });
     </script>

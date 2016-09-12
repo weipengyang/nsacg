@@ -64,23 +64,23 @@
                                 <div class="give_score">
                                     <div>
                                         服务态度：
-                                        <span class="grade pngFix"></span>
-                                        <span class="grade pngFix"></span>
-                                        <span class="grade pngFix"></span>
-                                        <span class="grade pngFix"></span>
-                                        <span class="grade pngFix"></span>
-                                        <input type="hidden" name="score" class="store_score" id="tdscore" value="5" />
+                                        <span class="grade_off pngFix"></span>
+                                        <span class="grade_off pngFix"></span>
+                                        <span class="grade_off pngFix"></span>
+                                        <span class="grade_off pngFix"></span>
+                                        <span class="grade_off pngFix"></span>
+                                        <input type="hidden" name="score" class="store_score" id="tdscore" value="0" />
                                     </div>
                                 </div>
                                 <div class="give_score">
                                     <div>
                                         维修质量：
-                                        <span class="grade pngFix"></span>
-                                        <span class="grade pngFix"></span>
-                                        <span class="grade pngFix"></span>
-                                        <span class="grade pngFix"></span>
-                                        <span class="grade pngFix"></span>
-                                        <input type="hidden" name="score" class="store_score" id="zlscore" value="5" />
+                                        <span class="grade_off pngFix"></span>
+                                        <span class="grade_off pngFix"></span>
+                                        <span class="grade_off pngFix"></span>
+                                        <span class="grade_off pngFix"></span>
+                                        <span class="grade_off pngFix"></span>
+                                        <input type="hidden" name="score" class="store_score" id="zlscore" value="0" />
                                     </div>
                                 </div>
                                 <textarea cols="40" id="content" name="content" placeholder="请在此输入您的评论" rows="7" style="width: 100%;line-height: 20px;"></textarea>
@@ -103,7 +103,14 @@
                             comment.fwtd = $("#tdscore").val();
                             comment.fwzl = $("#zlscore").val();
                             comment.content = $("#content").val();
-                           
+                            if (comment.fwtd < 1) {
+                                $.toast('请您对服务态度打分');
+                                return false;
+                            }
+                            if (comment.fwzl< 1) {
+                                $.toast('请您对服务质量打分');
+                                return false;
+                            }                          
                             var submitData = {
                                 comment: comment,
                                 orid: {pigcms:$wxinfo.流水号}

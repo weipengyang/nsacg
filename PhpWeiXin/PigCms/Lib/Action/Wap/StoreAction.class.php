@@ -1008,12 +1008,14 @@ public function check(){
 		$userinfo = M("Userinfo")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
         $card=M('member_card_create')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
         $notices=M('member_card_notice')->where(array('token' => $this->token,'cardid'=>$card['cardid'],'endtime'=>array('gt',time())))->select();
-        $cars=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->select();
+        $carcount=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->count();
         $cardinfo=M('member_card_set')->where(array('token' => $this->token,'id'=>$card['cardid']))->find();
         $user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
+        $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$userinfo['carno']))->find();
         $wxcount=M('维修','dbo.','difo')->where(array('车主'=>$card['number'],'维修类别'=>array('neq','蜡水洗车'),'当前状态'=>array('not in',array('结束','取消'))))->count();
         $this->assign('notices',$notices);
         $this->assign('card',$card);
+        $this->assign('carinfo',$carinfo);
         $this->assign('user',$user);
         $this->assign('wxcount',$wxcount);
         $this->assign('cardinfo',$cardinfo);

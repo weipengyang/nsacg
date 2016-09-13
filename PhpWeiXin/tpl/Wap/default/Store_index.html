@@ -15,7 +15,7 @@
     <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
     <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css" />
     <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm-extend.min.js' charset='utf-8'></script>
-    <link href="//at.alicdn.com/t/font_1473305391_5091624.css" rel="stylesheet" type="text/css" />
+    <link href="//at.alicdn.com/t/font_1473757456_4178314.css" rel="stylesheet" type="text/css" />
     <style>
         * {
             margin: 0;
@@ -36,23 +36,38 @@
 
         .index-nav-item {
             font-size:2rem;
-            border-width:1px;
+            border-width:6px;
             border-color:#DBDBDB;
             border-style:solid;
             display: inline-block;
             width: 50%;
-            line-height: 2em;
+            line-height: 2rem;
             font-size: 0.8rem;
             text-align: center;
 
         }
+        body .index-nav > li:nth-child(odd) {
+         border-right:hidden
+        }
+         body .index-nav > li:nth-child(1) {
+         border-bottom:hidden
+        }
+         body .index-nav > li:nth-child(2) {
+         border-bottom:hidden
+        }
+         body .index-nav > li:nth-child(3) {
+         border-bottom:hidden
+        }
+          body .index-nav > li:nth-child(4) {
+         border-bottom:hidden
+        }
         .index-nav-item-link i {
             display: block;
-            width: 3rem;
-            height: 3rem;
-            line-height: 3rem;
+            width: 2rem;
+            height: 2rem;
+            line-height: 2rem;
             margin:auto;
-            margin-bottom:0;
+            margin-top:5px;
             font-size:2rem
         }
         body .index-nav > li span {
@@ -198,28 +213,35 @@
                             <div class="col-33">{pigcms:$userinfo['expensetotal']}</div>
                             <div class="col-33">{pigcms:$userinfo['total_score']}</div>
                         </div>
-                        <div class="item-title line"><span style='margin-top:50px'>NO.{pigcms:$card['number']}</span></div>
-                        <div class="item-after" style='text-align:right;padding-top:10px'>广州市爱养车汽车服务有限公司</div>
-                    </div>
-                </div>
-            </div>
-            <div class="card" style="margin:0px">
-                <div class="card-content">
-                    <div class="card-content-inner">
-                        <div class="item-title">
-                            <div class="row">
-                                <div class="col-50"> <a external href="{pigcms::U('Card/topay', array('token' => $token,'wecha_id'=>$wecha_id,'cardid'=>$card['cardid']))}" class="button button-big button-round button-fill button-warning">充值</a></div>
-                                <div class="col-50"> <a external href="{pigcms::U('Store/check', array('token' => $token,'wecha_id'=>$wecha_id,'cardid'=>$card['cardid']))}" class="button button-big button-round button-fill button-success">结算</a></div>
-                            </div>
+                        <div class="row" style="margin:0px;text-align:center">
+                            <div class="col-33">保险到期</div>
+                            <div class="col-33">年检到期</div>
+                            <div class="col-33">保养里程</div>
                         </div>
+                        <div class="row" style="margin:0px;text-align:center;color:#FF9900">
+                            <div class="col-33">{pigcms:$carinfo['商保到期']|strtotime|date='Y-m-d',###}</div>
+                            <div class="col-33">{pigcms:$carinfo['年检日期']|strtotime|date='Y-m-d',###}</div>
+                            <div class="col-33">{pigcms:$carinfo['里程']}</div>
+                        </div>
+                        <div class="row" style="margin:0px;text-align:center">
+                            <div class="col-33" >服务顾问</div>
+                            <div class="col-33" style="height:1rem;border-width: 0px 1px 0 1px;border-style: solid;border-color: white;"></div>
+                            <div class="col-33">联系电话</div>
+                        </div>
+                        <div class="row" style="margin:0px;text-align:center;color:#FF9900">
+                            <div class="col-50"></div>
+                            <div class="col-50"></div>
+                        </div>
+
+                        <div class="item-after" style='text-align:right;padding-top:10px;padding-right:10px'>NO.{pigcms:$card['number']}</div>
                     </div>
                 </div>
             </div>
-            <div class="swiper-container " data-space-between='10' style="height:20px;margin:10px;background-color:white">
+            <div class="swiper-container " data-space-between='10' style="height:30px;margin:10px;background-color:white">
                 <div class="swiper-wrapper">
                     <volist name="notices" id="item">
                         <div class="swiper-slide" >
-                           <a href="{pigcms::U('Wap/Store/notice',array('id'=>$item['id']))}" style="padding-left:5px"><span class="icon iconfont icon-svg41" style="color:red">
+                           <a href="{pigcms::U('Wap/Store/notice',array('id'=>$item['id']))}" style="padding-left:5px;height:100%"><span class="icon iconfont icon-svg41" style="color:red">
                                <span style="color:rgba(160,180,64,32)">{pigcms:$item.title}—{pigcms:$item.time|date="Y-m-d H:i",###}
                                </span>
                                </span>
@@ -246,18 +268,18 @@
                                 <span class="tab-label" style="font-size:0.625rem">积分兑换</span>
                             </a>
                         </li>
-                        <!--<li class="index-nav-item">
-                            <a class="index-nav-item-link" external href="{pigcms::U('Store/coupon',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cardid' => 5, 'type' => 1))}">
-                                <i class="icon1 iconfont icon-wofabude"></i>
-                                <span class="tab-label" style="font-size:0.625rem">服务券</span>
+                        <li class="index-nav-item">
+                            <a class="index-nav-item-link" external href="{pigcms::U('Card/topay', array('token' => $token,'wecha_id'=>$wecha_id,'cardid'=>$card['cardid']))}">
+                                <i class="icon1 iconfont icon-chongzhi"></i>
+                                <span class="tab-label" style="font-size:0.625rem">会员充值</span>
                             </a>
                         </li>
                         <li class="index-nav-item">
-                            <a class="index-nav-item-link" external  href="{pigcms::U('Wap/Store/mycar')}">
-                                <i class="icon1 iconfont icon-weixiu"></i>
-                                <span class="tab-label" style="font-size:0.625rem">历史维修</span>
+                            <a class="index-nav-item-link" external  href="{pigcms::U('Store/check', array('token' => $token,'wecha_id'=>$wecha_id,'cardid'=>$card['cardid']))}">
+                                <i class="icon1 iconfont icon-jiesuan"></i>
+                                <span class="tab-label" style="font-size:0.625rem">维修结算</span>
                             </a>
-                        </li>-->
+                        </li>
                         <!--<li class="index-nav-item">
                             <a class="index-nav-item-link" external href="{pigcms::U('Wap/Store/baoxian')}">
                                 <i class="icon1 iconfont icon-baoyang0"></i>

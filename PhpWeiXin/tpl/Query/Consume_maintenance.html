@@ -600,10 +600,11 @@
                 var carno = $('#carno2').val();
                 reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i;
                 reg2 = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{4}[\u4e00-\u9fa5]$/i;
-                if (!reg.test(carno) && !reg2.test(carno)) {
-                    $.ligerDialog.alert("请输入完整的车牌号码，格式如粤T83G5N");
-                    return;
-                }
+                
+                //if (!reg.test(carno) && !reg2.test(carno)) {
+                //    $.ligerDialog.alert("请输入完整的车牌号码，格式如粤T83G5N");
+                //    return;
+                //}
                 if ($('#wxtype').val() == '') {
                     $.ligerDialog.alert('请选择维修类型');
                     return;

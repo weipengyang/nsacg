@@ -148,6 +148,36 @@ class ConsumeAction extends Action{
         echo json_encode($carinfo);
     
     }
+    public  function getscoreinfo(){
+    
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $where['1']=1;
+        $searchkey=$_POST['searchkey'];
+        $searchkey='%'.trim($searchkey).'%';
+        if($searchkey){       
+            $searchwhere['carno']=array('like',$searchkey);
+            $searchwhere['truename']=array('like',$searchkey);
+            $searchwhere['score_type']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $order='sign_time desc';
+        }
+        else{
+            $order=$sortname.' '.$sortorder.',sign_time desc';
+        }
+        $scoreinfo=M('member_card_sign')->join('join tp_userinfo on tp_member_card_sign.wecha_id=tp_userinfo.wecha_id')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+        $count=M('member_card_sign')->join('join tp_userinfo on tp_member_card_sign.wecha_id=tp_userinfo.wecha_id')->where($where)->count();
+        $data['Rows']=$scoreinfo;
+        $data['Total']=$count;
+        echo json_encode($data);
+    
+    }
     public  function getuserinfo(){
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
@@ -1745,8 +1775,8 @@ class ConsumeAction extends Action{
    }
    private function genwxrecord($carno,$type='AYC0002',$wxlb='蜡水洗车',$person,$fwgw,$licheng=null,$youwei=null,$lxr=null,$phone=null){
       
-           $wxrecord=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'_string'=>"当前状态 not in ('结束','取消')"))->find();
-           if($wxrecord)
+           //$wxrecord=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'_string'=>"当前状态 not in ('结束','取消')"))->find();
+           if(isset($wxrecord))
            {
                return '单已存在，请勿重复提交';
             }

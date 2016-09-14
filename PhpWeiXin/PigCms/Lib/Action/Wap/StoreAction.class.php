@@ -1007,13 +1007,20 @@ public function check(){
         $this->assign('info', $result);
 		$userinfo = M("Userinfo")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
         $card=M('member_card_create')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
-        $notices=M('member_card_notice')->where(array('token' => $this->token,'cardid'=>$card['cardid'],'endtime'=>array('gt',time())))->select();
+        $notices=M('member_card_notice')->where(array('token' => $this->token,'endtime'=>array('gt',time())))->select();
         $carcount=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->count();
         $cardinfo=M('member_card_set')->where(array('token' => $this->token,'id'=>$card['cardid']))->find();
         $user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
         $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$userinfo['carno']))->find();
+        if(isset($carinfo['服务顾问'])){
+         $fwgwinfo=M('员工目录','dbo.','difo')->where(array('姓名'=>$carinfo['服务顾问']))->find();
+        }
+        else{
+          $fwgwinfo=M('员工目录','dbo.','difo')->where(array('姓名'=>'刘述庆'))->find();
+        }
         $wxcount=M('维修','dbo.','difo')->where(array('车主'=>$card['number'],'维修类别'=>array('neq','蜡水洗车'),'当前状态'=>array('not in',array('结束','取消'))))->count();
         $this->assign('notices',$notices);
+        $this->assign('notices',);
         $this->assign('card',$card);
         $this->assign('carinfo',$carinfo);
         $this->assign('user',$user);
@@ -1023,9 +1030,24 @@ public function check(){
 		$this->display();
 		
 	}
+    public function notices(){
+        $notices=M('member_card_notice')->where(array('token' => $this->token,'endtime'=>array('gt',time())))->order('ordernum desc')->select();
+        $this->assign('noticelist',$notices);
+        $this->display();
+        
+    }
 	public function notice(){
         $id=$_GET['id'];
         $notice=M('member_card_notice')->where(array('id' => $id))->find();
+        $isread=M('member_card_noticedetail')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'noticeid'=>$id))->find();
+        if(!isset($isread)){
+            $noticedetail['token']=$this->token;
+            $noticedetail['wecha_id']=$this->wecha_id;
+            $noticedetail['noticeid']=$id;
+            $noticedetail['readtime']=time();
+            $noticedetail['type']=1;
+            M('member_card_noticedetail')->add($noticedetail);
+       }
         $this->assign('notice',$notice);
         $this->display();
         

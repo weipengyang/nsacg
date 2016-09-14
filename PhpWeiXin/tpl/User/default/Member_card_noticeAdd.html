@@ -39,6 +39,16 @@ items : [
 			<input type="input" class="px" id="enddate" name="enddate" value="{pigcms:$thisNotice.endtime|date="Y-m-d",###}" onClick="WdatePicker()">
 		</td>
 		</tr>
+        <tr >
+            <th>排序号：</th>
+            <td>
+                <input type="input" class="px" id="ordernum" name="ordernum" value="{pigcms:$thisNotice.ordernum}">
+            </td>
+        </tr>
+        <tr>
+            <th valign="top">内容摘要：</th>
+            <td><textarea name="summary" id="summary" rows="5" style="width: 410px; height: 50px; border:1px solid #ccc ;">{pigcms:$thisNotice.summary}</textarea></td>
+        </tr>
               	<tr>
               		<th valign="top">内容：</th>
               		<td><textarea name="content" id="content" rows="5" style="width: 410px; height: 250px; border:1px solid #ccc ;">{pigcms:$thisNotice.content}</textarea></td>

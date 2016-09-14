@@ -14636,6 +14636,7 @@
     <Content Include="tpl\Query\Consume_addproduct.html" />
     <Content Include="tpl\Query\Consume_assigntask.html" />
     <Content Include="tpl\Query\Consume_addproject.html" />
+    <Content Include="tpl\Query\Consume_members - Copy.html" />
     <Content Include="tpl\Query\Consume_scoreinfo.html" />
     <Content Include="tpl\Query\Consume_stat.html" />
     <Content Include="tpl\Query\Consume_carsinfo.html" />
@@ -27392,6 +27393,7 @@
     <Content Include="tpl\Wap\default\Hotels_order.html" />
     <Content Include="tpl\Wap\default\Hotels_selectdate.html" />
     <Content Include="tpl\Wap\default\index.html" />
+    <Content Include="tpl\Wap\default\Store_notices.html" />
     <Content Include="tpl\Wap\default\Store_notice.html" />
     <Content Include="tpl\Wap\default\Store_index.html" />
     <Content Include="tpl\Wap\default\Index_1110_index_fxfg.html" />

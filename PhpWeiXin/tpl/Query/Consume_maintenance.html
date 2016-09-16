@@ -39,6 +39,18 @@
                                 <option value="保险理赔">保险理赔</option>
                                 <option value="汽车维修">汽车维修</option>
                             </select>
+                            当前状态
+                            <select id="zt">
+                                <option value="">所有</option>
+                                <option value="报价">报价</option>
+                                <option value="派工">派工</option>
+                                <option value="领料">领料</option>
+                                <option value="审核">审核</option>
+                                <option value="结算">结算</option>
+                                <option value="出厂">出厂</option>
+                                <option value="结束">结束</option>
+                                <option value="取消">取消</option>
+                            </select>
                             <button type="button" class="am-btn am-btn-default am-margin-right" id="my-start">开始日期</button><span id="my-startDate"></span>
                             <button type="button" class="am-btn am-btn-default am-margin-right" id="my-end">结束日期</button><span id="my-endDate"></span>
                         </div>
@@ -462,6 +474,7 @@
                        return todate(value,false);
                     }
                 },
+                { display: '主修人', name: '当前主修人', width: 60, align: 'left' },
                 {
                     display: '客户确认', name: '确认维修', align: 'center', minWidth: 50, render:function (rowdata, index, value) {
                         if (value==null||value == '')
@@ -509,6 +522,15 @@
                 onDblClickRow: function (data, rowindex, rowobj) {
                     wxinfo(data['流水号']);
                 }
+            });
+            $("#zt").change(function () {
+                $('#search').click();
+            });
+            $("#lb").change(function () {
+                $('#search').click();
+            });
+            $("#shop").change(function () {
+                $('#search').click();
             });
             $('#carno').blur(function () {
                 var submitData = {
@@ -683,7 +705,10 @@
                     parms.shop = shop;
                 var lb = $('#lb').val();
                 if (lb != '')
-                    parms.lb =lb;
+                    parms.lb = lb;
+                var zt = $('#zt').val();
+                if (zt != '')
+                    parms.zt = zt;
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     parms.searchkey = searchkey;

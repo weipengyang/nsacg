@@ -41,7 +41,7 @@
             border-style:solid;
             display: inline-block;
             width: 50%;
-            line-height: 2rem;
+            line-height: 1.2rem;
             font-size: 0.8rem;
             text-align: center;
 
@@ -223,14 +223,11 @@
                             <div class="col-33">{pigcms:$carinfo['年检日期']|strtotime|date='Y-m-d',###}</div>
                             <div class="col-33">{pigcms:$carinfo['里程']}</div>
                         </div>
-                        <div class="row" style="margin:0px;text-align:center">
-                            <div class="col-33" >服务顾问</div>
-                            <div class="col-33" style="height:1rem;border-width: 0px 1px 0 1px;border-style: solid;border-color: white;"></div>
-                            <div class="col-33">联系电话</div>
+                        <div class="row">
+                            <div class="col-100" ><sapn style="margin-left:40px">服务顾问:{pigcms:$fwgwinfo['姓名']}</sapn></div>
                         </div>
-                        <div class="row" style="margin:0px;text-align:center;color:#FF9900">
-                            <div class="col-50"></div>
-                            <div class="col-50"></div>
+                        <div class="row" >
+                            <div class="col-100"><span style="margin-left:40px">联系电话:{pigcms:$fwgwinfo['联系电话']}</span></div>
                         </div>
 
                         <div class="item-after" style='text-align:right;padding-top:10px;padding-right:10px'>NO.{pigcms:$card['number']}</div>

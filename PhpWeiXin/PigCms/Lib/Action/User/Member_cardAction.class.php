@@ -716,7 +716,7 @@ class Member_cardAction extends UserAction{
 	}
 
 	public function useRecords(){
-		$types	= array('vip'=>4,'coupon'=>1,'integral'=>2);
+		$types	= array('vip'=>4,'coupon'=>1,'integral'=>3);
 		$type	= $_GET['type'];
 		if (!$types[$type]){
 			exit('no type');

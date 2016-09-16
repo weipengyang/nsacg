@@ -1020,7 +1020,7 @@ public function check(){
         }
         $wxcount=M('维修','dbo.','difo')->where(array('车主'=>$card['number'],'维修类别'=>array('neq','蜡水洗车'),'当前状态'=>array('not in',array('结束','取消'))))->count();
         $this->assign('notices',$notices);
-        $this->assign('notices',);
+        $this->assign('fwgwinfo',$fwgwinfo);
         $this->assign('card',$card);
         $this->assign('carinfo',$carinfo);
         $this->assign('user',$user);
@@ -2846,7 +2846,7 @@ public function check(){
     		echo  '你的积分不足'.$integral['integral'];
     		exit;
     	}
-        if($count1>=$integral['people'])
+        if($count1>=($integral['people']-intval($integral['basenum'])))
         {
     		echo  '礼品券已经兑换完了';
     		exit;
@@ -2896,16 +2896,16 @@ public function check(){
     	$now	= time();
     	$data 	= array();
         $now 		= time();
-    	$where 	= array('token'=>$this->token,'cardid'=>$thisCard['id'],'statdate'=>array('lt',$now),'enddate'=>array('gt',$now),'ispublic'=>'1');
+    	$where 	= array('token'=>$this->token,'statdate'=>array('lt',$now),'enddate'=>array('gt',$now),'ispublic'=>'1');
     	$data	= M('Member_card_integral')->where($where)->order('create_time desc')->select();
         foreach ($data as $k=>$n){
     		$data[$k]['info']	= html_entity_decode($n['info']);
-    		$cwhere = array('token'=>$this->token,'cardid'=>$thisCard['id'],'coupon_type'=>$type,'coupon_id'=>$n['id']);
+    		$cwhere = array('token'=>$this->token,'coupon_type'=>$type,'coupon_id'=>$n['id']);
     		$count 	= M('Member_card_coupon_record')->where($cwhere)->count();
-            $leftcount=$n['people']-$count;
+            $leftcount=$n['people']-$count-$data[$k]['basenum'];
             $data[$k]['get_count'] 	= $leftcount>0?$leftcount:0;//剩余多少张
     		$data[$k]['count'] 	= $n['people'];//总共多少张
-            $data[$k]['count1'] = $count;//
+            $data[$k]['count1'] = $count+$data[$k]['basenum'];//
 
     	}
     	$this->assign('list',$data);
@@ -2918,7 +2918,7 @@ public function check(){
     	$data['info']	= html_entity_decode($data['info']);
     	$cwhere = array('token'=>$this->token,'coupon_type'=>3,'coupon_id'=>$data['id']);
     	$count 	= M('Member_card_coupon_record')->where($cwhere)->count();
-        $leftcount=$data['people']-$count;
+        $leftcount=$data['people']-$count-$data['basenum'];
         $data['get_count'] 	= $leftcount>0?$leftcount:0;//剩余多少张
         $remainSeconds=$data['enddate']-time();
     	$this->assign('remainSeconds',$remainSeconds);

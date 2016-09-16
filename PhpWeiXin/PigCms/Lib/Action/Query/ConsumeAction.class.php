@@ -827,7 +827,7 @@ class ConsumeAction extends Action{
         $wecha_id = isset($_POST['wecha_id']) ? htmlspecialchars($_POST['wecha_id']) : '';
         $carno=strtoupper($carno);
         $cardno=$_POST['cardno'];
-        $carinfo=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$wecha_id,'carno'=>$carno))->find();
+        $carinfo=M('member_card_car')->where(array('token' => $this->token,'carno'=>$carno))->find();
         if(empty($carinfo))
         {   
             $user=M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->find();
@@ -1286,6 +1286,11 @@ class ConsumeAction extends Action{
        if($_POST['lb']&&trim($_POST['lb'])!='')
        {
            $where['维修类别']=trim($_POST['lb']);
+           
+       }
+       if($_POST['zt']&&trim($_POST['zt'])!='')
+       {
+           $where['当前状态']=trim($_POST['zt']);
            
        }
        if($_POST['shop']&&trim($_POST['shop'])!='')

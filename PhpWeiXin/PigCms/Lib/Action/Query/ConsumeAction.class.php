@@ -103,7 +103,7 @@ class ConsumeAction extends Action{
         if($projects){
            foreach($projects as $project){
                $projectprice+=$project['金额'];
-               $totalproject+=$project['金额']*$project['折扣'];
+               $totalproject+=$project['金额'];
            }
         }
         $productprice=0;
@@ -112,7 +112,7 @@ class ConsumeAction extends Action{
         if($products){
             foreach($products as $product){
                 $productprice+=$product['金额'];
-                $totalproduct+=$product['金额']*$product['折扣'];
+                $totalproduct+=$product['金额'];
             }
         }
         $appendprice=M('附加费用','dbo.','difo')->where(array('ID'=>$id))->sum('金额');

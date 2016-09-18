@@ -490,7 +490,7 @@ private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',
             $row['提成工时']=1;
             $row['提成金额']=0;
             $row['开工时间']=date('Y-m-d H:i',time());
-            $row['完工时间']=date('Y-m-d H:i',time());
+            //$row['完工时间']=date('Y-m-d H:i',time());
             $row['是否同意']=1;
             $row['已维修']='0小时'; 
             M('维修项目','dbo.','difo')->where(array('ID'=>$wxrecord['ID']))->save($row);
@@ -552,7 +552,7 @@ private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',
             $row['提成工时']=1;
             $row['提成金额']=0;
             $row['开工时间']=date('Y-m-d H:i',time());
-            $row['完工时间']=date('Y-m-d H:i',time());
+            //$row['完工时间']=date('Y-m-d H:i',time());
             $row['是否同意']=1;
             $row['已维修']='0小时'; 
             M('维修项目','dbo.','difo')->add($row);
@@ -1059,13 +1059,6 @@ public function check(){
 	{
 		$company = M('Company')->where("`token`='{$this->token}' AND `isbranch`=0")->find();
 		$cid = $this->_cid = isset($_GET['cid']) ? intval($_GET['cid']) : $company['id'];
-		if ($this->_isgroup) {
-			$cid = $company['id'];
-			$relation = M("Product_relation")->where(array('token' => $this->token, 'cid' => $this->_cid))->select();
-			if (empty($relation) && $this->_cid != $cid) {
-				$this->error("该店铺暂时没有商品可卖，先逛逛别的", U('Store/select',array('token' => $this->token, 'wecha_id' => $this->wecha_id, 'twid' => $this->_twid)));
-			}
-		}
 		session("session_company_{$this->token}", $this->_cid);
 		$this->assign('cid', $this->_cid);
 		$parentid = isset($_GET['parentid']) ? intval($_GET['parentid']) : 0;
@@ -1099,7 +1092,12 @@ public function check(){
 		$userinfo = M("Userinfo")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
         $card=M('member_card_create')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
         $notices=M('member_card_notice')->where(array('token' => $this->token,'endtime'=>array('gt',time())))->select();
-        $carcount=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->count();
+        $readed=0;
+        if(isset($notices)){
+            $nid=array_column($notices,'id');
+            $readed=M('member_card_noticedetail')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'noticeid'=>array('in',$nid)))->count();
+        }
+        $unreaded=count($notices)-$readed;
         $cardinfo=M('member_card_set')->where(array('token' => $this->token,'id'=>$card['cardid']))->find();
         $user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
         $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$userinfo['carno']))->find();
@@ -1110,6 +1108,17 @@ public function check(){
             $fwgwinfo=M('员工目录','dbo.','difo')->where(array('姓名'=>'刘述庆'))->find();
         }
         $wxcount=M('维修','dbo.','difo')->where(array('车主'=>$card['number'],'维修类别'=>array('neq','蜡水洗车'),'当前状态'=>array('not in',array('结束','取消'))))->count();
+        $couponCount=M("member_card_coupon_record")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'is_use'=>'0','over_time'=>array('egt',strtotime(date('Y-m-d',time())))))->count();
+        
+        $wxlist=M('维修','dbo.','difo')->where(array('制单人'=>array('neq','系统录单'),'客户ID'=>$user['ID'],'当前状态'=>'结算','维修类别'=>array('neq','蜡水洗车')))->count();
+        $xslist=M('销售单','dbo.','difo')->where(array('制单人'=>array('neq','系统录单'),'客户ID'=>$user['ID'],'当前状态'=>'待审核'))->count();
+        $bxlist=M('车辆保险','dbo.','difo')->where(array('客户ID'=>$user['ID'],'当前状态'=>'审核'))->count();
+        $dblist=M('车辆代办','dbo.','difo')->where(array('客户ID'=>$user['ID'],'当前状态'=>'审核'))->count();
+        $count=$wxlist+$xslist+$bxlist+$dblist;
+
+        $this->assign('count',$count);
+        $this->assign('unreaded',$unreaded);
+        $this->assign('couponCount',$couponCount);
         $this->assign('notices',$notices);
         $this->assign('fwgwinfo',$fwgwinfo);
         $this->assign('card',$card);
@@ -2725,12 +2734,25 @@ public function check(){
     }
     public function  carinfo()
     {
-        $list=M('维修','dbo.','difo')->where(array('车牌号码'=>$_GET['carno'],'当前状态'=>'结束'))->order('制单日期 desc')->select();
+        $carinfo=$_GET['carno'];
+        if(isset($carinfo)){
+            $list=M('维修','dbo.','difo')->where(array('车牌号码'=>$_GET['carno'],'当前状态'=>'结束','_string'=>'制单日期>DATEADD(day,-365,GETDATE())'))->order('制单日期 desc')->select();
+        }
+        else{
+            $cars=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->select();
+            $cars=array_column($cars,'carno');
+            $list=M('维修','dbo.','difo')->where(array('车牌号码'=>array('in',$cars),'当前状态'=>'结束','_string'=>'制单日期>DATEADD(day,-365,GETDATE())'))->order('制单日期 desc')->select();
+
+        }
         foreach($list as $key=>$value)
         {
            $items=M('维修项目','dbo.','difo')->where(array('ID'=>$value['ID']))->select();
            $peijian=M('维修配件','dbo.','difo')->where(array('ID'=>$value['ID'],'仅内部核算成本'=>0))->select();
            $list[$key]['items']=$items;
+           $list[$key]['iscomment']=0;
+           if((time()-strtotime($value['制单日期'])<30*24*3600)&&$value['是否评论']!='是'){
+               $list[$key]['iscomment']=1;
+           }
            $list[$key]['peijian']=$peijian;
        }
         $this->assign('list',$list);
@@ -2738,8 +2760,8 @@ public function check(){
     }
     public function mycar()
 	{
-        $userinfo = M("Userinfo")->where(array('token' => $this->token,wecha_id=>$this->wecha_id))->find();
-        $carlist=M('member_card_car')->where(array('token' => $this->token,wecha_id=>$this->wecha_id))->select();
+        $userinfo = M("Userinfo")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
+        $carlist=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->select();
         foreach($carlist as $key=>$car)
         {
                $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$car['carno']))->find();
@@ -2754,12 +2776,12 @@ public function check(){
         {
             $carno = isset($_POST['carno']) ? htmlspecialchars($_POST['carno']) : '';
             if($_POST['opt']=='delete'){
-               M('member_card_car')->where(array('token' => $this->token,wecha_id=>$this->wecha_id,'carno'=>$carno))->delete(); 
+               M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'carno'=>$carno))->delete(); 
             }
             else if($_POST['opt']=='modify')
             {
-                $where=array('token' => $this->token,wecha_id=>$this->wecha_id,'carno'=>$_POST['oldcarno']);
-                M('member_card_car')->where($where)->save(array('token' => $this->token,wecha_id=>$this->wecha_id,'carno'=>$carno));
+                $where=array('token' => $this->token,'wecha_id'=>$this->wecha_id,'carno'=>$_POST['oldcarno']);
+                M('member_card_car')->where($where)->save(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'carno'=>$carno));
                 echo '修改成功';
                 exit;
             }
@@ -2767,10 +2789,10 @@ public function check(){
             {
                 
                 $carno=strtoupper($carno);
-                $carinfo=M('member_card_car')->where(array('token' => $this->token,wecha_id=>$this->wecha_id,'carno'=>$carno))->find();
+                $carinfo=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'carno'=>$carno))->find();
                 if(empty($carinfo))
                 {
-                    M('member_card_car')->add(array('token' => $this->token,wecha_id=>$this->wecha_id,'carno'=>$carno));
+                    M('member_card_car')->add(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'carno'=>$carno));
                     echo '添加成功';
                     exit();
                 }
@@ -2823,12 +2845,12 @@ public function check(){
             $card=M('member_card_create')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
             $cardinfo=M('member_card_set')->where(array('token' => $this->token,'id'=>$card['cardid']))->find();
             $couponCount=M("member_card_coupon_record")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'is_use'=>'0','over_time'=>array('egt',strtotime(date('Y-m-d',time())))))->count();
-            $withrawcount=M("yangchebao_withdraw")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'state'=>array('lt',3)))->count();
+            //$withrawcount=M("yangchebao_withdraw")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'state'=>array('lt',3)))->count();
             $product_cart_model = M('product_cart');
             $orderscount = $product_cart_model->where(array('token' => $this->token, 'wecha_id' => $this->wecha_id, 'paid'=>0,'groupon' => 0, 'dining' => 0))->count();
             $this->assign('card',$card);
             $this->assign('orderscount',$orderscount);
-            $this->assign('withrawcount',$withrawcount);
+            //$this->assign('withrawcount',$withrawcount);
             $this->assign('couponCount1',$couponCount);
             $this->assign('cardinfo',$cardinfo);
             $this->assign('userinfo',$userinfo);

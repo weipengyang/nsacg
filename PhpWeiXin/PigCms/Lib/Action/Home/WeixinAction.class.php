@@ -517,6 +517,9 @@ class WeixinAction extends Action{
                 return array('turn on transfer_customer_service','transfer_customer_service');
             }
         }
+        //if(strpos(strtoupper($data['Content']), '会员卡') !== false){
+        //    return array('turn on transfer_customer_service','transfer_customer_service');
+        //}
         if(strpos(strtoupper($data['Content']), '#') === 0){
             $arr = explode("#",$data['Content']);
             $key=$arr[1];
@@ -802,7 +805,7 @@ class WeixinAction extends Action{
 			$data['title']=$memberConfig['title'];
 			$data['keyword']=$memberConfig['info'];
 			if (!$memberConfig['apiurl']){
-				$data['url']=rtrim($this->siteUrl,'/').U('Wap/Card/card',array('token'=>$this->token,'cardid'=>$card['cardid'],'wecha_id'=>$this->data['FromUserName']));
+				$data['url']=rtrim($this->siteUrl,'/').U('Wap/Store/cats',array('token'=>$this->token,'cardid'=>$card['cardid'],'wecha_id'=>$this->data['FromUserName']));
 			}else {
 				$data['url']=str_replace('{wechat_id}',$this->data['FromUserName'],$memberConfig['apiurl']);
 			}
@@ -819,7 +822,7 @@ class WeixinAction extends Action{
 			$data['title']=$unmemberConfig['title'];
 			$data['keyword']=$unmemberConfig['info'];
 			if (!$unmemberConfig['apiurl']){
-				$data['url']=rtrim($this->siteUrl,'/').U('Wap/Card/index',array('token'=>$this->token,'wecha_id'=>$this->data['FromUserName']));
+				$data['url']=rtrim($this->siteUrl,'/').U('Wap/Store/cats',array('token'=>$this->token,'wecha_id'=>$this->data['FromUserName']));
 			}else {
 				$data['url']=str_replace('{wechat_id}',$this->data['FromUserName'],$unmemberConfig['apiurl']);
 			}
@@ -922,12 +925,12 @@ class WeixinAction extends Action{
 			case 'help':
 				return $this->help();
 				break;
-			case '会员卡':
-				return $this->member();
-				break;
-			case '会员':
-				return $this->member();
-				break;
+            //case '会员卡':
+            //    return $this->member();
+            //    break;
+            //case '会员':
+            //    return $this->member();
+            //    break;
 			case '3g相册':
 				return $this->xiangce();
 				break;
@@ -1690,9 +1693,9 @@ class WeixinAction extends Action{
 			case '万能表单':
 				$url=$this->siteUrl.U('Wap/Selfform/index',array('token'=>$this->token,'wecha_id'=>$this->data['FromUserName'],'id'=>$urlInfos[1]));
 				break;
-			case '会员卡':
-				$url=$this->siteUrl.U('Wap/Card/vip',array('token'=>$this->token,'wecha_id'=>$this->data['FromUserName']));
-				break;
+            //case '会员卡':
+            //    $url=$this->siteUrl.U('Wap/Card/vip',array('token'=>$this->token,'wecha_id'=>$this->data['FromUserName']));
+            //    break;
 			case '首页':
 				$url=rtrim($this->siteUrl,'/').'/index.php?g=Wap&m=Index&a=index&token='.$this->token.'&wecha_id='.$this->data['FromUserName'];
 				break;
@@ -2218,7 +2221,7 @@ class WeixinAction extends Action{
 	function xiaohua(){
 		$this->ltkey=C('liaotian_key');
 		$name=implode('',$n);
-		@$str = 'http://www.tuling123.com/openapi/api?key='.$this->ltkey.'&info=' . urlencode('笑话' . $name);
+		$str = 'http://www.tuling123.com/openapi/api?key='.$this->ltkey.'&info=' . urlencode('笑话' . $name);
 		$json=json_decode(file_get_contents($str));
 		$str=str_replace('{br}',"\n",$json->content);
 		return str_replace(array('mzxing_com','提示：按分类看笑话请发送“笑话分类”'),array('weimicms',''),$str);

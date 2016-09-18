@@ -66,14 +66,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer" style="width:100%;margin-top:0.5rem">
-                            <if condition="$o.paid eq 0">
-                                <a  href="{pigcms::U('Store/orderCart', array('token' => $token, 'wecha_id' => $wecha_id,'orid' => $o['id'], 'twid' => $twid,'cid' => $cid))}" class="button button-fill button-warning">付款</a>
-                                <a href="#" onclick="canecelOrder({pigcms:$o['id']});" class="button">取消订单</a>
-                                <elseif condition="($o['paid'] eq 1) and $o['sent'] eq 1 " />
-                                <a href="{pigcms::U('Store/comment', array('token' => $token, 'wecha_id' => $wecha_id,'orid' => $o['id'], 'twid' => $twid,'cid' => $cid))}" class="button">评价</a>
-                           </if>
-                        </div>
                     </div>
                 </volist>
                 <else />

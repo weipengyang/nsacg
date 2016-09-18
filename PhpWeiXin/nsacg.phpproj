@@ -14636,6 +14636,7 @@
     <Content Include="tpl\Query\Consume_addproduct.html" />
     <Content Include="tpl\Query\Consume_assigntask.html" />
     <Content Include="tpl\Query\Consume_addproject.html" />
+    <Content Include="tpl\Query\Consume_maintenancerecord.html" />
     <Content Include="tpl\Query\Consume_members - Copy.html" />
     <Content Include="tpl\Query\Consume_scoreinfo.html" />
     <Content Include="tpl\Query\Consume_stat.html" />

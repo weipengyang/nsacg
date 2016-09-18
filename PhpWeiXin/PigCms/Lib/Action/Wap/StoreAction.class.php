@@ -1055,7 +1055,75 @@ public function check(){
 	/**
 	 * 商城首页
 	 */
-	public function cats() 
+    public function cats() 
+	{
+		$company = M('Company')->where("`token`='{$this->token}' AND `isbranch`=0")->find();
+		$cid = $this->_cid = isset($_GET['cid']) ? intval($_GET['cid']) : $company['id'];
+		if ($this->_isgroup) {
+			$cid = $company['id'];
+			$relation = M("Product_relation")->where(array('token' => $this->token, 'cid' => $this->_cid))->select();
+			if (empty($relation) && $this->_cid != $cid) {
+				$this->error("该店铺暂时没有商品可卖，先逛逛别的", U('Store/select',array('token' => $this->token, 'wecha_id' => $this->wecha_id, 'twid' => $this->_twid)));
+			}
+		}
+		session("session_company_{$this->token}", $this->_cid);
+		$this->assign('cid', $this->_cid);
+		$parentid = isset($_GET['parentid']) ? intval($_GET['parentid']) : 0;
+		$cats = $this->product_cat_model->where(array('token' => $this->token, 'cid' => $cid))->order("sort ASC, id DESC")->select();
+		$info = array();
+		$sub = array();
+		foreach ($cats as &$row) {
+			$row['info'] = $row['des'];
+			$row['img'] = $row['logourl'];
+			if ($row['isfinal'] == 1) {
+				$row['url'] = U('Store/products', array('token' => $this->token, 'catid' => $row['id'], 'wecha_id' => $this->wecha_id, 'cid' => $this->_cid, 'twid' => $this->_twid));
+			} else {
+                $row['url'] = U('Store/products', array('token' => $this->token, 'catid' => $row['id'], 'wecha_id' => $this->wecha_id, 'cid' => $this->_cid, 'twid' => $this->_twid));
+			}
+			$info[$row['id']] = $row;
+			
+			$row['parentid'] && $sub[$row['parentid']][] = $row;
+		}
+		foreach ($sub as $k => $r) {
+			if (isset($info[$k]) && $info[$k]) {
+				$info[$k]['sub'] = $r;
+			}
+		}
+		$result = array();
+		foreach ($info as $kk => $ii) {
+			if ($ii['parentid'] == $parentid) {
+				$result[$kk] = $ii;
+			}
+		}
+        $this->assign('info', $result);
+		$userinfo = M("Userinfo")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
+        $card=M('member_card_create')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
+        $notices=M('member_card_notice')->where(array('token' => $this->token,'endtime'=>array('gt',time())))->select();
+        $carcount=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->count();
+        $cardinfo=M('member_card_set')->where(array('token' => $this->token,'id'=>$card['cardid']))->find();
+        $user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
+        $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$userinfo['carno']))->find();
+        if(isset($carinfo['服务顾问'])){
+            $fwgwinfo=M('员工目录','dbo.','difo')->where(array('姓名'=>$carinfo['服务顾问']))->find();
+        }
+        else{
+            $fwgwinfo=M('员工目录','dbo.','difo')->where(array('姓名'=>'刘述庆'))->find();
+        }
+        $wxcount=M('维修','dbo.','difo')->where(array('车主'=>$card['number'],'维修类别'=>array('neq','蜡水洗车'),'当前状态'=>array('not in',array('结束','取消'))))->count();
+        $this->assign('notices',$notices);
+        $this->assign('fwgwinfo',$fwgwinfo);
+        $this->assign('card',$card);
+        $this->assign('carinfo',$carinfo);
+        $this->assign('user',$user);
+        $this->assign('wxcount',$wxcount);
+        $this->assign('cardinfo',$cardinfo);
+        $this->assign('userinfo',$userinfo);
+		$this->display("Index:1110_index_fxfg");
+		
+	}
+
+    #region 原来的首页
+	public function catsdel() 
 	{
 		$company = M('Company')->where("`token`='{$this->token}' AND `isbranch`=0")->find();
 		D("Product_cat")->where(array('token' => $this->token, 'cid' => 0))->save(array('cid' => $company['id']));
@@ -1175,7 +1243,7 @@ public function check(){
 			$this->display();
 		}
 	}
-	
+	#endregion
 	public function products() 
 	{
 		//if (isset($_G['cid']))

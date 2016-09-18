@@ -15,7 +15,7 @@
     <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
     <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css" />
     <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm-extend.min.js' charset='utf-8'></script>
-    <link href="//at.alicdn.com/t/font_1473305391_5091624.css" rel="stylesheet" type="text/css" />
+    <link href="//at.alicdn.com/t/font_1473757456_4178314.css" rel="stylesheet" type="text/css" />
     <style>
         * {
             margin: 0;
@@ -25,7 +25,7 @@
 
         .device {
             margin: 0px;
-            padding:0
+            padding: 0;
         }
 
         .index-nav {
@@ -35,35 +35,60 @@
         }
 
         .index-nav-item {
-            font-size:2rem;
-            border-width:1px;
-            border-color:#DBDBDB;
-            border-style:solid;
+            font-size: 2rem;
+            border-width: 2px;
+            border-color: #DBDBDB;
+            border-style: solid;
             display: inline-block;
-            width: 33%;
-            line-height: 2em;
+            width: 33.3333%;
+            line-height: 1.2rem;
             font-size: 0.8rem;
             text-align: center;
-
         }
+
+        body .index-nav > li:nth-child(3n+2) {
+            border-right: hidden;
+            border-left: hidden;
+        }
+
+        body .index-nav > li:nth-child(4) {
+            border-bottom: hidden;
+            border-top: hidden;
+        }
+
+        body .index-nav > li:nth-child(5) {
+            border-bottom: hidden;
+            border-top: hidden;
+        }
+
+        body .index-nav > li:nth-child(6) {
+            border-bottom: hidden;
+            border-top: hidden;
+        }
+
         .index-nav-item-link i {
             display: block;
-            width: 3rem;
-            height: 3rem;
-            line-height: 3rem;
-            margin:auto;
-            margin-bottom:0;
-            font-size:2rem
+            width: 2rem;
+            height: 1.625rem;
+            line-height: 1.625rem;
+            margin: auto;
+            margin-top: 5px;
+            font-size: 1.5rem;
         }
 
-        .index-nav-item-link i:after {
-            font-size: 2.21631rem;
-            height: 3.98936rem;
-            line-height: 3.98936rem;
+        .nav-item i {
+            display: block;
+            width: 2rem;
+            height: 1.5rem;
+            line-height: 1.5rem;
+            margin: auto;
+            margin-top: 5px;
+            font-size: 1.2rem;
         }
+
         body .index-nav > li span {
-           margin:0;
-           padding:0
+            margin: 0;
+            padding: 0;
         }
 
         body .index-nav > li:nth-child(1) i {
@@ -75,11 +100,11 @@
         }
 
         body .index-nav > li:nth-child(3) i {
-           color: rgba(129,165,93,0.9);
+            color: rgba(129,165,93,0.9);
         }
 
         body .index-nav > li:nth-child(4) i {
-           color: rgba(209,109,82,0.9);
+            color: rgba(209,109,82,0.9);
         }
 
         body .index-nav > li:nth-child(5) i {
@@ -99,7 +124,7 @@
         }
 
         body .index-nav > li:nth-child(9) i {
-           color: rgba(160,113,99,0.9);
+            color: rgba(160,113,99,0.9);
         }
 
         body .index-nav > li:nth-child(10) i {
@@ -119,12 +144,14 @@
             width: 2.5rem;
             height: 2.5rem;
             color: white;
-            margin-top:2px;
+            margin-top: 5px;
+            margin-left: 5px;
             text-align: center;
             line-height: 2rem;
             border-radius: 100%;
         }
-           .line {
+
+        .line {
             width: 100%;
             height: 2.5rem;
             line-height: 2.5rem;
@@ -140,16 +167,12 @@
             filter: alpha(opacity=40);
             opacity: 0.6;
         }
+
         .bg {
             color: white;
-            background: #fcecfc; /* Old browsers */
-            background: -moz-linear-gradient(left, #fcecfc 0%, #fd89d7 33%, #fba6e1 53%, #fd89d7 61%, #ff7cd8 100%); /* FF3.6+ */
-            background: -webkit-gradient(linear, left top, right top, color-stop(0%,#fcecfc), color-stop(33%,#fd89d7), color-stop(53%,#fba6e1), color-stop(61%,#fd89d7), color-stop(100%,#ff7cd8)); /* Chrome,Safari4+ */
-            background: -webkit-linear-gradient(left,#2496FF 0%,#2859FF 100%); /* Chrome10+,Safari5.1+ */
-            background: -o-linear-gradient(left, #fcecfc 0%,#fd89d7 33%,#fba6e1 53%,#fd89d7 61%,#ff7cd8 100%); /* Opera11.10+ */
-            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcecfc', endColorstr='#ff7cd8',GradientType=1 ); /* IE6-9 */
-            background: linear-gradient(left, #fcecfc 0%,#fd89d7 33%,#fba6e1 53%,#fd89d7 61%,#ff7cd8 100%); /* W3C */
-            filter: alpha(opacity=50);
+            border-radius: 5%;
+            background: url('{pigcms:$cardinfo.diybg}') no-repeat 0 0;
+            background-size: 100% 100%;
             opacity: 1;
         }
     </style>
@@ -165,7 +188,7 @@
                 <span class="icon icon-friends"></span>
                 <span class="tab-label">会员中心</span>
             </a>-->
-            <a class="tab-item" external data-no-cache="true"  href="{pigcms::U('Store/index',array('token' => $_GET['token'], 'catid' => $hostlist['id'], 'wecha_id' => $wecha_id, 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+            <a class="tab-item" external data-no-cache="true" href="{pigcms::U('Wap/Store/notices')}">
                 <span class="icon icon-message"></span>
                 <span class="tab-label">消息</span>
             </a>
@@ -184,48 +207,83 @@
             </a>
         </nav>
         <div class="content">
-            <div class="card bg" style="margin:0px">
-                <div class="card-content" style="margin:0px;padding:0px;">
-                    <div class="card-content-inner" style="margin:0px;padding:0px;">
+            <div class="card bg">
+                <div class="card-content">
+                    <div class="card-content-inner">
                         <div class="item-title">
+                            <div class="row" style="margin:0;padding:0">
+                            </div>
                             <div class="row">
                                 <div class="col-20"><img src='{pigcms:$fans['portrait']}' class='logo' /></div>
-                                <div class="col-30" style='margin-top:1rem;'>{pigcms:$userinfo['truename']}</div>
-                                 <div class="col-50" style='color:#13E658;text-align:end;float:right;margin-right:10px'>{pigcms:$user['等级']}{pigcms:$cardinfo['cardname']}</div>
+                                <div class="col-30" style='margin-top:1rem;margin-left:10px'>{pigcms:$userinfo['truename']}</div>
+                                <div class="col-50" style='color:#13E658;text-align:end;float:right;margin-right:10px;margin-top:0px;padding:0px'>NO.{pigcms:$card['number']}<br />{pigcms:$user['等级']}</div>
                             </div>
                         </div>
                         <div class="row" style="margin:0px;text-align:center">
-                            <div class="col-33">余额(元)</div>
-                            <div class="col-33">消费总额(元)</div>
-                            <div class="col-33">积分(分)</div>
+                            <div class="col-40">服务顾问</div>
+                            <div class="col-60" style="color:#ffd800;text-align:left"><span style="margin-left:10px">{pigcms:$fwgwinfo['姓名']}</span></div>
                         </div>
-                        <div class="row" style="margin:0px;text-align:center;color:#FF9900;font-size:1rem">
-                            <div class="col-33">{pigcms:$userinfo['balance']}</div>
-                            <div class="col-33">{pigcms:$userinfo['expensetotal']}</div>
-                            <div class="col-33">{pigcms:$userinfo['total_score']}</div>
+                        <div class="row" style="margin:0px;text-align:center">
+                            <div class="col-100" style="margin-left:1rem;text-align:center;color:#FF9900">{pigcms:$fwgwinfo['联系电话']}</div>
                         </div>
-                        <div class="item-title line"><span style='margin-top:50px'>NO.{pigcms:$card['number']}</span></div>
-                        <div class="item-after" style='text-align:right;padding-top:10px'>广州市爱养车汽车服务有限公司</div>
+                        <div class="row" style="margin:0px;margin-top:1.5rem">
+                            <div class="col-50" style="text-align:left;">余额:<span style="color:#FF9900">{pigcms:$userinfo['balance']}</span></div>
+                            <div class="col-50" style="text-align:right;">积分:<span style="color:#FF9900">{pigcms:$userinfo['total_score']}</span></div>
+                        </div>
+                        <!--<div class="row" style="margin:0px;text-align:center">
+                            <div class="col-33">保险到期</div>
+                            <div class="col-33">年检到期</div>
+                            <div class="col-33">保养里程</div>
+                        </div>
+                        <div class="row" style="margin:0px;text-align:center;color:#FF9900">
+                            <div class="col-33">{pigcms:$carinfo['商保到期']|strtotime|date='Y-m-d',###}</div>
+                            <div class="col-33">{pigcms:$carinfo['年检日期']|strtotime|date='Y-m-d',###}</div>
+                            <div class="col-33">{pigcms:$carinfo['里程']}</div>
+                        </div>
+                        -->
                     </div>
                 </div>
             </div>
-            <div class="card" style="margin:0px">
+            <div class="card">
                 <div class="card-content">
                     <div class="card-content-inner">
                         <div class="item-title">
                             <div class="row">
-                                <div class="col-50"> <a external href="{pigcms::U('Card/topay', array('token' => $token,'wecha_id'=>$wecha_id,'cardid'=>$card['cardid']))}" class="button button-big button-round button-fill button-warning">充值</a></div>
-                                <div class="col-50"> <a external href="{pigcms::U('Store/check', array('token' => $token,'wecha_id'=>$wecha_id,'cardid'=>$card['cardid']))}" class="button button-big button-round button-fill button-success">结算</a></div>
+                                <div class="col-25">
+                                    <a class="nav-item" external href="{pigcms::U('Wap/Store/mycar')}">
+                                        <i class="icon1 iconfont icon-meirong" style="color: rgba(160,158,99,0.9)"></i>
+                                        <span class="tab-label" style="font-size:0.625rem;">我的车辆</span>
+                                    </a>
+                                </div>
+                                <div class="col-25">
+                                    <a class="nav-item" external href="{pigcms::U('Wap/Store/mycar')}">
+                                        <i class="icon1 iconfont icon-weixiu" style="color: rgba(160,158,109,29);"></i>
+                                        <span class="tab-label" style="font-size:0.625rem;">维修查询</span>
+                                    </a>
+                                </div>
+                                <div class="col-25">
+                                    <a class="nav-item" external href="{pigcms::U('Store/check', array('token' => $token,'wecha_id'=>$wecha_id,'cardid'=>$card['cardid']))}">
+                                        <i class="icon1 iconfont icon-jiesuan" style="color:#330066;"></i>
+                                        <span class="tab-label" style="font-size:0.625rem">维修结算</span>
+                                    </a>
+                                </div>
+                                <div class="col-25">
+                                    <a class="nav-item" external href="{pigcms::U('Card/topay', array('token' => $token,'wecha_id'=>$wecha_id,'cardid'=>$card['cardid']))}">
+                                        <i class="icon1 iconfont icon-chongzhi" style="color:#CC99FF"></i>
+                                        <span class="tab-label" style="font-size:0.625rem">会员充值</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="swiper-container" data-space-between='10' style="height:20px">
+
+            <div class="swiper-container " data-space-between='10' style="height:30px;margin:10px;background-color:white">
                 <div class="swiper-wrapper">
                     <volist name="notices" id="item">
                         <div class="swiper-slide">
-                            <a href="{pigcms::U('Wap/Store/notice',array('id'=>$item['id']))}" style="padding-left:5px">
+                            <a href="{pigcms::U('Wap/Store/notices')}" external style="padding-left:5px;height:100%">
                                 <span class="icon iconfont icon-svg41" style="color:red">
                                     <span style="color:rgba(160,180,64,32)">
                                         {pigcms:$item.title}—{pigcms:$item.time|date="Y-m-d H:i",###}
@@ -233,49 +291,49 @@
                                 </span>
                             </a>
                         </div>
-                   </volist>
+                    </volist>
+                </div>
             </div>
-            </div>
-            <div class="card" style="padding:0;margin:0">
-                <div class="device" style="padding:0;margin:0">
-                    <ul class="index-nav" >
+            <div class="card">
+                <div class="device">
+                    <ul class="index-nav">
                         <volist name="info" id="vo">
                             <li class="index-nav-item">
                                 <a class="index-nav-item-link" href="<if condition="$vo['url'] eq ''">
                                     {pigcms::U('Wap/Index/lists',array('classid'=>$vo['id'],'token'=>$vo['token']))}<else />{pigcms:$vo.url|htmlspecialchars_decode}</if>">
                                     <i class="icon1 iconfont {pigcms:$vo.img}"></i>
-                                     <span class="tab-label" style="font-size:0.625rem">{pigcms:$vo.name}</span>
+                                    <span class="tab-label" style="font-size:0.625rem">{pigcms:$vo.name}</span>
                                 </a>
                             </li>
                         </volist>
                         <li class="index-nav-item">
-                            <a class="index-nav-item-link" external href="{pigcms::U('Wap/Store/mycoupon')}">
-                                <i class="icon1 iconfont icon-chanpinguanli"></i>
-                                <span class="tab-label" style="font-size:0.625rem">积分兑换</span>
-                            </a>
-                        </li>
-                        <li class="index-nav-item">
                             <a class="index-nav-item-link" external href="{pigcms::U('Store/coupon',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cardid' => 5, 'type' => 1))}">
-                                <i class="icon1 iconfont icon-wofabude"></i>
+                                <i class="icon iconfont icon-wofabude"></i>
                                 <span class="tab-label" style="font-size:0.625rem">服务券</span>
                             </a>
                         </li>
-                        <li class="index-nav-item">
-                            <a class="index-nav-item-link" external  href="{pigcms::U('Wap/Store/mycar')}">
-                                <i class="icon1 iconfont icon-weixiu"></i>
-                                <span class="tab-label" style="font-size:0.625rem">历史维修</span>
-                            </a>
-                        </li>
-                        <!--<li class="index-nav-item">
-                            <a class="index-nav-item-link" external href="{pigcms::U('Wap/Store/baoxian')}">
-                                <i class="icon1 iconfont icon-baoyang0"></i>
-                                <span class="tab-label" style="font-size:0.625rem">保险</span>
+                       <li class="index-nav-item">
+                            <a class="index-nav-item-link" external href="{pigcms::U('Wap/Store/mycoupon')}">
+                                <i class="icon1 iconfont icon-chanpinguanli"></i>
+                                <span class="tab-label" style="font-size:0.625rem">积分商城</span>
                             </a>
                         </li>
                         <li class="index-nav-item">
-                            <a class="index-nav-item-link" external href="{pigcms::U('Wap/Store/daiban')}">
-                                <i class="icon1 iconfont icon-jiaotongfakuandaiban"></i>
-                                <span class="tab-label" style="font-size:0.625rem">代办服务</span>
+                            <a class="index-nav-item-link" external href="{pigcms::U('Wap/Store/scoreprofit')}">
+                                <i class="icon1 iconfont icon-star"></i>
+                                <span class="tab-label" style="font-size:0.625rem">积分宝</span>
+                            </a>
+                        </li>
+                        <li class="index-nav-item">
+                            <a class="index-nav-item-link" external href="{pigcms::U('Store/my',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid))}">
+                                <i class="icon1 iconfont icon-dingdanguanli"></i>
+                                <span class="tab-label" style="font-size:0.625rem">我的订单</span>
+                            </a>
+                        </li>
+                        <li class="index-nav-item">
+                            <a class="index-nav-item-link" external data-no-cache="true" href="{pigcms::U('Store/getcoupon',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid))}">
+                                <i class="icon iconfont icon-huangou"> </i>
+                                <span class="tab-label" style="font-size:0.625rem">券码兑换</span>
                             </a>
                         </li>
                         <li class="index-nav-item">
@@ -283,7 +341,32 @@
                                 <i class="icon1 iconfont icon-shangjia"></i>
                                 <span class="tab-label" style="font-size:0.625rem">服务门店</span>
                             </a>
-                        </li>-->
+                        </li>
+                        <li class="index-nav-item">
+                            <a class="index-nav-item-link" external href="{pigcms::U('Card/signscore',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid))}">
+                                <i class="icon1 iconfont icon-fabu"></i>
+                                <span class="tab-label" style="font-size:0.625rem;">每日签到</span>
+                            </a>
+                        </li>
+                        <li class="index-nav-item">
+                            <a class="index-nav-item-link" external data-no-cache="true" href="{pigcms::U('Store/modifypass',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id']))}">
+                                <i class="icon iconfont icon-gerenziliao"></i>
+                                <span class="tab-label" style="font-size:0.625rem">密码修改</span>
+                            </a>
+                        </li>
+                        <!--<li class="index-nav-item">
+                              <a class="index-nav-item-link" external href="{pigcms::U('Wap/Store/baoxian')}">
+                                  <i class="icon1 iconfont icon-baoyang0"></i>
+                                  <span class="tab-label" style="font-size:0.625rem">保险</span>
+                              </a>
+                          </li>
+                          <li class="index-nav-item">
+                              <a class="index-nav-item-link" external href="{pigcms::U('Wap/Store/daiban')}">
+                                  <i class="icon1 iconfont icon-jiaotongfakuandaiban"></i>
+                                  <span class="tab-label" style="font-size:0.625rem">代办服务</span>
+                              </a>
+                          </li>
+                        -->
                     </ul>
                 </div>
 
@@ -297,12 +380,12 @@
             //对话框
             $.init();
             $(".swiper-container").swiper({
-                speed: 2000,
-                spaceBetween: 1000,
+                speed: 3000,
+                spaceBetween: 100,
                 autoplay: 1000,
                 direction: 'vertical'
-
             });
+
         });
     </script>
 

@@ -20,15 +20,6 @@
                 <span class="icon icon-home"></span>
                 <span class="tab-label">首页</span>
             </a>
-            <a class="tab-item" data-no-cache="true" href="{pigcms::U('Store/cart',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid, 'cid' => $cid))}">
-                <span class="icon icon-cart"></span>
-                <if condition="$count neq 0">
-                    <span class="badge" id='badge'>{pigcms:$count}</span>
-                    <else />
-                    <span class="badge" id='badge' style="display:none">{pigcms:$count}</span>
-                </if>
-                <span class="tab-label">购物车</span>
-            </a>
             <a class="tab-item" data-no-cache="true" href="{pigcms::U('Store/myinfo',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
                 <span class="icon icon-me"></span>
                 <span class="tab-label">我</span>

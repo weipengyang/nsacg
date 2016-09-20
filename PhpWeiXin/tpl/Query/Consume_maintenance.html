@@ -242,6 +242,14 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="am-g am-margin-top">
+                                    <div class="am-u-sm-2  am-text-right">
+                                        故障描述
+                                    </div>
+                                    <div class="am-u-sm-10 ">
+                                        <textarea class="" rows="3" id="fault"></textarea>
+                                    </div>
+                                </div>
                                 <div class="am-g am-margin-top" id="lxrdiv">
                                     <div class="am-u-sm-2  am-text-right">
                                         联系人
@@ -456,7 +464,7 @@
                 }
                 if (istime) {
                     time = times[0] + ':' + times[1];
-                    if (times[2].indexOf('PM')>0) {
+                    if (str[3].indexOf('PM') > 0) {
                         time = (parseInt(times[0]) + 12) + ':' + times[1];
                     }
                     return date + ' ' + time;
@@ -474,7 +482,7 @@
                        return todate(value,false);
                     }
                 },
-                { display: '主修人', name: '当前主修人', width: 60, align: 'left' },
+                { display: '主修人', name: '主修人', width: 60, align: 'left' },
                 {
                     display: '客户确认', name: '确认维修', align: 'center', minWidth: 50, render:function (rowdata, index, value) {
                         if (value==null||value == '')
@@ -508,7 +516,7 @@
                 },
                 {
                     display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
-                        if (rowdata['制单人'] == '系统录单' && rowdata['当前主修人'] =='')
+                        if (rowdata['制单人'] == '系统录单' && rowdata['主修人'] =='')
                             return '<a href="javascript:void(0);" onclick="assigntask(\'' + rowdata.流水号 + '\');"><strong>派工</strong></a>';
                         else
                             return '';
@@ -631,6 +639,10 @@
                     $.ligerDialog.alert('请选择维修类型');
                     return;
                 }
+                if ($('#fault').val() == '') {
+                    $.ligerDialog.alert('请填写故障描述');
+                    return;
+                }
                 if ($('#wxtype').val() != '普通快修') {
                     if ($('#lxr').val() == '') {
                         $.ligerDialog.alert('联系人不能为空');
@@ -673,14 +685,34 @@
                     youwei: $('#youwei').val(),
                     person: $('#wxperson').val(),
                     fwgw: $('#fwgw1').val(),
+                    fault: $('#fault').val(),
                     wxtype: $('#wxtype').val()
-                };
-                $.post('index.php?g=Query&m=Consume&a=wxrecord', submitData,
-                  function (data) {
-                      $.ligerDialog.alert(data);
-                      $('#doc-modal-3').modal('close');
-                      grid.reload();
-                  });
+                }; 
+                $.post('index.php?g=Query&m=Consume&a=haswxrecord', submitData,
+                 function (data) {
+                     if (data == 1) {
+                         $.ligerDialog.confirm('系统中已经存在同类型未结算维修单，确认继续录入？', function (yes) {
+                             if (yes) {
+                                 $.post('index.php?g=Query&m=Consume&a=wxrecord', submitData,
+                                  function (data) {
+                                      $.ligerDialog.alert(data);
+                                      $('#doc-modal-3').modal('close');
+                                      grid.reload();
+                                  });
+                             }
+                             });
+                     }
+                     else {
+                         $.post('index.php?g=Query&m=Consume&a=wxrecord', submitData,
+                           function (data) {
+                               $.ligerDialog.alert(data);
+                               $('#doc-modal-3').modal('close');
+                               grid.reload();
+                           });
+                     }
+                    
+                 });
+                
             });
             $('#my-start').datepicker().on('changeDate.datepicker.amui', function (event) {
                 startDate = new Date(event.date);

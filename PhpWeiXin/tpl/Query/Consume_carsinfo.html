@@ -27,6 +27,13 @@
         <div class="admin-content">
         <div class="admin-content-body">
             <div id="searchbar">
+                客户类别:
+                <select name="khlb" id="khlb">
+                    <option value="">所有分类</option>
+                   <volist name="lblist" id="item">
+                        <option value="{pigcms:$item.客户类别}">{pigcms:$item.客户类别}</option>
+                    </volist>
+                </select>
                 关键字：<input id="searchkey" type="text" />
                 <input id="search" type="button" value="模糊查询"  />
             </div>
@@ -96,7 +103,10 @@
             }
             return num;
         }
+        $('#khlb').change(function () {
+            $('#search').click();
 
+        });
         var cargird;
         $(document).ready(function () {
             cargird = $("#maingrid4").ligerGrid({
@@ -104,6 +114,7 @@
                         { display: '车牌号码', name: '车牌号码', width: 80, align: 'left',render: function (rowdata, index, value) {
                             return '<a href="javascript:void(0);" onclick="carinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
                         } },
+                        { display: '车主', name: '车主', minWidth: 140 },
                         { display: '联系人', name: '联系人', minWidth: 60 },
                         { display: '联系电话', name: '联系电话', minWidth: 60 },
                         { display: '会员等级', name: '客户类别', minWidth: 60 },
@@ -113,9 +124,9 @@
                                 return rowdata['品牌'] + '/' + rowdata['车型'];
                             }
                         },
-                        { display: '年份排量', name: '排量', minWidth: 120 },
-                        { display: '车架号', name: '车架号', width: 150},
-                        { display: '发动机型号', name: '发动机型号', minWidth: 60 },
+                        { display: '年份排量', name: '排量', minWidth: 120,hide:true},
+                        { display: '车架号', name: '车架号', width: 150, hide: true },
+                        { display: '发动机型号', name: '发动机型号', minWidth: 60, hide: true },
                         { display: '轮胎规格', name: '轮胎规格', minWidth: 60 },
                         { display: '品牌花纹', name: '品牌花纹', minWidth: 60 },
                         { display: '机油格', name: '机油格', width: 50 },
@@ -149,18 +160,9 @@
             $('#search').click(function () {
                 cargird.changePage('first');
                 var parms = {};
-                var endDate = $('#my-endDate').text();
-                if (endDate != '')
-                    parms.endDate = endDate;
-                var startDate = $('#my-startDate').text();
-                if (startDate != '')
-                    parms.startDate = startDate;
-                var shop = $('#shop').val();
-                if (shop != '')
-                    parms.shop = shop;
-                var lb = $('#lb').val();
-                if (lb != '')
-                    parms.lb = lb;
+                var khlb = $('#khlb').val();
+                if (khlb != '')
+                    parms.khlb =khlb;
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     parms.searchkey = searchkey;

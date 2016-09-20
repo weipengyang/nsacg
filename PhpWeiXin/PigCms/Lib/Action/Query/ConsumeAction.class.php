@@ -483,9 +483,9 @@ class ConsumeAction extends Action{
               unset($project['流水号']);
               M('维修项目','dbo.','difo')->where(array('流水号'=>$num))->save($project);
           }
-          $this->calprice($projects[0]['ID']);
 
        }
+       $this->calprice($projects[0]['ID']);
        echo '保存成功';
    }
   public function saveproduct(){
@@ -565,7 +565,13 @@ class ConsumeAction extends Action{
         $this->assign('carinfo',json_encode($carinfo));
         $this->display();
     }
-    public function member_del(){
+    public function carsinfo()
+    {
+        $lblist=M('车辆档案','dbo.','difo')->Distinct(true)->field('客户类别')->order('客户类别')->select();
+        $this->assign('lblist',$lblist);
+        $this->display();
+    }
+   public function member_del(){
 		$card_create_db=M('Member_card_create');
 		$thisUser=M('Userinfo')->where(array('id'=>intval($_GET['id'])))->find();
 		$where=array('wecha_id'=>$thisUser['wecha_id'],'token'=>$this->token);
@@ -1158,6 +1164,7 @@ class ConsumeAction extends Action{
            $this->genbill($wx['应收金额'],$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID']);
 
            $data['当前主修人']=$zhuxiu;
+           $data['主修人']=$zhuxiu;
            $data['当前状态']='结束';
            $data['门店']=$yg['部门'];
            $data['出厂时间']=date('Y-m-d H:i',time());
@@ -1242,6 +1249,9 @@ class ConsumeAction extends Action{
        if(!isset($sortname)){
         $sortname='流水号';
         $sortorder='desc';
+       }
+       if (isset($_POST['khlb'])&&trim($_POST['khlb'])!=''){
+           $where['客户类别']=$_POST['khlb'];
        }
        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
            $searchkey='%'.trim($_POST['searchkey']).'%';
@@ -1365,6 +1375,7 @@ class ConsumeAction extends Action{
            $item['开工时间']=date('Y-m-d H:i',time());;
            M('维修项目','dbo.','difo')->where(array('ID'=>$itemid))->save($item);
            $data['当前主修人']=$zhuxiu;
+           $data['主修人']=$zhuxiu;
            //$data['当前状态']='结束'; 
            $data['门店']=$yg['部门'];
            //$data['出厂时间']=date('Y-m-d H:i',time());
@@ -1867,6 +1878,65 @@ class ConsumeAction extends Action{
 
        echo $result;
    }
+   public function haswxrecord()
+   {    
+       $carno=$_POST['carno'];
+       $wxtype=$_POST['wxtype'];
+       $wxrecord=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxtype,'_string'=>"当前状态 not in ('结束','取消')"))->find();
+       if(isset($wxrecord)){
+          
+           echo 1;
+           exit;
+       }
+       echo 0;
+       exit;
+   }
+   public function getviewnotice()
+   {
+       $id=$_GET['id'];
+       $page=$_POST['page'];
+       $pagesize=$_POST['pagesize'];
+       $searchkey=$_POST['searchkey'];
+       $searchkey='%'.trim($searchkey).'%';
+       if($searchkey){       
+           $searchwhere['truename']=array('like',$searchkey);
+           $searchwhere['carno']=array('like',$searchkey);
+           $searchwhere['tel']=array('like',$searchkey); 
+           $searchwhere['_logic']='OR';
+           $where['_complex']=$searchwhere;
+
+       }
+       $flag=$_GET['flag'];
+       if(isset($flag)&&$flag=='1'){
+           $where['_string']="wecha_id not in (SELECT wecha_id from tp_member_card_noticedetail  where noticeid=$id) and carno<>''";
+           $userinfo=M('userinfo')->join(array())->where($where)->limit(($page-1)*$pagesize,$pagesize)->select();
+           $count=M('userinfo')->where($where)->count();
+
+       }
+       else{
+           $where['_string']="tp_member_card_noticedetail.noticeid=$id";
+           $userinfo=M('userinfo')->join('tp_member_card_noticedetail on tp_userinfo.wecha_id=tp_member_card_noticedetail.wecha_id')->where($where)->limit(($page-1)*$pagesize,$pagesize)->select();
+           $count=M('userinfo')->where($where)->count();
+       }
+       $data['Rows']=$userinfo;
+       $data['Total']=$count;
+       echo json_encode($data);
+
+       
+   }
+   public function getnotices(){
+    
+       $notices= M('member_card_notice')->query('SELECT *,(SELECT count(1) from tp_userinfo where   carno<>\'\') total from tp_member_card_notice a left join (
+SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
+) b on a.id=b.noticeid order by time desc');
+       $data['Rows']=$notices;
+       $data['Total']=count($notices);
+       echo json_encode($data);
+
+   }
+   public function notices(){
+       $this->display();
+   }
    private function genwxrecord($carno,$type='AYC0002',$wxlb='蜡水洗车',$person,$fwgw,$licheng=null,$youwei=null,$lxr=null,$phone=null){
       
            //$wxrecord=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'_string'=>"当前状态 not in ('结束','取消')"))->find();
@@ -1994,12 +2064,14 @@ class ConsumeAction extends Action{
                    $data['维修状态']='报价';
                }
                $data['当前主修人']=$person;
+               $data['主修人']=$person;
                $data['门店']=$yg['部门'];
                $data['结算客户']=$carinfo['车主'];;
                $data['结算客户ID']=$carinfo['客户ID'];
                $data['进厂时间']=date('Y-m-d',time());
                $data['结算日期']=date('Y-m-d',time());
                $data['维修类别']=$wxlb;
+               $data['报称故障']=$_POST['fault'];
                if(isset($xm))
                     $price=$xm['标准金额'];
                else
@@ -2018,6 +2090,7 @@ class ConsumeAction extends Action{
                    $row['工时']=$xm['标准工时'];
                    $row['单价']=$xm['标准金额'];
                    $row['金额']=$xm['标准金额'];
+                   $row['虚增类别']='';
                    $row['折扣']=1;
                    $row['提成工时']=1;
                    $row['提成金额']=1;
@@ -2094,6 +2167,7 @@ class ConsumeAction extends Action{
             $data['保修类别']='保外';
             $data['单据类别']='快修单';
             $data['当前主修人']=$person;
+            $data['主修人']=$person;
             $data['结算客户']=$carinfo['车主'];;
             $data['结算客户ID']=$carinfo['客户ID'];
             //$data['送修人电话']=$carinfo['手机号码'];

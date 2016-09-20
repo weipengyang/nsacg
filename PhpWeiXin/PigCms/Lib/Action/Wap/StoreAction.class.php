@@ -1932,7 +1932,7 @@ public function check(){
                     'keyword3'      => $order['paytype']=='CardPay'?'会员卡支付':'微信支付',
                     'wecha_id'      => $this->wecha_id,
                     'remark'        => '如有疑问，请致电020-39099139联系我们,或发消息到微信平台上进行咨询。',
-                    'url'      => U('Store/myinfo',array('token'=>$this->token,'wecha_id'=>$this->wecha_id),true,false,true),
+                    'url'      => U('Store/cats',array('token'=>$this->token,'wecha_id'=>$this->wecha_id),true,false,true),
                 );
                 $model->sendTempMsg($dataKey,$dataArr);
                 if ($order['twid']) {
@@ -1949,7 +1949,7 @@ public function check(){
                 $model->sendTempMsg('TM00820', array('href' => U('Store/my',array('token' => $this->token, 'wecha_id' => $this->wecha_id, 'cid' => $this->_cid, 'twid' => $this->_twid)), 'wecha_id' => $this->wecha_id, 'first' => '购买商品提醒', 'keynote1' => '订单已支付', 'keynote2' => date("Y年m月d日H时i分s秒"), 'remark' => '购买成功，感谢您的光临，欢迎下次再次光临！'));
                  */
             }
-			$this->redirect(U('Store/myinfo',array('token' => $this->token,'wecha_id' => $this->wecha_id, 'cid' => $this->_cid, 'twid' => $this->_twid)));
+			$this->redirect(U('Store/cats',array('token' => $this->token,'wecha_id' => $this->wecha_id, 'cid' => $this->_cid, 'twid' => $this->_twid)));
         }else{
             exit('订单不存在');
 	    }
@@ -2486,7 +2486,7 @@ public function check(){
                     'number'      =>'1张',
                     'wecha_id'      => $this->wecha_id,
                     'remark'        => '注意：此消息作为您本次消费凭证，请妥善保存，如有疑问，请致电020-39053199联系我们,或发消息到微信平台上进行咨询。',
-                    'url'      => U('Store/myinfo',array('token'=>$this->token,'wecha_id'=>$this->wecha_id,'cardid'=>$couponname['cardid']),true,false,true),
+                    'url'      => U('Store/cats',array('token'=>$this->token,'wecha_id'=>$this->wecha_id,'cardid'=>$couponname['cardid']),true,false,true),
                 );
                 //Log::write(json_encode($r),Log::DEBUG);
                 $model->sendTempMsg($dataKey,$dataArr);
@@ -2761,48 +2761,82 @@ public function check(){
     public function mycar()
 	{
         $userinfo = M("Userinfo")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
-        $carlist=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->select();
-        foreach($carlist as $key=>$car)
-        {
-               $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$car['carno']))->find();
-               $carlist[$key]['carinfo']=$carinfo;
-        }
-        $this->assign('carinfo',$carinfo);
-        $this->assign('carlist',$carlist);
-        $this->assign('userinfo',$userinfo);
-        $this->assign('metaTitle', '我的车辆');
-        $this->display();
         if($_POST)
         {
             $carno = isset($_POST['carno']) ? htmlspecialchars($_POST['carno']) : '';
+            $oldcarno = isset($_POST['oldcarno']) ? htmlspecialchars($_POST['oldcarno']) : '';
+            $licheng=htmlspecialchars($_POST['licheng']);
+            $baoxian=htmlspecialchars($_POST['baoxian']);
+            $nianjian=htmlspecialchars($_POST['nianjian']);
+            $wecha_id=$this->wecha_id;
             if($_POST['opt']=='delete'){
                M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'carno'=>$carno))->delete(); 
             }
             else if($_POST['opt']=='modify')
             {
-                $where=array('token' => $this->token,'wecha_id'=>$this->wecha_id,'carno'=>$_POST['oldcarno']);
-                M('member_card_car')->where($where)->save(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'carno'=>$carno));
+                //$where=array('token' => $this->token,'wecha_id'=>$this->wecha_id,'carno'=>$_POST['oldcarno']);
+                //M('member_card_car')->where($where)->save(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'carno'=>$carno));
+                $user=M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->find();
+                $item['商保到期']=$baoxian;
+                $item['里程']=$licheng;
+                $item['年检日期']=$nianjian;
+                M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$oldcarno))->save($item);
                 echo '修改成功';
                 exit;
             }
             else
             {
-                
                 $carno=strtoupper($carno);
-                $carinfo=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'carno'=>$carno))->find();
+                $carinfo=M('member_card_car')->where(array('token' => $this->token,'carno'=>$carno))->find();
                 if(empty($carinfo))
-                {
-                    M('member_card_car')->add(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'carno'=>$carno));
+                {   
+                    $user=M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->find();
+                    if($user['carno1']==""){
+                        M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno1'=>$carno));
+                    }elseif($user['carno2']==""){
+                        M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno2'=>$carno));
+                    }else{
+                        echo '最多绑定三辆车';
+                        exit();
+                    }
+                    M('member_card_car')->add(array('token' => $this->token,'wecha_id'=>$wecha_id,'carno'=>$carno,'optuser'=>$user['truename'],'bindtime'=>time()));
+                    $cardno=M('member_card_create')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->find();
+                    $czinfo=M('往来单位','dbo.','difo')->where(array('名称'=>$cardno['number']))->find();
+                    $item['车主']=$cardno['number'];
+                    $item['车牌号码']=$carno;
+                    $item['客户ID']=$czinfo['ID'];
+                    $item['手机号码']=$user['tel'];
+                    $item['联系人']=$user['truename'];
+                    $item['联系电话']=$user['tel'];
+                    $item['商保到期']=$baoxian;
+                    $item['里程']=$licheng;
+                    $item['年检日期']=$nianjian;
+                    $item['客户类别']=$czinfo['类别'];
+                    M('车辆档案','dbo.','difo')->add($item);
                     echo '添加成功';
                     exit();
                 }
                 else
                 {
+                    //M('member_card_car')->where(array('token' => $this->token,wecha_id=>$wecha_id,'carno'=>$carno))->delete();
                     echo '车牌号码已存在';
                     exit();
                 }
             }
-
+     
+        }
+        else{
+            $carlist=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->select();
+            foreach($carlist as $key=>$car)
+            {
+                $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$car['carno']))->find();
+                $carlist[$key]['carinfo']=$carinfo;
+            }
+            $this->assign('carinfo',$carinfo);
+            $this->assign('carlist',$carlist);
+            $this->assign('userinfo',$userinfo);
+            $this->assign('metaTitle', '我的车辆');
+            $this->display();
         }
 	}
     public function getQRCode()
@@ -2923,7 +2957,7 @@ public function check(){
     } 
     public function action_myCoupon(){
     	$data['use_time'] 		= '';
-    	$data['add_time'] 		= time();
+    	$data['add_time'] 		= time(); 
     	$data['coupon_id'] 		= $this->_post('id','intval');
     	$data['token'] 			= $this->token;
     	$data['wecha_id'] 		= $this->wecha_id;

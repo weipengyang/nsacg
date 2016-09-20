@@ -23,6 +23,7 @@ var indexdata =
     { text: '其他查询', isexpand: false, children: [
        { url: "index.php?&g=Query&m=Consume&a=stat", text: "数据统计" },
        { url: "index.php?&g=Query&m=Consume&a=scoreinfo", text: "积分查看" },
+       { url: "index.php?&g=Query&m=Consume&a=notices", text: "会员通知" },
       { url: "/index.php?g=Query&m=Consume&a=month", text: "每月维修业绩" },
        { url: "/index.php?g=Query&m=Consume&a=days", text: "每日维修业绩" },
        { url: "/index.php?g=Query&m=Consume&a=qcode", text: "二维码生成" } 

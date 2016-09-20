@@ -83,6 +83,7 @@
                     {
                         if (haveproject.rows[i]['项目编号'] == data['项目编号']) {
                             flag = true;
+                            haveproject.rows[i]['虚增类别'] = '';
                             haveproject.select(haveproject.rows[i]);
                         }
                     }
@@ -94,6 +95,7 @@
                         row['结算方式'] = '客付';
                         row['工时'] = data['标准工时'];
                         row['单价'] = data['标准金额'];
+                        row['虚增类别'] ='';
                         row['主修人'] = getQueryString('zhuxiu');
                         row['折扣'] = getQueryString('discount');
                         row['金额'] = row['工时'] * row['单价'] * row['折扣'];
@@ -145,6 +147,9 @@
                             if (!selected) { alert('请选择行'); return; }
                             data['金额'] = data['工时'] * data['单价'] * data['折扣'];
                             data['税额'] = data['金额'] * data['税率'];
+                            if (data['虚增类别'] == null || data['虚增类别'] == "NULL") {
+                                data['虚增类别'] = '';
+                            }
                             haveproject.updateRow(selected, data);
                         }
                     },                    {

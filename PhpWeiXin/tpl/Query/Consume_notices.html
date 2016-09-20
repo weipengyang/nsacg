@@ -1,0 +1,268 @@
+﻿<!doctype html>
+<html class="no-js fixed-layout">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>会员通知查看</title>
+    <meta name="description" content="爱养车">
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.7.0/css/amazeui.min.css" />
+    <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+
+</head>
+<body>
+    <!--[if lte IE 9]>
+    <p class="browsehappy">你正在使用<strong>过时</strong>的浏览器，Amaze UI 暂不支持。 请 <a href="http://browsehappy.com/" target="_blank">升级浏览器</a>
+      以获得更好的体验！</p>
+    <![endif]-->
+    <div class="am-cf admin-main" style="padding:0;margin:0">
+        <!-- content start -->
+        <div class="admin-content">
+        <div class="admin-content-body">
+            <!--<div id="searchbar">
+                关键字：<input id="searchkey" type="text" />
+                <input id="search" type="button" value="模糊查询"  />
+            </div>-->
+
+            <div id="maingrid4" style="margin:0; padding:0"></div>
+            </div>
+            </div>
+        <!-- content end -->
+    </div>
+    <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
+    <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
+    <script src="/tpl/static/assets/js/app.js"></script>
+    <script>
+        function carinfo(carno) {
+            $.ligerDialog.open({
+                height: 500,
+                url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
+                width: 900,
+                showMax: true,
+                showToggle: true,
+                showMin: true,
+                isResize: true,
+                modal: false,
+                title: '车俩信息编辑'
+            });
+        }
+        function viewinfo(id,flag) {
+            $.ligerDialog.open({
+                height: 500,
+                url: '/index.php?g=Query&m=Consume&a=viewnotice&id=' + id+"&flag="+flag,
+                width: 900,
+                showMax: true,
+                showToggle: true,
+                showMin: true,
+                isResize: true,
+                modal: false,
+                title: '已阅读通知会员'
+            });
+        }
+        function date(format, timestamp) {
+            var a, jsdate = ((timestamp) ? new Date(timestamp * 1000) : new Date());
+            var pad = function (n, c) {
+                if ((n = n + "").length < c) {
+                    return new Array(++c - n.length).join("0") + n;
+                } else {
+                    return n;
+                }
+            };
+            var txt_weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            var txt_ordin = { 1: "st", 2: "nd", 3: "rd", 21: "st", 22: "nd", 23: "rd", 31: "st" };
+            var txt_months = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            var f = {
+                // Day 
+                d: function () { return pad(f.j(), 2) },
+                D: function () { return f.l().substr(0, 3) },
+                j: function () { return jsdate.getDate() },
+                l: function () { return txt_weekdays[f.w()] },
+                N: function () { return f.w() + 1 },
+                S: function () { return txt_ordin[f.j()] ? txt_ordin[f.j()] : 'th' },
+                w: function () { return jsdate.getDay() },
+                z: function () { return (jsdate - new Date(jsdate.getFullYear() + "/1/1")) / 864e5 >> 0 },
+
+                // Week 
+                W: function () {
+                    var a = f.z(), b = 364 + f.L() - a;
+                    var nd2, nd = (new Date(jsdate.getFullYear() + "/1/1").getDay() || 7) - 1;
+                    if (b <= 2 && ((jsdate.getDay() || 7) - 1) <= 2 - b) {
+                        return 1;
+                    } else {
+                        if (a <= 2 && nd >= 4 && a >= (6 - nd)) {
+                            nd2 = new Date(jsdate.getFullYear() - 1 + "/12/31");
+                            return date("W", Math.round(nd2.getTime() / 1000));
+                        } else {
+                            return (1 + (nd <= 3 ? ((a + nd) / 7) : (a - (7 - nd)) / 7) >> 0);
+                        }
+                    }
+                },
+
+                // Month 
+                F: function () { return txt_months[f.n()] },
+                m: function () { return pad(f.n(), 2) },
+                M: function () { return f.F().substr(0, 3) },
+                n: function () { return jsdate.getMonth() + 1 },
+                t: function () {
+                    var n;
+                    if ((n = jsdate.getMonth() + 1) == 2) {
+                        return 28 + f.L();
+                    } else {
+                        if (n & 1 && n < 8 || !(n & 1) && n > 7) {
+                            return 31;
+                        } else {
+                            return 30;
+                        }
+                    }
+                },
+
+                // Year 
+                L: function () { var y = f.Y(); return (!(y & 3) && (y % 1e2 || !(y % 4e2))) ? 1 : 0 },
+                //o not supported yet 
+                Y: function () { return jsdate.getFullYear() },
+                y: function () { return (jsdate.getFullYear() + "").slice(2) },
+
+                // Time 
+                a: function () { return jsdate.getHours() > 11 ? "pm" : "am" },
+                A: function () { return f.a().toUpperCase() },
+                B: function () {
+                    // peter paul koch: 
+                    var off = (jsdate.getTimezoneOffset() + 60) * 60;
+                    var theSeconds = (jsdate.getHours() * 3600) + (jsdate.getMinutes() * 60) + jsdate.getSeconds() + off;
+                    var beat = Math.floor(theSeconds / 86.4);
+                    if (beat > 1000) beat -= 1000;
+                    if (beat < 0) beat += 1000;
+                    if ((String(beat)).length == 1) beat = "00" + beat;
+                    if ((String(beat)).length == 2) beat = "0" + beat;
+                    return beat;
+                },
+                g: function () { return jsdate.getHours() % 12 || 12 },
+                G: function () { return jsdate.getHours() },
+                h: function () { return pad(f.g(), 2) },
+                H: function () { return pad(jsdate.getHours(), 2) },
+                i: function () { return pad(jsdate.getMinutes(), 2) },
+                s: function () { return pad(jsdate.getSeconds(), 2) },
+                //u not supported yet 
+
+                // Timezone 
+                //e not supported yet 
+                //I not supported yet 
+                O: function () {
+                    var t = pad(Math.abs(jsdate.getTimezoneOffset() / 60 * 100), 4);
+                    if (jsdate.getTimezoneOffset() > 0) t = "-" + t; else t = "+" + t;
+                    return t;
+                },
+                P: function () { var O = f.O(); return (O.substr(0, 3) + ":" + O.substr(3, 2)) },
+                //T not supported yet 
+                //Z not supported yet 
+
+                // Full Date/Time 
+                c: function () { return f.Y() + "-" + f.m() + "-" + f.d() + "T" + f.h() + ":" + f.i() + ":" + f.s() + f.P() },
+                //r not supported yet 
+                U: function () { return Math.round(jsdate.getTime() / 1000) }
+            };
+
+            return format.replace(/[\\]?([a-zA-Z])/g, function (t, s) {
+                if (t != s) {
+                    // escaped 
+                    ret = s;
+                } else if (f[s]) {
+                    // a date function exists 
+                    ret = f[s]();
+                } else {
+                    // nothing special 
+                    ret = s;
+                }
+                return ret;
+            });
+        }
+
+        function todate(num, istime) {
+            if (num && num.length > 8) {
+                num = num + "";
+                var date = "";
+                var month = new Array();
+                month["Jan"] = '01'; month["Feb"] = '02'; month["Mar"] = '03'; month["Apr"] = '04'; month["May"] = '05'; month["Jun"] = '06';
+                month["Jul"] = '07'; month["Aug"] = '08'; month["Sep"] = '09'; month["Oct"] = '10'; month["Nov"] = '11'; month["Dec"] = '12';
+                var str = num.split(" ");
+                var times = '';
+                if (str.length > 4) {
+                    date = str[3] + "-";
+                    date = date + month[str[0]] + "-" + str[2];
+                    times = str[4].split(':');
+                } else {
+                    date = str[2] + "-";
+                    date = date + month[str[0]] + "-" + str[1];
+                    times = str[3].split(':');
+                }
+                if (istime) {
+                    time = times[0] + ':' + times[1];
+                    if (times[2].indexOf('PM')) {
+                        time = (parseInt(time[0]) + 12) + ':' + times[1];
+                    }
+                    return date + ' ' + time;
+                }
+                return date;
+            }
+            return num;
+        }
+        var cargird;
+        $(document).ready(function () {
+            cargird = $("#maingrid4").ligerGrid({
+                columns: [
+                         { display: '标题', name: 'title', minWidth: 60 },
+                         {
+                             display: '添加时间', name: 'time', minWidth: 60, render: function (rowdata, index, value) {
+
+                                 return date('Y-m-d H:i', value);
+                             }
+                         },
+                         {
+                             display: '截止时间', name: 'endtime', minWidth: 60, render: function (rowdata, index, value) {
+
+                                 return date('Y-m-d H:i', value);
+                             }
+                         },
+                         {
+                             display: '未读', name: 'total', width: 80, align: 'left', render: function (rowdata, index, value) {
+                                 if (rowdata['num'] == null)
+                                     rowdata['num'] = 0;
+                                 return '<a href="javascript:void(0);" onclick="viewinfo(\'' + rowdata['id'] + '\',1);"><strong>' + (value - rowdata['num']) + '</strong></a>';
+                          }
+                         },
+                         {
+                             display: '已读', name: 'num', minWidth: 60, render: function (rowdata, index, value) {
+                                 if (value == null)
+                                     value = 0;
+                                 return '<a href="javascript:void(0);" onclick="viewinfo(\'' + rowdata['id'] + '\');"><strong>' + value + '</strong></a>';
+                            }
+                        },
+                ],
+                isScroll: true,
+                pageSize: 20,
+                url: '/index.php?g=Query&m=Consume&a=getnotices',
+                height: '100%',
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    carinfo(data['车牌号码']);
+                }
+            });
+            $('#search').click(function () {
+                cargird.changePage('first');
+                var parms = {};
+                var searchkey = $('#searchkey').val();
+                if (searchkey != '')
+                    parms.searchkey = searchkey;
+                cargird.set('parms', parms);
+                cargird.reload();
+
+            });
+
+        });
+    </script>
+
+</body>
+</html>

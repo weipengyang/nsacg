@@ -217,7 +217,7 @@
                     }
                     if (istime) {
                         time = times[0] + ':' + times[1];
-                        if (times[2].indexOf('PM')>0) {
+                        if (str[3].indexOf('PM') > 0) {
                             time = (parseInt(times[0]) + 12) + ':' + times[1];
                         }
                         return date + ' ' + time;

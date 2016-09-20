@@ -609,7 +609,7 @@ class Member_cardAction extends UserAction{
 	//会员礼卷
 	public function integral(){
 		$member_card_inergral_db=M('Member_card_integral');
-		$data=$member_card_inergral_db->where(array('token'=>$this->token,'cardid'=>$this->thisCard['id']))->order('id desc')->select();
+		$data=$member_card_inergral_db->where(array('token'=>$this->token))->order('id desc')->select();
         foreach ($data as $k=>$n){
             $data[$k]['count']= M('member_card_coupon_record')->where(array('coupon_id'=>$n['id'],'coupon_type'=>3))->count();
         }

@@ -1011,7 +1011,7 @@
                        return todate(value,false);
                     }
                 },
-                { display: '主修人', name: '当前主修人', width: 60, align: 'left' },
+                { display: '主修人', name: '主修人', width: 60, align: 'left' },
                 {
                     display: '客户确认', name: '确认维修', align: 'center', minWidth: 50, render:function (rowdata, index, value) {
                         if (value==null||value == '')
@@ -1045,7 +1045,7 @@
                 },
                 {
                     display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
-                        if (rowdata['制单人'] == '系统录单' && rowdata['当前主修人'] =='')
+                        if (rowdata['制单人'] == '系统录单' && rowdata['主修人'] =='')
                             return '<a href="javascript:void(0);" onclick="assigntask(\'' + rowdata.流水号 + '\');"><strong>派工</strong></a>';
                         else
                             return '';

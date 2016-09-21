@@ -1287,7 +1287,7 @@ class ConsumeAction extends Action{
    }
 
    public  function getwxinfo(){
-       $type=$_GET['type'];
+       $type=$_POST['type'];
        $page=$_POST['page'];
        $pagesize=$_POST['pagesize'];
        $where['1']=1;
@@ -1351,15 +1351,10 @@ class ConsumeAction extends Action{
        if(isset($type)&&$type=='1')
        {
            $where['_string']="当前状态 not in ('结束','取消')";
-           $wxinfo=M('维修','dbo.','difo')->where($where)->order($order)->select();
-           $count=M('维修','dbo.','difo')->where($where)->count();
 
        }
-       else{
-           $wxinfo=M('维修','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
-           $count=M('维修','dbo.','difo')->where($where)->count();
-
-       }
+       $wxinfo=M('维修','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+       $count=M('维修','dbo.','difo')->where($where)->count();
        $data['Rows']=$wxinfo;
        $data['Total']=$count;
        echo json_encode($data);
@@ -1909,14 +1904,14 @@ class ConsumeAction extends Action{
        $flag=$_GET['flag'];
        if(isset($flag)&&$flag=='1'){
            $where['_string']="wecha_id not in (SELECT wecha_id from tp_member_card_noticedetail  where noticeid=$id) and carno<>''";
-           $userinfo=M('userinfo')->join(array())->where($where)->limit(($page-1)*$pagesize,$pagesize)->select();
+           $userinfo=M('userinfo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->select();
            $count=M('userinfo')->where($where)->count();
 
        }
        else{
            $where['_string']="tp_member_card_noticedetail.noticeid=$id";
            $userinfo=M('userinfo')->join('tp_member_card_noticedetail on tp_userinfo.wecha_id=tp_member_card_noticedetail.wecha_id')->where($where)->limit(($page-1)*$pagesize,$pagesize)->select();
-           $count=M('userinfo')->where($where)->count();
+           $count=M('userinfo')->join('tp_member_card_noticedetail on tp_userinfo.wecha_id=tp_member_card_noticedetail.wecha_id')->where($where)->count();
        }
        $data['Rows']=$userinfo;
        $data['Total']=$count;

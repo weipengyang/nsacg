@@ -448,8 +448,8 @@ class WeixinAction extends Action{
             return array('成功退出微信墙对话模式', 'text');
         }
         $weixin = new Wechat($this->token,$this->wxuser);
-        if(strpos(strtoupper($data['Content']), '@') === 0){
-            $arr = explode("@",$data['Content']);
+        if(strpos(strtoupper($data['Content']), '*#') === 0){
+            $arr = explode("*#",$data['Content']);
             $key=$arr[1];
             if($key&&strlen($key)>4){
                 $serch['类别']=array('like','轮胎%');
@@ -517,9 +517,9 @@ class WeixinAction extends Action{
                 return array('turn on transfer_customer_service','transfer_customer_service');
             }
         }
-        //if(strpos(strtoupper($data['Content']), '会员卡') !== false){
-        //    return array('turn on transfer_customer_service','transfer_customer_service');
-        //}
+        if(strpos(strtoupper($data['Content']), '会员卡') !== false){
+            return array('turn on transfer_customer_service','transfer_customer_service');
+        }
         if(strpos(strtoupper($data['Content']), '#') === 0){
             $arr = explode("#",$data['Content']);
             $key=$arr[1];
@@ -549,16 +549,28 @@ class WeixinAction extends Action{
             }
 
         }
-        /*
         if(preg_match('/^[1-2][0-9][5][0-9]{2,4}$/i',strtoupper($data['Content']),$m)){
             $key=$data['Content'];
             if($key&&strlen($key)>4){
                 $serch['类别']=array('like','轮胎%');
-                $serch['库存']=array('gt',0);
-                $serch['助记码']=array('like',"%$key%");
-                $list=M('配件目录','dbo.','difo')->where($serch)->limit(0,20)->select();
-                $content="订货电话:020-39039139\r\n";
-                $content.="手机号码:18922761908\r\n\r\n";
+                $serch['停用']=0;
+                $serch['一级批发价']=array('gt',0);
+                if(strlen($key)>5){
+                    $serchkey=substr($key,0,3).'/'.substr($key,3,2).'R';
+                    $serchkey.=substr($key,5,2);
+                    $serch['名称']=array('like',"%$serchkey%");
+                }
+                else{
+                    $serchkey=substr($key,0,3).'/'.substr($key,3,2).'R';
+                    $serchkey1=substr($key,0,3).'R'.substr($key,3,2);
+                    $searchwhere['名称']=array('like',"%$serchkey%");
+                    $searchwhere['_string']=" 名称 like '%$serchkey1%'";
+                    $searchwhere['_logic']='OR';
+                    $serch['_complex']=$searchwhere;
+                }
+                $list=M('配件目录','dbo.','difo')->where($serch)->order('库存 desc')->limit(0,20)->select();
+                $content="送货电话:02039099139\r\n";
+                $content.="手机号码:18922761808\r\n\r\n";
                 foreach($list as $item){
                     $content.="规格:".$item['名称']."\r\n";
                     $content.="品牌:".$item['品牌']."\r\n";
@@ -570,7 +582,8 @@ class WeixinAction extends Action{
                 return array('turn on transfer_customer_service','transfer_customer_service');
 
             }
-        }*/
+        }
+
 		/**欢仔**/
         if ($this -> fans['wallopen'] && !$this -> knwxs['knwxopen']){
             $where = array('token' => $this -> token);

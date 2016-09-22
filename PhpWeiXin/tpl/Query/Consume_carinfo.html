@@ -183,36 +183,7 @@
                     checkbox: checkbox                   
                 };
                 return options;
-            }            function todate(num, istime) {
-                if (num && num.length > 8) {
-                    num = num + "";
-                    var date = "";
-                    var month = new Array();
-                    month["Jan"] = '01'; month["Feb"] = '02'; month["Mar"] = '03'; month["Apr"] = '04'; month["May"] = '05'; month["Jun"] = '06';
-                    month["Jul"] = '07'; month["Aug"] = '08'; month["Sep"] = '09'; month["Oct"] = '10'; month["Nov"] = '11'; month["Dec"] = '12';
-                    var str = num.split(" ");
-                    var times = '';
-                    if (str.length > 4) {
-                        date = str[3] + "-";
-                        date = date + month[str[0]] + "-" + str[2];
-                        times = str[4].split(':');
-                    } else {
-                        date = str[2] + "-";
-                        date = date + month[str[0]] + "-" + str[1];
-                        times = str[3].split(':');
-                    }
-                    if (istime) {
-                        time = times[0] + ':' + times[1];
-                        if (str[3].indexOf('PM') > 0) {
-                            time = (parseInt(times[0]) + 12) + ':' + times[1];
-                        }
-                        return date + ' ' + time;
-                    }
-                    return date;
-                }
-                return num;
-            }
-            function setdata()
+            }            function setdata()
             {
                
                 var carinfo ={pigcms:$carinfo};

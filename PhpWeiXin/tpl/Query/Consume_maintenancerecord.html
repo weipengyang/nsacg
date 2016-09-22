@@ -40,18 +40,6 @@
         <!-- content start -->
         <div class="admin-content">
             <div class="admin-content-body">
-                <div style="margin-top:5px;padding-left:10px">
-                    <button type="button" class="am-btn am-btn-primary" data-am-modal="{target: '#doc-modal-1', closeViaDimmer: 0,width:500}">洗车</button>
-                    <button type="button" class="am-btn am-btn-primary" data-am-modal="{target: '#doc-modal-2', closeViaDimmer: 0,width:500}">美容</button>
-                    <button type="button" class="am-btn am-btn-primary" data-am-modal="{target: '#doc-modal-3', closeViaDimmer: 0,width:700}">维修</button>
-                    <button type="button" id="baojia" class="am-btn am-btn-default">报价</button>
-                    <button type="button" id="paigong" class="am-btn am-btn-primary">派工</button>
-                    <button type="button" id="lingliao" class="am-btn am-btn-secondary">领料</button>
-                    <button type="button" id="shenhe" class="am-btn am-btn-success">审核</button>
-                    <button type="button" id="jiesuan" class="am-btn am-btn-warning">结算</button>
-                    <button type="button" id="chuchang" class="am-btn am-btn-danger">出厂</button>
-                    <button type="button" id="all" class="am-btn am-btn-primary">所有未结算</button>
-                </div>
                 <div class="am-g">
                     <div class="am-u-sm-10 am-u-md-9">
                         <div class="am-form-group am-form-select">
@@ -76,79 +64,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="am-modal am-modal-no-btn" tabindex="-1" id="doc-modal-1">
-                    <div class="am-modal-dialog">
-                        <div class="am-modal-hd">
-                            洗车录入
-                            <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
-                        </div>
-                        <div class="am-modal-bd">
-                            <div class="am-form">
-                                <div class="am-g am-margin-top">
-                                    <div class="am-u-sm-4  am-text-right">
-                                        车牌号码
-                                    </div>
-                                    <div class="am-u-sm-8 ">
-                                        <input type="text" name="carno" id="carno" class="am-input-sm">
-                                    </div>
-                                </div>
-                                <div class="am-g am-margin-top">
-                                    <div class="am-u-sm-4  am-text-right">
-                                        车主
-                                    </div>
-                                    <div class="am-u-sm-8  am-u-end col-end">
-                                        <div id="chezhu"></div>
-                                    </div>
-                                </div>
-                                <div class="am-g am-margin-top">
-                                    <div class="am-u-sm-4  am-text-right">
-                                        客户类别
-                                    </div>
-                                    <div class="am-u-sm-8  am-u-end col-end">
-                                        <select data-am-selected name="group" id="group">
-                                            <volist name="lblist" id="item">
-                                                <option value="{pigcms:$item.客户类别}">{pigcms:$item.客户类别}</option>
-                                            </volist>
-                                            <option value="临时客户">临时客户</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div id="qianyue" class="am-g am-margin-top" style="display:none">
-                                    <div class="am-u-sm-4 am-u-md-2 am-text-right">
-                                        定点金额
-                                    </div>
-                                    <div class="am-u-sm-8 ">
-                                        <input type="text" name="money" id="money" value="25" class="am-input">
-                                    </div>
-                                    <div class="am-hide-sm-only am-u-md-6">元</div>
-                                </div>
-                                <div class="am-g am-margin-top"> 
-                                    <div class="am-u-sm-4  am-text-right">
-                                        美容师傅
-                                    </div>
-                                    <div class="am-u-sm-8  am-u-end col-end">
-                                        <select data-am-selected name="person" id="person">
-                                            <volist name="list" id="item">
-                                                <option value="{pigcms:$item.姓名}">{pigcms:$item.姓名}</option>
-                                            </volist>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="am-g am-margin-top">
-                                    <div class="am-u-sm-4  am-text-right">
-                                        操作
-                                    </div>
-                                    <div class="am-u-sm-8  am-u-end col-end">
-                                        <button class="am-btn am-btn-primary" id="reflash">
-                                            <i class="am-icon-submit"></i>
-                                            提交
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
+                <div style="margin-bottom:5px;padding-left:10px">
+                    <button type="button" class="am-btn am-btn-primary" onclick="washcar();">洗车</button>
+                    <button type="button" class="am-btn am-btn-primary" data-am-modal="{target: '#doc-modal-2', closeViaDimmer: 0,width:500}">美容</button>
+                    <button type="button" class="am-btn am-btn-primary" data-am-modal="{target: '#doc-modal-3', closeViaDimmer: 0,width:700}">维修</button>
+                    <button type="button" id="baojia" class="am-btn am-btn-default">报价</button>
+                    <button type="button" id="paigong" class="am-btn am-btn-primary">派工</button>
+                    <button type="button" id="lingliao" class="am-btn am-btn-secondary">领料</button>
+                    <button type="button" id="shenhe" class="am-btn am-btn-success">审核</button>
+                    <button type="button" id="jiesuan" class="am-btn am-btn-warning">结算</button>
+                    <button type="button" id="chuchang" class="am-btn am-btn-danger">出厂</button>
+                    <button type="button" id="all" class="am-btn am-btn-primary">所有未结算</button>
                 </div>
                 <div class="am-modal am-modal-no-btn" tabindex="1" id="doc-modal-2">
                     <div class="am-modal-dialog">
@@ -364,6 +290,9 @@
     <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
+        var form, grid, project, product, append, opgrid = null;
+        var cardialog;
+        var record = {};
         function wxinfo(xh) {
            var wxdialog= $.ligerDialog.open({
                 height: 540,
@@ -392,6 +321,21 @@
             });
             cardialog.max();
         }
+        function washcar() {
+            if (cardialog) cardialog.show();
+            else {
+                cardialog = $.ligerDialog.open({
+                    height: 280,
+                    url: '/index.php?g=Query&m=Consume&a=washcar',
+                    width: 600,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '洗车录入'
+                });
+            }
+        }
         function assigntask(itemid) {
             $('#doc-modal-4').modal({
                 relatedTarget: this,
@@ -414,37 +358,6 @@
                 }
             });
         }
-        function todate(num,istime) {
-            if (num && num.length > 8) {
-                num = num + "";
-                var date = "";
-                var month = new Array();
-                month["Jan"] = '01'; month["Feb"] = '02'; month["Mar"] = '03'; month["Apr"] = '04'; month["May"] = '05'; month["Jun"] = '06';
-                month["Jul"] = '07'; month["Aug"] = '08'; month["Sep"] = '09'; month["Oct"] = '10'; month["Nov"] = '11'; month["Dec"] = '12';
-                var str = num.split(" ");
-                var times ='';
-                if (str.length > 4) {
-                    date = str[3] + "-";
-                    date = date + month[str[0]] + "-" + str[2];
-                    times = str[4].split(':');
-                } else {
-                    date = str[2] + "-";
-                    date = date + month[str[0]] + "-" + str[1];
-                    times = str[3].split(':');
-                }
-                if (istime) {
-                    time = times[0] + ':' + times[1];
-                    if (times[2].indexOf('PM')>0) {
-                        time = (parseInt(times[0]) + 12) + ':' + times[1];
-                    }
-                    return date + ' ' + time;
-                }
-                return date;
-            }
-            return num;
-        }
-        var form, grid, project, product, append, opgrid = null;
-        var record = {};
         $(function () {
             grid = $("#maingrid4").ligerGrid({
                 columns: [
@@ -576,7 +489,11 @@
                                 { display: "报价人", name: "报价人", newline: false, type: "text" },
                                 { display: "审核人", name: "审核人", newline: false, type: "text" },
                                 { display: "出厂里程", name: "出厂里程", newline: false, type: "text" },
-                                { display: "出厂时间", name: "出厂时间", newline: false, type: "text" },
+                                {
+                                    display: "出厂时间", name: "出厂时间", newline: false, type: "date", options: {
+                                        showTime: true
+                                    }
+                                },
                                 {
                                     display: "实际完工", name: "实际完工", newline: false, type: "date", options: {
                                         showTime: true
@@ -659,7 +576,6 @@
 
             });
             inidata();
-
             project = $("#projectgrid").ligerGrid({
                 height: '50%',
                 width: '100%',
@@ -961,35 +877,6 @@
                 };
                 return options;
             }
-            function todate(num, istime) {
-                if (num && num.length > 8) {
-                    num = num + "";
-                    var date = "";
-                    var month = new Array();
-                    month["Jan"] = '01'; month["Feb"] = '02'; month["Mar"] = '03'; month["Apr"] = '04'; month["May"] = '05'; month["Jun"] = '06';
-                    month["Jul"] = '07'; month["Aug"] = '08'; month["Sep"] = '09'; month["Oct"] = '10'; month["Nov"] = '11'; month["Dec"] = '12';
-                    var str = num.split(" ");
-                    var times = '';
-                    if (str.length > 4) {
-                        date = str[3] + "-";
-                        date = date + month[str[0]] + "-" + str[2];
-                        times = str[4].split(':');
-                    } else {
-                        date = str[2] + "-";
-                        date = date + month[str[0]] + "-" + str[1];
-                        times = str[3].split(':');
-                    }
-                    if (istime) {
-                        time = times[0] + ':' + times[1];
-                        if (times[2].indexOf('PM') > 0) {
-                            time = (parseInt(times[0]) + 12) + ':' + times[1];
-                        }
-                        return date + ' ' + time;
-                    }
-                    return date;
-                }
-                return num;
-            }
             function inidata() {
                 $("div[data-index='1']").html("<div id='projectgrid' style='margin:0;padding 0'><div>");
                 $("div[data-index='2']").html("<div id='productgrid'style='margin:0;padding 0'><div>");
@@ -1050,26 +937,6 @@
                     $('#lcdiv').show();
                     $('#ltdiv').show();
                 }
-            });
-            $('#carno').blur(function () {
-                var submitData = {
-                    carno: $('#carno').val()
-                };
-                $.post('index.php?g=Query&m=Consume&a=getgrade', submitData,
-                 function (data) {
-                     if (data) {
-                         $('#chezhu').text(data.车主);
-                         $('#group').val(data.客户类别);
-                         var select = '#group option[value="' + data.客户类别 + '"]';
-                         var $o = $(select)[0].index;
-                         $('#group').find('option').eq($o).attr('selected', true);
-                         //$("#group option[@value='" + data.客户类别 + "']").attr("selected", "true");
-                     }
-                     else {
-                         $('#chezhu').text('0000');
-                         $('#group').find('option:last').attr('selected', true);
-                     }
-                 }, 'JSON');
             });
             $('#carno2').blur(function () {
                 var submitData = {

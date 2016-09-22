@@ -66,6 +66,11 @@
             <div class="card-content-inner">
                 <a href="#" class="button button-big" id="addcar"><i class="iconfont icon-tianjia">添加车辆</i></a>
             </div>
+            <div class="card-content-inner" style="margin-top:2px">
+                <span style="font-size:0.8rem"><span style="color:red">注意事项:</span><br/>1、车辆绑定成功后如需要变更车牌或删除绑定车辆需要携带有效资料到服务门店前台进行更改<br/>
+                                    2、一辆车只能绑定一个微信号码，一个微信号最多绑定三辆车
+                </span>
+            </div>
             <div class="weui_dialog_confirm" style="display: none;">
                 <div class="weui_mask"></div>
                 <div class="weui_dialog">
@@ -162,7 +167,8 @@
             $('.weui_dialog_confirm').show().on('click', '.default ', function () {
                 $('.weui_dialog_confirm').off('click').hide();
             }).on('click', '.primary', function () {
-                if(opt=='add'){
+               
+                if (opt == 'add') {
                     var carno = $("#carno").val();
                     if (carno == '') {
                         $.alert("请输入您的车牌号码");
@@ -197,11 +203,24 @@
                     nianjian:nianjian,
                     opt:opt
                 };
-                $.post('index.php?g=Wap&m=Store&a=mycar', submitData,
-                  function (data) {
-                      $.alert(data);
-                      location.href = location.href;
-                  });
+                if (opt == 'add') {
+                    $.confirm('车辆绑定后无法进行更改与删除，确认要增加?', '提示', function () {
+                        $.post('index.php?g=Wap&m=Store&a=mycar', submitData,
+                         function (data) {
+                             $.alert(data);
+                             location.href = location.href;
+                         });
+                    }, function () {
+                        return false;
+                    });
+                }
+                else {
+                    $.post('index.php?g=Wap&m=Store&a=mycar', submitData,
+                      function (data) {
+                          $.alert(data);
+                          location.href = location.href;
+                      });
+                }
 
             });
            
@@ -224,7 +243,7 @@
             $("#baoxian").calendar();
             $("#nianjian").calendar();
             $(document).on('click', '#addcar', function () {
-                modify('');
+                  modify('');
                 });
             });
     </script>

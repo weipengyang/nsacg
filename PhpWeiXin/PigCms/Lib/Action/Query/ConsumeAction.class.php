@@ -130,24 +130,7 @@ class ConsumeAction extends Action{
 
         M('维修','dbo.','difo')->where(array('ID'=>$id))->save($data);
     }
-    public function getzhuxiu()
-    {
-        $shop=$_GET['shop'];
-        if($shop&&$shop!=''&&$shop!='NULL'){
-            $zhuxiu=M('员工目录','dbo.','difo')->where(array('部门'=>$shop,'职务'=>'维修技工'))->select();
-        }else{
-             $zhuxiu=M('员工目录','dbo.','difo')->where(array('职务'=>'维修技工'))->select();       
-        }        
-            echo json_encode($zhuxiu);
-    }
-    public  function getcarinfo(){
-    
-        $carno=$_GET['carno'];
-        $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
-
-        echo json_encode($carinfo);
-    
-    }
+   
     public  function getscoreinfo(){
     
         $page=$_POST['page'];
@@ -259,6 +242,29 @@ class ConsumeAction extends Action{
         echo json_encode($data);
     
     }
+    public function getzhuxiu()
+    {
+        $shop=$_POST['shop'];
+        $wxlx=$_POST['wxlx'];
+        $zhiwu='维修技工';
+        if($wxlx&&in_array($wxlx,array('蜡水洗车','汽车美容'))){
+            $zhiwu='美容技工';
+        }
+        if($shop){
+            $zhuxiu=M('员工目录','dbo.','difo')->where(array('部门'=>$shop,'职务'=>$zhiwu))->select();
+        }else{
+            $zhuxiu=M('员工目录','dbo.','difo')->where(array('职务'=>$zhiwu))->select();       
+        }        
+        echo json_encode($zhuxiu);
+    }
+    public  function getcarinfo(){
+        
+        $carno=$_GET['carno'];
+        $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
+
+        echo json_encode($carinfo);
+        
+    }
     public  function getpinpai(){
          
         $pinpai=M('常见品牌','dbo.','difo')->where(array('品牌'=>array('like','%'.$_POST['key'].'%')))->select();
@@ -283,7 +289,12 @@ class ConsumeAction extends Action{
         echo json_encode($pinpai);
     
    }
-   public  function getkhlb(){
+      public  function getwxlb(){
+         
+          $wxlb=M('维修类别','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
+          echo json_encode($wxlb);
+    
+   }  public  function getkhlb(){
          
         $pinpai=M('客商分类','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
         echo json_encode($pinpai);
@@ -2110,6 +2121,112 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $sql="exec [dbo].[Proc_WriteLog] '$id','$ywbh','$type','$content','$username'";
        M('维修项目','dbo.','difo')->execute($sql);
    }
+   public function washcar(){
+     if(IS_POST)
+     {
+         $wxinfo=$_POST['wxinfo'];
+         $carno=$wxinfo['车牌号码'];
+         $money='25';
+         $data=M('维修','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
+         $data['流水号']=null;
+         unset( $data['流水号']);
+         unset($data['ROW_NUMBER']);
+         $bianhao=$this->getcodenum('WX');
+         $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
+         if($carinfo)
+         {
+             $data['车牌号码']=$carno;
+             $data['送修人']=$carinfo['手机号码'];
+             foreach($data as $key=>$value){
+                 $data[$key]=$carinfo[$key];
+             }
+         }
+         else{
+             $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
+             foreach($data as $key=>$value){
+                 $data[$key]=$carinfo[$key];
+             }
+             $data['车牌号码']='0000';
+             $data['客户类别']='临时客户';
+             $data['联系人']=$carno;
+             $data['送修人']=$carno;
+             $data['联系电话']='';
+         }
+         
+         $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>$wxinfo['主修人']))->find();
+         $data['接车人']=$wxinfo['接车人'];         
+         $data['ID']=$this->getcode(18,0,1);
+         $data['制单日期']=date('Y-m-d',time());
+         $data['制单人']=cookie('username');
+         $data['维修类别']='蜡水洗车';
+         $data['保修类别']='保外';
+         $data['单据类别']='快修单';
+         $data['当前主修人']=$wxinfo['主修人'];
+         $data['主修人']=$wxinfo['主修人'];
+         $data['结算客户']=$carinfo['车主'];;
+         $data['结算客户ID']=$carinfo['客户ID'];
+         //$data['送修人电话']=$carinfo['手机号码'];
+         $data['当前状态']='结算';
+         $data['维修状态']='结算';
+         $data['预计完工']=date('Y-m-d',time());
+         $data['进厂时间']=date('Y-m-d',time());
+         unset($data['出厂时间']);
+         unset($data['下次保养']);
+         unset($data['实际完工']);
+         unset($data['购买日期']);
+         unset($data['结束日期']);
+         $data['结算日期']=date('Y-m-d',time());
+         $data['报价金额']=0;
+         $data['应收金额']=0; 
+         if(strpos($data['车主'], 'AYC') === 0){
+             $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0001'))->find();
+         }elseif($carinfo['客户类别']=='VIP客户'){
+             $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0004'))->find();
+         }
+         elseif(strpos($carinfo['客户类别'],'定点签约')===0){
+             $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0003'))->find();
+             $xm['标准金额']=$money;
+             $data['报价金额']=$money;
+             $data['应收金额']=$money;
+         }
+         elseif($carinfo['客户类别']=='三方合作'){
+             $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0007'))->find();
+         }
+         else{
+             $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0002'))->find();
+             $data['报价金额']=35;
+             $data['应收金额']=35;
+         }
+         $data['业务编号']=$bianhao;
+         M('维修','dbo.','difo')->add($data);
+         $this->writeLog($data['ID'],$bianhao,'维修','前台接车');
+         $row=array();
+         $row['ID']=$data['ID'];
+         $row['项目编号']=$xm['项目编号'];
+         $row['项目名称']=$xm['项目名称'];
+         $row['维修工艺']=$xm['维修工艺'];
+         $row['结算方式']='客付';
+         $row['工时']=$xm['标准工时'];
+         $row['单价']=$xm['标准金额'];
+         $row['金额']=$xm['标准金额'];
+         $row['折扣']=1;
+         $row['提成工时']=1;
+         $row['提成金额']=1;
+         $row['主修人']=$wxinfo['主修人'];
+         $row['班组']=$yg['班组'];
+         $row['开工时间']=date('Y-m-d H:i',time());
+         //$row['完工时间']=date('Y-m-d H:i',time());
+         $row['是否同意']=0;
+         $row['已维修']='0小时'; 
+         M('维修项目','dbo.','difo')->add($row);
+         echo '提交成功';
+         exit;
+     }
+     else{
+         $this->display();
+     }
+
+   }
     public function record()
     {
         $list=M('员工目录','dbo.','difo')->where(array('部门'=>array('like','%美容部')))->select();
@@ -2165,12 +2282,15 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $data['主修人']=$person;
             $data['结算客户']=$carinfo['车主'];;
             $data['结算客户ID']=$carinfo['客户ID'];
-            //$data['送修人电话']=$carinfo['手机号码'];
             $data['当前状态']='结算';
             $data['维修状态']='结算';
             $data['进厂时间']=date('Y-m-d',time());
             $data['结算日期']=date('Y-m-d',time());
-            $data['下次保养']=null;
+            unset($data['出厂时间']);
+            unset($data['下次保养']);
+            unset($data['实际完工']);
+            unset($data['购买日期']);
+            unset($data['结束日期']);
             $data['报价金额']=0;
             $data['应收金额']=0; 
             if(strpos($data['车主'], 'ACG') === 0||(strpos($data['车主'], 'AYC') === 0)){
@@ -2210,7 +2330,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $row['主修人']=$person;
             $row['班组']=$yg['班组'];
             $row['开工时间']=date('Y-m-d H:i',time());
-            //$row['完工时间']=date('Y-m-d H:i',time());
             $row['是否同意']=0;
             $row['已维修']='0小时'; 
             M('维修项目','dbo.','difo')->add($row);

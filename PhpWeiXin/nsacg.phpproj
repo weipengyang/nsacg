@@ -14638,6 +14638,8 @@
     <Content Include="tpl\Query\Consume_addproject.html" />
     <Content Include="tpl\Query\Consume_maintenancerecord.html" />
     <Content Include="tpl\Query\Consume_members - Copy.html" />
+    <Content Include="tpl\Query\Consume_meirong.html" />
+    <Content Include="tpl\Query\Consume_washcar.html" />
     <Content Include="tpl\Query\Consume_notices.html" />
     <Content Include="tpl\Query\Consume_viewnotice.html" />
     <Content Include="tpl\Query\Consume_scoreinfo.html" />

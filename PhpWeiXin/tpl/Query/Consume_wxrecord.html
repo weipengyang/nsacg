@@ -1,16 +1,12 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>美容录入</title>
+    <title>维修录入</title>
     <meta name="description" content="爱养车" />
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
-    <script src="/tpl/static/lib/jquery-validation/jquery.validate.min.js"></script>
-    <script src="/tpl/static/lib/jquery-validation/jquery.metadata.js"></script>
-    <script src="/tpl/static/lib/jquery-validation/messages_cn.js"></script>
-
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
     <script type="text/javascript">
         $(function ()
@@ -48,12 +44,23 @@
                        }
                    },
                    {
-                       display: "美容项目", name: "维修类别", newline: false, type: "combobox",comboboxName:'wxlx',
+                       display: "维修类别", name: "维修类别", newline: false, type: "combobox",comboboxName:'wxlx',
                         options: {
-                            valueField: '项目编号',
-                            textField: '项目名称',
+                            valueField: '类别',
+                            textField: '类别',
                             autocomplete: true,
-                            url: '/index.php?g=Query&m=Consume&a=getmrproject'
+                            url: '/index.php?g=Query&m=Consume&a=getwxlb',
+                            onChangeValue: function () {
+                                var selected = this.selected;
+                                var fwgw = liger.get('fwgw');
+                                var zhuxiu = liger.get('zhuxiu');
+                                var wxlx = liger.get('wxlx');
+                                if (zhuxiu) {
+                                    zhuxiu.setParm('shop', fwgw['部门']);
+                                    zhuxiu.setParm('wxlx', this.getValue());
+                                    zhuxiu.reload();
+                                }
+                            }
                         }
                     },
                     {
@@ -64,13 +71,13 @@
                     },
                     { display: "联系人 ", name: "联系人", newline: true, type: "text", validate: { required: true } },
                     { display: "联系电话 ", name: "联系电话", newline: false, type: "text", validate: { required: true } },
-                    { display: "轮胎规格", name: "轮胎规格", newline: true, type: "text" },
+                    { display: "轮胎规格", name: "轮胎规格", newline: true, type: "text"},
                     { display: "油位表", name: "油位表", newline: false, type: "text" },
                     {
-                        display: "里程表", name: "里程表", newline: true, type: "text"
+                        display: "里程表", name: "里程表", newline: true, type: "text" 
 
                     },
-                    {
+                   {
                         display: "接车人", name: "接车人", newline: true, type: "combobox",comboboxName:'fwgw',
                         options: {
                             valueField: '姓名',
@@ -83,21 +90,22 @@
                                 var wxlx = liger.get('wxlx');
                                 if (zhuxiu) {
                                     zhuxiu.setParm('shop', selected['部门']);
-                                    zhuxiu.setParm('wxlx','汽车美容');
+                                    zhuxiu.setParm('wxlx', wxlx.getValue());
                                     zhuxiu.reload();
                                 }
                             }
                         }
                     },
                     {
-                        display: "美容师傅", name: "主修人", newline: false, type: "combobox", comboboxName: 'zhuxiu',
+                        display: "维修师傅", name: "维修师傅", newline: false, type: "combobox", comboboxName: 'zhuxiu',
                         options: {
                             valueField: '姓名',
                             textField: '姓名',
                             autocomplete: true,
                             url: '/index.php?g=Query&m=Consume&a=getzhuxiu',
                         },
-                    }
+                    },
+                    { display: "故障描述", name: "故障描述", newline: true, type: "textarea", width: 430, height: 100 }
                 ],
                 buttons: [                    { text: "取消", width: 60, click: null },                    {
                         text: "保存", width: 60, click: function () {
@@ -106,18 +114,49 @@
                                 $.ligerDialog.alert('请输入车牌号码');
                                 return;
                             }
-                            if (data['联系人'] == '') {
-                                $.ligerDialog.alert('联系人不能为空');
+                            //if (!reg.test(carno) && !reg2.test(carno)) {
+                            //    $.ligerDialog.alert("请输入完整的车牌号码，格式如粤T83G5N");
+                            //    return;
+                            //}
+                            if (data['维修类别'] == '') {
+                                $.ligerDialog.alert('请选择维修类型');
                                 return;
                             }
-                            if (data['联系电话'] == '') {
-                                $.ligerDialog.alert('联系电话不能为空');
+                            if (data['故障描述'] == '') {
+                                $.ligerDialog.alert('请填写故障描述');
                                 return;
+                            }
+                            if (data['维修类别'] != '普通快修') {
+                                if (data['联系人'] == '') {
+                                    $.ligerDialog.alert('联系人不能为空');
+                                    return;
+                                }
+                                if (data['联系电话'] == '') {
+                                    $.ligerDialog.alert('联系电话不能为空');
+                                    return;
+                                }
+                                reg = /^0{0,1}(13[0-9]|145|15[0-9]|18[0-9])[0-9]{8}$/i;
+                                if (!reg.test(data['联系电话'])) {
+                                    $.ligerDialog.alert("请输入11位的手机号码");
+                                    return;
+                                }
+                                if (data['轮胎规格'] == '') {
+                                    $.ligerDialog.alert('轮胎规格不能为空');
+                                    return;
+                                }
+                                if (data['里程表'] == '') {
+                                    $.ligerDialog.alert('里程数不为空');
+                                    return;
+                                }
+                                if (data['油位表'] == '') {
+                                    $.ligerDialog.alert('油位表不能为空');
+                                    return;
+                                }
                             }
                             var submitData = {
                                 wxinfo: data
                             };
-                            $.post('index.php?g=Query&m=Consume&a=mrrecord', submitData,
+                            $.post('index.php?g=Query&m=Consume&a=wxrecord', submitData,
                               function (data) {
                                   $.ligerDialog.alert(data);
                                   window.parent.liger.get('maingrid4').reload();

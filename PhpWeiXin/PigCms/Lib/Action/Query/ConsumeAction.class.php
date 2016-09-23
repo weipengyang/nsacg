@@ -305,6 +305,10 @@ class ConsumeAction extends Action{
         $pinpai=M('车辆类别','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
         echo json_encode($pinpai);
     }
+    public function getdiscount(){
+        $discount=M('会员详细信息','dbo.','difo')->where(array('ID'=>$_GET['id']))->find();
+        echo json_encode($discount);
+    }
     public function waiguan(){
         $pinpai=M('车辆外观','dbo.','difo')->where(array('外观'=>array('like','%'.$_POST['key'].'%')))->select();
         echo json_encode($pinpai);
@@ -327,6 +331,20 @@ class ConsumeAction extends Action{
        if($user['权限']=='超级用户'){
            $key=$_POST['key'];
            $file='./uploads/rlydsv1453614397/cars/'.$key;
+           if(unlink($file)){
+               echo 1;
+               exit;
+           } 
+           echo 0;
+           exit;
+       }
+   }
+   public function deletewxfile(){
+       
+       $user=M('用户管理','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();
+       if($user['权限']=='超级用户'){
+           $key=$_POST['key'];
+           $file='./uploads/rlydsv1453614397/wxfiles/'.$key;
            if(unlink($file)){
                echo 1;
                exit;
@@ -363,6 +381,80 @@ class ConsumeAction extends Action{
         $this->assign('carno',$carno);
         $this->display();
     }
+   public function wxfileupload(){
+        $wxno=$_GET['wxno'];
+        $path='./uploads/'.$this->token.'/wxfiles/'.$wxno.'/';
+        $files=scandir($path);
+        $attrs=array();
+        foreach($files as $key=>$value){
+            if(!in_array($files[$key],array('.','..'))){
+                $files[$key]='http://www.nsayc.com/uploads/rlydsv1453614397/wxfiles/'.$wxno.'/'.$value;
+                $attr['key']=$wxno.'/'.$value;
+                $attr['showDelete']=true;
+                $attr['showZoom']=true;
+                $attr['width']='120px';
+                array_push($attrs,$attr);
+                
+            }
+            else
+                unset($files[$key]);
+          }
+        if($files){
+         $this->assign('files',json_encode(array_values($files)));
+       }else{
+           $this->assign('files','[]');
+        }
+        $this->assign('attrs',json_encode(array_values($attrs)));
+        $this->assign('wxno',$wxno);
+        $this->display();
+    }
+   function uploadwxfile($filetypes=''){
+       import('ORG.Net.UploadFile');
+       $upload = new UploadFile();
+       $upload->maxSize  = intval(C('up_size'))*1024 ;
+       if (!$filetypes){
+           $upload->allowExts  = explode(',',C('up_exts'));
+       }else {
+           $upload->allowExts  = $filetypes;
+       }
+       $wxno=$_GET['wxno'];
+       $upload->autoSub=0;
+       $upload->saveRule=null;
+       $upload->thumbRemoveOrigin=true;
+       
+       $upload->savePath =  './uploads/'.$this->token.'/wxfiles/'.$wxno.'/';// 设置附件上传目录
+       //
+       if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/uploads')||!is_dir($_SERVER['DOCUMENT_ROOT'].'/uploads')){
+           mkdir($_SERVER['DOCUMENT_ROOT'].'/uploads',0777);
+       }
+       $firstLetterDir=$_SERVER['DOCUMENT_ROOT'].'/uploads/'.$this->token;
+       if (!file_exists($firstLetterDir)||!is_dir($firstLetterDir)){
+           mkdir($firstLetterDir,0777);
+       }
+       if (!file_exists($firstLetterDir.'/wxfiles')||!is_dir($firstLetterDir.'/wxfiles')){
+           mkdir($firstLetterDir.'/wxfiles',0777);
+       }
+       if (!file_exists($firstLetterDir.'/wxfiles/'.$wxno)||!is_dir($firstLetterDir.'/wxfiles/'.$wxno)){
+           mkdir($firstLetterDir.'/wxfiles/'.$wxno,0777);
+       }
+       //
+       
+       $upload->hashLevel=4;
+       if(!$upload->upload()) {// 上传错误提示错误信息
+           $msg=$upload->getErrorMsg();
+           echo $msg;
+           exit;
+
+       }else{// 上传成功 获取上传文件信息
+           $info =  $upload->getUploadFileInfo();
+           $this->siteUrl=$this->siteUrl?$this->siteUrl:C('site_url');
+           $msg=$this->siteUrl.substr($upload->savePath,1).$info[0]['savename'];
+           echo json_encode($info);
+           exit;
+
+       }
+      
+   }
    function upload($filetypes=''){
        import('ORG.Net.UploadFile');
        $upload = new UploadFile();
@@ -1327,6 +1419,11 @@ class ConsumeAction extends Action{
        if($_POST['shop']&&trim($_POST['shop'])!='')
        {
            $where['门店']=trim($_POST['shop']);
+           
+       }
+       if($_POST['carno']&&trim($_POST['carno'])!='')
+       {
+           $where['车牌号码']=trim($_POST['carno']);
            
        }
        if($_POST['startDate']&&trim($_POST['startDate'])!='')

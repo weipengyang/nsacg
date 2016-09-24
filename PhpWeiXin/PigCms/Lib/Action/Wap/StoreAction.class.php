@@ -2396,7 +2396,7 @@ public function check(){
             }
 			$cinfo['info'] 	= html_entity_decode($cinfo['info']);
             if($value['is_use']==0){
-                if($value['over_time']-$now>=0){
+                if($value['over_time']-strtotime(date("y-m-d 23:59:59",$now))>=0){
                     $cinfo['isovertime']=0;
                     $list[$key]=array_merge($value,$cinfo);
                 }else{ 

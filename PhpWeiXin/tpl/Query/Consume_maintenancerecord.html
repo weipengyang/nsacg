@@ -843,6 +843,9 @@
                     append.setOptions({ urlParms: { id: record['ID'] } });
                     append.reload();
                 });
+                $("li[data-index='5']").live('click', function () {
+                    $("div[data-index='5']").find('iframe').attr('src','/index.php?g=Query&m=Consume&a=wxfileupload&wxno=' + record['流水号']);
+                });
                 $("li[data-index='6']").live('click', function () {
                     opgrid.setOptions({ urlParms: { id: record['业务编号'] } });
                     opgrid.reload();

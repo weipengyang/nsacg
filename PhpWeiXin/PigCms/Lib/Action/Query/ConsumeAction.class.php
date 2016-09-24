@@ -185,6 +185,170 @@ class ConsumeAction extends Action{
         echo json_encode($data);
     
     }
+    public function getstacks()
+    {   
+
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        $where['1']=1;
+        if(!isset($sortname)){
+            $sortname='编号';
+            $sortorder='desc';
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($_POST['lb']&&trim($_POST['lb'])!='')
+        {
+            $where['类别']=array('like','%'.trim($_POST['lb'].'%'));
+            
+        }
+        if($searchkey){       
+            $searchwhere['编号']=array('like',$searchkey);
+            $searchwhere['名称']=array('like',$searchkey);
+            $searchwhere['规格']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        if($_GET['key']=='39099139')
+        {
+            $where['类别']=array('like','%'.trim('轮胎%'));
+        }
+        $count=M('配件库存','dbo.','difo')->where($where)->count();
+        $yelist=M('配件库存','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
+    public function getcarsinfo()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        if (isset($_POST['khlb'])&&trim($_POST['khlb'])!=''){
+            $where['客户类别']=$_POST['khlb'];
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        $where['车牌号码']=array('neq','0000');
+        if($searchkey){       
+            $searchwhere['品牌']=array('like',$searchkey);
+            $searchwhere['轮胎规格']=array('like',$searchkey);
+            $searchwhere['车型']=array('like',$searchkey);
+            $searchwhere['运输证号']=array('like',$searchkey);
+            $searchwhere['车架号']=array('like',$searchkey);
+            $searchwhere['机油格']=array('like',$searchkey);
+            $searchwhere['空气格']=array('like',$searchkey);
+            $searchwhere['冷气格']=array('like',$searchkey);
+            $searchwhere['汽油格']=array('like',$searchkey);
+            $searchwhere['车主']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['客户类别']=array('like',$searchkey);
+            $searchwhere['联系人']=array('like',$searchkey);
+            $searchwhere['联系电话']=array('like',$searchkey);
+            $searchwhere['保险公司']=array('like',$searchkey);
+            $searchwhere['发动机号']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $count=M('车辆档案','dbo.','difo')->where($where)->count();
+        $yelist=M('车辆档案','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
+
+    public  function getwxinfo(){
+        $type=$_POST['type'];
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $where['1']=1;
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($_POST['lb']&&trim($_POST['lb'])!='')
+        {
+            $where['维修类别']=trim($_POST['lb']);
+            
+        }
+        if($_POST['zt']&&trim($_POST['zt'])!='')
+        {
+            $where['当前状态']=trim($_POST['zt']);
+            
+        }
+        if($_POST['shop']&&trim($_POST['shop'])!='')
+        {
+            $where['门店']=trim($_POST['shop']);
+            
+        }
+        if($_POST['carno']&&trim($_POST['carno'])!='')
+        {
+            $where['车牌号码']=trim($_POST['carno']);
+            
+        }
+        if($_POST['startDate']&&trim($_POST['startDate'])!='')
+        {
+            $where['制单日期']=array('egt',trim($_POST['startDate']));
+            
+        }
+        if($_POST['endDate']&&trim($_POST['endDate'])!='')
+        {
+            $where['制单日期']=array('elt',trim($_POST['endDate']));
+            
+        }
+        if(trim($_POST['startDate'])!=''&&trim($_POST['endDate'])!='')
+        {
+            $where['制单日期']=array('BETWEEN',array(trim($_POST['startDate']),trim($_POST['endDate'])));
+            
+        }
+        if($searchkey){       
+            $searchwhere['制单人']=array('like',$searchkey);
+            $searchwhere['接车人']=array('like',$searchkey);
+            $searchwhere['维修类别']=array('like',$searchkey);
+            $searchwhere['车主']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['客户类别']=array('like',$searchkey);
+            $searchwhere['联系人']=array('like',$searchkey);
+            $searchwhere['门店']=array('like',$searchkey);
+            $searchwhere['送修人']=array('like',$searchkey);
+            $searchwhere['联系电话']=array('like',$searchkey);
+            $searchwhere['当前状态']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $order='流水号 desc';
+        }
+        else{
+            $order=$sortname.' '.$sortorder.',流水号 desc';
+        }
+        if(isset($type)&&$type=='1')
+        {
+            $where['_string']="当前状态 not in ('结束','取消')";
+
+        }
+        $wxinfo=M('维修','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+        $count=M('维修','dbo.','difo')->where($where)->count();
+        $data['Rows']=$wxinfo;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
     public  function getprojectbyname(){
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
@@ -1352,131 +1516,7 @@ class ConsumeAction extends Action{
          $this->assign('yelist',$yelist);
          $this->display();
     }
-   public function getcarsinfo()
-   {   
-       $page=$_POST['page'];
-       $pagesize=$_POST['pagesize'];
-       $sortname=$_POST['sortname'];
-       $sortorder=$_POST['sortorder'];
-       if(!isset($sortname)){
-        $sortname='流水号';
-        $sortorder='desc';
-       }
-       if (isset($_POST['khlb'])&&trim($_POST['khlb'])!=''){
-           $where['客户类别']=$_POST['khlb'];
-       }
-       if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
-           $searchkey='%'.trim($_POST['searchkey']).'%';
-       }
-       $where['车牌号码']=array('neq','0000');
-       if($searchkey){       
-           $searchwhere['品牌']=array('like',$searchkey);
-           $searchwhere['轮胎规格']=array('like',$searchkey);
-           $searchwhere['车型']=array('like',$searchkey);
-           $searchwhere['运输证号']=array('like',$searchkey);
-           $searchwhere['车架号']=array('like',$searchkey);
-           $searchwhere['机油格']=array('like',$searchkey);
-           $searchwhere['空气格']=array('like',$searchkey);
-           $searchwhere['冷气格']=array('like',$searchkey);
-           $searchwhere['汽油格']=array('like',$searchkey);
-           $searchwhere['车主']=array('like',$searchkey);
-           $searchwhere['车牌号码']=array('like',$searchkey);
-           $searchwhere['客户类别']=array('like',$searchkey);
-           $searchwhere['联系人']=array('like',$searchkey);
-           $searchwhere['联系电话']=array('like',$searchkey);
-           $searchwhere['保险公司']=array('like',$searchkey);
-           $searchwhere['发动机号']=array('like',$searchkey);
-           $searchwhere['_logic']='OR';
-           $where['_complex']=$searchwhere;
-           
-       }
-       $count=M('车辆档案','dbo.','difo')->where($where)->count();
-       $yelist=M('车辆档案','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
-       $data['Rows']=$yelist;
-       $data['Total']=$count;
-       echo json_encode($data);
-       
-   }
 
-   public  function getwxinfo(){
-       $type=$_POST['type'];
-       $page=$_POST['page'];
-       $pagesize=$_POST['pagesize'];
-       $where['1']=1;
-       if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
-           $searchkey='%'.trim($_POST['searchkey']).'%';
-       }
-       if($_POST['lb']&&trim($_POST['lb'])!='')
-       {
-           $where['维修类别']=trim($_POST['lb']);
-           
-       }
-       if($_POST['zt']&&trim($_POST['zt'])!='')
-       {
-           $where['当前状态']=trim($_POST['zt']);
-           
-       }
-       if($_POST['shop']&&trim($_POST['shop'])!='')
-       {
-           $where['门店']=trim($_POST['shop']);
-           
-       }
-       if($_POST['carno']&&trim($_POST['carno'])!='')
-       {
-           $where['车牌号码']=trim($_POST['carno']);
-           
-       }
-       if($_POST['startDate']&&trim($_POST['startDate'])!='')
-       {
-           $where['制单日期']=array('egt',trim($_POST['startDate']));
-           
-       }
-       if($_POST['endDate']&&trim($_POST['endDate'])!='')
-       {
-           $where['制单日期']=array('elt',trim($_POST['endDate']));
-           
-       }
-       if(trim($_POST['startDate'])!=''&&trim($_POST['endDate'])!='')
-       {
-           $where['制单日期']=array('BETWEEN',array(trim($_POST['startDate']),trim($_POST['endDate'])));
-           
-       }
-       if($searchkey){       
-           $searchwhere['制单人']=array('like',$searchkey);
-           $searchwhere['接车人']=array('like',$searchkey);
-           $searchwhere['维修类别']=array('like',$searchkey);
-           $searchwhere['车主']=array('like',$searchkey);
-           $searchwhere['车牌号码']=array('like',$searchkey);
-           $searchwhere['客户类别']=array('like',$searchkey);
-           $searchwhere['联系人']=array('like',$searchkey);
-           $searchwhere['门店']=array('like',$searchkey);
-           $searchwhere['送修人']=array('like',$searchkey);
-           $searchwhere['联系电话']=array('like',$searchkey);
-           $searchwhere['当前状态']=array('like',$searchkey);
-           $searchwhere['_logic']='OR';
-           $where['_complex']=$searchwhere;
-
-       }
-       $sortname=$_POST['sortname'];
-       $sortorder=$_POST['sortorder'];
-       if(!isset($sortname)){
-           $order='流水号 desc';
-       }
-       else{
-           $order=$sortname.' '.$sortorder.',流水号 desc';
-       }
-       if(isset($type)&&$type=='1')
-       {
-           $where['_string']="当前状态 not in ('结束','取消')";
-
-       }
-       $wxinfo=M('维修','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
-       $count=M('维修','dbo.','difo')->where($where)->count();
-       $data['Rows']=$wxinfo;
-       $data['Total']=$count;
-       echo json_encode($data);
-       
-   }
    public function assigntask(){
        if(IS_POST){
            $zhuxiu=$_POST['zhuxiu'];

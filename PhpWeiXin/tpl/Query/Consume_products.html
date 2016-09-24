@@ -1,19 +1,112 @@
-﻿<!doctype html>
-<html class="no-js fixed-layout">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>爱养车</title>
-    <meta name="description" content="爱养车">
-    <meta name="keywords" content="index">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="renderer" content="webkit">
-    <meta http-equiv="Cache-Control" content="no-siteapp" />
-    <link rel="icon" type="image/png" href="assets/i/favicon.png">
-    <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
-    <meta name="apple-mobile-web-app-title" content="Amaze UI" />
+    <title>配件库存查询</title>
+    <meta name="description" content="爱养车" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
     <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.7.0/css/amazeui.min.css" />
     <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script>
+        var grid;
+        $(document).ready(function () {
+            var key = "{pigcms:$_GET['key']}";
+            $('#search').click(function () {
+                var yjml = $('#yjml').val();
+                var ejml = $('#ejml').val();
+                var sjml = $('#sjml').val();
+                var lb = '';
+                if (yjml != '') {
+                    lb = yjml;
+                }
+                if (ejml != '') {
+                    lb += '>>' + ejml;
+                }
+                if (sjml != '') {
+                    lb += '>>' + sjml;
+                }
+                var parms ={ };
+                if (key)
+                    parms['key']=key;
+                if ($('#searchkey').val() != '')
+                    parms['searchkey']=$('#searchkey').val();
+                if (lb)
+                    parms['lb'] =lb;
+                grid.set('parms', parms);
+                grid.reload();
+
+            });
+            $("#yjml").change(function () {
+                var code = $('#yjml').val();
+                var submitData = {
+                    code: code
+                };
+                if (code != '') {
+                    $.post('index.php?g=Query&m=Consume&a=products&key=' + key, submitData,
+                     function (data) {
+                         if (data) {
+                             $('#ejml').empty();
+                             $('#ejml').append("<option value=''>请选择</option>");
+                             $('#sjml').empty();
+                             $('#sjml').append("<option value=''>请选择</option>");
+                             $(data).each(function () {
+                                 var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                                 $('#ejml').append(option);
+                             });
+                             var parms = {};
+                             parms['lb'] = code;
+                             grid.set('parms', parms);
+                             grid.reload();
+
+                         }
+                     }, 'JSON');
+                }
+            });
+            $("#ejml").change(function () {
+                var code = $('#ejml').val();
+                var submitData = {
+                    code: code
+                };
+                if (code != '') {
+                    $.post('index.php?g=Query&m=Consume&a=products&key=' + key, submitData,
+                     function (data) {
+                         if (data) {
+                             $('#sjml').empty();
+                             $('#sjml').append("<option value=''>请选择</option>");
+                             $(data).each(function () {
+                                 var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                                 $('#sjml').append(option);
+                             });
+                         }
+                         $('#search').click();
+                     },'JSON');
+                }
+            });
+            $('#sjml').change(function () {
+                $('#search').click();
+            });
+            grid = $("#maingrid4").ligerGrid({
+                columns: [
+                { display: '编号', name: '编号', align: 'left', width: 120 },
+                { display: '名称', name: '名称', minWidth: 150},
+                { display: '规格', name: '规格', minWidth: 100 },
+                { display: '品牌', name: '品牌', minWidth: 100 },
+                { display: '库存', name: '库存', width: 60, align: 'left' },
+                { display: '入库数', name: '入库数量', align: 'center', width: 50 },
+                { display: '出库数', name: '出库数', width: 60, align: 'left' },
+                { display: '批发价', name: '一级批发价', minWidth: 60 },
+                { display: '配套车型', name: '备注', minWidth: 200 },
+        ],
+                isScroll: true,
+                pageSize: 20,
+                url: '/index.php?g=Query&m=Consume&a=getstacks',
+                height: '100%'
+            });
+        });
+    </script>
 </head>
 <body>
     <!--[if lte IE 9]>
@@ -35,13 +128,9 @@
                                 配件分类
                                 <select data-am-selected="{btnSize: 'sm'}" id="yjml">
                                     <option value="">所有分类</option>
-                                    <if condition="$_GET['key'] eq '39099139'">
-                                       <option value="轮胎">轮胎</option>
-                                     <else/>
                                         <volist name="pjlist" id="item">
                                             <option value="{pigcms:$item.名称}">{pigcms:$item.名称}</option>
                                         </volist>
-                                    </if>
                                 </select>
                                 <select data-am-selected="{btnSize: 'sm'}" id="ejml">
                                     <option value="">所有分类</option>
@@ -60,143 +149,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="am-g">
-                        <div class="am-u-sm-12">
-                            <form class="am-form">
-                                <table class="am-table am-table-striped am-table-hover table-main">
-                                    <thead>
-                                        <tr>
-                                            <th class="table-title">编号</th>
-                                            <th class="table-title">名称</th>
-                                            <th class="table-title">规格</th>
-                                            <th class="table-title">库存</th>
-                                            <if condition="$_GET['key'] neq '39099139'">
-                                                <th class="table-title ">入库数</th>
-                                                <th class="table-title ">出库数</th>
-                                             </if>
-                                                <th class="table-title ">批发价</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <volist name="list" id="item">
-                                            <tr>
-                                                <td>{pigcms:$item.编号}</td>
-                                                <td>{pigcms:$item.名称}</td>
-                                                <td>{pigcms:$item.规格}</td>
-                                                <td>{pigcms:$item.库存}</td>
-                                                <if condition="$_GET['key'] neq '39099139'">
-                                                    <td>{pigcms:$item.入库数量}</td>
-                                                    <td>{pigcms:$item.出库数量}</td>
-                                                 </if>
-                                                    <td>{pigcms:$item.一级批发价}</td>
-</tr>
-
-                                        </volist>
-                                    </tbody>
-                                </table>
-                                <div class="am-cf">
-                                    <div class="am-fr">
-                                        <div class="cLine">
-                                            <div class="pageNavigator right">
-                                                <div class="pages">{pigcms:$page}</div>
-                                            </div>
-                                            <div class="clr"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr />
-                            </form>
-                        </div>
-                    </div>
+                    <div id="maingrid4" style="margin:0; padding:0;"></div>
                 </div>
-            </div>
+
+         </div>
+
         <!-- content end -->
     </div>
-    <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
-    <script src="/tpl/static/assets/js/jquery.min.js"></script>
     <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
-    <script>
-        $(document).ready(function () {
-            var key="{pigcms:$_GET['key']}";
-
-            $('#search').click(function () {
-                var yjml = $('#yjml').val();
-                var ejml = $('#ejml').val();
-                var sjml = $('#sjml').val();
-                var lb = '';
-                if (yjml != '')
-                {
-                    lb = yjml;
-                }
-                if (ejml != '') {
-                    lb += '>>' + ejml;
-                }
-                if (sjml != '') {
-                    lb += '>>' + sjml;
-                }
-                var url = '/index.php?g=Query&m=Consume&a=products';
-                if (key)
-                    url += '&key=' + key;
-                if($('#searchkey').val()!='')
-                    url += '&searchkey=' + $('#searchkey').val();
-                if (lb)
-                    url += '&lb=' + lb;
-               
-                location.href = url;
-            });
-            $("#yjml").change(function () {
-                var code=$('#yjml').val();
-                var submitData = {
-                    code: code
-                };
-                if (code != '') {
-                    $.post('index.php?g=Query&m=Consume&a=products&key=' + key, submitData,
-                     function (data) {
-                         if (data) {
-                             $('#ejml').empty();
-                             $('#ejml').append("<option value=''>请选择</option>");
-                             $('#sjml').empty();
-                             $('#sjml').append("<option value=''>请选择</option>");
-                             $(data).each(function () {
-                                 var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
-                                 $('#ejml').append(option);
-                             });
-
-                         }
-                     }, 'JSON');
-                }
-            });
-            $("#ejml").change(function () {
-                var code=$('#ejml').val();
-                var submitData = {
-                    code: code
-                };
-                if (code != '') {
-                    $.post('index.php?g=Query&m=Consume&a=products&key=' + key, submitData,
-                     function (data) {
-                         if (data) {
-                             $('#sjml').empty();
-                             $('#sjml').append("<option value=''>请选择</option>");
-                             $(data).each(function () {
-                                 var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
-                                 $('#sjml').append(option);
-                             });
-                         }
-                     }, 'JSON');
-                }
-            });
-        
-
-        });
-        //reflash();
-        //function reflash() {
-
-        //    location.href = location.href;
-        //    setTimeout("reflash()", 100000);
-
-        //}
-    </script>
-
-</body>
+    </body>
 </html>

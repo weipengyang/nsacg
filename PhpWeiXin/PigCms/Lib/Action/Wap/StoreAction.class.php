@@ -1340,9 +1340,7 @@ public function check(){
 		if (empty($product)) {
 			$this->redirect(U('Store/products',array('token' => $this->token,'wecha_id' => $this->wecha_id,'cid' => $this->_cid, 'twid' => $this->_twid)));
 		}
-		
 		$cid = $this->_isgroup ? $this->mainCompany['id'] : $this->_cid;
-		
 		$product['intro'] = isset($product['intro']) ? htmlspecialchars_decode($product['intro']) : '';
 		$this->assign('product', $product);
 		if ($product['endtime']){
@@ -1381,28 +1379,6 @@ public function check(){
 		$this->assign('metaTitle', $product['name']);
 		$calCartInfo = $this->calCartInfo();
 		$this->assign('count', $calCartInfo[0]);
-		$where = array('token' => $this->token, 'cid' => $cid, 'pid' => $id, 'isdelete' => 0);
-		$product_model = M("Product_comment");
-		$score      = $product_model->where($where)->sum('score');
-		$count      = $product_model->where($where)->count();
-		$comment = $product_model->where($where)->order('id desc')->limit("0, 10")->select();
-		foreach ($comment as &$com) {
-			$com['wecha_id'] = $com['truename'];
-		}
-		
-		$percent = "100%";
-		if ($count) {
-			$score = number_format($score / $count, 1);
-			$percent =  number_format($score / 5, 2) * 100 . "%";
-		}
-		$totalPage = ceil($count / 10);
-		$page = $totalPage > 1 ? 2 : 0;
-		
-		$this->assign('score', $score);
-		$this->assign('num', $count);
-		$this->assign('page', $page);
-		$this->assign('comment', $comment);
-		$this->assign('percent', $percent);
 		$this->display();
 	}
 	
@@ -2396,7 +2372,7 @@ public function check(){
             }
 			$cinfo['info'] 	= html_entity_decode($cinfo['info']);
             if($value['is_use']==0){
-                if($value['over_time']-strtotime(date("y-m-d 23:59:59",$now))>=0){
+                if(strtotime(date("y-m-d 23:59:59",$value['over_time']))-$now>=0){
                     $cinfo['isovertime']=0;
                     $list[$key]=array_merge($value,$cinfo);
                 }else{ 
@@ -2983,12 +2959,14 @@ public function check(){
     		exit;
         }
         $days=$integral['days'];
-        $data['over_time']=strtotime(date('Y-m-d',time)."+$days day");
-        $data['coupon_num']=date('YmdHis',time()).mt_rand(1000,9999);
-        $rid 	= M('Member_card_coupon_record')->add($data);//会员优惠券表中增加一条记录
-
+        $num=$integral['num'];
+        for($i=0;$i<$num;$i++){
+            $data['over_time']=strtotime(date('Y-m-d',time)."+$days day");
+            $data['coupon_num']=date('YmdHis',time()).mt_rand(1000,9999);
+            M('Member_card_coupon_record')->add($data);//会员优惠券表中增加一条记录
+        }
         $arr= array();
-        $arr['itemid']	= $rid; //暂取记录id
+        $arr['itemid']	= 0; //暂取记录id
         $arr['wecha_id']= $this->wecha_id;
         $arr['expense']	= 0;
         $arr['time']	= $now;
@@ -3026,10 +3004,10 @@ public function check(){
     		$data[$k]['info']	= html_entity_decode($n['info']);
     		$cwhere = array('token'=>$this->token,'coupon_type'=>$type,'coupon_id'=>$n['id']);
     		$count 	= M('Member_card_coupon_record')->where($cwhere)->count();
-            $leftcount=$n['people']-$count-$data[$k]['basenum'];
+            $leftcount=$n['people']-$count/$n['num']-$data[$k]['basenum'];
             $data[$k]['get_count'] 	= $leftcount>0?$leftcount:0;//剩余多少张
     		$data[$k]['count'] 	= $n['people'];//总共多少张
-            $data[$k]['count1'] = $count+$data[$k]['basenum'];//
+            $data[$k]['count1'] = $count/$n['num']+$data[$k]['basenum'];//
 
     	}
     	$this->assign('list',$data);
@@ -3042,7 +3020,7 @@ public function check(){
     	$data['info']	= html_entity_decode($data['info']);
     	$cwhere = array('token'=>$this->token,'coupon_type'=>3,'coupon_id'=>$data['id']);
     	$count 	= M('Member_card_coupon_record')->where($cwhere)->count();
-        $leftcount=$data['people']-$count-$data['basenum'];
+        $leftcount=$data['people']-$count/$data['num']-$data['basenum'];
         $data['get_count'] 	= $leftcount>0?$leftcount:0;//剩余多少张
         $remainSeconds=$data['enddate']-time();
     	$this->assign('remainSeconds',$remainSeconds);

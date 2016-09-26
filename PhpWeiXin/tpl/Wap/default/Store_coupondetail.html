@@ -42,7 +42,7 @@
                                     <div class="swiper-slide"><img src="{pigcms:$img.image}" style="width:100%;height:100%"></div>
                                 </volist>
                                 <else />
-                                <div class="swiper-slide"><img src="{pigcms:$coupon.pic}"></div>
+                                <div class="swiper-slide"><img src="{pigcms:$coupon.pic}" style="width:100%;height:100%"></div>
                             </if>
                         </div>
                         <div class="swiper-pagination"></div>
@@ -50,12 +50,13 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-header">{pigcms:$coupon.title}<span style="font-size:0.6rem">(总共<span id="stock" style="color:orange">{pigcms:$coupon.people}张</span>)</span></div>
+                <div class="card-header">{pigcms:$coupon.distitle}<span style="font-size:0.6rem">(总共<span id="stock" style="color:orange">{pigcms:$coupon.people}<if condition="$coupon['num'] gt 1">份<else />张</if></span>)</span></div>
                 <div class="card-content">
                     <div class="card-content-inner">
                         <div class="item-title">需要积分:<span style="color:orange">{pigcms:$coupon.integral}</span>分</div>
+                        <div class="item-title"><if condition="$coupon['num'] gt 1">包含{pigcms:$coupon.title}<span style="color:red">{pigcms:$coupon.num}</span>张</if></div>
                         <div class="item-title">
-                            <span>剩余<span style="color:red">{pigcms:$coupon.get_count}</span>张</span>
+                            <span>剩余<span style="color:red">{pigcms:$coupon.get_count}</span><if condition="$coupon['num'] gt 1">份<else />张</if></span>
                         </div>
                         <div class="item-title">
                             <span id="remainTime" style=""></span>
@@ -64,7 +65,13 @@
                         <div class="item-title" style="padding-top:10px">
                             <div class="row">
                                 <div class="col-50"></div>
-                                <div class="col-50"><a href="#" id="exchange" class="button button-big button-fill ">立即兑换</a></div>
+                                <div class="col-50">
+                                    <if condition="$coupon['get_count'] neq 0">
+                                        <a href="#" id="exchange" class="button button-big button-fill" >立即兑换</a>
+                                        <else/>
+                                        <a href="#"  class="button button-big button-fill" style="background-color:#B2B2B2">已兑换完</a>
+                                        </if>
+                                    </div>
                             </div>
                         </div>
                     </div>

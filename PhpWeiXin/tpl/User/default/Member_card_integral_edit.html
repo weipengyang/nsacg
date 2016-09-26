@@ -45,8 +45,12 @@ editor = K.create('#useinfo', {
           <div class="msgWrap form">
             <table class="userinfoArea" border="0" cellspacing="0" cellpadding="0" width="100%">
               <tbody>
+                <tr>
+                    <th>显示名称：</th>
+                    <td><input type="input" class="px" id="distitle" value="{pigcms:$vip.distitle}" name="distitle" style="width:400px;"> </td>
+                </tr>
 				<tr>
-              		<th>礼品名称：</th>
+              		<th>礼品券名称：</th>
               		<td><input type="input" class="px" id="title" value="{pigcms:$vip.title}" name="title" style="width:400px;"> </td>
               	</tr>
                   <tr>
@@ -62,6 +66,19 @@ editor = K.create('#useinfo', {
 					<td><input type="input" class="px" id="title" value="{pigcms:$vip.integral}" name="integral" style="width:50px;"> 积分				　
 				</td>
 				</tr>
+                <tr>
+                    <th>包含券数量：</th>
+                    <td>
+                        <input type="input" class="px" id="num" value="{pigcms:$vip.num}" name="num" style="width:50px;"> 张				　
+                    </td>
+                </tr>
+                  <tr>
+                      <th>对应项目编码：</th>
+                      <td>
+                          <input type="input" class="px" id="code" value="{pigcms:$vip.code}" name="code" style="width:50px;"> 				　
+                      </td>
+                  </tr>
+
                   <tr>
                       <th>使用有效：</th>
                       <td><input type="text" class="px" id="days" value="{pigcms:$vip.days}" name="days" style="width:100px;">天（从兑换当天算起） </td>

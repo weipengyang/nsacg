@@ -130,7 +130,14 @@ class ConsumeAction extends Action{
 
         M('维修','dbo.','difo')->where(array('ID'=>$id))->save($data);
     }
-   
+    public function changestate(){
+       if(IS_POST){
+           $id=$_POST['id'];
+           $zt=$_POST['zt'];
+           M('维修','dbo.','difo')->where(array('流水号'=>$id))->save(array('当前状态'=>$zt));
+           
+       }
+    }
     public  function getscoreinfo(){
     
         $page=$_POST['page'];

@@ -2,6 +2,7 @@ var indexdata =
 [
     { text: '客户管理',isexpand:true, children: [ 
 		{ url: "/index.php?g=Query&m=Consume&a=maintenance", text: "维修录入" },
+		{ url: "/index.php?g=Query&m=Consume&a=maintenancerecord", text: "维修开单" },
 		{url:"/index.php?g=Query&m=Consume&a=carsinfo",text:"车辆资料"},
 		{url:"/index.php?g=Query&m=Consume&a=membercard",text:"爱养车会员"},
         {url:"/index.php?g=Query&m=Consume&a=acgmembercard",text:"爱车港会员"}

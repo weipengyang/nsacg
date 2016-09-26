@@ -66,7 +66,13 @@
                         <div class="item-title" style="padding-top:10px">
                             <div class="row">
                                 <div class="col-50"></div>
-                                <div class="col-50"><a href="#" onclick="QuickBuy()" class="button button-big button-fill ">立即支付</a></div>
+                                <div class="col-50">
+                                    <if condition="$product['num'] neq 0">
+                                        <a href="#" onclick="QuickBuy()" class="button button-big button-fill">立即支付</a>
+                                        <else />
+                                        <a href="#" class="button button-big button-fill" style="background-color:#B2B2B2">已买光了</a>
+                                    </if>
+                                </div>
                             </div>
                         </div>
                     </div>

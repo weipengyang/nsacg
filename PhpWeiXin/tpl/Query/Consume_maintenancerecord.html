@@ -13,7 +13,7 @@
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
-    <link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+    <link href="//at.alicdn.com/t/font_1474792210_8989851.css" rel="stylesheet" type="text/css" />
 
     <style type="text/css">
         .l-text-field {
@@ -75,27 +75,27 @@
                         <button id="search" type="button">模糊查询</button>
                     </div>
                     <div class="am-u-sm-2 am-u-md-3" id="optdiv">
-                        <div id="baojiadiv"  style="display:none"><button type="button" class="am-btn am-btn-primary am-round am-btn-sm"><i class="am-icon-hand-o-right"></i>主管派工</button>
+                        <div id="baojiadiv"  style="display:none"><button type="button" onclick="changeState('派工','paigong');" class="am-btn am-btn-primary am-round am-btn-sm"><i class="am-icon-hand-o-right"></i>主管派工</button>
                         </div>
                         <div id="paigongdiv" style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm"><i class="am-icon-hand-o-left"></i>维修报价</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm"><i class="am-icon-hand-o-right"></i>维修领料</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('报价','baojia');" ><i class="am-icon-hand-o-left"></i>维修报价</button>
+                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('领料','lingliao');"><i class="am-icon-hand-o-right"></i>维修领料</button>
                         </div>
                         <div id="lingliaodiv"  style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm"><i class="am-icon-hand-o-left"></i>主管派工</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm"><i class="am-icon-hand-o-right"></i>完工审核</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('派工','paigong');"><i class="am-icon-hand-o-left"></i>主管派工</button>
+                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('审核','shenhe');"><i class="am-icon-hand-o-right"></i>完工审核</button>
                         </div>
                         <div id="shenhediv"  style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm"><i class="am-icon-hand-o-left"></i>驳回派工</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm"><i class="am-icon-hand-o-right"></i>维修结算</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('派工','paigong');"><i class="am-icon-hand-o-left"></i>驳回派工</button>
+                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('结算','jiesuan');"><i class="am-icon-hand-o-right"></i>维修结算</button>
                         </div>
                         <div id="jiesuandiv"  style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm"><i class="am-icon-hand-o-left"></i>完工审核</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm"><i class="am-icon-hand-o-right"></i>车辆出厂</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('审核','shenhe');"><i class="am-icon-hand-o-left"></i>完工审核</button>
+                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('出厂','chuchang');"><i class="am-icon-hand-o-right"></i>车辆出厂</button>
                         </div>
                         <div id="chuchangdiv"  style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm"><i class="am-icon-hand-o-left"></i>维修结算</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm"><i class="am-icon-hand-o-right"></i>确认出厂</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('结算','jiesuan');"><i class="am-icon-hand-o-left"></i>维修结算</button>
+                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('结束','baojia');"><i class="am-icon-hand-o-right"></i>确认出厂</button>
                         </div>
                     </div>
                 </div>
@@ -113,9 +113,6 @@
                                     </div>
                                     <div class="am-u-sm-8 am-u-md-8">
                                         <select data-am-selected name="zhuxiu" id="zhuxiu">
-                                            <volist name="list" id="item">
-                                                <option value="{pigcms:$item.姓名}">{pigcms:$item.姓名}</option>
-                                            </volist>
                                         </select>
                                     </div>
                                 </div>
@@ -216,27 +213,177 @@
                 });
             }
         }
-        function assigntask(itemid) {
-            $('#doc-modal-4').modal({
-                relatedTarget: this,
-                width: 380,
-                closeOnConfirm: false,
-                onConfirm: function (e) {
-                    var zhuxiu = $('#zhuxiu').val();
-                    var data = {
-                        zhuxiu: zhuxiu,
-                        itemid: itemid,
-                    };
-                    $.post('/index.php?g=Query&m=Consume&a=maintenance', data,
-                      function (msg) {
-                          alert(msg);
-                          $('#doc-modal-4').modal('close');
-                          location.href = location.href;
-                      });
-                },
-                onCancel: function (e) {
-                }
+        function assigntask(itemid,shop,wxlb) {
+            if (typeof(itemid)=='object') {
+                itemid = record['ID'];
+                shop = record['门店'];
+                wxlb = record['维修类别'];
+            }
+            $.post('/index.php?g=Query&m=Consume&a=getzhuxiu', {
+                shop:shop,
+                wxlx: wxlb
+            }, function (data)
+            {
+                $('#zhuxiu').html('');
+                $(eval(data)).each(function(){
+                    var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
+                    $('#zhuxiu').append(option);
             });
+                $('#doc-modal-4').modal({
+                    relatedTarget: this,
+                    width: 380,
+                    closeOnConfirm: false,
+                    onConfirm: function (e) {
+                        var zhuxiu = $('#zhuxiu').val();
+                        var data = {
+                            zhuxiu: zhuxiu,
+                            itemid: itemid,
+                        };
+                        $.post('/index.php?g=Query&m=Consume&a=assigntask', data,
+                          function (msg) {
+                              alert(msg);
+                              $('#doc-modal-4').modal('close');
+                              reload();
+                              //location.href = location.href;
+                          });
+                    },
+                    onCancel: function (e) {
+                    }
+                });
+
+            });
+
+        }
+        function changeState(zt,opt) {
+            var row = grid.getSelectedRow();
+            if (row) {
+                var data = {
+                    id: row['流水号'],
+                    zt: zt,
+                };
+                $.post('/index.php?g=Query&m=Consume&a=changestate', data,
+                  function (msg) {
+                      $('#' + opt).click();
+                      setTimeout(function () {
+                          for (var i = 0; i < grid.data.Rows.length; i++)
+                          {
+                              if (grid.data.Rows[i]['流水号'] == row['流水号'])
+                              {
+                                  grid.select(grid.data.Rows[i]);
+
+                              }
+                          }
+                      }, 500);
+                  });
+            }
+        }
+        function reload() {
+            setdata(record);
+            project.setOptions({ urlParms: { ID: record['ID'] } });
+            project.reload();
+            product.setOptions({ urlParms: { id: record['ID'] } });
+            product.reload();
+            append.setOptions({ urlParms: { id: record['ID'] } });
+            append.reload();
+            opgrid.setOptions({ urlParms: { id: record['业务编号'] } });
+            opgrid.reload();
+            historygrid.setOptions({ urlParms: { carno: record['车牌号码'] } });
+            historygrid.reload();
+            $("div[data-index='5']").find('iframe').attr('src', '/index.php?g=Query&m=Consume&a=wxfileupload&wxno=' + record['流水号']);
+
+        }
+        function submitForm() {
+
+            var form = liger.get("form1");
+            var data = form.getData();
+            data = JSON.stringify(data);
+            data = JSON2.parse(data);
+            $.post('/index.php?g=Query&m=Consume&a=savewxinfo', data,
+              function (msg) {
+                  $.ligerDialog.alert(msg);
+                  location.href = location.href;
+              });
+
+        }
+        function getGridOptions(checkbox) {
+            var options = {
+                columns: [
+                { display: '车主名称', name: '名称', align: 'left', width: 100, minWidth: 60 },
+                { display: '会员编号', name: '会员编号', minWidth: 120, width: 100 },
+                { display: '等级', name: '等级', minWidth: 120, width: 100 },
+                { display: '联系人', name: '联系人', minWidth: 140, width: 100 },
+                { display: '联系电话', name: '联系电话', width: 100 },
+                { display: '手机号码', name: '手机号码', width: 100 },
+                { display: '业务员', name: '业务员', width: 100 }
+                ],
+                switchPageSizeApplyComboBox: false,
+                url: '/index.php?g=Query&m=Consume&a=getuserinfo',
+                //data: $.extend({}, {}),
+                pageSize: 10,
+                checkbox: checkbox
+            };
+            return options;
+        }
+        function inidata() {
+            $("div[data-index='1']").html("<div id='projectgrid' style='margin:0;padding 0'><div>");
+            $("div[data-index='2']").html("<div id='productgrid'style='margin:0;padding 0'><div>");
+            $("div[data-index='3']").html("<div id='appendgrid'style='margin:0;padding 0'><div>");
+            $("div[data-index='5']").html('<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=wxfileupload&wxno=' + record['流水号'] + '"></iframe></div>');
+            $("div[data-index='6']").html("<div id='opgrid'style='margin:0;padding 0'><div>");
+            $("div[data-index='7']").html("<div id='historygrid'style='margin:0;padding 0'><div>");
+
+        }
+        function setClickEvent() {
+            $("li[data-index='1']").live('click', function () {
+                project.setOptions({ urlParms: { ID: record['ID'] } });
+                project.reload();
+            });
+            $("li[data-index='2']").live('click', function () {
+                product.setOptions({ urlParms: { id: record['ID'] } });
+                product.reload();
+            });
+            $("li[data-index='3']").live('click', function () {
+                append.setOptions({ urlParms: { id: record['ID'] } });
+                append.reload();
+            });
+            $("li[data-index='5']").live('click', function () {
+                $("div[data-index='5']").find('iframe').attr('src', '/index.php?g=Query&m=Consume&a=wxfileupload&wxno=' + record['流水号']);
+            });
+            $("li[data-index='6']").live('click', function () {
+                opgrid.setOptions({ urlParms: { id: record['业务编号'] } });
+                opgrid.reload();
+            });
+            $("li[data-index='7']").live('click', function () {
+                var parms = {
+                    carno: record['车牌号码']
+                };
+                historygrid.set('parms', parms);
+                historygrid.reload();
+            });
+        }
+        function setdisabled() {
+            project.toolbarManager.setDisabled('assign');
+            product.toolbarManager.setDisabled('btnlingliao');
+            product.toolbarManager.setDisabled('btntuiliao');
+            product.toolbarManager.setDisabled('btncaigou');
+        }
+        function setdata(record) {
+            if (record && record != '') {
+                record = JSON2.stringify(record);
+                record = JSON2.parse(record);
+                form.setData(record);
+                $("input[ligeruiid='车主']").val(record['车主']);
+                $("input[ligeruiid='车型']").val(record['车型']);
+                $("input[ligeruiid='客户类别']").val(record['客户类别']);
+                $("input[ligeruiid='品牌']").val(record['品牌']);
+                $("input[ligeruiid='车辆类别']").val(record['车辆类别']);
+                $("input[ligeruiid='保险公司']").val(record['保险公司']);
+                $("input[ligeruiid='服务顾问']").val(record['服务顾问']);
+
+            }
+        }
+        function format(rowdata, index, value) {
+            return todate(value);
         }
         $(function () {
             grid = $("#maingrid4").ligerGrid({
@@ -283,7 +430,7 @@
                 {
                     display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
                         if (rowdata['制单人'] == '系统录单' && rowdata['主修人'] == '')
-                            return '<a href="javascript:void(0);" onclick="assigntask(\'' + rowdata.流水号 + '\');"><strong>派工</strong></a>';
+                            return '<a href="javascript:void(0);" onclick="assigntask(\'' + rowdata.ID + '\',\''+rowdata['门店']+'\',\''+rowdata['维修类别']+'\');"><strong>派工</strong></a>';
                         else
                             return '';
                     }
@@ -298,8 +445,7 @@
                 },
                 onSelectRow: function (data, rowindex,rowobj) {
                     record = data;
-                    setdata(data);
-                    form.selectTab(0);
+                    reload();
                 },
                 onSuccess: function (data) {
                     if (data.Rows) {
@@ -307,7 +453,7 @@
                         $.getJSON('index.php?&g=Query&m=Consume&a=getdiscount&id=' + record['客户ID'], function (data) {
                             discount = data;
                         });
-                        setdata(data.Rows[0]);
+                        //setdata(data.Rows[0]);
                     }
                 }
             });
@@ -531,10 +677,28 @@
                             }, icon: 'ad icon iconfont icon-dingdanguanli'
                         },
                         { line: true },
-                        {
-                            id: 'assign',
-                            text: '派工', click: assigntask, icon: 'memeber'
-                        },
+                         {
+                             id: 'deleteproject',
+                             text: '删除', click: function () {
+                                 $.ligerDialog.confirm('确定要删除?', function (yes) {
+                                     if (yes) {
+                                         var rows = project.getSelectedRows();
+                                         if (rows.length > 0) {
+                                             var data = {
+                                                 projects: rows
+                                             }
+                                             $.post('/index.php?g=Query&m=Consume&a=deleteproject', data,
+                                               function (msg) {
+                                                   $.ligerDialog.alert(msg);
+                                                   project.reload();
+                                               });
+                                         } else {
+                                             $.ligerDialog.alert('请选择要删除项目');
+                                         }
+                                     }
+                                 });
+                             }, icon: 'delete'
+                         },
                         { line: true },
                         {
                             id: 'modifyproject',
@@ -560,28 +724,10 @@
                             }, icon: 'modify'
                         },
                         { line: true },
-                        {
-                            id: 'deleteproject',
-                            text: '删除', click: function () {
-                                $.ligerDialog.confirm('确定要删除?', function (yes) {
-                                    if (yes) {
-                                        var rows = project.getSelectedRows();
-                                        if (rows.length > 0) {
-                                            var data = {
-                                                projects: rows
-                                            }
-                                            $.post('/index.php?g=Query&m=Consume&a=deleteproject', data,
-                                              function (msg) {
-                                                  alert(msg);
-                                                  project.reload();
-                                              });
-                                        } else {
-                                            $.ligerDialog.alert('请选择要删除项目');
-                                        }
-                                    }
-                                });
-                            }, icon: 'delete'
-                        }
+                         {
+                             id: 'assign',
+                             text: '派工', click: assigntask, icon: 'memeber'
+                         }
                         ]
                     }
                 });
@@ -643,9 +789,6 @@
                             }, icon: 'add'
                         },
                         { line: true },
-                        { text: '修改', click: null, icon: 'modify' },
-                        { text: '领料', click: null, icon: 'modify' },
-                        { line: true },
                         {
                             text: '删除',
                             click: function () {
@@ -667,7 +810,12 @@
                                     }
                                 });
                             }, icon: 'delete'
-                        }
+                        },
+                        { line: true },
+                        { id:'btnmodify',text: '修改', click: null, icon: 'modify' },
+                        { id: 'btnlingliao', text: '领料', click: null, icon: 'ad icon iconfont icon-lingliao' },
+                        { id: 'btntuiliao', text: '退料', click: null, icon: 'ad icon iconfont icon-jianqu' },
+                        { id: 'btncaigou', text: '采购开单', click: null, icon: 'ad icon iconfont icon-cart' },
                         ]
                     }
                 });
@@ -774,254 +922,15 @@
                         wxinfo(data['流水号']);
                     }
                 });
-                setClickEvent();
+                setdisabled();
+                //setClickEvent();
                 grid.select(grid.data.Rows[0]);
-            }, 500);
-            function reload() {
-                project.setOptions({ urlParms: { ID: record['ID'] } });
-                project.reload();
-                product.setOptions({ urlParms: { id: record['ID'] } });
-                product.reload();
-                append.setOptions({ urlParms: { id: record['ID'] } });
-                append.reload();
-                opgrid.setOptions({ urlParms: { id:record['业务编号']} });
-                opgrid.reload();
-                historygrid.setOptions({ urlParms: { carno: record['车牌号码'] } });
-                historygrid.reload();
-            }
-            function submitForm() {
-
-                var form = liger.get("form1");
-                var data = form.getData();
-                data = JSON.stringify(data);
-                data = JSON2.parse(data);
-                $.post('/index.php?g=Query&m=Consume&a=savewxinfo', data,
-                  function (msg) {
-                      $.ligerDialog.alert(msg);
-                      location.href = location.href;
-                  });
-
-            }
-            function getGridOptions(checkbox) {
-                var options = {
-                    columns: [
-                    { display: '车主名称', name: '名称', align: 'left', width: 100, minWidth: 60 },
-                    { display: '会员编号', name: '会员编号', minWidth: 120, width: 100 },
-                    { display: '等级', name: '等级', minWidth: 120, width: 100 },
-                    { display: '联系人', name: '联系人', minWidth: 140, width: 100 },
-                    { display: '联系电话', name: '联系电话', width: 100 },
-                    { display: '手机号码', name: '手机号码', width: 100 },
-                    { display: '业务员', name: '业务员', width: 100 }
-                    ],
-                    switchPageSizeApplyComboBox: false,
-                    url: '/index.php?g=Query&m=Consume&a=getuserinfo',
-                    //data: $.extend({}, {}),
-                    pageSize: 10,
-                    checkbox: checkbox
-                };
-                return options;
-            }
-            function inidata() {
-                $("div[data-index='1']").html("<div id='projectgrid' style='margin:0;padding 0'><div>");
-                $("div[data-index='2']").html("<div id='productgrid'style='margin:0;padding 0'><div>");
-                $("div[data-index='3']").html("<div id='appendgrid'style='margin:0;padding 0'><div>");
-                $("div[data-index='5']").html('<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=wxfileupload&wxno=' + record['流水号'] + '"></iframe></div>');
-                $("div[data-index='6']").html("<div id='opgrid'style='margin:0;padding 0'><div>");
-                $("div[data-index='7']").html("<div id='historygrid'style='margin:0;padding 0'><div>");
-
-            }
-            function setClickEvent() {
-                $("li[data-index='1']").live('click', function () {
-                    project.setOptions({ urlParms: { ID: record['ID'] } });
-                    project.reload();
-                });
-                $("li[data-index='2']").live('click', function () {
-                    product.setOptions({ urlParms: { id: record['ID'] } });
-                    product.reload();
-                });
-                $("li[data-index='3']").live('click', function () {
-                    append.setOptions({ urlParms: { id: record['ID'] } });
-                    append.reload();
-                });
-                $("li[data-index='5']").live('click', function () {
-                    $("div[data-index='5']").find('iframe').attr('src','/index.php?g=Query&m=Consume&a=wxfileupload&wxno=' + record['流水号']);
-                });
-                $("li[data-index='6']").live('click', function () {
-                    opgrid.setOptions({ urlParms: { id: record['业务编号'] } });
-                    opgrid.reload();
-                });
-                $("li[data-index='7']").live('click', function () {
-                    var parms = {
-                        carno: record['车牌号码']
-                    };
-                    historygrid.set('parms', parms);
-                    historygrid.reload();
-                });
-            }
-            function setdata(record) {
-                if (record && record != '') {
-                    record = JSON2.stringify(record);
-                    record = JSON2.parse(record);
-                    form.setData(record);
-                    $("input[ligeruiid='车主']").val(record['车主']);
-                    $("input[ligeruiid='车型']").val(record['车型']);
-                    $("input[ligeruiid='客户类别']").val(record['客户类别']);
-                    $("input[ligeruiid='品牌']").val(record['品牌']);
-                    $("input[ligeruiid='车辆类别']").val(record['车辆类别']);
-                    $("input[ligeruiid='保险公司']").val(record['保险公司']);
-                    $("input[ligeruiid='服务顾问']").val(record['服务顾问']);
-
-                }
-            }
-            function format(rowdata, index, value) {
-                return todate(value);
-            }
+            }, 300);
             $("#lb").change(function () {
                 $('#search').click();
             });
             $("#shop").change(function () {
                 $('#search').click();
-            });
-            $("#wxtype").change(function () {
-                if ($("#wxtype").val() == '普通快修') {
-                    $('#lcdiv').hide();
-                    $('#ltdiv').hide();
-                    $('#lxrdiv').hide();
-                } else {
-                    $('#lxrdiv').show();
-                    $('#lcdiv').show();
-                    $('#ltdiv').show();
-                }
-            });
-            $('#carno2').blur(function () {
-                var submitData = {
-                    carno: $('#carno2').val()
-                };
-                $.post('index.php?g=Query&m=Consume&a=getgrade', submitData,
-                 function (data) {
-                     if (data) {
-                         $('#lxr').val(data.联系人);
-                         $('#phone').val(data.联系电话);
-                         $('#luntai').val(data.轮胎规格);
-                     }
-                 }, 'JSON');
-            });
-            $("#group").change(function () {
-                if ($("#group").val() == '定点签约') {
-                    $('#qianyue').show();
-                }
-                else {
-                    $('#qianyue').hide();
-                    $('#momey').val("");
-                }
-            });
-            $('#reflash').click(function () {
-                if ($('#carno').val() == '') {
-                    alert('请输入车牌号码');
-                    return;
-                }
-                var submitData = {
-                    carno: $('#carno').val(),
-                    person: $('#person').val(),
-                    money: $('#money').val()
-                };
-                $.post('index.php?g=Query&m=Consume&a=record', submitData,
-                  function (data) {
-                      alert(data);
-                      $('#doc-modal-1').modal('close');
-                      grid.reload();
-                  });
-            });
-            $('#mrsubmit').click(function () {
-                if ($('#carno1').val() == '') {
-                    alert('请输入车牌号码');
-                    return;
-                }
-                if ($('#project').val() == '')
-                {
-                    alert('请选择美容项目');
-                    return;
-                }
-                var submitData = {
-                    carno: $('#carno1').val(),
-                    person: $('#mrperson').val(),
-                    fwgw: $('#fwgw').val(),
-                    project: $('#project').val()
-                };
-                $.post('index.php?g=Query&m=Consume&a=mrrecord', submitData,
-                  function (data) {
-                      alert(data);
-                      $('#doc-modal-2').modal('close');
-                      grid.reload();
-                  });
-            });
-            $('#wxsubmit').click(function () {
-                if ($('#carno2').val() == '') {
-                    alert('请输入车牌号码');
-                    return;
-                }
-                var carno = $('#carno2').val();
-                reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i;
-                reg2 = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{4}[\u4e00-\u9fa5]$/i;
-                
-                //if (!reg.test(carno) && !reg2.test(carno)) {
-                //    $.ligerDialog.alert("请输入完整的车牌号码，格式如粤T83G5N");
-                //    return;
-                //}
-                if ($('#wxtype').val() == '') {
-                    $.ligerDialog.alert('请选择维修类型');
-                    return;
-                }
-                if ($('#wxtype').val() != '普通快修') {
-                    if ($('#lxr').val() == '') {
-                        $.ligerDialog.alert('联系人不能为空');
-                        return;
-                    }
-                    if ($('#phone').val() == '') {
-                        $.ligerDialog.alert('联系电话不能为空');
-                        return;
-                    }
-                    reg = /^0{0,1}(13[0-9]|145|15[0-9]|18[0-9])[0-9]{8}$/i;
-                    if (!reg.test($('#phone').val())) {
-                        $.ligerDialog.alert("请输入11位的手机号码");
-                        return;
-                    }
-                    if ($('#luntai').val() == '') {
-                        $.ligerDialog.alert('轮胎规格不能为空');
-                        return;
-                    }
-                    if ($('#licheng').val() == '') {
-                        $.ligerDialog.alert('里程数不为空');
-                        return;
-                    }
-                    if ($('#youwei').val() == '') {
-                        $.ligerDialog.alert('油位表不能为空');
-                        return;
-                    }
-                } else {
-                     $('#licheng').val('');
-                     $('#youwei').val('');
-                     $('#lxr').val('');
-                     $('#phone').val('');
-                     $('#luntai').val('');
-                 }
-                var submitData = {
-                    carno: carno,
-                    licheng: $('#licheng').val(),
-                    lxr: $('#lxr').val(),
-                    luntai: $('#luntai').val(),
-                    phone: $('#phone').val(),
-                    youwei: $('#youwei').val(),
-                    person: $('#wxperson').val(),
-                    fwgw: $('#fwgw1').val(),
-                    wxtype: $('#wxtype').val()
-                };
-                $.post('index.php?g=Query&m=Consume&a=wxrecord', submitData,
-                  function (data) {
-                      $.ligerDialog.alert(data);
-                      $('#doc-modal-3').modal('close');
-                      grid.reload();
-                  });
             });
             $('#baojia').click(function () {
                 $('#optdiv').find('div').each(function () {
@@ -1034,6 +943,14 @@
                 grid.set('parms', parms);
                 grid.reload();
                 project.toolbarManager.setDisabled('assign');
+                product.toolbarManager.setDisabled('btnlingliao');
+                product.toolbarManager.setDisabled('btntuiliao');
+                product.toolbarManager.setDisabled('btncaigou');
+                setTimeout(function () {
+                    grid.select(grid.data.Rows[0]);
+                    $("li[data-index='1']").click();
+                }, 100);
+
             });
             $('#paigong').click(function () {
                 $('#optdiv').find('div').each(function () {
@@ -1045,6 +962,16 @@
                 };
                 grid.set('parms', parms);
                 grid.reload();
+                project.toolbarManager.setEnabled('assign');
+                product.toolbarManager.setDisabled('btnlingliao');
+                product.toolbarManager.setDisabled('btntuiliao');
+                product.toolbarManager.setDisabled('btncaigou');
+                setTimeout(function () {
+                    grid.select(grid.data.Rows[0]);
+                    $("li[data-index='1']").click();
+                }, 100);
+
+
             });
             $('#lingliao').click(function () {
                 $('#optdiv').find('div').each(function () {
@@ -1056,6 +983,16 @@
                 };
                 grid.set('parms', parms);
                 grid.reload();
+                project.toolbarManager.setDisabled('assign');
+                product.toolbarManager.setEnabled('btnlingliao');
+                product.toolbarManager.setEnabled('btntuiliao');
+                product.toolbarManager.setEnabled('btncaigou');
+                setTimeout(function () {
+                    grid.select(grid.data.Rows[0]);
+                    $("li[data-index='2']").click();
+                }, 100);
+                
+
             });
             $('#shenhe').click(function () {
                 $('#optdiv').find('div').each(function () {
@@ -1097,6 +1034,9 @@
                 };
                 grid.set('parms', parms);
                 grid.reload();
+                $('#optdiv').find('div').each(function () {
+                    $(this).hide();
+                });
             });
             $('#search').click(function () {
                 var parms = {};
@@ -1111,7 +1051,10 @@
                     parms.searchkey = searchkey;
                 grid.set('parms', parms);
                 grid.reload();
-
+                setdisabled();
+                $('#optdiv').find('div').each(function () {
+                    $(this).hide();
+                });
             });
         });
     </script>

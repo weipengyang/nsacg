@@ -202,7 +202,7 @@ class ConsumeAction extends Action{
         $where['1']=1;
         if(!isset($sortname)){
             $sortname='编号';
-            $sortorder='desc';
+            $sortorder='asc';
         }
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
             $searchkey='%'.trim($_POST['searchkey']).'%';

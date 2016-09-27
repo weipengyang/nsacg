@@ -216,6 +216,7 @@ class ConsumeAction extends Action{
             $searchwhere['编号']=array('like',$searchkey);
             $searchwhere['名称']=array('like',$searchkey);
             $searchwhere['规格']=array('like',$searchkey);
+            $searchwhere['备注']=array('like',$searchkey);
             $searchwhere['_logic']='OR';
             $where['_complex']=$searchwhere;
 
@@ -223,6 +224,10 @@ class ConsumeAction extends Action{
         if($_GET['key']=='39099139')
         {
             $where['类别']=array('like','%'.trim('轮胎%'));
+        }
+        if($_POST['flag'])
+        {
+            $where['_string']='isnull(库存,0)<isnull(警戒下限,0)';
         }
         $count=M('配件库存','dbo.','difo')->where($where)->count();
         $yelist=M('配件库存','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
@@ -355,6 +360,28 @@ class ConsumeAction extends Action{
         $data['Total']=$count;
         echo json_encode($data);
         
+    }
+    public  function getstockbycode(){
+       
+        $userinfo=M('配件仓位','dbo.','difo')->where(array('编号'=>$_POST['code']))->select();
+        $data['Rows']=$userinfo;
+        $data['Total']=count($userinfo);
+        echo json_encode($data);
+        
+    }
+    public  function getstock(){
+        
+        $data=M('配件目录','dbo.','difo')->where(array('编号'=>$_GET['code']))->find();
+        echo json_encode($data);
+        
+    }
+    public function savestock()
+    {
+        if(IS_POST){
+            $stockinfo=$_POST['stockinfo'];
+            M('配件目录','dbo.','difo')->where(array('编号'=>$stockinfo['编号']))->save($stockinfo);
+            echo '保存成功';
+        }
     }
     public  function getprojectbyname(){
         $page=$_POST['page'];

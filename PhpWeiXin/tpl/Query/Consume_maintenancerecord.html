@@ -1039,6 +1039,7 @@
                 });
             });
             $('#search').click(function () {
+                grid.changePage('first');
                 var parms = {};
                 var shop = $('#shop').val();
                 if (shop != '')

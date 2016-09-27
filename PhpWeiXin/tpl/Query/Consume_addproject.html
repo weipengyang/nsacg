@@ -98,7 +98,8 @@
                         row['虚增类别'] ='';
                         row['主修人'] = getQueryString('zhuxiu');
                         row['折扣'] = getQueryString('discount');
-                        row['金额'] = row['工时'] * row['单价'] * row['折扣'];
+                        row['金额'] = row['工时'] * row['单价'];
+                        //row['金额'] = row['工时'] * row['单价'] * row['折扣'];
                         row['税率'] = 0;
                         row['税额'] = row['金额'] * row['税率'];
                         row['备注'] = data['备注'];
@@ -145,7 +146,8 @@
                             var data = form.getData();
                             var selected = haveproject.getSelected();
                             if (!selected) { alert('请选择行'); return; }
-                            data['金额'] = data['工时'] * data['单价'] * data['折扣'];
+                            data['金额'] = data['工时'] * data['单价'];
+                            //data['金额'] = data['工时'] * data['单价'] * data['折扣'];
                             data['税额'] = data['金额'] * data['税率'];
                             if (data['虚增类别'] == null || data['虚增类别'] == "NULL") {
                                 data['虚增类别'] = '';

@@ -1,0 +1,123 @@
+﻿<!doctype html>
+<html class="no-js fixed-layout">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>爱养车</title>
+    <meta name="description" content="爱养车">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.7.0/css/amazeui.min.css" />
+    <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+
+</head>
+<body>
+    <!--[if lte IE 9]>
+    <p class="browsehappy">你正在使用<strong>过时</strong>的浏览器，Amaze UI 暂不支持。 请 <a href="http://browsehappy.com/" target="_blank">升级浏览器</a>
+      以获得更好的体验！</p>
+    <![endif]-->
+    <div class="am-cf admin-main" style="padding:0;margin:0">
+        <!-- content start -->
+        <div class="admin-content">
+        <div class="admin-content-body">
+            <div id="searchbar">
+                关键字：<input id="searchkey" type="text" />
+                <input id="search" type="button" value="模糊查询"  />
+            </div>
+
+            <div id="maingrid4" style="margin:0; padding:0"></div>
+            </div>
+            </div>
+        <!-- content end -->
+    </div>
+    <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
+    <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
+    <script src="/tpl/static/assets/js/app.js"></script>
+    <script>
+        function todate(num, istime) {
+            if (num && num.length > 8) {
+                num = num + "";
+                var date = "";
+                var month = new Array();
+                month["Jan"] = '01'; month["Feb"] = '02'; month["Mar"] = '03'; month["Apr"] = '04'; month["May"] = '05'; month["Jun"] = '06';
+                month["Jul"] = '07'; month["Aug"] = '08'; month["Sep"] = '09'; month["Oct"] = '10'; month["Nov"] = '11'; month["Dec"] = '12';
+                var str = num.split(" ");
+                var times = '';
+                if (str.length > 4) {
+                    date = str[3] + "-";
+                    date = date + month[str[0]] + "-" + str[2];
+                    times = str[4].split(':');
+                } else {
+                    date = str[2] + "-";
+                    date = date + month[str[0]] + "-" + str[1];
+                    times = str[3].split(':');
+                }
+                if (istime) {
+                    time = times[0] + ':' + times[1];
+                    if (times[2].indexOf('PM')) {
+                        time = (parseInt(time[0]) + 12) + ':' + times[1];
+                    }
+                    return date + ' ' + time;
+                }
+                return date;
+            }
+            return num;
+        }
+        function getQueryString(name) {
+            var now_url = document.location.search.slice(1), q_array = now_url.split('&');
+            for (var i = 0; i < q_array.length; i++) {
+                var v_array = q_array[i].split('=');
+                if (v_array[0] == name) {
+                    return v_array[1];
+                }
+            }
+            return false;
+        }
+
+        var cargird;
+        $(document).ready(function () {
+            cargird = $("#maingrid4").ligerGrid({
+                columns: [
+                        {
+                            display: '品牌型号', name: '品牌', width: 90, render: function (rowdata, index, value) {
+
+                                return rowdata['品牌'] + '/' + rowdata['车型'];
+                            }
+                        },
+                        { display: '年份排量', name: '排量', minWidth: 120},
+                        { display: '发动机型号', name: '发动机型号', minWidth: 60, },
+                        { display: '轮胎规格', name: '轮胎规格', minWidth: 60 },
+                        { display: '品牌花纹', name: '品牌花纹', minWidth: 60 },
+                        { display: '机油格', name: '机油格', width: 50 },
+                        { display: '空气格', name: '空气格', width: 50 },
+                        { display: '冷气格', name: '冷气格', width: 50 },
+                        { display: '车架号', name: '车架号', width: 150 },
+                ],
+                isScroll: true,
+                pageSize: 10,
+                url: '/index.php?g=Query&m=Consume&a=getcarsinfo',
+                parms: { searchkey:getQueryString('code')},
+                height: '100%'
+            });
+            $('#search').click(function () {
+                cargird.changePage('first');
+                var parms = {};
+                var searchkey = $('#searchkey').val();
+                if (searchkey != '')
+                    parms.searchkey = searchkey;
+                cargird.set('parms', parms);
+                cargird.reload();
+
+            });
+
+        });
+    </script>
+
+</body>
+</html>

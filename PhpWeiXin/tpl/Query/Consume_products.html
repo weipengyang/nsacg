@@ -12,9 +12,71 @@
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
     <script>
         var grid;
+        var editdialog,cardialog;
+        function editinfo(code) {
+            if (editdialog) {
+                editdialog.setUrl('/index.php?g=Query&m=Consume&a=editproduct&code=' + code);
+                editdialog.show();
+            }
+            else {
+                editdialog = $.ligerDialog.open({
+                    height: 380,
+                    url: '/index.php?g=Query&m=Consume&a=editproduct&code=' + code,
+                    width: 600,
+                    showToggle: false,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    title: '库存商品编辑'
+                });
+            }
+        }
+        function viewcarinfo(code) {
+            if (cardialog) {
+                cardialog.setUrl('/index.php?g=Query&m=Consume&a=usecars&code=' + code);
+                cardialog.show();
+            }
+            else {
+                cardialog = $.ligerDialog.open({
+                    height: 470,
+                    url: '/index.php?g=Query&m=Consume&a=usecars&code=' + code,
+                    width: 900,
+                    showToggle: false,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    title: '库存商品编辑'
+                });
+            }
+        }
+        function searachbykey() {
+            grid.changePage('first');
+            var yjml = $('#yjml').val();
+            var ejml = $('#ejml').val();
+            var sjml = $('#sjml').val();
+            var lb = '';
+            if (yjml != '') {
+                lb = yjml;
+            }
+            if (ejml != '') {
+                lb += '>>' + ejml;
+            }
+            if (sjml != '') {
+                lb += '>>' + sjml;
+            }
+            var parms = {};
+            if ($('#searchkey').val() != '')
+                parms['searchkey'] = $('#searchkey').val();
+            if (lb)
+                parms['lb'] = lb;
+            parms['flag'] =1;
+            grid.set('parms', parms);
+            grid.reload();
+        }
         $(document).ready(function () {
             var key = "{pigcms:$_GET['key']}";
             $('#search').click(function () {
+                grid.changePage('first');
                 var yjml = $('#yjml').val();
                 var ejml = $('#ejml').val();
                 var sjml = $('#sjml').val();
@@ -88,22 +150,73 @@
             $('#sjml').change(function () {
                 $('#search').click();
             });
+            function f_showdetail(row, detailPanel, callback) {
+                var detailgrid = document.createElement('div');
+                $(detailPanel).append(detailgrid);
+                $(detailgrid).ligerGrid({
+                    columns:
+                                [
+                                { display: '编号', name: '编号', width: 100 },
+                                { display: '仓库', name: '仓库' },
+                                { display: '库存', name: '库存' },
+                                { display: '盘点数量', name: '盘点数量' },
+                                ],
+                    isScroll: false,
+                    showToggleColBtn: false,
+                    width: '50%',
+                    usePager: false,
+                    parms:{code:row['编号']},
+                    url: '/index.php?g=Query&m=Consume&a=getstockbycode',
+                    showTitle: false,
+                    columnWidth: 100,
+                    onAfterShowData: callback,
+                    frozen: false
+                });
+            }
             grid = $("#maingrid4").ligerGrid({
                 columns: [
-                { display: '编号', name: '编号', align: 'left', width: 120 },
-                { display: '名称', name: '名称', minWidth: 150},
-                { display: '规格', name: '规格', minWidth: 100 },
-                { display: '品牌', name: '品牌', minWidth: 100 },
-                { display: '库存', name: '库存', width: 60, align: 'left' },
+                { display: '编号', name: '编号', align: 'left', width: 100 },
+                { display: '名称', name: '名称', width: 150},
+                { display: '规格', name: '规格', width: 120 },
+                { display: '品牌', name: '品牌', width: 120 },
+                {
+                    display: '库存', name: '库存', width: 60, align: 'left', render: function (rowdata, index, value) {
+                        if (value < rowdata['警戒下限'])
+                            return "<span style='color:red'>" + value + "</span>";
+                        else
+                            return value;
+                    }
+                },
+                { display: '使用车辆数', name: '数量', width: 60, align: 'left',render: function (rowdata, index, value) {
+                    if (value&&value>0)
+                        return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + rowdata['编码'] + '\');"><strong>' + value + '</strong></a>';
+                    else
+                        return value;
+                } },
                 { display: '入库数', name: '入库数量', align: 'center', width: 50 },
                 { display: '出库数', name: '出库数量', width: 60, align: 'left' },
-                { display: '批发价', name: '一级批发价', minWidth: 60 },
-                { display: '配套车型', name: '备注', minWidth: 200 },
+                { display: '警戒下限', name: '警戒下限', width: 60, align: 'left' },
+                { display: '最新进价', name: '最新进价', width: 60 },
+                { display: '参考进价', name: '参考进价', width: 60 },
+                { display: '参考售价', name: '参考售价', width: 60 },
+                { display: '批发价', name: '一级批发价', width: 60 },
+                {
+                    display: '配套车型', name: '备注', minWidth: 200,render: function (rowdata, index, value) {
+
+                        return value;
+                    }
+                },
         ],
                 isScroll: true,
                 pageSize: 20,
+                detailHeight: 120,
+                fixedCellHeight:false,
                 url: '/index.php?g=Query&m=Consume&a=getstacks',
-                height: '100%'
+                height: '100%',
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    editinfo(data['编号']);
+                },
+                detail:{ onShowDetail: f_showdetail },
             });
         });
     </script>
@@ -138,6 +251,7 @@
                                 <select data-am-selected="{btnSize: 'sm'}" id="sjml">
                                     <option value="">所有分类</option>
                                 </select>
+                                <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="searachbykey();">低于警戒线</button>
                            </div>
                         </div>
                         <div class="am-u-sm-2 am-u-md-3">

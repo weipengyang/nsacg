@@ -236,6 +236,50 @@ class ConsumeAction extends Action{
         echo json_encode($data);
         
     }
+    public function getcrklist()
+    {   
+
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        $where['1']=1;
+        if(!isset($sortname)){
+            $sortname='编号';
+            $sortorder='asc';
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($_POST['lb']&&trim($_POST['lb'])!='')
+        {
+            $where['单据类别']=$_POST['lb'];
+            
+        }
+        if($_POST['code']&&trim($_POST['code'])!='')
+        {
+            $where['编号']=$_POST['code'];
+            
+        }
+        if($searchkey){       
+            $searchwhere['编号']=array('like',$searchkey);
+            $searchwhere['名称']=array('like',$searchkey);
+            $searchwhere['规格']=array('like',$searchkey);
+            $searchwhere['备注']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $count=M('出入库明细','dbo.','difo')->join('left join 出入库单 on 出入库明细.ID=出入库单.ID')->where($where)->count();
+        $yelist=M('出入库明细','dbo.','difo')
+            ->join('left join 出入库单 on 出入库明细.ID=出入库单.ID')->where($where)
+            ->field('出入库明细.*,出入库单.单据编号,出入库单.原因,出入库单.引用单号,出入库单.引用类别,出入库单.制单日期,出入库单.审核日期')
+            ->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
     public function getcarsinfo()
     {   
         $page=$_POST['page'];
@@ -2330,7 +2374,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
      {
          $wxinfo=$_POST['wxinfo'];
          $carno=$wxinfo['车牌号码'];
-         $money='25';
+         $money=$wxinfo['money'];
          $data=M('维修','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
          $data['流水号']=null;
          unset( $data['流水号']);

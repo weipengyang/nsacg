@@ -12,7 +12,7 @@
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
     <script>
         var grid;
-        var editdialog,cardialog;
+        var editdialog,cardialog,crkialog;
         function editinfo(code) {
             if (editdialog) {
                 editdialog.setUrl('/index.php?g=Query&m=Consume&a=editproduct&code=' + code);
@@ -46,6 +46,24 @@
                     isResize: true,
                     modal: false,
                     title: '库存商品编辑'
+                });
+            }
+        }
+        function viewcrkinfo(code,lb){
+            if (crkialog) {
+                crkialog.setUrl('/index.php?g=Query&m=Consume&a=crklist&code='+ code+'&lb='+lb);
+                crkialog.show();
+            }
+            else {
+                crkialog = $.ligerDialog.open({
+                    height: 470,
+                    url: '/index.php?g=Query&m=Consume&a=crklist&code='+code+'&lb='+lb,
+                    width: 900,
+                    showToggle: false,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    title: '出入库详情'
                 });
             }
         }
@@ -192,9 +210,23 @@
                         return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + rowdata['编码'] + '\');"><strong>' + value + '</strong></a>';
                     else
                         return value;
-                } },
-                { display: '入库数', name: '入库数量', align: 'center', width: 50 },
-                { display: '出库数', name: '出库数量', width: 60, align: 'left' },
+                }
+                },
+                { display: '入库数', name: '入库数量', align: 'center', width: 50,render: function (rowdata, index, value) {
+                    if (value&&value>0)
+                        return '<a href="javascript:void(0);" onclick="viewcrkinfo(\'' + rowdata['编号'] + '\',\'入库\');"><strong>' + value + '</strong></a>';
+                    else
+                        return value;
+                }
+                },
+                {
+                    display: '出库数', name: '出库数量', width: 60, align: 'left', render: function (rowdata, index, value) {
+                        if (value && value > 0)
+                            return '<a href="javascript:void(0);" onclick="viewcrkinfo(\'' + rowdata['编号'] + '\',\'出库\');"><strong>' + value + '</strong></a>';
+                        else
+                            return value;
+                    }
+                },
                 { display: '警戒下限', name: '警戒下限', width: 60, align: 'left' },
                 { display: '最新进价', name: '最新进价', width: 60 },
                 { display: '参考进价', name: '参考进价', width: 60 },

@@ -376,12 +376,11 @@
                 closeOnConfirm:false,
                 onConfirm: function(e) {
                     var price = $('#price').val();
-                    if ('{pigcms:$username}' != '阳伟鹏') {
-                        if (!(price && price > 0 && price % 100 == 0)) {
-                            $.alert({ title: '提示', content: "充值金额必须为100的整数倍" });
-                            return false;
-                        }
+                    if (!(price && price >= 100 )) {
+                        $.alert({ title: '提示', content: "充值金额必须大于等于100元" });
+                        return false;
                     }
+                    
                     var data = {
                         wecha_id: wecha_id,
                         price:price

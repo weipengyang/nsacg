@@ -128,11 +128,14 @@
             InterValObj = window.setInterval(SetRemainTime, 1000); //间隔函数，1秒执行
             $(document).on('click', '#exchange', function () {
                 $.confirm('兑换礼品券需要消耗{pigcms:$coupon.integral}点积分，确定兑换吗？', function () {
+                    $.showIndicator();
                     var submitData = {
                         id:'{pigcms:$coupon.id}'
                     };
                     $.post('/index.php?g=Wap&m=Store&a=action_myCoupon&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData, function (data) {
                         $.alert(data);
+                        $.hideIndicator();
+                        location.href = '/index.php?g=Wap&m=Store&a=cats&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}';
                     });
                 });
             });

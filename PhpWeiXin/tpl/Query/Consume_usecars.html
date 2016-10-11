@@ -69,6 +69,27 @@
             }
             return num;
         }
+        var cardialog;
+        function carinfo(carno) {
+            if (cardialog) {
+                cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
+                cardialog.show();
+            }
+            else {
+                cardialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '车俩信息编辑'
+                });
+            }
+        }
+
         function getQueryString(name) {
             var now_url = document.location.search.slice(1), q_array = now_url.split('&');
             for (var i = 0; i < q_array.length; i++) {
@@ -84,6 +105,11 @@
         $(document).ready(function () {
             cargird = $("#maingrid4").ligerGrid({
                 columns: [
+                     {
+                         display: '车牌号码', name: '车牌号码', width: 80, align: 'left', render: function (rowdata, index, value) {
+                             return '<a href="javascript:void(0);" onclick="carinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+                         }
+                     },
                         {
                             display: '品牌型号', name: '品牌', width: 90, render: function (rowdata, index, value) {
 
@@ -91,7 +117,6 @@
                             }
                         },
                         { display: '年份排量', name: '排量', minWidth: 120},
-                        { display: '发动机型号', name: '发动机型号', minWidth: 60, },
                         { display: '轮胎规格', name: '轮胎规格', minWidth: 60 },
                         { display: '品牌花纹', name: '品牌花纹', minWidth: 60 },
                         { display: '机油格', name: '机油格', width: 50 },

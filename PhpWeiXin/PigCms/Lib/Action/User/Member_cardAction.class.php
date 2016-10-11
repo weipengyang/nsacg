@@ -478,11 +478,10 @@ class Member_cardAction extends UserAction{
 	}
 	public function notice(){
 		$member_card_notice_db=M('Member_card_notice');
-		$where=array('cardid'=>$this->thisCard['id']);
-		$count      = $member_card_notice_db->where($where)->count();
+		$count      = $member_card_notice_db->count();
 		$Page       = new Page($count,15);
 		$show       = $Page->show();
-		$list = $member_card_notice_db->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('time desc')->select();
+		$list = $member_card_notice_db->limit($Page->firstRow.','.$Page->listRows)->order('time desc')->select();
 		
 		$this->assign('page',$show);
 		$this->assign('list',$list);

@@ -138,7 +138,7 @@
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         var form, grid, project, product, append, opgrid, historygrid = null;
-        var washdialog, mrdialog, wxdialog;
+        var washdialog, mrdialog, wxdialog, pickdialog, cardialog;
         var record,discount = {};
         function wxinfo(xh) {
            var wxdialog= $.ligerDialog.open({
@@ -154,25 +154,50 @@
            });
            wxdialog.max();
         }
+        function pick() {
+            if (pickdialog) {
+                pickdialog.setUrl('/index.php?g=Query&m=Consume&a=picking');
+                pickdialog.show();
+            }
+            else {
+                  pickdialog = $.ligerDialog.open({
+                    height: 540,
+                    url: '/index.php?g=Query&m=Consume&a=picking',
+                    width: 800,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '维修领料'
+                });
+            }
+        }
         function viewcarinfo(carno) {
-            var cardialog=$.ligerDialog.open({
-                height: 500,
-                url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
-                width: 900,
-                showMax: true,
-                showToggle: true,
-                showMin: true,
-                isResize: true,
-                modal: false,
-                title: '车辆信息编辑'
-            });
-            cardialog.max();
+            if (cardialog) {
+                cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
+                cardialog.show();
+            }
+            else {
+                    cardialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '车辆信息编辑'
+                });
+                cardialog.max();
+            }
         }
         function washcar() {
             if (washdialog) washdialog.show();
             else {
                 washdialog = $.ligerDialog.open({
-                    height: 280,
+                    height: 310,
                     url: '/index.php?g=Query&m=Consume&a=washcar',
                     width: 600,
                     showToggle: false,
@@ -581,9 +606,7 @@
                                 { display: '优惠金额', name: '优惠金额', newline: false, type: 'text' },
                                 { display: '应收金额', name: '应收金额', newline: false, type: 'text' },
                                 { display: '现收金额', name: '现收金额', newline: false, type: 'text' },
-                                { display: '发票类型', name: '发票类别', newline: true, type: 'text' },
-                                { display: '发票号码', name: '发票号码', newline: false, type: 'text' },
-                                { display: '结算日期', name: '结算日期', newline: false, type: 'text' },
+                                { display: '结算日期', name: '结算日期', newline: true, type: 'date' },
                                 { display: '结算方式', name: '结算方式', newline: false , type: 'text' },
                                 { display: '结算人', name: '收款人', newline: false, type: 'text' },
                                 { display: '毛利', name: '毛利', newline: false, type: 'text' },
@@ -745,6 +768,7 @@
                     { display: '单位', name: '单位', minWidth: 80 },
                     { display: '结算类别', name: '结算方式', minWidth: 100 },
                     { display: '已领料数量', name: '已领料数量', minWidth: 60 },
+                    { display: '待审核数量', name: '待审核数量', minWidth: 60 },
                     { display: '已退料数量', name: '已退料数量', minWidth: 60 },
                     { display: '税率', name: '税率', minWidth: 60 },
                     { display: '税额', name: '税额', minWidth: 60 },
@@ -813,7 +837,24 @@
                         },
                         { line: true },
                         { id:'btnmodify',text: '修改', click: null, icon: 'modify' },
-                        { id: 'btnlingliao', text: '领料', click: null, icon: 'ad icon iconfont icon-lingliao' },
+                        {
+                            id: 'btnlingliao', text: '领料', click: function () {
+                                var rows = product.getSelectedRows();
+                                if (rows.length > 0) {
+                                    for (var i = 0; i < rows.length; i++) {
+                                        var count = rows[i]['数量'] - rows[i]['已领料数量'] - rows[i]['待审核数量'] + rows[i]['已退料数量'];
+                                        if (count <= 0)
+                                        {
+                                            $.ligerDialog.alert(rows[i]['名称'] + "没有未领用数量");
+                                            return;
+                                        }
+                                    }
+                                    pick();
+                                } else {
+                                    $.ligerDialog.alert('请选择要领料的配件');
+                                }
+                            }, icon: 'ad icon iconfont icon-lingliao'
+                        },
                         { id: 'btntuiliao', text: '退料', click: null, icon: 'ad icon iconfont icon-jianqu' },
                         { id: 'btncaigou', text: '采购开单', click: null, icon: 'ad icon iconfont icon-cart' },
                         ]

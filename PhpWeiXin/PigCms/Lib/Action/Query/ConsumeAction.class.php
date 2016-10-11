@@ -1120,7 +1120,7 @@ class ConsumeAction extends Action{
    private function changecarinfo($user,$number)
    {
        $car=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$user['carno']))->find();
-       $lb='3星客户';
+       $lb='2星客户';
        if(!empty($car)){
            $item['车主']=$number;
            $item['联系人']=$user['truename'];
@@ -1132,7 +1132,7 @@ class ConsumeAction extends Action{
            
            $czinfo['名称']=$number;
            $czinfo['会员']=1;
-           $czinfo['等级']='★★★';
+           $czinfo['等级']='★★';
            $czinfo['会员编号']=$number;
            $czinfo['入会日期']=date('Y-m-d',time());
            $czinfo['联系人']=$user['truename'];
@@ -1152,7 +1152,7 @@ class ConsumeAction extends Action{
 			if($db->where(array('token'=>$this->token,'wecha_id'=>$wecha_id))->setInc('balance',$_POST['price'])){
 				$orderid = date('YmdHis',time()).mt_rand(1000,9999);
 				M('Member_card_pay_record')->add(array('orderid' => $orderid , 'ordername' => '前台手动充值' ,'note'=>'操作人'.cookie('username'), 'createtime' => time() , 'token' => $this->token , 'wecha_id' => $uinfo['wecha_id'] , 'price' => $_POST['price'] , 'type' => 1 , 'paid' => 1 , 'module' => 'qiantai' , 'paytime' => time() , 'paytype' => 'recharge'));
-                if(intval($_POST['price'])>=200){
+                if(intval($_POST['price'])>=100){
                     $cardnumber=$this->change($mycard['cardid'],$uinfo['wecha_id']);
                     if($cardnumber!='0'){
                        $this->changecarinfo($uinfo,$cardnumber);
@@ -1621,6 +1621,57 @@ class ConsumeAction extends Action{
            exit;
        }
    }
+   public function picking(){
+     if(IS_POST){
+         $wxinfo=$_POST['wxinfo'];
+         $form=$_POST['data'];
+         $wxID=$wxinfo['ID'];
+         $products=$_POST['products'];
+         $data['ID']=$this->getcode(20,1,1);
+         $data['引用单号']=$wxinfo['业务编号'];
+         $data['引用ID']=$wxID;
+         $data['引用类别']='维修领料';
+         $data['单据编号']=$this->getcodenum('CK');
+         $data['制单日期']=$wxinfo['维修领料'];
+         $data['制单人']=cookie('username');
+         $data['车牌号码']=$wxinfo['车牌号码'];
+         $data['当前状态']='待审核';
+         $data['原因']='维修领料';
+         $data['领料员']=$form['领料员'];
+         $data['单据类别']='出库';
+         $data['单据备注']=$form['备注'];
+        if($form['备注']==''){
+            $data['单据备注']='维修领料';
+        }
+        M('出入库单','dbo.','difo')->add($data);
+        foreach($products as $product){
+            $crk['ID']=$data['ID'];
+            $crk['仓库']=$product['仓库'];
+            $crk['编号']=$product['编号'];
+            $crk['名称']=$product['名称'];
+            $crk['规格']=$product['规格'];
+            $crk['单位']=$product['单位'];
+            $crk['数量']=$product['本次领料'];
+            $crk['单价']=$product['单价'];
+            $crk['金额']=$product['金额'];
+            $crk['成本价']=$product['成本价'];
+            $crk['适用车型']=$product['适用车型'];
+            $crk['产地']=$product['产地'];
+            $crk['备注']=$product['备注'];
+            $num=$product['本次领料'];
+            $code=$product['编号'];
+            M('出入库明细','dbo.','difo')->add($crk);
+            M('配件目录','dbo.','difo')->execute("UPDATE 配件目录 SET 维修领用=维修领用+$num WHERE 编号='$code'");
+            M('维修配件','dbo.','difo')->execute("UPDATE 维修配件 SET 待审核数量=$num WHERE ID='$wxID'and 编号='$code'");
+           
+        }
+        echo '领料成功';
+    }
+     else{ 
+
+         $this->display();
+     }
+   }
    public function maintenance()
     {  
        if(IS_POST){
@@ -1635,6 +1686,7 @@ class ConsumeAction extends Action{
            $this->genbill($wx['应收金额'],$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID']);
 
            $data['当前主修人']=$zhuxiu;
+           $data['主修人']=$zhuxiu;
            $data['当前状态']='结束'; 
            $data['门店']=$yg['部门'];
            $data['出厂时间']=date('Y-m-d H:i',time());
@@ -2238,7 +2290,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 $czinfo['手机号码']=$phone;
                 $czinfo['联系电话']=$phone;
                 $czinfo['联系人']=$lxr;
-                $czinfo['ID']=$this->getcode(18,0,0);
+                $czinfo['ID']=$this->getcode(18,0,1);
                 M('往来单位','dbo.','difo')->add($czinfo);
                 $carinfo['车主']=$carno;
                 $carinfo['车牌号码']=$carno;
@@ -2292,7 +2344,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
 
         }
         $data['接车人']=$fwgw;
-        $data['ID']=$this->getcode(10,0,1);
+        $data['ID']=$this->getcode(20,1,1);
         $data['制单日期']=date('Y-m-d',time());
         $data['制单人']=cookie('username');
         $data['保修类别']='保外';

@@ -1655,7 +1655,7 @@ class CardAction extends WapAction{
     {
 
         $car=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$user['carno']))->find();
-        $lb='4星客户';
+        $lb='2星客户';
         if(!empty($car)){
             $item['车主']=$number;
             $item['联系人']=$user['truename'];
@@ -1665,7 +1665,7 @@ class CardAction extends WapAction{
             M('维修','dbo.','difo')->where(array('客户ID'=>$car['客户ID']))->save($item);
             $czinfo['名称']=$number;
             $czinfo['会员']=1;
-            $czinfo['等级']='★★★★';
+            $czinfo['等级']='★★';
             $czinfo['会员编号']=$number;
             $czinfo['入会日期']=date('Y-m-d',time());
             $czinfo['联系人']=$user['truename'];
@@ -1751,7 +1751,7 @@ class CardAction extends WapAction{
 			if($order['paid'] == 1){
 				$record->where("orderid = '$orderid'")->setField('paytime',time());
 				if($order['type'] == 1){
-                    if($order['price']>=200||$wecha_id=='ohD3dviFloHSvcl9ieoXFibqPFJM')
+                    if($order['price']>=100||$wecha_id=='ohD3dviFloHSvcl9ieoXFibqPFJM')
                     {   
                         $cardnumber=$this->change();
                         if($cardnumber!='0'){

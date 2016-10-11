@@ -47,31 +47,44 @@
     <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
+        var cardialog,picdialog;
         function carinfo(carno) {
-            $.ligerDialog.open({
-                height: 500,
-                url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
-                width: 900,
-                showMax: true,
-                showToggle: true,
-                showMin: true,
-                isResize: true,
-                modal: false,
-                title: '车俩信息编辑'
-            });
+            if (cardialog) {
+                cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
+                cardialog.show();
+            }
+            else {
+                cardialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '车俩信息编辑'
+                });
+            }
         }
         function picnfo(carno) {
-            $.ligerDialog.open({
-                height: 500,
-                url: '/index.php?g=Query&m=Consume&a=fileupload&carno=' + carno,
-                width: 900,
-                showMax: true,
-                showToggle: true,
-                showMin: true,
-                isResize: true,
-                modal: false,
-                title: '车辆图片查看'
-            });
+            if (picdialog) {
+                picdialog.setUrl('/index.php?g=Query&m=Consume&a=fileupload&carno=' + carno);
+                picdialog.show();
+            }
+            else {
+                picdialog=$.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=fileupload&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '车辆图片查看'
+                });
+            }
         }
 
         function todate(num, istime) {
@@ -129,6 +142,7 @@
                         { display: '发动机型号', name: '发动机型号', minWidth: 60, hide: true },
                         { display: '轮胎规格', name: '轮胎规格', minWidth: 60 },
                         { display: '品牌花纹', name: '品牌花纹', minWidth: 60 },
+                        { display: '服务顾问', name: '服务顾问', minWidth: 80 },
                         { display: '机油格', name: '机油格', width: 50 },
                         { display: '空气格', name: '空气格', width: 50 },
                         { display: '冷气格', name: '冷气格', width: 50 },

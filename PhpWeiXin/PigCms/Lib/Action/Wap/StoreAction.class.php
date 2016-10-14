@@ -1431,7 +1431,7 @@ public function check(){
 		$_SESSION[$this->session_cart_name] = serialize($carts);
 		$calCartInfo = $this->calCartInfo();
 		echo $calCartInfo[0].'|'.$calCartInfo[1];
-	}
+	} 
 	
 	private function calCartInfo($carts='')
 	{
@@ -1450,7 +1450,7 @@ public function check(){
 		return array($totalCount, $totalFee, $data[2]);
 	}
 	
-	private function _getCart()
+	private function   _getCart()
 	{
 		if (!isset($_SESSION[$this->session_cart_name])||!strlen($_SESSION[$this->session_cart_name])){
 			$carts = array();
@@ -1573,15 +1573,13 @@ public function check(){
 				}
 				$data[$pid] = array();
                
-				$row['price'] = $price ? $price : ($this->fans['getcardtime'] > 0 && $row["$grade"] ? $row["$grade"] : $row['price']);
+				$row['price'] = $price ? $price : ($row["$grade"] ? $row["$grade"] : $row['price']);
 				$row['count'] = $data[$pid]['total'] = $count;
 				if (empty($count) && empty($price)) {
-					$row['count'] = $data[$pid]['total'] = isset($carts[$pid]['count']) ? $carts[$pid]['count'] : (isset($carts[$pid]) && is_int($carts[$pid]) ? $carts[$pid] : 0);
-					if ($this->fans['getcardtime'] > 0) {
-						$row['price'] = $row["$grade"] ? $row["$grade"] : $row['price'];
-					}
+					$row['count'] = $data[$pid]['total'] = isset($carts[$pid]['count'])?$carts[$pid]['count'] : (isset($carts[$pid]) && is_int($carts[$pid]) ? $carts[$pid] : 0);
+					$row['price'] = $row["$grade"] ? $row["$grade"] : $row['price'];
+					
 				}
-				
 				$data[$pid]['totalPrice'] = $data[$pid]['total'] * $row['price'];
 				$totalprice += $data[$pid]['totalPrice'];
 			}

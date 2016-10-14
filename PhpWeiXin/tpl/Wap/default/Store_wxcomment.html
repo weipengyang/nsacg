@@ -63,6 +63,17 @@
                                 </div>
                                 <div class="give_score">
                                     <div>
+                                        前台接待：
+                                        <span class="grade_off pngFix"></span>
+                                        <span class="grade_off pngFix"></span>
+                                        <span class="grade_off pngFix"></span>
+                                        <span class="grade_off pngFix"></span>
+                                        <span class="grade_off pngFix"></span>
+                                        <input type="hidden" name="score" class="store_score" id="qtscore" value="0" />
+                                    </div>
+                                </div>
+                                <div class="give_score">
+                                    <div>
                                         服务态度：
                                         <span class="grade_off pngFix"></span>
                                         <span class="grade_off pngFix"></span>
@@ -102,13 +113,18 @@
                             var comment = {};
                             comment.fwtd = $("#tdscore").val();
                             comment.fwzl = $("#zlscore").val();
+                            comment.qtjd = $("#qtscore").val();
                             comment.content = $("#content").val();
+                            if (comment.qtjd < 1) {
+                                $.toast('请您对前台接待满意度打分');
+                                return false;
+                            }
                             if (comment.fwtd < 1) {
                                 $.toast('请您对服务态度打分');
                                 return false;
                             }
                             if (comment.fwzl< 1) {
-                                $.toast('请您对服务质量打分');
+                                $.toast('请您对维修质量打分');
                                 return false;
                             }                          
                             var submitData = {

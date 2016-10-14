@@ -171,7 +171,10 @@ class ConsumeAction extends Action{
     public  function getuserinfo(){
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
-        $where['1']=1;
+        $where['供应商']=0;
+        if($_GET['type']){
+            $where['供应商']=1;
+        }
         $searchkey=$_POST['searchkey'];
         $searchkey='%'.trim($searchkey).'%';
         if($searchkey){       
@@ -537,7 +540,25 @@ class ConsumeAction extends Action{
         echo json_encode($wxlb);
     
 } 
-    public  function getkhlb(){
+    public  function getfplb(){
+         
+        $wxlb=M('发票类别','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($wxlb);
+    
+} 
+    public  function getjsfs(){
+         
+        $wxlb=M('结算方式','dbo.','difo')->where(array('名称'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($wxlb);
+    
+} 
+    public  function gethyfs(){
+         
+        $wxlb=M('货运方式','dbo.','difo')->where(array('方式'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($wxlb);
+    
+} 
+   public  function getkhlb(){
          
         $pinpai=M('客商分类','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
         echo json_encode($pinpai);
@@ -1632,7 +1653,7 @@ class ConsumeAction extends Action{
          $data['引用ID']=$wxID;
          $data['引用类别']='维修领料';
          $data['单据编号']=$this->getcodenum('CK');
-         $data['制单日期']=$wxinfo['维修领料'];
+         $data['制单日期']=date('Y-m-d',time());
          $data['制单人']=cookie('username');
          $data['车牌号码']=$wxinfo['车牌号码'];
          $data['当前状态']='待审核';
@@ -1672,7 +1693,85 @@ class ConsumeAction extends Action{
          $this->display();
      }
    }
-   public function maintenance()
+   public function purchasing(){
+     if(IS_POST){
+         $wxinfo=$_POST['wxinfo'];
+         $form=$_POST['data'];
+         $wxID=$wxinfo['ID'];
+         $products=$_POST['products'];
+         $data['ID']=$this->getcode(20,1,1);
+         $data['单据编号']=$this->getcodenum('PK');
+         $data['制单日期']=date('Y-m-d',time());
+         $data['制单人']=cookie('username');
+         $data['供应商']=$form['供应商'];
+         $data['供应商ID']=$form['供应商ID'];
+         $data['发票类别']=$form['发票类别'];
+         $data['发票号码']=$form['发票号码'];
+         $data['运费']=0;
+         $data['结算方式']=$form['结算方式'];
+         $data['货运方式']=$form['货运方式'];
+         $data['业务员']=cookie('username');
+         $data['整单折扣']=1;
+         $data['送货地址']=$form['领料员'];
+         $data['付款日期']=$form['付款日期'];
+         $data['当前状态']='待审核';
+         $data['合计货款']=$form['合计货款'];
+         $data['合计数量']=$form['合计数量'];
+         $data['合计税额']=$form['合计税额'];
+         $data['价税合计']=$form['价税合计'];
+         $data['总金额']=$form['总金额'];
+         $data['单据类别']='采购进货';
+         $data['引用ID']=$wxID;
+         //$data['引用类别']='维修领料';
+         //$data['引用单号']=$wxinfo['业务编号'];
+         //$data['急件']=$form['急件'];
+         $data['应结金额']=$form['总金额'];
+         $data['现结金额']=0;
+         $data['挂账金额']=$form['总金额'];
+         $data['车牌号码']=$wxinfo['车牌号码'];
+         //$data['原因']='维修领料';
+         $data['备注']=$form['备注'];
+        if($form['备注']==''){
+            $data['备注']='维修采购';
+        }
+        M('采购单','dbo.','difo')->add($data);
+        foreach($products as $product){
+            $crk['ID']=$data['ID'];
+            $crk['仓库']=$product['仓库'];
+            $crk['编号']=$product['编号'];
+            $crk['名称']=$product['名称'];
+            $crk['规格']=$product['规格'];
+            $crk['单位']=$product['单位'];
+            $crk['数量']=$product['数量'];
+            $crk['单价']=$product['单价'];
+            $crk['金额']=$product['金额'];
+            $crk['折扣']=$product['折扣'];
+            $crk['税率']=$product['税率'];
+            $crk['税额']=$product['税额'];
+            $crk['是否采购']=1;
+            $crk['含税价']=$product['含税价'];
+            $crk['价税合计']=$product['价税合计'];
+            $crk['适用车型']=$product['适用车型'];
+            $crk['产地']=$product['产地'];
+            $crk['备注']=$product['备注'];
+            $crk['车型']=$wxinfo['车型'];
+            $crk['品牌']=$wxinfo['品牌'];
+            $crk['排量']=$wxinfo['排量'];
+            $crk['年份']=$wxinfo['年份'];
+            $crk['车牌号码']=$wxinfo['车牌号码'];
+            M('采购明细','dbo.','difo')->add($crk);
+            //M('配件目录','dbo.','difo')->execute("UPDATE 配件目录 SET 维修领用=维修领用+$num WHERE 编号='$code'");
+            //M('维修配件','dbo.','difo')->execute("UPDATE 维修配件 SET 待审核数量=$num WHERE ID='$wxID'and 编号='$code'");
+           
+        }
+        echo '开单成功，转入采购审核中';
+    }
+     else{ 
+
+         $this->display();
+     }
+   }
+  public function maintenance()
     {  
        if(IS_POST){
            $zhuxiu=$_POST['zhuxiu'];
@@ -2375,8 +2474,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         unset($data['购买日期']);
         unset($data['结束日期']);
         unset($data['预计完工']);
+        unset($data['结算日期']);
         $data['进厂时间']=date('Y-m-d',time());
-        $data['结算日期']=date('Y-m-d',time());
+        //$data['结算日期']=date('Y-m-d',time());
         $data['维修类别']=$wxlb;
         $data['报称故障']=$fault;
         if(isset($xm))

@@ -138,7 +138,7 @@
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         var form, grid, project, product, append, opgrid, historygrid = null;
-        var washdialog, mrdialog, wxdialog, pickdialog, cardialog;
+        var washdialog, mrdialog, wxdialog, pickdialog, cardialog,purchasedialog;
         var record,discount = {};
         function wxinfo(xh) {
            var wxdialog= $.ligerDialog.open({
@@ -170,6 +170,25 @@
                     isResize: true,
                     modal: false,
                     title: '维修领料'
+                });
+            }
+        }
+        function purchasing() {
+            if (purchasedialog) {
+                purchasedialog.setUrl('/index.php?g=Query&m=Consume&a=purchasing');
+                purchasedialog.show();
+            }
+            else {
+                purchasedialog = $.ligerDialog.open({
+                    height: 540,
+                    url: '/index.php?g=Query&m=Consume&a=purchasing',
+                    width: 800,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '维修采购开单'
                 });
             }
         }
@@ -247,8 +266,8 @@
             $.post('/index.php?g=Query&m=Consume&a=getzhuxiu', {
                 shop:shop,
                 wxlx: wxlb
-            }, function (data)
-            {
+            },
+            function (data){
                 $('#zhuxiu').html('');
                 $(eval(data)).each(function(){
                     var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
@@ -258,7 +277,7 @@
                     relatedTarget: this,
                     width: 380,
                     closeOnConfirm: false,
-                    onConfirm: function (e) {
+                    onConfirm:function (e) {
                         var zhuxiu = $('#zhuxiu').val();
                         var data = {
                             zhuxiu: zhuxiu,
@@ -312,7 +331,7 @@
             append.reload();
             opgrid.setOptions({ urlParms: { id: record['业务编号'] } });
             opgrid.reload();
-            historygrid.setOptions({ urlParms: { carno: record['车牌号码'] } });
+            historygrid.set('parms', { carno: record['车牌号码'] });
             historygrid.reload();
             $("div[data-index='5']").find('iframe').attr('src', '/index.php?g=Query&m=Consume&a=wxfileupload&wxno=' + record['流水号']);
 
@@ -770,6 +789,11 @@
                     { display: '已领料数量', name: '已领料数量', minWidth: 60 },
                     { display: '待审核数量', name: '待审核数量', minWidth: 60 },
                     { display: '已退料数量', name: '已退料数量', minWidth: 60 },
+                    { display: '是否已采购', name: '是否采购', minWidth: 60,render: function (rowdata, index, value) {
+                        if (value == '1')
+                            return '是';
+                        return '否';
+                    }},
                     { display: '税率', name: '税率', minWidth: 60 },
                     { display: '税额', name: '税额', minWidth: 60 },
                     { display: '虚增类别', name: '虚增类别', minWidth: 100 },
@@ -784,7 +808,7 @@
                             return '否';
                         }
                     },
-                    { display: '备注', name: '备注', minWidth: 200 },
+                    { display:'备注', name:'备注', minWidth: 200 },
                     ],
                     url: '/index.php?g=Query&m=Consume&a=getproduct',
                     pageSize: 10,
@@ -856,7 +880,24 @@
                             }, icon: 'ad icon iconfont icon-lingliao'
                         },
                         { id: 'btntuiliao', text: '退料', click: null, icon: 'ad icon iconfont icon-jianqu' },
-                        { id: 'btncaigou', text: '采购开单', click: null, icon: 'ad icon iconfont icon-cart' },
+                        {
+                            id: 'btncaigou', text: '采购开单', click: function () {
+                                var rows = product.getSelectedRows();
+                                if (rows.length > 0) {
+                                    for (var i = 0; i < rows.length; i++) {
+                                        var count = rows[i]['数量'] - rows[i]['已领料数量'] - rows[i]['待审核数量'] + rows[i]['已退料数量'];
+                                        if (count <= 0) {
+                                            $.ligerDialog.alert(rows[i]['名称'] + "没有未领用数量");
+                                            return;
+                                        }
+                                    }
+                                    purchasing();
+                                } else {
+                                    $.ligerDialog.alert('请选择要采购的配件');
+                                }
+
+                            }, icon: 'ad icon iconfont icon-cart'
+                        },
                         ]
                     }
                 });

@@ -14638,6 +14638,8 @@
     <Content Include="tpl\Query\Consume_addproject.html" />
     <Content Include="tpl\Query\Consume_carinfo - Copy.html" />
     <Content Include="tpl\Query\Consume_crklist.html" />
+    <Content Include="tpl\Query\Consume_purchasecheck.html" />
+    <Content Include="tpl\Query\Consume_pickcheck.html" />
     <Content Include="tpl\Query\Consume_modifyproduct.html" />
     <Content Include="tpl\Query\Consume_picking.html" />
     <Content Include="tpl\Query\Consume_purchasing.html" />

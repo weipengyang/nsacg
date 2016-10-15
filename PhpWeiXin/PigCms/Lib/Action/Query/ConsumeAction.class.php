@@ -915,6 +915,14 @@ class ConsumeAction extends Action{
        $data['Total']=count($carinfo);
        echo json_encode($data);
    }
+   public function getpick(){
+       $id=$_GET['id'];
+       $carinfo=M('出入库单','dbo.','difo')->where(array('当前状态'=>'待审核','单据类别'=>'出库'))->select();
+       $data['Rows']=$carinfo;
+       $data['Total']=count($carinfo);
+       echo json_encode($data);
+   }
+
    public function carinfo()
     {
         if(IS_POST){
@@ -1623,12 +1631,16 @@ class ConsumeAction extends Action{
            $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>$zhuxiu))->find();
            $item['主修人']=$zhuxiu;
            $item['班组']=$yg['班组'];
-           $item['开工时间']=date('Y-m-d H:i',time());;
+           $wxinfo=M('维修项目','dbo.','difo')->where(array('ID'=>$itemid))->find();
+           if(!isset($wxinfo['开工时间'])){
+            $item['开工时间']=date('Y-m-d H:i',time());
+            $data['门店']=$yg['部门'];
+         }
+           
            M('维修项目','dbo.','difo')->where(array('ID'=>$itemid))->save($item);
            $data['当前主修人']=$zhuxiu;
            $data['主修人']=$zhuxiu;
            //$data['当前状态']='结束'; 
-           $data['门店']=$yg['部门'];
            //$data['出厂时间']=date('Y-m-d H:i',time());
            //$data['实际完工']=date('Y-m-d H:i',time());
            //$data['结算日期']=date('Y-m-d',time());
@@ -1640,6 +1652,9 @@ class ConsumeAction extends Action{
            //$this->genbill($wx['应收金额'],$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID']);
            echo '派工完成';
            exit;
+       }
+       else{
+           $this->display();
        }
    }
    public function picking(){

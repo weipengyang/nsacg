@@ -65,11 +65,11 @@
                     price: {pigcms:$_REQUEST['price']},
                     password: password,
                 };
-                $("#showcard").removeAttr('onclick');
+                $("#topay").removeAttr('onclick');
                 $.post('index.php?g=Wap&m=Store&a=pay', submitData,
                function (data) {
                    $.alert(data);
-                   location.href = 'index.php?g=Wap&m=Store&a=check';
+                   location.href = 'index.php?g=Wap&m=Store&a=cats';
                });
             });
         });

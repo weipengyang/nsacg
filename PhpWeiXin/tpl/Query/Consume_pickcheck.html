@@ -41,18 +41,6 @@
         <!-- content start -->
         <div class="admin-content">
             <div class="admin-content-body">
-                <div style="margin-bottom:5px;padding-left:10px">
-                    <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="washcar();"><i class="iconfont icon-xiche"></i>洗车</button>
-                    <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="meirong();"><i class="iconfont icon-meirong"></i>美容</button>
-                    <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="weixiu();"><i class="iconfont icon-weixiu"></i>维修</button>
-                    <button type="button" id="baojia" class="am-btn am-btn-default am-btn-sm">报价</button>
-                    <button type="button" id="paigong" class="am-btn am-btn-primary am-btn-sm">派工</button>
-                    <button type="button" id="lingliao" class="am-btn am-btn-secondary am-btn-sm">领料</button>
-                    <button type="button" id="shenhe" class="am-btn am-btn-success am-btn-sm">审核</button>
-                    <button type="button" id="jiesuan" class="am-btn am-btn-warning am-btn-sm">结算</button>
-                    <button type="button" id="chuchang" class="am-btn am-btn-danger am-btn-sm">出厂</button>
-                    <button type="button" id="all" class="am-btn am-btn-primary am-btn-sm">所有未结算</button>
-                </div>
                 <div class="am-g">
                     <div class="am-u-sm-10 am-u-md-9">
                         门店
@@ -75,27 +63,9 @@
                         <button id="search" type="button">模糊查询</button>
                     </div>
                     <div class="am-u-sm-2 am-u-md-3" id="optdiv">
-                        <div id="baojiadiv"  style="display:none"><button type="button" onclick="changeState('派工','paigong');" class="am-btn am-btn-primary am-round am-btn-sm"><i class="am-icon-hand-o-right"></i>主管派工</button>
-                        </div>
-                        <div id="paigongdiv" style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('报价','baojia');" ><i class="am-icon-hand-o-left"></i>维修报价</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('领料','lingliao');"><i class="am-icon-hand-o-right"></i>维修领料</button>
-                        </div>
-                        <div id="lingliaodiv"  style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('派工','paigong');"><i class="am-icon-hand-o-left"></i>主管派工</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('审核','shenhe');"><i class="am-icon-hand-o-right"></i>完工审核</button>
-                        </div>
-                        <div id="shenhediv"  style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('派工','paigong');"><i class="am-icon-hand-o-left"></i>驳回派工</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('结算','jiesuan');"><i class="am-icon-hand-o-right"></i>维修结算</button>
-                        </div>
-                        <div id="jiesuandiv"  style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('审核','shenhe');"><i class="am-icon-hand-o-left"></i>完工审核</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('出厂','chuchang');"><i class="am-icon-hand-o-right"></i>车辆出厂</button>
-                        </div>
-                        <div id="chuchangdiv"  style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('结算','jiesuan');"><i class="am-icon-hand-o-left"></i>维修结算</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('结束','baojia');"><i class="am-icon-hand-o-right"></i>确认出厂</button>
+                        <div id="paigongdiv" >
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="check();" ><i class="am-icon-hand-o-left"></i>审核通过</button>
+                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="deleterecord();"><i class="am-icon-hand-o-right"></i>删除</button>
                         </div>
                     </div>
                 </div>
@@ -148,7 +118,45 @@
                 cardialog.max();
             }
         }
-        function changeState(zt,opt) {
+        function check() {
+            var row = grid.getSelectedRow();
+            if (row) {
+                var data = {
+                    crk: row,
+                    crkmx: product.rows,
+                };
+                $.post('/index.php?g=Query&m=Consume&a=pickcheck', data,
+                  function (msg) {
+                      $.ligerDialog.alert(msg);
+                      grid.reload();
+                  });
+            }
+            else {
+                alert('选择审核记录');
+            }
+        }
+        function deleterecord() {
+            var row = grid.getSelectedRow();
+            if (row) {
+                $.ligerDialog.confirm('你确定要删除此记录', function (flag) {
+                    if (flag) {
+                        var data = {
+                            crk: row,
+                            crkmx: product.rows,
+                        };
+                        $.post('/index.php?g=Query&m=Consume&a=deletepick', data,
+                          function (msg) {
+                              $.ligerDialog.alert(msg);
+                              grid.reload();
+                          });
+                    }
+                });
+            }
+            else {
+                alert('选择审核记录');
+            }
+        }
+        function changeState(zt, opt) {
             var row = grid.getSelectedRow();
             if (row) {
                 var data = {
@@ -171,27 +179,22 @@
                   });
             }
         }
-        function setdisabled() {
-            project.toolbarManager.setDisabled('assign');
-            product.toolbarManager.setDisabled('btnlingliao');
-            product.toolbarManager.setDisabled('btntuiliao');
-            product.toolbarManager.setDisabled('btncaigou');
-        }
         function format(rowdata, index, value) {
             return todate(value);
         }
         $(function () {
             grid = $("#maingrid4").ligerGrid({
                 columns: [
-                { display: '单据编号', name: '单据编号', align: 'left', width: 60 },
+                { display: '单据编号', name: '单据编号', align: 'left', width: 100 },
                 {
                     display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
                         return todate(value, false);
                     }
                 },
-                { display: '制单人', name: '制单人', width: 60, align: 'left' },
-                { display: '业务员', name: '业务员', minWidth: 60 },
-                { display: '原因', name: '原因', minWidth: 80 },
+                { display: '单据类别', name: '单据类别', width: 100, align: 'left' },
+                { display: '制单人', name: '制单人', width: 100, align: 'left' },
+                { display: '业务员', name: '领料员', minWidth: 100 },
+                { display: '原因', name: '原因', minWidth: 120 },
                 {
                     display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
 
@@ -199,8 +202,8 @@
 
                     }
                 },
-                { display: '引用单号', name: '引用单号', minWidth: 140 },
-                { display: '备注', name: '备注', minWidth: 100 },
+                { display: '引用单号', name: '引用单号', minWidth: 100 },
+                { display: '备注', name: '备注', minWidth: 120 },
                 ],
                 isScroll: true,
                 pageSize: 10,
@@ -211,16 +214,8 @@
                 },
                 onSelectRow: function (data, rowindex,rowobj) {
                     record = data;
-                    reload();
-                },
-                onSuccess: function (data) {
-                    if (data.Rows) {
-                        record = data.Rows[0];
-                        $.getJSON('index.php?&g=Query&m=Consume&a=getdiscount&id=' + record['客户ID'], function (data) {
-                            discount = data;
-                        });
-                        //setdata(data.Rows[0]);
-                    }
+                    product.set('parms', { id: record['ID'] });
+                    product.reload();
                 }
             });
             product = $("#maingrid5").ligerGrid({
@@ -230,31 +225,15 @@
                 { display: '编号', name: '编号', minWidth: 100 },
                 { display: '名称', name: '名称', minWidth: 140 },
                 { display: '规格', name: '规格', minWidth: 100 },
+                { display: '单位', name: '单位', minWidth: 80 },
                 { display: '数量', name: '数量', minWidth: 60 },
-                { display: '已领料数量', name: '已领料数量', minWidth: 60 },
-                { display: '本次领料', name: '本次领料', minWidth: 60 },
-                { display: '已退料数量', name: '已退料数量', minWidth: 60 },
                 { display: '单价', name: '单价', minWidth: 80 },
                 { display: '金额', name: '金额', minWidth: 80 },
-                { display: '折扣', name: '折扣', minWidth: 80 },
-                { display: '单位', name: '单位', minWidth: 80 },
-                { display: '结算类别', name: '结算方式', minWidth: 100 },
-                { display: '税率', name: '税率', minWidth: 60 },
-                { display: '税额', name: '税额', minWidth: 60 },
-                { display: '虚增类别', name: '虚增类别', minWidth: 100 },
-                { display: '虚增金额', name: '虚增金额', minWidth: 80 },
-                { display: '急件金额', name: '急件金额', minWidth: 80 },
                 { display: '适用车型', name: '适用车型', minWidth: 100 },
                 { display: '产地', name: '产地', minWidth: 100 },
-                {
-                    display: '是否同意', name: '是否同意', align: 'left', width: 100, minWidth: 60, render: function (rowdata, index, value) {
-                        if (value == '1')
-                            return '是';
-                        return '否';
-                    }
-                },
                 { display: '备注', name: '备注', minWidth: 200 },
                 ],
+                url: '/index.php?g=Query&m=Consume&a=getpickdetail',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     product.deleteSelectedRow();
                 },

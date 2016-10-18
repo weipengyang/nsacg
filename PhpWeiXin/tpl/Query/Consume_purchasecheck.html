@@ -41,18 +41,6 @@
         <!-- content start -->
         <div class="admin-content">
             <div class="admin-content-body">
-                <div style="margin-bottom:5px;padding-left:10px">
-                    <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="washcar();"><i class="iconfont icon-xiche"></i>洗车</button>
-                    <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="meirong();"><i class="iconfont icon-meirong"></i>美容</button>
-                    <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="weixiu();"><i class="iconfont icon-weixiu"></i>维修</button>
-                    <button type="button" id="baojia" class="am-btn am-btn-default am-btn-sm">报价</button>
-                    <button type="button" id="paigong" class="am-btn am-btn-primary am-btn-sm">派工</button>
-                    <button type="button" id="lingliao" class="am-btn am-btn-secondary am-btn-sm">领料</button>
-                    <button type="button" id="shenhe" class="am-btn am-btn-success am-btn-sm">审核</button>
-                    <button type="button" id="jiesuan" class="am-btn am-btn-warning am-btn-sm">结算</button>
-                    <button type="button" id="chuchang" class="am-btn am-btn-danger am-btn-sm">出厂</button>
-                    <button type="button" id="all" class="am-btn am-btn-primary am-btn-sm">所有未结算</button>
-                </div>
                 <div class="am-g">
                     <div class="am-u-sm-10 am-u-md-9">
                         门店
@@ -75,71 +63,27 @@
                         <button id="search" type="button">模糊查询</button>
                     </div>
                     <div class="am-u-sm-2 am-u-md-3" id="optdiv">
-                        <div id="baojiadiv"  style="display:none"><button type="button" onclick="changeState('派工','paigong');" class="am-btn am-btn-primary am-round am-btn-sm"><i class="am-icon-hand-o-right"></i>主管派工</button>
-                        </div>
-                        <div id="paigongdiv" style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('报价','baojia');" ><i class="am-icon-hand-o-left"></i>维修报价</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('领料','lingliao');"><i class="am-icon-hand-o-right"></i>维修领料</button>
-                        </div>
-                        <div id="lingliaodiv"  style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('派工','paigong');"><i class="am-icon-hand-o-left"></i>主管派工</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('审核','shenhe');"><i class="am-icon-hand-o-right"></i>完工审核</button>
-                        </div>
-                        <div id="shenhediv"  style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('派工','paigong');"><i class="am-icon-hand-o-left"></i>驳回派工</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('结算','jiesuan');"><i class="am-icon-hand-o-right"></i>维修结算</button>
-                        </div>
-                        <div id="jiesuandiv"  style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('审核','shenhe');"><i class="am-icon-hand-o-left"></i>完工审核</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('出厂','chuchang');"><i class="am-icon-hand-o-right"></i>车辆出厂</button>
-                        </div>
-                        <div id="chuchangdiv"  style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('结算','jiesuan');"><i class="am-icon-hand-o-left"></i>维修结算</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('结束','baojia');"><i class="am-icon-hand-o-right"></i>确认出厂</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="am-modal am-modal-prompt" tabindex="-1" id="doc-modal-4">
-                    <div class="am-modal-dialog">
-                        <div class="am-modal-hd">
-                            派工
-                            <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
-                        </div>
-                        <div class="am-modal-bd">
-                            <div class="am-form">
-                                <div class="am-g am-margin-top">
-                                    <div class="am-u-sm-4 am-u-md-4 am-text-right">
-                                        <span class="red">*</span>主修人
-                                    </div>
-                                    <div class="am-u-sm-8 am-u-md-8">
-                                        <select data-am-selected name="zhuxiu" id="zhuxiu">
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="am-modal-footer">
-                            <span class="am-modal-btn" data-am-modal-cancel>取消</span>
-                            <span class="am-modal-btn" data-am-modal-confirm>提交</span>
+                        <div id="paigongdiv">
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="check();"><i class="am-icon-hand-o-left"></i>审核通过</button>
+                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="deleterecord();"><i class="am-icon-hand-o-right"></i>删除</button>
                         </div>
                     </div>
                 </div>
                 <div id="maingrid4" style="margin:0; padding:0;"></div>
                 <div id="maingrid5" style="margin:0; padding:0;height:50%">
-                <div id="form1">
-                </div>
                 </div>
             </div>
         </div>
-        <!-- content end -->
+    </div>
+    <!-- content end -->
     </div>
     <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
     <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
-        var form, grid, project, product, append, opgrid, historygrid = null;
-        var washdialog, mrdialog, wxdialog, pickdialog, cardialog,purchasedialog;
-        var record,discount = {};
+        var  grid, product = null;
+        var  wxdialog, cardialog,caldialog;
+        var record
         function wxinfo(xh) {
            var wxdialog= $.ligerDialog.open({
                 height: 540,
@@ -153,44 +97,6 @@
                 title: '车辆维修详细信息'
            });
            wxdialog.max();
-        }
-        function pick() {
-            if (pickdialog) {
-                pickdialog.setUrl('/index.php?g=Query&m=Consume&a=picking');
-                pickdialog.show();
-            }
-            else {
-                  pickdialog = $.ligerDialog.open({
-                    height: 540,
-                    url: '/index.php?g=Query&m=Consume&a=picking',
-                    width: 800,
-                    showMax: true,
-                    showToggle: true,
-                    showMin: true,
-                    isResize: true,
-                    modal: false,
-                    title: '维修领料'
-                });
-            }
-        }
-        function purchasing() {
-            if (purchasedialog) {
-                purchasedialog.setUrl('/index.php?g=Query&m=Consume&a=purchasing');
-                purchasedialog.show();
-            }
-            else {
-                purchasedialog = $.ligerDialog.open({
-                    height: 540,
-                    url: '/index.php?g=Query&m=Consume&a=purchasing',
-                    width: 800,
-                    showMax: true,
-                    showToggle: true,
-                    showMin: true,
-                    isResize: true,
-                    modal: false,
-                    title: '维修采购开单'
-                });
-            }
         }
         function viewcarinfo(carno) {
             if (cardialog) {
@@ -212,218 +118,51 @@
                 cardialog.max();
             }
         }
-        function washcar() {
-            if (washdialog) washdialog.show();
-            else {
-                washdialog = $.ligerDialog.open({
-                    height: 310,
-                    url: '/index.php?g=Query&m=Consume&a=washcar',
-                    width: 600,
-                    showToggle: false,
-                    showMin: false,
-                    isResize: true,
-                    modal: false,
-                    title: '洗车录入'
-                });
-            }
-        }
-        function meirong() {
-            if (mrdialog) mrdialog.show();
-            else {
-                mrdialog = $.ligerDialog.open({
-                    height: 350,
-                    url: '/index.php?g=Query&m=Consume&a=meirong',
-                    width: 600,
-                    showToggle: false,
-                    showMin: false,
-                    isResize: true,
-                    modal: false,
-                    title: '美容录入'
-                });
-            }
-        }
-        function weixiu() {
-            if (wxdialog) wxdialog.show();
-            else {
-                wxdialog = $.ligerDialog.open({
-                    height: 440,
-                    url: '/index.php?g=Query&m=Consume&a=wxrecord',
-                    width: 600,
-                    showToggle: false,
-                    showMin: false,
-                    isResize: true,
-                    modal: false,
-                    title: '维修录入'
-                });
-            }
-        }
-        function assigntask(itemid,shop,wxlb) {
-            if (typeof(itemid)=='object') {
-                itemid = record['ID'];
-                shop = record['门店'];
-                wxlb = record['维修类别'];
-            }
-            $.post('/index.php?g=Query&m=Consume&a=getzhuxiu', {
-                shop:shop,
-                wxlx: wxlb
-            },
-            function (data){
-                $('#zhuxiu').html('');
-                $(eval(data)).each(function(){
-                    var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
-                    $('#zhuxiu').append(option);
-            });
-                $('#doc-modal-4').modal({
-                    relatedTarget: this,
-                    width: 380,
-                    closeOnConfirm: false,
-                    onConfirm:function (e) {
-                        var zhuxiu = $('#zhuxiu').val();
-                        var data = {
-                            zhuxiu: zhuxiu,
-                            itemid: itemid,
-                        };
-                        $.post('/index.php?g=Query&m=Consume&a=assigntask', data,
-                          function (msg) {
-                              alert(msg);
-                              $('#doc-modal-4').modal('close');
-                              reload();
-                              //location.href = location.href;
-                          });
-                    },
-                    onCancel: function (e) {
-                    }
-                });
-
-            });
-
-        }
-        function changeState(zt,opt) {
+        function check() {
             var row = grid.getSelectedRow();
             if (row) {
-                var data = {
-                    id: row['流水号'],
-                    zt: zt,
-                };
-                $.post('/index.php?g=Query&m=Consume&a=changestate', data,
-                  function (msg) {
-                      $('#' + opt).click();
-                      setTimeout(function () {
-                          for (var i = 0; i < grid.data.Rows.length; i++)
-                          {
-                              if (grid.data.Rows[i]['流水号'] == row['流水号'])
-                              {
-                                  grid.select(grid.data.Rows[i]);
-
-                              }
-                          }
-                      }, 500);
-                  });
+                if (caldialog) {
+                    caldialog.setUrl('/index.php?g=Query&m=Consume&a=editpurchase');
+                    caldialog.show();
+                }
+                else {
+                    caldialog = $.ligerDialog.open({
+                        height: 320,
+                        url: '/index.php?g=Query&m=Consume&a=editpurchase',
+                        width: 600,
+                        showMax: false,
+                        showToggle: true,
+                        showMin: true,
+                        isResize: true,
+                        modal: false,
+                        title: '结算信息'
+                    });
+                }  
+                
+            }
+            else {
+                alert('选择审核记录');
             }
         }
-        function reload() {
-            setdata(record);
-            project.setOptions({ urlParms: { ID: record['ID'] } });
-            project.reload();
-            product.setOptions({ urlParms: { id: record['ID'] } });
-            product.reload();
-            append.setOptions({ urlParms: { id: record['ID'] } });
-            append.reload();
-            opgrid.setOptions({ urlParms: { id: record['业务编号'] } });
-            opgrid.reload();
-            historygrid.set('parms', { carno: record['车牌号码'] });
-            historygrid.reload();
-            $("div[data-index='5']").find('iframe').attr('src', '/index.php?g=Query&m=Consume&a=wxfileupload&wxno=' + record['流水号']);
-
-        }
-        function submitForm() {
-
-            var form = liger.get("form1");
-            var data = form.getData();
-            data = JSON.stringify(data);
-            data = JSON2.parse(data);
-            $.post('/index.php?g=Query&m=Consume&a=savewxinfo', data,
-              function (msg) {
-                  $.ligerDialog.alert(msg);
-                  location.href = location.href;
-              });
-
-        }
-        function getGridOptions(checkbox) {
-            var options = {
-                columns: [
-                { display: '车主名称', name: '名称', align: 'left', width: 100, minWidth: 60 },
-                { display: '会员编号', name: '会员编号', minWidth: 120, width: 100 },
-                { display: '等级', name: '等级', minWidth: 120, width: 100 },
-                { display: '联系人', name: '联系人', minWidth: 140, width: 100 },
-                { display: '联系电话', name: '联系电话', width: 100 },
-                { display: '手机号码', name: '手机号码', width: 100 },
-                { display: '业务员', name: '业务员', width: 100 }
-                ],
-                switchPageSizeApplyComboBox: false,
-                url: '/index.php?g=Query&m=Consume&a=getuserinfo',
-                //data: $.extend({}, {}),
-                pageSize: 10,
-                checkbox: checkbox
-            };
-            return options;
-        }
-        function inidata() {
-            $("div[data-index='1']").html("<div id='projectgrid' style='margin:0;padding 0'><div>");
-            $("div[data-index='2']").html("<div id='productgrid'style='margin:0;padding 0'><div>");
-            $("div[data-index='3']").html("<div id='appendgrid'style='margin:0;padding 0'><div>");
-            $("div[data-index='5']").html('<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=wxfileupload&wxno=' + record['流水号'] + '"></iframe></div>');
-            $("div[data-index='6']").html("<div id='opgrid'style='margin:0;padding 0'><div>");
-            $("div[data-index='7']").html("<div id='historygrid'style='margin:0;padding 0'><div>");
-
-        }
-        function setClickEvent() {
-            $("li[data-index='1']").live('click', function () {
-                project.setOptions({ urlParms: { ID: record['ID'] } });
-                project.reload();
-            });
-            $("li[data-index='2']").live('click', function () {
-                product.setOptions({ urlParms: { id: record['ID'] } });
-                product.reload();
-            });
-            $("li[data-index='3']").live('click', function () {
-                append.setOptions({ urlParms: { id: record['ID'] } });
-                append.reload();
-            });
-            $("li[data-index='5']").live('click', function () {
-                $("div[data-index='5']").find('iframe').attr('src', '/index.php?g=Query&m=Consume&a=wxfileupload&wxno=' + record['流水号']);
-            });
-            $("li[data-index='6']").live('click', function () {
-                opgrid.setOptions({ urlParms: { id: record['业务编号'] } });
-                opgrid.reload();
-            });
-            $("li[data-index='7']").live('click', function () {
-                var parms = {
-                    carno: record['车牌号码']
-                };
-                historygrid.set('parms', parms);
-                historygrid.reload();
-            });
-        }
-        function setdisabled() {
-            project.toolbarManager.setDisabled('assign');
-            product.toolbarManager.setDisabled('btnlingliao');
-            product.toolbarManager.setDisabled('btntuiliao');
-            product.toolbarManager.setDisabled('btncaigou');
-        }
-        function setdata(record) {
-            if (record && record != '') {
-                record = JSON2.stringify(record);
-                record = JSON2.parse(record);
-                form.setData(record);
-                $("input[ligeruiid='车主']").val(record['车主']);
-                $("input[ligeruiid='车型']").val(record['车型']);
-                $("input[ligeruiid='客户类别']").val(record['客户类别']);
-                $("input[ligeruiid='品牌']").val(record['品牌']);
-                $("input[ligeruiid='车辆类别']").val(record['车辆类别']);
-                $("input[ligeruiid='保险公司']").val(record['保险公司']);
-                $("input[ligeruiid='服务顾问']").val(record['服务顾问']);
-
+        function deleterecord() {
+            var row = grid.getSelectedRow();
+            if (row) {
+                $.ligerDialog.confirm('你确定要删除此记录', function (flag) {
+                    if (flag) {
+                        var data = {
+                            cgd: row,
+                            cgdmx: product.rows,
+                        };
+                        $.post('/index.php?g=Query&m=Consume&a=deletepurchase', data,
+                          function (msg) {
+                              $.ligerDialog.alert(msg);
+                              grid.reload();
+                          });
+                    }
+                });
+            }
+            else {
+                alert('选择审核记录');
             }
         }
         function format(rowdata, index, value) {
@@ -432,27 +171,31 @@
         $(function () {
             grid = $("#maingrid4").ligerGrid({
                 columns: [
-                { display: '当前状态', name: '当前状态', align: 'left', width: 60 },
+                { display: '单据编号', name: '单据编号', align: 'left', width: 100 },
                 {
                     display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
                         return todate(value, false);
                     }
                 },
-                { display: '主修人', name: '主修人', width: 60, align: 'left' },
-                {
-                    display: '客户确认', name: '确认维修', align: 'center', minWidth: 50, render: function (rowdata, index, value) {
-                        if (value == null || value == '')
-                            value = '<span style="color:red">否</span>';
-                        else
-                            value = '<span style="color:blue">是</span>';
-
-                        return value;
-                    }
+                { display: '单据类别', name: '单据类别', width: 100, align: 'left' },
+                { display: '制单人', name: '制单人', width: 100, align: 'left' },
+                { display: '业务员', name: '领料员', minWidth: 100 },
+                { display: '供应商', name: '供应商', minWidth: 100 },
+                { display: '发票类别', name: '发票类别', minWidth: 100 },
+                { display: '结算方式', name: '结算方式', minWidth: 100 },
+                { display: '货运方式', name: '货运方式', minWidth: 100 },
+                { display: '付款日期', name: '付款日期', minWidth: 100,render: function (rowdata, index, value) {
+                    return todate(value, false);
+                  }
                 },
-                { display: '制单人', name: '制单人', width: 60, align: 'left' },
-                { display: '接车人', name: '接车人', minWidth: 60 },
-                { display: '维修类别', name: '维修类别', minWidth: 80 },
-                { display: '车主', name: '车主', minWidth: 140 },
+                { display: '送货地址', name: '送货地址', minWidth: 100 },
+                { display: '整单折扣', name: '整单折扣', minWidth: 100 },
+                { display: '合计数量', name: '合计数量', minWidth: 100 },
+                { display: '合计货款', name: '合计货款', minWidth: 100 },
+                { display: '合计税额', name: '合计税额', minWidth: 100 },
+                { display: '价税合计', name: '价税合计', minWidth: 100 },
+                { display: '运费', name: '运费', minWidth: 100 },
+                { display: '总金额', name: '总金额', minWidth: 100 },
                 {
                     display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
 
@@ -460,666 +203,54 @@
 
                     }
                 },
-                { display: '客户类别', name: '客户类别', minWidth: 140 },
-                { display: '联系人', name: '联系人', minWidth: 100 },
-                { display: '轮胎规格', name: '轮胎规格', minWidth: 60 },
-                { display: '机油格', name: '机油格', minWidth: 60 },
-                { display: '空气格', name: '空气格', minWidth: 60 },
-                { display: '冷气格', name: '冷气格', minWidth: 60 },
-                {
-                    display: '保险到期', name: '商保到期', minWidth: 100, render: function (rowdata, index, value) {
-                        return todate(value, false);
-                    }
-                },
-                {
-                    display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
-                        if (rowdata['制单人'] == '系统录单' && rowdata['主修人'] == '')
-                            return '<a href="javascript:void(0);" onclick="assigntask(\'' + rowdata.ID + '\',\''+rowdata['门店']+'\',\''+rowdata['维修类别']+'\');"><strong>派工</strong></a>';
-                        else
-                            return '';
-                    }
-                }
+                { display: '备注', name: '备注', minWidth: 120 },
                 ],
                 isScroll: true,
                 pageSize: 10,
-                url: '/index.php?g=Query&m=Consume&a=getwxinfo',
+                url: '/index.php?g=Query&m=Consume&a=getpurchase',
                 height: '50%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     wxinfo(data['流水号']);
                 },
                 onSelectRow: function (data, rowindex,rowobj) {
                     record = data;
-                    reload();
-                },
-                onSuccess: function (data) {
-                    if (data.Rows) {
-                        record = data.Rows[0];
-                        $.getJSON('index.php?&g=Query&m=Consume&a=getdiscount&id=' + record['客户ID'], function (data) {
-                            discount = data;
-                        });
-                        //setdata(data.Rows[0]);
-                    }
+                    product.set('parms', { id: record['ID'] });
+                    product.reload();
                 }
             });
-            form = $("#form1").ligerForm({
-                inputWidth: 160, labelWidth: 85, space: 20,
-                validate: true,
-                buttons: [
-                    { text: "更新", width: 60, click: submitForm }
+            product = $("#maingrid5").ligerGrid({
+                height: '100%',
+                columns: [
+                { display: '仓库', name: '仓库', minWidth: 120 },
+                { display: '编号', name: '编号', minWidth: 100 },
+                { display: '名称', name: '名称', minWidth: 140 },
+                { display: '规格', name: '规格', minWidth: 100 },
+                { display: '单位', name: '单位', minWidth: 80 },
+                { display: '数量', name: '数量', minWidth: 60 },
+                { display: '单价', name: '单价', minWidth: 80 },
+                { display: '金额', name: '金额', minWidth: 80 },
+                { display: '税率', name: '税率', minWidth: 80 },
+                { display: '折扣', name: '折扣', minWidth: 80 },
+                { display: '税额', name: '税额', minWidth: 80 },
+                { display: '价税合计', name: '价税合计', minWidth: 80 },
+                { display: '适用车型', name: '适用车型', minWidth: 100 },
+                { display: '产地', name: '产地', minWidth: 100 },
+                { display: '备注', name: '备注', minWidth: 200 },
                 ],
-                tab: {
-                    items: [
-                        {
-                            title: '基本信息',
-                            fields: [
-                                { display: "流水号", name: "流水号", newline: true, type: "hidden" },
-                                { display: "客户ID", name: "客户ID", newline: true, type: "hidden" },
-                                { display: "业务编号 ", name: "业务编号", newline: true, type: "text", readonly: true },
-                                { display: "制单日期 ", name: "制单日期", newline: false, type: "text", readonly: true },
-                                { display: "制单人 ", name: "制单人", newline: false, type: "text", readonly: true },
-                                { display: "服务顾问", name: "接车人", newline: false, type: "text" },
-                                { display: "维修类别 ", name: "维修类别", newline: false, type: "text" },
-                                { display: "保修类别 ", name: "保修类别", newline: false, type: "text" },
-                                { display: "车牌号码", name: "车牌号码", newline: true, type: "text" },
-                                { display: "品牌", name: "品牌", newline: false, type: "text", readonly: true },
-                                { display: "车系", name: "车型", newline: false, type: "text", readonly: true },
-                                { display: "进厂里程", name: "进厂里程", newline: false, type: "text" },
-                                {
-                                    display: "进厂时间", name: "进厂时间", newline: false, type: "date", options: {
-                                        showTime: true
-                                    }
-                                },
-                                { display: "油表数", name: "油表数", newline: false, type: "text" },
-                                {
-                                    display: "预计完工", name: "预计完工", newline: true, type: "date", options: {
-                                        showTime: true
-                                    }
-                                },
-                                { display: "下次保养 ", name: "下次保养", newline: false, type: "date" },
-                                { display: "车辆类型", name: "车辆类别", newline: false, type: "text" },
-                                { display: "年份 ", name: "年份", newline: false, type: "text" },
-                                { display: "排量", name: "排量", newline: false, type: "text" },
-                                { display: "车架号", name: "车架号", newline: false, type: "text" },
-                                { display: "轮胎规格", name: "轮胎规格", newline: true, type: "text" },
-                                { display: "机油格", name: "机油格", newline: false, type: "text" },
-                                { display: "空气格", name: "空气格", newline: false, type: "text" },
-                                { display: "冷气格", name: "冷气格", newline: false, type: "text" },
-                                { display: "汽油格", name: "汽油格", newline: false, type: "text" },
-                                { display: "刹车皮", name: "刹车皮", newline: false, type: "text" },
-                                { display: "发动机号", name: "发动机号", newline: true, type: "text" },
-                                { display: "发动机型号", name: "发动机型号", newline: false, type: "text" },
-                                { display: "电池", name: "电池", newline: false, type: "text" },
-                                { display: "车主", name: "车主", newline: false, type: "text", readonly: true },
-                                { display: "客户类别", name: "客户类别", newline: false, type: "text", readonly: true },
-                                { display: "联系人", name: "联系人", newline: false, type: "text" },
-                                { display: "联系电话", name: "联系电话", newline: true, type: "text" },
-                                { display: "手机号", name: "手机号码", newline: false, type: "text" },
-                                { display: "地址", name: "地址", newline: false, type: "text" },
-                                { display: "身份证号", name: "身份证号", newline: false, type: "text" },
-                                { display: "送修人", name: "送修人", newline: false, type: "text" },
-                                { display: "送修人电话", name: "送修人电话", newline: false, type: "text" },
-                                { display: "报价金额", name: "报价金额", newline: true, type: "text" },
-                                { display: "报价人", name: "报价人", newline: false, type: "text" },
-                                { display: "审核人", name: "审核人", newline: false, type: "text" },
-                                { display: "出厂里程", name: "出厂里程", newline: false, type: "text" },
-                                {
-                                    display: "出厂时间", name: "出厂时间", newline: false, type: "date", options: {
-                                        showTime: true
-                                    }
-                                },
-                                {
-                                    display: "实际完工", name: "实际完工", newline: false, type: "date", options: {
-                                        showTime: true
-                                    }
-                                },
-                                { display: "取消原因", name: "取消原因", newline: true, type: "text" },
-                                { display: "维修状态", name: "维修状态", newline: false, type: "text" },
-                                //{
-                                //    display: "保险公司 ", name: "保险公司", newline: false, type: "combobox",
-                                //    options: {
-                                //        valueField: '名称',
-                                //        textField: '名称',
-                                //        autocomplete: true,
-                                //        url: '/index.php?g=Query&m=Consume&a=baoxian',
-                                //    } },
+                url: '/index.php?g=Query&m=Consume&a=getpurchasedetail',
+                onSelectRow: function (rowdata, rowid, rowobj) {
+                  
 
-                                { display: "报称故障 ", name: "报称故障", newline: true, width: 300, type: "textarea" },
-                                { display: "重要提示 ", name: "重要提示", newline: false, width: 300, type: "textarea" },
-                                { display: "备注 ", name: "单据备注", newline: false, width: 300, type: "textarea" },
-                            ]
-
-                        },
-                        {
-                            title: '维修项目'
-                        },
-                        {
-                            title: '维修配件'
-                        },
-                        {
-                            title: '附加费用'
-                        },
-                        {
-                            title: '结算信息',
-                            fields: [
-                                { display: '结算客户', name: '结算客户', newline: true, type: 'text' },
-                                { display: '三包厂商', name: '三包厂商', newline: false, type: 'text' },
-                                { display: '保险公司', name: '保险公司', newline: false, type: 'text' },
-                                { display: '服务折扣', name: '整单服务折扣', newline: false, type: 'text' },
-                                { display: '销售折扣', name: '整单销售折扣', newline: false, type: 'text' },
-                                { display: '费用折扣', name: '整单费用折扣', newline: false, type: 'text' },
-                                { display: '服务税率', name: '整单服务税率', newline: true, type: 'text' },
-                                { display: '销售税率', name: '整单销售税率', newline: false, type: 'text' },
-                                { display: '费用税率', name: '整单费用税率', newline: false, type: 'text' },
-                                { display: '计次金额', name: '计次金额', newline: false, type: 'text' },
-                                { display: '材料费', name: '材料费', newline: false, type: 'text' },
-                                { display: '管理费', name: '管理费', newline: false, type: 'text' },
-                                { display: '工时费', name: '工时费', newline: true, type: 'text' },
-                                { display: '附加费', name: '附加费', newline: false, type: 'text' },
-                                { display: '款项总额', name: '款项总额', newline: false, type: 'text' },
-                                { display: '三包金额', name: '三包金额', newline: false, type: 'text' },
-                                { display: '保险金额', name: '保险金额', newline: false, type: 'text' },
-                                { display: '保险客付', name: '保险客付', newline: false, type: 'text' },
-                                { display: '客付金额', name: '客付金额', newline: true, type: 'text' },
-                                { display: '客付税额', name: '客付税额', newline: false, type: 'text' },
-                                { display: '客付虚增', name: '客付虚增', newline: false, type: 'text' },
-                                { display: '优惠金额', name: '优惠金额', newline: false, type: 'text' },
-                                { display: '应收金额', name: '应收金额', newline: false, type: 'text' },
-                                { display: '现收金额', name: '现收金额', newline: false, type: 'text' },
-                                { display: '结算日期', name: '结算日期', newline: true, type: 'date' },
-                                { display: '结算方式', name: '结算方式', newline: false , type: 'text' },
-                                { display: '结算人', name: '收款人', newline: false, type: 'text' },
-                                { display: '毛利', name: '毛利', newline: false, type: 'text' },
-
-                            ]
-
-                        },
-                        {
-                            title: '维修照片'
-                        },
-                        {
-                            title: '操作日志'
-                        },
-                        {
-                            title: '维修历史'
-                        }
-                    ]
                 }
-
             });
-            setTimeout(function () {
-                inidata();
-                project = $("#projectgrid").ligerGrid({
-                    height: '50%',
-                    width: '100%',
-                    columns: [
-                    { display: '项目编号', name: '项目编号', minWidth: 80 },
-                    { display: '项目名称', name: '项目名称', minWidth: 160 },
-                    { display: '工时', name: '工时', minWidth: 40 },
-                    { display: '单价', name: '单价', minWidth: 60 },
-                    { display: '金额', name: '金额', minWidth: 60 },
-                    { display: '折扣', name: '折扣', minWidth: 60 },
-                     { display: '主修人', name: '主修人', minWidth: 80 },
-                    { display: '班组', name: '班组', minWidth: 120 },
-                    {
-                        display: '开工时间', name: '开工时间', type: 'date', minWidth: 120, render: function (rowdata, index, value) {
-                            return todate(value, true);
-                        }
-                    },
-                    {
-                        display: '完工时间', name: '完工时间', type: 'date', minWidth: 120, render: function (rowdata, index, value) {
-                            return todate(value, true);
-                        }
-                    },
-                    { display: '维修工艺', name: '维修工艺', minWidth: 120 },
-                    { display: '结算方式', name: '结算方式', minWidth: 120 },
-                    { display: '税率', name: '税率', minWidth: 60 },
-                    { display: '税额', name: '税额', minWidth: 120 },
-                    { display: '虚增类别', name: '虚增类别', minWidth: 120 },
-                    { display: '虚增金额', name: '虚增金额', minWidth: 120 },
-                    { display: '提成工时', name: '提成工时', minWidth: 120 },
-                    { display: '提成金额', name: '提成金额', minWidth: 120 },
-                    { display: '维修工扣款', name: '维修工扣款', minWidth: 120 },
-                    { display: '扣款原因', name: '扣款原因', minWidth: 120 },
-                     { display: '已维修', name: '已维修', minWidth: 120 },
-                    {
-                        display: '是否同意', name: '是否同意', align: 'left', width: 100, minWidth: 60, render: function (rowdata, index, value) {
-                            if (value == '1')
-                                return '是';
-                            return '否';
-                        }
-                    },
-                    { display: '备注', name: '备注', minWidth: 240 }
-                    ],
-                    url: '/index.php?g=Query&m=Consume&a=getproject',
-                    pageSize: 10,
-                    delayLoad: true,
-                    checkbox: true,
-                    urlParms: { ID: record['ID'] },
-                    rownumbers: true,
-                    isScroll: true,
-                    toolbar: {
-                        items: [
-                        {
-                            id: 'addproject',
-                            text: '增加',
-                            click: function () {
-                           
-                                var dialog = $.ligerDialog.open({
-                                    height: 600,
-                                    url: 'index.php?&g=Query&m=Consume&a=addproject&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + discount['服务折扣1']+ "&zhuxiu=" + record['当前主修人'],
-                                    width: 900,
-                                    showMax: true,
-                                    showToggle: true,
-                                    showMin: true,
-                                    isResize: true,
-                                    modal: true,
-                                    title: '增加维修项目'
-                                });
-                                project.reload();
-                            }, icon: 'ad icon iconfont icon-dingdanguanli'
-                        },
-                        { line: true },
-                         {
-                             id: 'deleteproject',
-                             text: '删除', click: function () {
-                                 $.ligerDialog.confirm('确定要删除?', function (yes) {
-                                     if (yes) {
-                                         var rows = project.getSelectedRows();
-                                         if (rows.length > 0) {
-                                             var data = {
-                                                 projects: rows
-                                             }
-                                             $.post('/index.php?g=Query&m=Consume&a=deleteproject', data,
-                                               function (msg) {
-                                                   $.ligerDialog.alert(msg);
-                                                   project.reload();
-                                               });
-                                         } else {
-                                             $.ligerDialog.alert('请选择要删除项目');
-                                         }
-                                     }
-                                 });
-                             }, icon: 'delete'
-                         },
-                        { line: true },
-                        {
-                            id: 'modifyproject',
-                            text: '修改', click: function () {
-                                var row = project.getSelectedRow();
-                                if (row) {
-                                    $.ligerDialog.open({
-                                        height: 400,
-                                        url: 'index.php?&g=Query&m=Consume&a=modifyproject&id=' + row['流水号'],
-                                        width: 600,
-                                        showMax: true,
-                                        showToggle: true,
-                                        showMin: true,
-                                        isResize: true,
-                                        modal: true,
-                                        title: '修改维修项目'
-                                    });
-                                }
-                                else {
-                                    $.ligerDialog.alert('请选择要修改的项目');
-                                }
 
-                            }, icon: 'modify'
-                        },
-                        { line: true },
-                         {
-                             id: 'assign',
-                             text: '派工', click: assigntask, icon: 'memeber'
-                         }
-                        ]
-                    }
-                });
-                product = $("#productgrid").ligerGrid({
-                    height: '50%',
-                    columns: [
-                    { display: '仓库', name: '仓库', minWidth: 120 },
-                    { display: '编号', name: '编号', minWidth: 100 },
-                    { display: '名称', name: '名称', minWidth: 140 },
-                    { display: '规格', name: '规格', minWidth: 100 },
-                    { display: '数量', name: '数量', type: 'date', minWidth: 60 },
-                    { display: '单价', name: '单价', minWidth: 80 },
-                    { display: '金额', name: '金额', minWidth: 80 },
-                    { display: '折扣', name: '折扣', minWidth: 80 },
-                    { display: '单位', name: '单位', minWidth: 80 },
-                    { display: '结算类别', name: '结算方式', minWidth: 100 },
-                    { display: '已领料数量', name: '已领料数量', minWidth: 60 },
-                    { display: '待审核数量', name: '待审核数量', minWidth: 60 },
-                    { display: '已退料数量', name: '已退料数量', minWidth: 60 },
-                    { display: '是否已采购', name: '是否采购', minWidth: 60,render: function (rowdata, index, value) {
-                        if (value == '1')
-                            return '是';
-                        return '否';
-                    }},
-                    { display: '税率', name: '税率', minWidth: 60 },
-                    { display: '税额', name: '税额', minWidth: 60 },
-                    { display: '虚增类别', name: '虚增类别', minWidth: 100 },
-                    { display: '虚增金额', name: '虚增金额', minWidth: 80 },
-                    { display: '急件金额', name: '急件金额', minWidth: 80 },
-                    { display: '适用车型', name: '适用车型', minWidth: 100 },
-                    { display: '产地', name: '产地', minWidth: 100 },
-                    {
-                        display: '是否同意', name: '是否同意', align: 'left', width: 100, minWidth: 60, render: function (rowdata, index, value) {
-                            if (value == '1')
-                                return '是';
-                            return '否';
-                        }
-                    },
-                    { display:'备注', name:'备注', minWidth: 200 },
-                    ],
-                    url: '/index.php?g=Query&m=Consume&a=getproduct',
-                    pageSize: 10,
-                    isScroll: true,
-                    delayLoad: true,
-                    urlParms: { id: record['ID'] },
-                    rownumbers: true,
-                    checkbox: true,
-                    toolbar: {
-                        items: [
-                        {
-                            id:'addproduct',
-                            text: '增加', click: function () {
-                                $.ligerDialog.open({
-                                    height: 600,
-                                    url: 'index.php?&g=Query&m=Consume&a=addproduct&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + discount['销售折扣1'] + "&shop=" + record['门店'],
-                                    width: 900,
-                                    showMax: true,
-                                    showToggle: true,
-                                    showMin: true,
-                                    isResize: true,
-                                    modal: true,
-                                    title: '增加维修配件'
-                                });
-
-                            }, icon: 'add'
-                        },
-                        { line: true },
-                        {
-                            text: '删除',
-                            click: function () {
-                                $.ligerDialog.confirm('确定要删除?', function (yes) {
-                                    if (yes) {
-                                        var rows = product.getSelectedRows();
-                                        if (rows.length > 0) {
-                                            var data = {
-                                                products: rows
-                                            }
-                                            $.post('/index.php?g=Query&m=Consume&a=deleteproduct', data,
-                                              function (msg) {
-                                                  alert(msg);
-                                                  product.reload();
-                                              });
-                                        } else {
-                                            $.ligerDialog.alert('请选择要删除项目');
-                                        }
-                                    }
-                                });
-                            }, icon: 'delete'
-                        },
-                        { line: true },
-                        { id:'btnmodify',text: '修改', click: null, icon: 'modify' },
-                        {
-                            id: 'btnlingliao', text: '领料', click: function () {
-                                var rows = product.getSelectedRows();
-                                if (rows.length > 0) {
-                                    for (var i = 0; i < rows.length; i++) {
-                                        var count = rows[i]['数量'] - rows[i]['已领料数量'] - rows[i]['待审核数量'] + rows[i]['已退料数量'];
-                                        if (count <= 0)
-                                        {
-                                            $.ligerDialog.alert(rows[i]['名称'] + "没有未领用数量");
-                                            return;
-                                        }
-                                    }
-                                    pick();
-                                } else {
-                                    $.ligerDialog.alert('请选择要领料的配件');
-                                }
-                            }, icon: 'ad icon iconfont icon-lingliao'
-                        },
-                        { id: 'btntuiliao', text: '退料', click: null, icon: 'ad icon iconfont icon-jianqu' },
-                        {
-                            id: 'btncaigou', text: '采购开单', click: function () {
-                                var rows = product.getSelectedRows();
-                                if (rows.length > 0) {
-                                    for (var i = 0; i < rows.length; i++) {
-                                        var count = rows[i]['数量'] - rows[i]['已领料数量'] - rows[i]['待审核数量'] + rows[i]['已退料数量'];
-                                        if (count <= 0) {
-                                            $.ligerDialog.alert(rows[i]['名称'] + "没有未领用数量");
-                                            return;
-                                        }
-                                    }
-                                    purchasing();
-                                } else {
-                                    $.ligerDialog.alert('请选择要采购的配件');
-                                }
-
-                            }, icon: 'ad icon iconfont icon-cart'
-                        },
-                        ]
-                    }
-                });
-                append = $("#appendgrid").ligerGrid({
-                    height: '50%',
-                    columns: [
-                    { display: '编号', name: '编号', minWidth: 100 },
-                    { display: '名称', name: '名称', minWidth: 140 },
-                    { display: '结算方式', name: '结算方式', minWidth: 120 },
-                    { display: '金额', name: '金额', minWidth: 120 },
-                    { display: '折扣', name: '折扣', minWidth: 120 },
-                    { display: '税率', name: '税率', minWidth: 120 },
-                    { display: '税额', name: '税额', minWidth: 120 },
-                    { display: '托外单位', name: '托外单位', minWidth: 120 },
-                    { display: '托外金额', name: '托外金额', minWidth: 120 },
-                    { display: '付款金额', name: '付款金额', minWidth: 120 },
-                    {
-                        display: '是否同意', name: '是否同意', align: 'left', width: 100, minWidth: 60, render: function (rowdata, index, value) {
-                            if (value == '1')
-                                return '是';
-                            return '否';
-                        }
-                    },
-                    { display: '备注', name: '备注', minWidth: 240 }
-                    ],
-                    url: '/index.php?g=Query&m=Consume&a=getappend',
-                    pageSize: 10,
-                    isScroll: true,
-                    delayLoad: true,
-                    urlParms: { id: record['ID'] },
-                    rownumbers: true,
-                    toolbar: {
-                        items: [
-                        { text: '增加', click: null, icon: 'add' },
-                        { line: true },
-                        { text: '修改', click: null, icon: 'modify' },
-                        { line: true },
-                        { text: '删除', click: null, icon: 'delete' }
-                        ]
-                    }
-                });
-                opgrid = $("#opgrid").ligerGrid({
-                    height: '50%',
-                    columns: [
-                    { display: '单据编号', name: '单据编号', align: 'left', width: 140, minWidth: 60 },
-                    { display: '单据类别', name: '单据类别', minWidth: 140 },
-                    { display: '时间', name: '时间', minWidth: 150, render: format },
-                    { display: '操作员', name: '操作员', minWidth: 150 },
-                    { display: '事件', name: '事件', minWidth: 200 }
-                    ],
-                    url: '/index.php?g=Query&m=Consume&a=getlog',
-                    pageSize: 10,
-                    isScroll: true,
-                    urlParms: { id: record['业务编号'] },
-                    rownumbers: true,
-                });
-                historygrid = $("#historygrid").ligerGrid({
-                    columns: [
-                    { display: '当前状态', name: '当前状态', align: 'left', width: 60 },
-                    {
-                        display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
-                            return todate(value, false);
-                        }
-                    },
-                    { display: '主修人', name: '主修人', width: 60, align: 'left' },
-                    {
-                        display: '客户确认', name: '确认维修', align: 'center', minWidth: 50, render: function (rowdata, index, value) {
-                            if (value == null || value == '')
-                                value = '<span style="color:red">否</span>';
-                            else
-                                value = '<span style="color:blue">是</span>';
-
-                            return value;
-                        }
-                    },
-                    { display: '制单人', name: '制单人', width: 60, align: 'left' },
-                    { display: '接车人', name: '接车人', minWidth: 60 },
-                    { display: '维修类别', name: '维修类别', minWidth: 80 },
-                    { display: '车主', name: '车主', minWidth: 140 },
-                    {
-                        display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
-
-                            return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
-
-                        }
-                    },
-                    { display: '客户类别', name: '客户类别', minWidth: 140 },
-                    { display: '联系人', name: '联系人', minWidth: 100 },
-                    { display: '轮胎规格', name: '轮胎规格', minWidth: 60 },
-                    { display: '机油格', name: '机油格', minWidth: 60 },
-                    { display: '空气格', name: '空气格', minWidth: 60 },
-                    { display: '冷气格', name: '冷气格', minWidth: 60 },
-                    {
-                        display: '保险到期', name: '商保到期', minWidth: 100, render: function (rowdata, index, value) {
-                            return todate(value, false);
-                        }
-                    }
-                    ],
-                    isScroll: true,
-                    pageSize: 10,
-                    url: '/index.php?g=Query&m=Consume&a=getwxinfo',
-                    height: '50%',
-                    onDblClickRow: function (data, rowindex, rowobj) {
-                        wxinfo(data['流水号']);
-                    }
-                });
-                setdisabled();
-                //setClickEvent();
-                grid.select(grid.data.Rows[0]);
-            }, 300);
             $("#lb").change(function () {
                 $('#search').click();
             });
             $("#shop").change(function () {
                 $('#search').click();
             });
-            $('#baojia').click(function () {
-                $('#optdiv').find('div').each(function () {
-                    $(this).hide();
-                });
-                $('#baojiadiv').show();
-                var parms = {
-                    zt:'报价'
-                };
-                grid.set('parms', parms);
-                grid.reload();
-                project.toolbarManager.setDisabled('assign');
-                product.toolbarManager.setDisabled('btnlingliao');
-                product.toolbarManager.setDisabled('btntuiliao');
-                product.toolbarManager.setDisabled('btncaigou');
-                setTimeout(function () {
-                    grid.select(grid.data.Rows[0]);
-                    $("li[data-index='1']").click();
-                }, 100);
 
-            });
-            $('#paigong').click(function () {
-                $('#optdiv').find('div').each(function () {
-                    $(this).hide();
-                });
-                $('#paigongdiv').show();
-                var parms = {
-                    zt: '派工'
-                };
-                grid.set('parms', parms);
-                grid.reload();
-                project.toolbarManager.setEnabled('assign');
-                product.toolbarManager.setDisabled('btnlingliao');
-                product.toolbarManager.setDisabled('btntuiliao');
-                product.toolbarManager.setDisabled('btncaigou');
-                setTimeout(function () {
-                    grid.select(grid.data.Rows[0]);
-                    $("li[data-index='1']").click();
-                }, 100);
-
-
-            });
-            $('#lingliao').click(function () {
-                $('#optdiv').find('div').each(function () {
-                    $(this).hide();
-                });
-                $('#lingliaodiv').show();
-                var parms = {
-                    zt: '领料'
-                };
-                grid.set('parms', parms);
-                grid.reload();
-                project.toolbarManager.setDisabled('assign');
-                product.toolbarManager.setEnabled('btnlingliao');
-                product.toolbarManager.setEnabled('btntuiliao');
-                product.toolbarManager.setEnabled('btncaigou');
-                setTimeout(function () {
-                    grid.select(grid.data.Rows[0]);
-                    $("li[data-index='2']").click();
-                }, 100);
-                
-
-            });
-            $('#shenhe').click(function () {
-                $('#optdiv').find('div').each(function () {
-                    $(this).hide();
-                });
-                $('#shenhediv').show();
-                var parms = {
-                    zt: '审核'
-                };
-                grid.set('parms', parms);
-                grid.reload();
-            });
-            $('#jiesuan').click(function () {
-                $('#optdiv').find('div').each(function () {
-                    $(this).hide();
-                });
-                $('#jiesuandiv').show();
-                var parms = {
-                    zt: '结算'
-                };
-                grid.set('parms', parms);
-                grid.reload();
-            });
-            $('#chuchang').click(function () {
-                $('#optdiv').find('div').each(function () {
-                    $(this).hide();
-                });
-                $('#chuchangdiv').show();
-                var parms = {
-                    zt: '出厂'
-                };
-                grid.set('parms', parms);
-                grid.reload();
-            });
-            $('#all').click(function () {
-                var parms = {
-                    zt: '',
-                    type: '1'
-                };
-                grid.set('parms', parms);
-                grid.reload();
-                $('#optdiv').find('div').each(function () {
-                    $(this).hide();
-                });
-            });
             $('#search').click(function () {
                 grid.changePage('first');
                 var parms = {};

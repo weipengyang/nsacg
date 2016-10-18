@@ -1009,7 +1009,7 @@ class ConsumeAction extends Action{
                 $inout['制单人']=cookie('username');
                 $inout['单位名称']=$cgd['供应商'];
                 $inout['账款类别']='付款单';
-                $inout['实付金额']=$cgd['现收金额'];
+                $inout['实付金额']=$cgd['现结金额'];
                 $inout['折扣金额']=0;
                 $inout['结算方式']='支出';
                 $inout['摘要']='采购进货付款('.$cgd['单据编号'].')';
@@ -1019,7 +1019,7 @@ class ConsumeAction extends Action{
                 $inout['发票号']=$cgd['发票号'];;
                 $inout['ID']=$this->getcode(18,1,1);
                 $inout['单位编号']=$cgd['供应商ID'];
-                $inout['本次冲账']=$cgd['现收金额'];
+                $inout['本次冲账']=$cgd['现结金额'];
                 $inout['单据类别']='应付款';
                 $inout['取用预存']=0;
                 M('日常收支','dbo.','difo')->add($inout);
@@ -1157,7 +1157,7 @@ class ConsumeAction extends Action{
                      $data['已领料数量']=$pj['已领料数量']+ $num;
                      M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
                      M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num where 编号='$code'");
-                     M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓位='$ck'");
+                     M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓库='$ck'");
 
                  }
                  $crkitem['当前状态']='已审核';
@@ -1171,7 +1171,7 @@ class ConsumeAction extends Action{
                       $code=$item['编号'];
                       $ck=$item['仓库'];
                       M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num where 编号='$code'");
-                      M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓位='$ck'");
+                      M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓库='$ck'");
 
                   }
                   $crkitem['当前状态']='已审核';
@@ -1193,7 +1193,7 @@ class ConsumeAction extends Action{
                        //$data['已领料数量']=$pj['已领料数量']+ $num;
                        //M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
                        M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存+$num where 编号='$code'");
-                       M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存+$num where 编号='$code' and 仓位='$ck'");
+                       M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存+$num where 编号='$code' and 仓库='$ck'");
 
                    }
                    $crkitem['当前状态']='已审核';

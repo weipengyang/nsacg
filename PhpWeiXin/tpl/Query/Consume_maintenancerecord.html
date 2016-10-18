@@ -92,7 +92,8 @@
                         <div id="jiesuandiv"  style="display:none">
                             <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('审核','shenhe');"><i class="am-icon-hand-o-left"></i>完工审核</button>
                             <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('出厂','chuchang');"><i class="am-icon-hand-o-right"></i>车辆出厂</button>
-                        </div>
+                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="checkin();"><i class="am-icon-check"></i>确认结算</button>
+                       </div>
                         <div id="chuchangdiv"  style="display:none">
                             <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('结算','jiesuan');"><i class="am-icon-hand-o-left"></i>维修结算</button>
                             <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('结束','baojia');"><i class="am-icon-hand-o-right"></i>确认出厂</button>
@@ -113,7 +114,7 @@
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         var form, grid, project, product, append, opgrid, historygrid = null;
-        var washdialog, mrdialog, wxdialog, pickdialog, cardialog,purchasedialog,assigntaskdialog;
+        var washdialog, caldialog,mrdialog, wxdialog, pickdialog, cardialog, purchasedialog, assigntaskdialog;
         var record,discount = {};
         function wxinfo(xh) {
            var wxdialog= $.ligerDialog.open({
@@ -146,6 +147,32 @@
                     modal: false,
                     title: '维修领料'
                 });
+            }
+        }
+        function checkin() {
+            var row = grid.getSelectedRow();
+            if (row) {
+                if (caldialog) {
+                    caldialog.setUrl('/index.php?g=Query&m=Consume&a=pay');
+                    caldialog.show();
+                }
+                else {
+                    caldialog = $.ligerDialog.open({
+                        height: 320,
+                        url: '/index.php?g=Query&m=Consume&a=pay',
+                        width: 600,
+                        showMax: false,
+                        showToggle: true,
+                        showMin: true,
+                        isResize: true,
+                        modal: false,
+                        title: '结算信息'
+                    });
+                }
+
+            }
+            else {
+                alert('选择审核记录');
             }
         }
         function purchasing() {
@@ -994,7 +1021,7 @@
                 setTimeout(function () {
                     grid.select(grid.data.Rows[0]);
                     $("li[data-index='1']").click();
-                }, 100);
+                }, 200);
 
             });
             $('#paigong').click(function () {
@@ -1014,7 +1041,7 @@
                 setTimeout(function () {
                     grid.select(grid.data.Rows[0]);
                     $("li[data-index='1']").click();
-                }, 100);
+                }, 200);
 
 
             });
@@ -1035,7 +1062,7 @@
                 setTimeout(function () {
                     grid.select(grid.data.Rows[0]);
                     $("li[data-index='2']").click();
-                }, 100);
+                }, 200);
                 
 
             });
@@ -1049,6 +1076,14 @@
                 };
                 grid.set('parms', parms);
                 grid.reload();
+                project.toolbarManager.setDisabled('assign');
+                product.toolbarManager.setDisabled('btnlingliao');
+                product.toolbarManager.setDisabled('btntuiliao');
+                product.toolbarManager.setDisabled('btncaigou');
+                setTimeout(function () {
+                    grid.select(grid.data.Rows[0]);
+                    $("li[data-index='0']").click();
+                }, 200);
             });
             $('#jiesuan').click(function () {
                 $('#optdiv').find('div').each(function () {
@@ -1060,17 +1095,34 @@
                 };
                 grid.set('parms', parms);
                 grid.reload();
+                project.toolbarManager.setDisabled('assign');
+                product.toolbarManager.setDisabled('btnlingliao');
+                product.toolbarManager.setDisabled('btntuiliao');
+                product.toolbarManager.setDisabled('btncaigou');
+                setTimeout(function () {
+                    grid.select(grid.data.Rows[0]);
+                    $("li[data-index='4']").click();
+                }, 200);
             });
             $('#chuchang').click(function () {
                 $('#optdiv').find('div').each(function () {
                     $(this).hide();
                 });
                 $('#chuchangdiv').show();
+                project.toolbarManager.setDisabled('assign');
+                product.toolbarManager.setDisabled('btnlingliao');
+                product.toolbarManager.setDisabled('btntuiliao');
+                product.toolbarManager.setDisabled('btncaigou');
+
                 var parms = {
                     zt: '出厂'
                 };
                 grid.set('parms', parms);
                 grid.reload();
+                setTimeout(function () {
+                    grid.select(grid.data.Rows[0]);
+                    $("li[data-index='0']").click();
+                }, 200);
             });
             $('#all').click(function () {
                 var parms = {

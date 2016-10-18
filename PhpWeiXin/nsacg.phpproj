@@ -14636,8 +14636,8 @@
     <Content Include="tpl\Query\Consume_addproduct.html" />
     <Content Include="tpl\Query\Consume_assigntask.html" />
     <Content Include="tpl\Query\Consume_addproject.html" />
-    <Content Include="tpl\Query\Consume_carinfo - Copy.html" />
     <Content Include="tpl\Query\Consume_crklist.html" />
+    <Content Include="tpl\Query\Consume_pay.html" />
     <Content Include="tpl\Query\Consume_editpurchase.html" />
     <Content Include="tpl\Query\Consume_purchasecheck.html" />
     <Content Include="tpl\Query\Consume_pickcheck.html" />
@@ -14645,7 +14645,6 @@
     <Content Include="tpl\Query\Consume_picking.html" />
     <Content Include="tpl\Query\Consume_purchasing.html" />
     <Content Include="tpl\Query\Consume_usecars.html" />
-    <Content Include="tpl\Query\Consume_washcar - Copy.html" />
     <Content Include="tpl\Query\Consume_wxfileupload.html" />
     <Content Include="tpl\Query\Consume_maintenancerecord.html" />
     <Content Include="tpl\Query\Consume_editproduct.html" />

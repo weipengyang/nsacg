@@ -30,7 +30,7 @@ class ConsumeAction extends Action{
 
     public function addproject(){
         if(IS_POST){
-            $result=M('','dbo','difo')->query("SELECT 类别 [text],'true' isexpand FROM 项目分类");
+            $result=M('','dbo.','difo')->query("SELECT 类别 [text],'true' isexpand FROM 项目分类");
             $project['text']='全部';
             $project['isexpand']='true';
             $project['children']=$result;
@@ -45,6 +45,43 @@ class ConsumeAction extends Action{
             $this->display();
         }
     }
+    public function getmainmenu()
+    {
+            $ds=M('sys_app','dbo.','difo')->order('App_order')->select();
+            $toolbarscript = "{Items:[";
+
+           foreach($ds as $row)
+           {
+                $toolbarscript .= "{";
+                $toolbarscript .= "type: 'button',";
+                $toolbarscript .= "text: '". $row["App_name"] . "',";
+                $toolbarscript .= "icon: '" .$row["App_icon"] ."',";
+                if (true)
+                {
+                    $toolbarscript .= "disable: false,";
+                }
+                else
+                {
+                    $toolbarscript .= "disable:false, " ;
+                }
+                $toolbarscript .= "click: function () {";
+                $toolbarscript .= "f_according(" . $row["id"] .")";
+                $toolbarscript .= "}";
+                $toolbarscript .= "},";
+           }
+            $toolbarscript .= "]}";
+            echo $toolbarscript;
+     }
+    public function getmenus()
+    {
+        $ds=M('sys_menu','dbo.','difo')->where(array('app_id'=>$_GET['appid'],'parentid'=>0))->order('menu_order')->select();
+        foreach($ds as $key=>$item){
+           $children=M('sys_menu','dbo.','difo')->where(array('app_id'=>$_GET['appid'],'parentid'=>$item['Menu_id']))->order('menu_order')->select();
+           $ds[$key]['children']=$children;
+        }
+        echo json_encode($ds);
+     }
+
     public function stat()
     {
         $jy=M('车辆档案','dbo.','difo')->query("select  机油格,count(1) 数量 from  车辆档案 where 机油格 is not null group by 机油格 ");
@@ -891,7 +928,28 @@ class ConsumeAction extends Action{
       $xh=$_POST['流水号'];
       unset($wxinfo['流水号']);
       M('维修','dbo.','difo')->where(array('流水号'=>$xh))->save($wxinfo);
+      $this->calprice($wxinfo['ID']);
       echo '保存成功';
+  }
+
+  public function pay(){
+    if(IS_POST){
+        $wx=$_POST['record']; 
+        $this->genbill($wx['现收金额'],$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID']);
+        $data['当前状态']='出厂'; 
+        $data['出厂时间']=date('Y-m-d H:i',time());
+        $data['实际完工']=date('Y-m-d H:i',time());
+        $data['结算日期']=date('Y-m-d',time());
+        $data['结算日期']=date('Y-m-d',time());
+        $data['现收金额']=$wx['现收金额'];
+        $data['挂账金额']=$wx['挂账金额'];
+        $data['优惠金额']=$wx['优惠金额'];
+        $data['标志']='已结算';
+        $code=$wx['流水号'];
+        M('维修','dbo.','difo')->where(array('流水号'=>$code))->save($data);
+    }else{
+        $this->display();
+    }
   }
 
    public function modifyproject()
@@ -1346,10 +1404,10 @@ class ConsumeAction extends Action{
             $where['_complex']=$searchwhere;
 
         }
-		$count		= $card_create_db->join('tp_userinfo on tp_member_card_create.wecha_id=tp_userinfo.wecha_id')->where($where)->count(); 
+		$count		= $card_create_db->join('join tp_userinfo on tp_member_card_create.wecha_id=tp_userinfo.wecha_id')->where($where)->count(); 
 		$Page       = new Page($count,15,$parms);
 		$show       = $Page->show();
-		$list 		= $card_create_db->join('tp_userinfo on tp_member_card_create.wecha_id=tp_userinfo.wecha_id')->where($where)->order('tp_userinfo.getcardtime desc')->limit($Page->firstRow.','.$Page->listRows)->select();
+		$list 		= $card_create_db->join('join tp_userinfo on tp_member_card_create.wecha_id=tp_userinfo.wecha_id')->where($where)->order('tp_userinfo.getcardtime desc')->limit($Page->firstRow.','.$Page->listRows)->select();
 		$members	= $list;
 		if ($members){		
 			$this->assign('members',$members);
@@ -1712,7 +1770,7 @@ class ConsumeAction extends Action{
             $where['shop']=array('neq','');
         }
         if($searchkey){       
-            $searchwhere['carno']=array('like',$searchkey);
+            $searchwhere['tp_userinfo.carno']=array('like',$searchkey);
             $searchwhere['carno1']=array('like',$searchkey);
             $searchwhere['carno2']=array('like',$searchkey);
             $searchwhere['orderid']=array('like',$searchkey);
@@ -1751,6 +1809,90 @@ class ConsumeAction extends Action{
 		$show2       = $Page2->show();
 		$this->assign('rmb',$rmb);
 		$this->assign('page2',$show2);
+        $this->display();
+		
+    }
+    public function consume()
+    {
+        $where=array('1'=>'1');
+        if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+            $searchkey='%'.trim($_GET['searchkey']).'%';
+        }
+        if($_GET['shop']&&trim($_GET['shop'])!='')
+        {
+            $where=array('shop'=>trim($_GET['shop']));
+
+        }
+        else{
+            $where['shop']=array('neq','');
+        }
+        if($searchkey){       
+            $searchwhere['tp_userinfo.carno']=array('like',$searchkey);
+            $searchwhere['carno1']=array('like',$searchkey);
+            $searchwhere['carno2']=array('like',$searchkey);
+            $searchwhere['orderid']=array('like',$searchkey);
+            $searchwhere['number']=array('like',$searchkey);
+            $searchwhere['ordername']=array('like',$searchkey);
+            $searchwhere['truename']=array('like',$searchkey);
+            $searchwhere['wechaname']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $parms=$_GET;
+        $count= M('Member_card_pay_record')
+            ->join('join tp_userinfo on tp_member_card_pay_record.wecha_id=tp_userinfo.wecha_id')
+             ->join('join tp_member_card_create on tp_member_card_pay_record.wecha_id=tp_member_card_create.wecha_id')
+           ->where($where)->count();
+		$Page = new Page($count,15,$parms);
+		$rmb = M('Member_card_pay_record')
+            ->join('join tp_userinfo on tp_member_card_pay_record.wecha_id=tp_userinfo.wecha_id')
+            ->join('join tp_member_card_create on tp_member_card_pay_record.wecha_id=tp_member_card_create.wecha_id')
+            ->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('createtime DESC')->select();
+		$this->assign('rmb',$rmb);
+		$this->assign('page',$Page->show());
+        $this->display();
+		
+    }
+    public function usecoupons()
+    {
+        $where=array('1'=>'1');
+        if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+            $searchkey='%'.trim($_GET['searchkey']).'%';
+        }
+        if($_GET['shop']&&trim($_GET['shop'])!='')
+        {
+            $where=array('shop'=>trim($_GET['shop']));
+
+        }
+        else{
+            $where['shop']=array('neq','');
+        }
+        if($searchkey){       
+            $searchwhere['tp_userinfo.carno']=array('like',$searchkey);
+            $searchwhere['carno1']=array('like',$searchkey);
+            $searchwhere['carno2']=array('like',$searchkey);
+            $searchwhere['number']=array('like',$searchkey);
+            $searchwhere['notes']=array('like',$searchkey);
+            $searchwhere['truename']=array('like',$searchkey);
+            $searchwhere['wechaname']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $parms=$_GET;
+        $count= M('Member_card_use_record')
+            ->join('join tp_userinfo on tp_member_card_use_record.wecha_id=tp_userinfo.wecha_id')
+            ->join('join tp_member_card_create on tp_member_card_use_record.wecha_id=tp_member_card_create.wecha_id')
+            ->where($where)->count();
+		$Page = new Page($count,15,$parms);
+		$show = $Page->show();
+		$record = M('Member_card_use_record')
+            ->join('join tp_userinfo on tp_member_card_use_record.wecha_id=tp_userinfo.wecha_id')
+            ->join('join tp_member_card_create on tp_member_card_use_record.wecha_id=tp_member_card_create.wecha_id')
+            ->where($where)->order('tp_member_card_use_record.time desc')->limit($Page->firstRow.','.$Page->listRows)->select();
+        $this->assign('page',$show);
+        $this->assign('record',$record);
         $this->display();
 		
     }
@@ -1833,9 +1975,9 @@ class ConsumeAction extends Action{
 
         $bianhao=$this->getcodenum("BI");
         $data['单据编号']=$bianhao;
-        $data['ID']=$this->getcode(10,0,1);
+        $data['ID']=$this->getcode(20,1,1);
         $data['制单日期']=date('Y-m-d',time());
-        $data['制单人']='系统自动';
+        $data['制单人']=cookie('username');
         $data['单位名称']=$chezhu;
         $data['账款类别']='收款单';
         $data['开户银行']='';
@@ -2094,7 +2236,6 @@ class ConsumeAction extends Action{
             $crk['折扣']=$product['折扣'];
             $crk['税率']=$product['税率'];
             $crk['税额']=$product['税额'];
-            $crk['是否采购']=1;
             $crk['含税价']=$product['含税价'];
             $crk['价税合计']=$product['价税合计'];
             $crk['适用车型']=$product['适用车型'];
@@ -2106,8 +2247,9 @@ class ConsumeAction extends Action{
             $crk['年份']=$wxinfo['年份'];
             $crk['车牌号码']=$wxinfo['车牌号码'];
             M('采购明细','dbo.','difo')->add($crk);
+            $code=$crk['编号'];
             //M('配件目录','dbo.','difo')->execute("UPDATE 配件目录 SET 维修领用=维修领用+$num WHERE 编号='$code'");
-            //M('维修配件','dbo.','difo')->execute("UPDATE 维修配件 SET 待审核数量=$num WHERE ID='$wxID'and 编号='$code'");
+            M('维修配件','dbo.','difo')->execute("UPDATE 维修配件 SET 是否采购=1 WHERE  编号='$code' and ID='$wxID'");
            
         }
         echo '开单成功，转入采购审核中';

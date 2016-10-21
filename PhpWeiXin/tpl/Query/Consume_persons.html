@@ -51,12 +51,9 @@
                                 </select>
                                 部门
                                 <select data-am-selected="{btnSize: 'sm'}" id="bumen">
-                                    <option value="">所有部门</option>
-                                    <option value="区府店美容">区府店美容部</option>
-                                    <option value="区府店维修">区府店维修部</option>
-                                    <option value="区府店维修">区府店钣喷部</option>
-                                    <option value="塘坑店美容">塘坑店美容部</option>
-                                    <option value="塘坑店维修">塘坑店维修部</option>
+                                    <option value="">所有门店</option>
+                                    <option value="区府店">区府店美容部</option>
+                                    <option value="塘坑店">塘坑店美容部</option>
                                 </select>
 
                                 <button type="button" class="am-btn am-btn-default am-margin-right" id="my-start">开始日期</button><span id="my-startDate"></span>
@@ -72,48 +69,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="am-g">
-                        <div class="am-u-sm-12">
-                            <form class="am-form">
-                                <table class="am-table am-table-striped am-table-hover table-main">
-                                    <thead>
-                                        <tr>
-                                            <th class="table-title">主修人</th>
-                                            <th class="table-title">日期</th>
-                                            <th class="table-title">维修类别</th>
-                                            <th class="table-title">服务车辆数</th>
-                                            <th class="table-title">工时费</th>
-                                            <th class="table-title ">产值</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody> 
-                                        <volist name="yelist" id="item">
-                                            <tr>
-                                                <td>{pigcms:$item.主修人}</td>
-                                                <td>{pigcms:$item.时间}</td>
-                                                <td>{pigcms:$item.维修类别}</td>
-                                                <td>{pigcms:$item.服务车辆数}</td>
-                                                <td>{pigcms:$item.工时费}</td>
-                                                <td>{pigcms:$item.产值}</td>
-                                            </tr>
-
-                                        </volist>
-                                    </tbody>
-                                </table>
-                                <div class="am-cf">
-                                    <div class="am-fr">
-                                        <div class="cLine">
-                                            <div class="pageNavigator right">
-                                                <div class="pages">{pigcms:$page}</div>
-                                            </div>
-                                            <div class="clr"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr />
-                            </form>
-                        </div>
-                    </div>
+                    <div id="maingrid4" style="margin:0; padding:0;"></div>
                 </div>
             </div>
         <!-- content end -->
@@ -124,6 +80,34 @@
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         $(document).ready(function () {
+            grid = $("#maingrid4").ligerGrid({
+                columns: [
+                    { display: '主修人', name: '主修人', align: 'left', width: 100 },
+                    { display: '日期', name: '日期', width: 150 },
+                    { display: '服务车辆数', name: '服务车辆数', width: 120 },
+                    { display: '工时费', name: '工时费', width: 120 },
+                   {
+                     display: '产值', name: '产值', width: 60, align: 'left', render: function (rowdata, index, value) {
+                        if (value < rowdata['警戒下限'])
+                            return "<span style='color:red'>" + value + "</span>";
+                        else
+                            return value;
+                    }
+                },
+                ],
+                isScroll: true,
+                pageSize: 20,
+                detailHeight: 120,
+                fixedCellHeight: false,
+                url: '/index.php?g=Query&m=Consume&a=getpersonwork',
+                height: '100%',
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    editinfo(data['编号']);
+                },
+                detail: { onShowDetail: f_showdetail },
+
+            });
+
             var startDate = new Date(2014, 11, 20);
             var endDate = new Date(2014, 11, 25);
             var d = new Date();
@@ -166,7 +150,7 @@
                     url += '&searchkey=' + searchkey;
                 location.href = url;
             });
-
+           
         });
         //reflash();
         //function reflash() {

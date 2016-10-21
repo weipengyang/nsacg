@@ -15,12 +15,14 @@ class CardAction extends WapAction{
 		if (!$this->wecha_id && ACTION_NAME != 'companyMap'){
 			$this->error('您没有权限使用会员卡，如需使用请关注微信“'.$this->wxuser['wxname'].'”并回复会员卡',U('Index/index',array('token'=>$this->token)));
 		}
-        $user = M('Userinfo')->where(array('token' => $this->token, 'wecha_id' => $this->wecha_id))->find();
-        if(empty($user)||empty($user['carno'])){
-            $this->redirect(U('Store/userinfo', array('token' => $this->token)));
+        if(!in_array(ACTION_NAME, array('scanpay'))){
 
+            $user = M('Userinfo')->where(array('token' => $this->token, 'wecha_id' => $this->wecha_id))->find();
+            if(empty($user)||empty($user['carno'])){
+                $this->redirect(U('Store/userinfo', array('token' => $this->token)));
+
+            }
         }
-		
 		if (C('baidu_map')){
 			$this->isamap=0;
 		}else {
@@ -1613,6 +1615,36 @@ class CardAction extends WapAction{
         
 	}
 	
+    public function scanpay(){
+        if(IS_POST){
+            $price 		= $_POST['price'];
+            $orderid 	= $this->_get('orderid');
+            $record 	= M('Member_card_pay_record');
+            if($orderid == '' && $price <= 0){
+                $this->error('请填写正确的充值金额');
+            }
+
+            $token = $this->_get('token');
+            $wecha_id = $this->_get('wecha_id');
+            $_POST['wecha_id'] = $wecha_id;
+            $_POST['token'] = $token;
+            $_POST['createtime'] = time();
+            $_POST['orderid'] = date('YmdHis',time()).mt_rand(1000,9999);
+            $_POST['ordername'] ='临时客户支付';
+            
+            if($record->create($_POST)){
+                if($record->add($_POST)){
+                    header("Location:/wxpay/index.php?g=Wap&m=Weixin&a=pay&price=" . $price . "&orderName=" . $_POST['ordername'] . "&single_orderid=" . $_POST['orderid'] . "&showwxpaytitle=1&from=Card"  . "&token=" . $this->token . "&wecha_id=" . $this->wecha_id);
+                }
+            }else{
+                $this->error('系统错误');
+            }
+        }
+        else{
+           $this->display();
+        }
+		
+	}
 
 	//充值处理
 	public function payAction(){

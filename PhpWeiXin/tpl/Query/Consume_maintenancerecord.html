@@ -160,7 +160,7 @@
                     caldialog = $.ligerDialog.open({
                         height: 320,
                         url: '/index.php?g=Query&m=Consume&a=pay',
-                        width: 600,
+                        width: 600, 
                         showMax: false,
                         showToggle: true,
                         showMin: true,
@@ -335,7 +335,7 @@
             $.post('/index.php?g=Query&m=Consume&a=savewxinfo', data,
               function (msg) {
                   $.ligerDialog.alert(msg);
-                  location.href = location.href;
+                  reload();
               });
 
         }

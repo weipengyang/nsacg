@@ -10,6 +10,22 @@
     <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
     <script type="text/javascript">
+        var historygrid, wxdialog;
+        function wxinfo(xh) {
+            var wxdialog = $.ligerDialog.open({
+                height: 540,
+                url: '/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh,
+                width: 950,
+                showMax: true,
+                showToggle: true,
+                showMin: true,
+                isResize: true,
+                modal: false,
+                title: '车辆维修详细信息'
+            });
+            wxdialog.max();
+        }
+
         $(function ()
         {
             var form = $("#form1").ligerForm({
@@ -145,9 +161,63 @@
                         {
                             title: '车辆图片'
                         }
-                    ]
+,
+                        {
+                            title: '历史维修'
+                        }]
                 }
 
+            });
+            $("div[data-index='2']").html("<div id='historygrid'style='margin:0;padding 0'><div>");
+            historygrid = $("#historygrid").ligerGrid({
+                columns: [
+                { display: '当前状态', name: '当前状态', align: 'left', width: 60 },
+                {
+                    display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
+                        return todate(value, false);
+                    }
+                },
+                { display: '主修人', name: '主修人', width: 60, align: 'left' },
+                {
+                    display: '客户确认', name: '确认维修', align: 'center', minWidth: 50, render: function (rowdata, index, value) {
+                        if (value == null || value == '')
+                            value = '<span style="color:red">否</span>';
+                        else
+                            value = '<span style="color:blue">是</span>';
+
+                        return value;
+                    }
+                },
+                { display: '制单人', name: '制单人', width: 60, align: 'left' },
+                { display: '接车人', name: '接车人', minWidth: 60 },
+                { display: '维修类别', name: '维修类别', minWidth: 80 },
+                { display: '车主', name: '车主', minWidth: 140 },
+                {
+                    display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
+
+                        return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                    }
+                },
+                { display: '客户类别', name: '客户类别', minWidth: 140 },
+                { display: '联系人', name: '联系人', minWidth: 100 },
+                { display: '轮胎规格', name: '轮胎规格', minWidth: 60 },
+                { display: '机油格', name: '机油格', minWidth: 60 },
+                { display: '空气格', name: '空气格', minWidth: 60 },
+                { display: '冷气格', name: '冷气格', minWidth: 60 },
+                {
+                    display: '保险到期', name: '商保到期', minWidth: 100, render: function (rowdata, index, value) {
+                        return todate(value, false);
+                    }
+                }
+                ],
+                isScroll: true,
+                pageSize: 15,
+                url: '/index.php?g=Query&m=Consume&a=getwxinfo',
+                height: '80%',
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    wxinfo(data['流水号']);
+                }
             });
 
             setdata();
@@ -191,6 +261,8 @@
                     carinfo = JSON2.stringify(carinfo);
                     carinfo = JSON2.parse(carinfo);
                     form.setData(carinfo);
+                    historygrid.set('parms', { carno: carinfo['车牌号码'] });
+                    historygrid.reload();
                     $("input[ligeruiid='车主']").val(carinfo['车主']);
                     $("input[ligeruiid='车型']").val(carinfo['车型']);
                     $("input[ligeruiid='客户类别']").val(carinfo['客户类别']);

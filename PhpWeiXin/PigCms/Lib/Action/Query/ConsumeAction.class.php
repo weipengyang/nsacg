@@ -232,6 +232,92 @@ class ConsumeAction extends Action{
         echo json_encode($data);
     
     }
+    public function getpersonwork()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        $where['1']=1;
+         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
+             $searchkey='%'.trim($_POST['searchkey']).'%';
+         }
+         if($_POST['lb']&&trim($_POST['lb'])!='')
+         {
+             $where['维修类别']=trim($_POST['lb']);
+             
+         }
+         if($_POST['bm']&&trim($_POST['bm'])!='')
+         {
+             $where['部门']=array('like','%'.trim($_POST['bm'].'%'));
+             
+         }
+         if($_POST['startdate']&&trim($_POST['startdate'])!='')
+         {
+             $where['时间']=array('egt',trim($_POST['startdate']));
+             
+         }
+         if($_POST['endDate']&&trim($_POST['enddate'])!='')
+         {
+             $where['时间']=array('elt',trim($_POST['endDate']));
+             
+         }
+         if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
+         {
+             $where['时间']=array('BETWEEN',array(trim($_POST['startdate']),trim($_POST['enddate'])));
+             
+         }
+         if($_POST['zhuxiu']&&trim($_POST['zhuxiu'])!='')
+         {
+             $where['主修人']=trim($_POST['zhuxiu']);
+             
+         }
+        if(!isset($sortname)){
+            $sortname='时间';
+            $sortorder='desc';
+        }
+        if($searchkey){       
+            $searchwhere['维修类别']=array('like',$searchkey);
+            $searchwhere['主修人']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $count=M('个人业绩表','dbo.','difo')->join('员工目录 on 个人业绩表.主修人=员工目录.姓名')->where($where)->count();
+        $yelist=M('个人业绩表','dbo.','difo')->join('员工目录 on 个人业绩表.主修人=员工目录.姓名')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
+    public function getpersonstat()
+    {   
+        $where['1']=1;
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){       
+            $searchwhere['维修类别']=array('like',$searchkey);
+            $searchwhere['主修人']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $where['主修人']='陈康';
+        $yelist=M('个人业绩表','dbo.','difo')->query("SELECT sum([工时费]) 工时
+      ,[时间]
+      ,[主修人]
+      ,sum([服务车辆数]) 台次
+      ,sum([产值]) 产值
+  FROM [qxqpt2009].[dbo].[个人业绩表] group by [主修人],[时间]");
+        foreach($$yelist as $item){
+            
+        }
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
     public function getstacks()
     {   
 
@@ -337,6 +423,26 @@ class ConsumeAction extends Action{
             $searchkey='%'.trim($_POST['searchkey']).'%';
         }
         $where['车牌号码']=array('neq','0000');
+        if($_POST['where']!=''){
+            $cond=json_decode($_POST['where']);
+            $conditions=$cond->rules;
+            $opt=$cond->op;
+            $maps['equal']='eq';
+            $maps['notequal']='neq';
+            $maps['like']='like';
+            if($opt=='and'){
+                foreach($conditions as $condition){
+                    if($condition->op=='equal'||$condition->op=='notequal')
+                        $value=array($maps[$condition->op],$condition->value);
+                    else
+                        $value=array('like','%'.$condition->value.'%');
+                    $where[$condition->field]=$value;
+                }
+            }
+            else{
+                
+            }
+        }
         if($searchkey){       
             $searchwhere['品牌']=array('like',$searchkey);
             $searchwhere['轮胎规格']=array('like',$searchkey);
@@ -358,8 +464,8 @@ class ConsumeAction extends Action{
             $where['_complex']=$searchwhere;
             
         }
-        $count=M('车辆档案','dbo.','difo')->where($where)->count();
-        $yelist=M('车辆档案','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $count=M('车辆档案','dbo.','difo')->join('left join 维修统计 on 车辆档案.车牌号码=维修统计.车牌')->where($where)->count();
+        $yelist=M('车辆档案','dbo.','difo')->join('left join 维修统计 on 车辆档案.车牌号码=维修统计.车牌')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
         $data['Rows']=$yelist;
         $data['Total']=$count;
         echo json_encode($data);
@@ -536,6 +642,16 @@ class ConsumeAction extends Action{
             $zhuxiu=M('员工目录','dbo.','difo')->where(array('部门'=>$shop,'职务'=>$zhiwu))->select();
         }else{
             $zhuxiu=M('员工目录','dbo.','difo')->where(array('职务'=>$zhiwu))->select();       
+        }        
+        echo json_encode($zhuxiu);
+    }
+    public function getpersonbydepart()
+    {
+        $shop=$_POST['bumen'];
+        if($shop){
+            $zhuxiu=M('员工目录','dbo.','difo')->where(array('部门'=>$shop,'技术员'=>'1'))->select();
+        }else{
+            $zhuxiu=M('员工目录','dbo.','difo')->select(array('技术员'=>'1'));       
         }        
         echo json_encode($zhuxiu);
     }

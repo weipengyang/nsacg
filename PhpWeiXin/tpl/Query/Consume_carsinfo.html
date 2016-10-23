@@ -36,6 +36,7 @@
                 </select>
                 关键字：<input id="searchkey" type="text" />
                 <input id="search" type="button" value="模糊查询"  />
+                <input id="highgrade" type="button" value="高级搜索" />
             </div>
 
             <div id="maingrid4" style="margin:0; padding:0"></div>
@@ -122,6 +123,12 @@
         });
         var cargird;
         $(document).ready(function () {
+           $.ligerDefaults.Filter.operators['string'] =
+           $.ligerDefaults.Filter.operators['text'] =
+           ["like", "equal", "notequal"];
+            $('#highgrade').click(function () {
+                cargird.showFilter();
+            });
             cargird = $("#maingrid4").ligerGrid({
                 columns: [
                         { display: '车牌号码', name: '车牌号码', width: 80, align: 'left',render: function (rowdata, index, value) {
@@ -146,6 +153,8 @@
                         { display: '机油格', name: '机油格', width: 50 },
                         { display: '空气格', name: '空气格', width: 50 },
                         { display: '冷气格', name: '冷气格', width: 50 },
+                        { display: '进厂次数', name: '进厂次数', minWidth: 60 },
+                        { display: '消费金额', name: '消费金额', minWidth: 60 },
                         { display: '保险公司', name: '保险公司', minWidth: 60 },
                         {
                             display: '保险到期', name: '交保到期', minWidth: 100, render: function (rowdata, index, value) {

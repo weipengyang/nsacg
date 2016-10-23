@@ -14,7 +14,7 @@
         }
     </style>
     <script type="text/javascript">
-        var tree = null;
+        var tree,form,product,havaproduct = null;
         var data = [
                { id: 1, name: '客付' },
                { id: 2, name: '保险' },
@@ -24,6 +24,15 @@
           { id: 1, name: '配件' },
           { id: 2, name: '价格' }
         ];
+        function updateRow() {
+            var data = form.getData();
+            var selected = haveproduct.getSelected();
+            if (!selected) { $.ligerDialog.alert('请选择行'); return; }
+            data['金额'] = data['数量'] * data['单价'];
+            //data['金额'] = data['数量'] * data['单价'] * data['折扣'];
+            data['税额'] = data['金额'] * data['税率'];
+            haveproduct.updateRow(selected, data);
+        }
         $(function () {
             //布局
             $("#layout1").ligerLayout({ leftWidth: 150, height: '100%', space: 2});
@@ -56,7 +65,7 @@
                     }
                 }, 500);
             });
-            var product = $("#productgrid").ligerGrid({
+            product = $("#productgrid").ligerGrid({
                 height: '39%',
                 width: '100%',
                 columns: [          
@@ -117,7 +126,7 @@
                     }
                    
                 }
-            });            var haveproduct = $("#haveproduct").ligerGrid({
+            });            haveproduct = $("#haveproduct").ligerGrid({
                 height: '34%',
                 width: '100%',
                 columns: [
@@ -155,19 +164,11 @@
                     $("input[ligeruiid='虚增类别']").val(rowdata['虚增类别']);
                     $("input[ligeruiid='仅内部核算成本']").val(rowdata['仅内部核算成本']);
                 }
-            });            var form = $("#form1").ligerForm({
+            });            form = $("#form1").ligerForm({
                 inputWidth: 100, labelWidth: 65, space:3,
                 validate: true,
                 buttons: [                    {
-                        text: "更新", width: 100, click: function () {
-                            var data = form.getData();
-                            var selected = haveproduct.getSelected();
-                            if (!selected) { $.ligerDialog.alert('请选择行'); return; }
-                            data['金额'] = data['数量'] * data['单价'];
-                            //data['金额'] = data['数量'] * data['单价'] * data['折扣'];
-                            data['税额'] = data['金额'] * data['税率'];
-                            haveproduct.updateRow(selected, data);
-                        }
+                        text: "更新", width: 100, click: updateRow
                     },                    {
                         text: "保存", width: 100, click: function () {
                             var data = haveproduct.getChanges();
@@ -191,10 +192,26 @@
                             data: data,
                         }
                     },
-                    { display: "数量 ", name: "数量", newline: false, type: "text" },
-                    { display: "单价 ", name: "单价", newline: false, type: "text" },
-                    { display: "折扣", name: "折扣", newline: false, type: "text" },
-                    { display: "税率", name: "税率", newline: true, type: "text" },
+                    {
+                        display: "数量 ", name: "数量", newline: false, type: "text", options: {
+                            onBlur:updateRow
+                        }
+                    },
+                    {
+                        display: "单价 ", name: "单价", newline: false, type: "text", options: {
+                            onBlur: updateRow
+                        }
+                    },
+                    {
+                        display: "折扣", name: "折扣", newline: false, type: "text", options: {
+                            onBlur: updateRow
+                        }
+                    },
+                    {
+                        display: "税率", name: "税率", newline: true, type: "text", options: {
+                            onBlur: updateRow
+                        }
+                    },
                     {
                         display: "虚增类别", name: "虚增类别", newline: false, type: "combobox",
                         options: {
@@ -204,13 +221,22 @@
                         },
 
                     },
-                    { display: "虚增金额", name: "虚增金额", newline: false, type: "text" },
+                    {
+                        display: "虚增金额", name: "虚增金额", newline: false, type: "text", options: {
+                            onBlur: updateRow
+                        }
+                    },
                     { display: "内部核算", name: "仅内部核算成本", newline: false, type: "checkbox"},
-                    { display: "备注", name: "备注", newline: false, type: "text" },
+                    {
+                        display: "备注", name: "备注", newline: false, type: "text", options: {
+                            onBlur: updateRow
+                        }
+                    },
 
                 ]
             });
-
+            $("input[ligeruiid='结算方式']").live('blur', updateRow);
+            $("input[ligeruiid='虚增类别']").live('blur', updateRow);
         });
 
         function getQueryString(name) {

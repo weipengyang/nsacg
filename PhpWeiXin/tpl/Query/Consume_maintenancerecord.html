@@ -13,7 +13,7 @@
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
-    <link href="//at.alicdn.com/t/font_1474792210_8989851.css" rel="stylesheet" type="text/css" />
+    <link href="//at.alicdn.com/t/font_1477193360_4766667.css" rel="stylesheet" type="text/css" />
 
     <style type="text/css">
         .l-text-field {
@@ -114,8 +114,54 @@
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         var form, grid, project, product, append, opgrid, historygrid = null;
-        var washdialog, caldialog,mrdialog, wxdialog, pickdialog, cardialog, purchasedialog, assigntaskdialog;
-        var record,discount = {};
+        var washdialog, caldialog, mrdialog, wxdialog, pickdialog,
+            cardialog, purchasedialog, addprojectdialog,editprojectdialog, assigntaskdialog;
+        var record, discount = {};
+        function editproject() {
+            var row = project.getSelectedRow();
+            if (row) {
+                if (editprojectdialog) {
+                    editprojectdialog.setUrl('index.php?&g=Query&m=Consume&a=modifyproject&id=' + row['流水号']);
+                    editprojectdialog.show();
+                } else {
+                    editprojectdialog = $.ligerDialog.open({
+                        height: 400,
+                        url: 'index.php?&g=Query&m=Consume&a=modifyproject&id=' + row['流水号'],
+                        width: 600,
+                        showMax: true,
+                        showToggle: true,
+                        showMin: true,
+                        isResize: true,
+                        modal: true,
+                        title: '修改维修项目'
+                    });
+                }
+            }
+            else {
+                $.ligerDialog.alert('请选择要修改的项目');
+            }
+
+        }
+        function addproject() {
+            var url='index.php?&g=Query&m=Consume&a=addproject&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + discount['服务折扣1'] + "&zhuxiu=" + record['当前主修人'];
+            if (addprojectdialog) {
+                addprojectdialog.setUrl(url);
+                addprojectdialog.show();
+            } else {
+                addprojectdialog = $.ligerDialog.open({
+                    height: 600,
+                    url: url,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: true,
+                    title: '增加维修项目'
+                });
+
+            }
+        }
         function wxinfo(xh) {
            var wxdialog= $.ligerDialog.open({
                 height: 540,
@@ -259,7 +305,38 @@
                 });
             }
         }
-        function assigntask(id, shop, wxlb) {
+        function assigntask() {
+            var row = project.getSelected();
+            if (row) {
+                var url = '/index.php?g=Query&m=Consume&a=assigntask';
+                url += '&id=' + record['ID'];
+                url += '&shop=' + record['门店'];
+                url += '&wxlb=' + record['维修类别'];
+                url += '&code=' + row['流水号'];
+
+                if (assigntaskdialog) {
+                    assigntaskdialog.setUrl(url);
+                    assigntaskdialog.show();
+                }
+                else {
+                    assigntaskdialog = $.ligerDialog.open({
+                        height: 180,
+                        url: url,
+                        width: 280,
+                        showMax: false,
+                        showToggle: true,
+                        showMin: true,
+                        isResize: true,
+                        modal: false,
+                        title: '派工'
+                    });
+                }
+            }
+            else {
+                $.ligerDialog.alert('请选择要派工的项目');
+            }
+        }
+        function assignbatchtask(id, shop, wxlb) {
             if (typeof (id) == 'object') {
                 id = record['ID'];
                 shop = record['门店'];
@@ -288,7 +365,7 @@
                 });
             }
         }
-        function changeState(zt,opt) {
+        function changeState(zt, opt) {
             var row = grid.getSelectedRow();
             if (row) {
                 var data = {
@@ -464,7 +541,7 @@
                 {
                     display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
                         if (rowdata['制单人'] == '系统录单' && rowdata['主修人'] == '')
-                            return '<a href="javascript:void(0);" onclick="assigntask(\'' + rowdata.ID + '\',\''+rowdata['门店']+'\',\''+rowdata['维修类别']+'\');"><strong>派工</strong></a>';
+                            return '<a href="javascript:void(0);" onclick="assignbatchtask(\'' + rowdata.ID + '\',\'' + rowdata['门店'] + '\',\'' + rowdata['维修类别'] + '\');"><strong>派工</strong></a>';
                         else
                             return '';
                     }
@@ -692,21 +769,7 @@
                         {
                             id: 'addproject',
                             text: '增加',
-                            click: function () {
-                           
-                                var dialog = $.ligerDialog.open({
-                                    height: 600,
-                                    url: 'index.php?&g=Query&m=Consume&a=addproject&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + discount['服务折扣1']+ "&zhuxiu=" + record['当前主修人'],
-                                    width: 900,
-                                    showMax: true,
-                                    showToggle: true,
-                                    showMin: true,
-                                    isResize: true,
-                                    modal: true,
-                                    title: '增加维修项目'
-                                });
-                                project.reload();
-                            }, icon: 'ad icon iconfont icon-dingdanguanli'
+                            click:addproject, icon: 'icon iconfont icon-dingdanguanli'
                         },
                         { line: true },
                          {
@@ -734,31 +797,17 @@
                         { line: true },
                         {
                             id: 'modifyproject',
-                            text: '修改', click: function () {
-                                var row = project.getSelectedRow();
-                                if (row) {
-                                    $.ligerDialog.open({
-                                        height: 400,
-                                        url: 'index.php?&g=Query&m=Consume&a=modifyproject&id=' + row['流水号'],
-                                        width: 600,
-                                        showMax: true,
-                                        showToggle: true,
-                                        showMin: true,
-                                        isResize: true,
-                                        modal: true,
-                                        title: '修改维修项目'
-                                    });
-                                }
-                                else {
-                                    $.ligerDialog.alert('请选择要修改的项目');
-                                }
-
-                            }, icon: 'modify'
+                            text: '修改', click:editproject, icon: 'modify'
                         },
                         { line: true },
                          {
                              id: 'assign',
-                             text: '派工', click: assigntask, icon: 'memeber'
+                             text: '派工', click: assigntask, icon: 'icon iconfont icon-wode'
+                         },
+                         { line: true },
+                         {
+                             id: 'assign',
+                             text: '批量派工', click: assignbatchtask, icon: 'icon iconfont icon-renren1'
                          }
                         ]
                     }

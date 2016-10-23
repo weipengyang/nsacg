@@ -1016,6 +1016,14 @@ class ConsumeAction extends Action{
        $this->calprice($projects[0]['ID']);
        echo '保存成功';
    }
+   public function saveprojectbyid(){
+       $project=$_POST['project'];
+        $num=$project['流水号'];
+        unset($project['流水号']);
+        M('维修项目','dbo.','difo')->where(array('流水号'=>$num))->save($project);
+       $this->calprice($project['ID']);
+       echo '保存成功';
+   }
   public function saveproduct(){
        $products=$_POST['products'];
        foreach($products as $product)
@@ -2225,10 +2233,16 @@ class ConsumeAction extends Action{
             $item['开工时间']=date('Y-m-d H:i',time());
             $data['门店']=$yg['部门'];
          }
-           
-           M('维修项目','dbo.','difo')->where(array('ID'=>$itemid))->save($item);
-           $data['当前主修人']=$zhuxiu;
-           $data['主修人']=$zhuxiu;
+           if(isset($_POST['code'])){
+               M('维修项目','dbo.','difo')->where(array('流水号'=>$_POST['code']))->save($item);
+
+           }else{
+             M('维修项目','dbo.','difo')->where(array('ID'=>$itemid))->save($item);
+             $data['当前主修人']=$zhuxiu;
+             $data['主修人']=$zhuxiu;
+             M('维修','dbo.','difo')->where(array('ID'=>$itemid))->save($data);
+          }
+          
            //$data['当前状态']='结束'; 
            //$data['出厂时间']=date('Y-m-d H:i',time());
            //$data['实际完工']=date('Y-m-d H:i',time());
@@ -2237,7 +2251,6 @@ class ConsumeAction extends Action{
            //$data['挂账金额']=0;
            //$data['现收金额']=0;
            //$data['标志']='已结算';
-           M('维修','dbo.','difo')->where(array('ID'=>$itemid))->save($data);
            //$this->genbill($wx['应收金额'],$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID']);
            echo '派工完成';
            exit;

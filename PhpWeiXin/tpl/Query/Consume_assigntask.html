@@ -17,7 +17,10 @@
                 buttons: [                    {
                         text: "保存", width: 100, click: function () {
                             var data = {};
-                            data['itemid']=getQueryString('id');
+                            data['itemid'] = getQueryString('id');
+                            if (getQueryString('code')) {
+                                data['code'] = getQueryString('code');
+                            }
                             data['zhuxiu'] = $("input[ligeruiid='主修人']").val();
                             if (data['zhuxiu'] == '') {
                                 $.ligerDialog.alert('请选择主修人');

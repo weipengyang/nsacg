@@ -2305,6 +2305,8 @@ public function check(){
         $sign['expense'] =$score;
         M("维修",'dbo.','difo')->where(array('流水号' =>$id))->save($data);
         M('member_card_sign')->add($sign);
+        M('userinfo')->where(array('wecha_id'=>$this->wecha_id,'token'=>$this->token))->setInc('total_score',$score);
+
 	    echo U('Store/carinfo',array('carno' =>$wx['车牌号码'] ));
         exit;
 		

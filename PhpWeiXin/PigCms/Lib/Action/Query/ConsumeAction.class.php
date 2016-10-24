@@ -2882,11 +2882,11 @@ class ConsumeAction extends Action{
            $licheng=$_POST['licheng'];
            $youwei=$_POST['youwei'];
            $luntai=$_POST['luntai'];
-            $wxinfo=$_POST['wxinfo'];
+           $wxinfo=$_POST['wxinfo'];
             if(isset($wxinfo))
             {
-                $result=$this->genwxrecord($wxinfo['车牌号码'],null,$wxinfo['维修类别'],$wxinfo['主修人'],
-              $wxinfo['接车人'],$wxinfo['里程表'],$wxinfo['油位表'],$wxinfo['联系人'],$wxinfo['联系电话'],$wxinfo['轮胎规格'],$wxinfo['故障描述']);
+               $result=$this->genwxrecord($wxinfo['车牌号码'],null,$wxinfo['维修类别'],$wxinfo['主修人'],
+               $wxinfo['接车人'],$wxinfo['里程表'],$wxinfo['油位表'],$wxinfo['联系人'],$wxinfo['联系电话'],$wxinfo['轮胎规格'],$wxinfo['故障描述']);
             }
             else{
                 $result=$this->genwxrecord($carno,'',$wxtype,$person,$fwgw,$licheng,$youwei,$_POST['lxr'],$_POST['phone'],$luntai,$_POST['fault']);

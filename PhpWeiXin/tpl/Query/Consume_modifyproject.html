@@ -98,7 +98,8 @@
                             row['流水号'] = projectinfo['流水号'];
                             row['ID'] = projectinfo['ID'];
                             var data = {
-                                project: row
+                                project: row,
+                                record: parent.record,
                             };
                             $.post('/index.php?g=Query&m=Consume&a=saveprojectbyid', data,
                               function (msg) {

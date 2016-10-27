@@ -143,6 +143,9 @@
 
         }
         function addproject() {
+            if (discount['服务折扣1'] == null) {
+                discount['服务折扣1'] = 1;
+            }
             var url='index.php?&g=Query&m=Consume&a=addproject&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + discount['服务折扣1'] + "&zhuxiu=" + record['当前主修人'];
             if (addprojectdialog) {
                 addprojectdialog.setUrl(url);
@@ -371,6 +374,7 @@
                 var data = {
                     id: row['流水号'],
                     zt: zt,
+                    record:record
                 };
                 $.post('/index.php?g=Query&m=Consume&a=changestate', data,
                   function (msg) {
@@ -490,7 +494,9 @@
                 $("input[ligeruiid='车辆类别']").val(record['车辆类别']);
                 $("input[ligeruiid='保险公司']").val(record['保险公司']);
                 $("input[ligeruiid='服务顾问']").val(record['服务顾问']);
-
+                $.getJSON('index.php?&g=Query&m=Consume&a=getdiscount&id=' + record['客户ID'], function (data) {
+                    discount = data;
+                });
             }
         }
         function format(rowdata, index, value) {
@@ -519,7 +525,6 @@
                 { display: '制单人', name: '制单人', width: 60, align: 'left' },
                 { display: '接车人', name: '接车人', minWidth: 60 },
                 { display: '维修类别', name: '维修类别', minWidth: 80 },
-                { display: '车主', name: '车主', minWidth: 140 },
                 {
                     display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
 
@@ -527,6 +532,7 @@
 
                     }
                 },
+                { display: '车主', name: '车主', minWidth: 140 },
                 { display: '客户类别', name: '客户类别', minWidth: 140 },
                 { display: '联系人', name: '联系人', minWidth: 100 },
                 { display: '轮胎规格', name: '轮胎规格', minWidth: 60 },
@@ -569,7 +575,7 @@
                 }
             });
             form = $("#form1").ligerForm({
-                inputWidth: 160, labelWidth: 85, space: 20,
+                inputWidth: 100, labelWidth: 80, space: 1,
                 validate: true,
                 buttons: [
                     { text: "更新", width: 60, click: submitForm }
@@ -581,10 +587,19 @@
                             fields: [
                                 { display: "流水号", name: "流水号", newline: true, type: "hidden" },
                                 { display: "客户ID", name: "客户ID", newline: true, type: "hidden" },
+                                { display: "结算客户ID", name: "结算客户ID", newline: true, type: "hidden" },
                                 { display: "业务编号 ", name: "业务编号", newline: true, type: "text", readonly: true },
                                 { display: "制单日期 ", name: "制单日期", newline: false, type: "text", readonly: true },
                                 { display: "制单人 ", name: "制单人", newline: false, type: "text", readonly: true },
-                                { display: "服务顾问", name: "接车人", newline: false, type: "text" },
+                                {
+                                    display: "服务顾问", name: "接车人", newline: false, type: "text", type: "combobox",
+                                    options: {
+                                        valueField: '姓名',
+                                        textField: '姓名',
+                                        autocomplete: true,
+                                        url: '/index.php?g=Query&m=Consume&a=getfwgw',
+                                    }
+                                },
                                 { display: "维修类别 ", name: "维修类别", newline: false, type: "text" },
                                 { display: "保修类别 ", name: "保修类别", newline: false, type: "text" },
                                 { display: "车牌号码", name: "车牌号码", newline: true, type: "text" },
@@ -616,7 +631,32 @@
                                 { display: "发动机号", name: "发动机号", newline: true, type: "text" },
                                 { display: "发动机型号", name: "发动机型号", newline: false, type: "text" },
                                 { display: "电池", name: "电池", newline: false, type: "text" },
-                                { display: "车主", name: "车主", newline: false, type: "text", readonly: true },
+                                {
+                                display: "车主", name: "车主", newline: false,type: "popup", options: {
+                                        condition: {
+                                            prefixID: 'condtion_',
+                                            fields: [{ name: 'searchkey', type: 'text', width: 120, label: '客户信息', labelWidth: 90 }]
+                                            
+                                        },
+                                        onSelected: function (e) {
+                                            alert(e.value);
+                                            var row = e.data[0];
+                                            $("input[name='联系电话']").val(row['联系电话']);
+                                            $("input[name='客户ID']").val(row['ID']);
+                                            $("input[name='结算客户ID']").val(row['ID']);
+                                            $("input[name='手机号码']").val(row['手机号码']);
+                                            $("input[name='联系人']").val(row['联系人']);
+                                        },
+                                        searchClick: function (e) {
+                                            e.grid.set('parms', { 'searchkey': e.rules[0]['value'] });
+                                            e.grid.reload();
+                                        },
+                                        grid: getGridOptions(false),
+                                        valueField: '名称',
+                                        textField: '名称',
+                                        width: 600
+                                    }
+                                },
                                 { display: "客户类别", name: "客户类别", newline: false, type: "text", readonly: true },
                                 { display: "联系人", name: "联系人", newline: false, type: "text" },
                                 { display: "联系电话", name: "联系电话", newline: true, type: "text" },
@@ -641,6 +681,8 @@
                                 },
                                 { display: "取消原因", name: "取消原因", newline: true, type: "text" },
                                 { display: "维修状态", name: "维修状态", newline: false, type: "text" },
+                                { display: "当前状态", name: "当前状态", newline: false, type: "text" },
+                                { display: "门店", name: "门店", newline: false, type: "text" },
                                 //{
                                 //    display: "保险公司 ", name: "保险公司", newline: false, type: "combobox",
                                 //    options: {
@@ -650,9 +692,9 @@
                                 //        url: '/index.php?g=Query&m=Consume&a=baoxian',
                                 //    } },
 
-                                { display: "报称故障 ", name: "报称故障", newline: true, width: 300, type: "textarea" },
-                                { display: "重要提示 ", name: "重要提示", newline: false, width: 300, type: "textarea" },
-                                { display: "备注 ", name: "单据备注", newline: false, width: 300, type: "textarea" },
+                                { display: "报称故障 ", name: "报称故障", newline: true, width: 240, type: "textarea" },
+                                { display: "重要提示 ", name: "重要提示", newline: false, width: 240, type: "textarea" },
+                                { display: "备注 ", name: "单据备注", newline: false, width: 240, type: "textarea" },
                             ]
 
                         },
@@ -754,11 +796,11 @@
                                 return '是';
                             return '否';
                         }
-                    },
+                    }, 
                     { display: '备注', name: '备注', minWidth: 240 }
                     ],
                     url: '/index.php?g=Query&m=Consume&a=getproject',
-                    pageSize: 10,
+                    pageSize: 10 ,
                     delayLoad: true,
                     checkbox: true,
                     urlParms: { ID: record['ID'] },
@@ -908,7 +950,7 @@
                                         var count = rows[i]['数量'] - rows[i]['已领料数量'] - rows[i]['待审核数量'] + rows[i]['已退料数量'];
                                         if (count <= 0)
                                         {
-                                            $.ligerDialog.alert(rows[i]['名称'] + "没有未领用数量");
+                                            $.ligerDialog.alert(rows[i]['名称'] + "已经领料");
                                             return;
                                         }
                                     }
@@ -924,9 +966,8 @@
                                 var rows = product.getSelectedRows();
                                 if (rows.length > 0) {
                                     for (var i = 0; i < rows.length; i++) {
-                                        var count = rows[i]['数量'] - rows[i]['已领料数量'] - rows[i]['待审核数量'] + rows[i]['已退料数量'];
-                                        if (count <= 0) {
-                                            $.ligerDialog.alert(rows[i]['名称'] + "没有未领用数量");
+                                        if (rows[i]['是否采购']=='是') {
+                                            $.ligerDialog.alert(rows[i]['名称'] + "已开采购单");
                                             return;
                                         }
                                     }
@@ -1063,10 +1104,7 @@
                 };
                 grid.set('parms', parms);
                 grid.reload();
-                project.toolbarManager.setDisabled('assign');
-                product.toolbarManager.setDisabled('btnlingliao');
-                product.toolbarManager.setDisabled('btntuiliao');
-                product.toolbarManager.setDisabled('btncaigou');
+                setdisabled();
                 setTimeout(function () {
                     grid.select(grid.data.Rows[0]);
                     $("li[data-index='1']").click();
@@ -1083,10 +1121,8 @@
                 };
                 grid.set('parms', parms);
                 grid.reload();
+                setdisabled();
                 project.toolbarManager.setEnabled('assign');
-                product.toolbarManager.setDisabled('btnlingliao');
-                product.toolbarManager.setDisabled('btntuiliao');
-                product.toolbarManager.setDisabled('btncaigou');
                 setTimeout(function () {
                     grid.select(grid.data.Rows[0]);
                     $("li[data-index='1']").click();
@@ -1144,10 +1180,9 @@
                 };
                 grid.set('parms', parms);
                 grid.reload();
-                project.toolbarManager.setDisabled('assign');
-                product.toolbarManager.setDisabled('btnlingliao');
-                product.toolbarManager.setDisabled('btntuiliao');
-                product.toolbarManager.setDisabled('btncaigou');
+                setdisabled();
+                if(record['维修类别']=='普通快修')
+                product.toolbarManager.setEnabled('btnlingliao');
                 setTimeout(function () {
                     grid.select(grid.data.Rows[0]);
                     $("li[data-index='4']").click();
@@ -1158,11 +1193,7 @@
                     $(this).hide();
                 });
                 $('#chuchangdiv').show();
-                project.toolbarManager.setDisabled('assign');
-                product.toolbarManager.setDisabled('btnlingliao');
-                product.toolbarManager.setDisabled('btntuiliao');
-                product.toolbarManager.setDisabled('btncaigou');
-
+                setdisabled();
                 var parms = {
                     zt: '出厂'
                 };

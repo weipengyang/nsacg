@@ -144,6 +144,7 @@
                             crk: row,
                             crkmx: product.rows,
                         };
+                        return;
                         $.post('/index.php?g=Query&m=Consume&a=deletepick', data,
                           function (msg) {
                               $.ligerDialog.alert(msg);
@@ -153,30 +154,7 @@
                 });
             }
             else {
-                alert('选择审核记录');
-            }
-        }
-        function changeState(zt, opt) {
-            var row = grid.getSelectedRow();
-            if (row) {
-                var data = {
-                    id: row['流水号'],
-                    zt: zt,
-                };
-                $.post('/index.php?g=Query&m=Consume&a=changestate', data,
-                  function (msg) {
-                      $('#' + opt).click();
-                      setTimeout(function () {
-                          for (var i = 0; i < grid.data.Rows.length; i++)
-                          {
-                              if (grid.data.Rows[i]['流水号'] == row['流水号'])
-                              {
-                                  grid.select(grid.data.Rows[i]);
-
-                              }
-                          }
-                      }, 500);
-                  });
+                alert('选择删除记录');
             }
         }
         function format(rowdata, index, value) {
@@ -248,112 +226,6 @@
             });
             $("#shop").change(function () {
                 $('#search').click();
-            });
-            $('#baojia').click(function () {
-                $('#optdiv').find('div').each(function () {
-                    $(this).hide();
-                });
-                $('#baojiadiv').show();
-                var parms = {
-                    zt:'报价'
-                };
-                grid.set('parms', parms);
-                grid.reload();
-                project.toolbarManager.setDisabled('assign');
-                product.toolbarManager.setDisabled('btnlingliao');
-                product.toolbarManager.setDisabled('btntuiliao');
-                product.toolbarManager.setDisabled('btncaigou');
-                setTimeout(function () {
-                    grid.select(grid.data.Rows[0]);
-                    $("li[data-index='1']").click();
-                }, 100);
-
-            });
-            $('#paigong').click(function () {
-                $('#optdiv').find('div').each(function () {
-                    $(this).hide();
-                });
-                $('#paigongdiv').show();
-                var parms = {
-                    zt: '派工'
-                };
-                grid.set('parms', parms);
-                grid.reload();
-                project.toolbarManager.setEnabled('assign');
-                product.toolbarManager.setDisabled('btnlingliao');
-                product.toolbarManager.setDisabled('btntuiliao');
-                product.toolbarManager.setDisabled('btncaigou');
-                setTimeout(function () {
-                    grid.select(grid.data.Rows[0]);
-                    $("li[data-index='1']").click();
-                }, 100);
-
-
-            });
-            $('#lingliao').click(function () {
-                $('#optdiv').find('div').each(function () {
-                    $(this).hide();
-                });
-                $('#lingliaodiv').show();
-                var parms = {
-                    zt: '领料'
-                };
-                grid.set('parms', parms);
-                grid.reload();
-                project.toolbarManager.setDisabled('assign');
-                product.toolbarManager.setEnabled('btnlingliao');
-                product.toolbarManager.setEnabled('btntuiliao');
-                product.toolbarManager.setEnabled('btncaigou');
-                setTimeout(function () {
-                    grid.select(grid.data.Rows[0]);
-                    $("li[data-index='2']").click();
-                }, 100);
-                
-
-            });
-            $('#shenhe').click(function () {
-                $('#optdiv').find('div').each(function () {
-                    $(this).hide();
-                });
-                $('#shenhediv').show();
-                var parms = {
-                    zt: '审核'
-                };
-                grid.set('parms', parms);
-                grid.reload();
-            });
-            $('#jiesuan').click(function () {
-                $('#optdiv').find('div').each(function () {
-                    $(this).hide();
-                });
-                $('#jiesuandiv').show();
-                var parms = {
-                    zt: '结算'
-                };
-                grid.set('parms', parms);
-                grid.reload();
-            });
-            $('#chuchang').click(function () {
-                $('#optdiv').find('div').each(function () {
-                    $(this).hide();
-                });
-                $('#chuchangdiv').show();
-                var parms = {
-                    zt: '出厂'
-                };
-                grid.set('parms', parms);
-                grid.reload();
-            });
-            $('#all').click(function () {
-                var parms = {
-                    zt: '',
-                    type: '1'
-                };
-                grid.set('parms', parms);
-                grid.reload();
-                $('#optdiv').find('div').each(function () {
-                    $(this).hide();
-                });
             });
             $('#search').click(function () {
                 grid.changePage('first');

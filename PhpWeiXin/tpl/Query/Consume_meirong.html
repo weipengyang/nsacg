@@ -13,6 +13,10 @@
 
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
     <script type="text/javascript">
+        var data = [
+              { id: '塘坑店', name: '塘坑店' },
+              { id: '区府店', name: '区府店' },
+        ];
         $(function ()
         {
             var form = $("#form1").ligerForm({
@@ -71,22 +75,30 @@
 
                     },
                     {
+                        display: "门店", name: "门店", newline: false, type: "combobox", comboboxName: 'mendian', options: {
+                            valueField: 'name',
+                            textField: 'name',
+                            data: data,
+                            onChangeValue: function () {
+                                var selected = this.selected;
+                                var zhuxiu = liger.get('zhuxiu');
+                                if (zhuxiu) {
+                                    zhuxiu.setParm('shop', selected['name']);
+                                    zhuxiu.setParm('wxlx', '汽车美容');
+                                    zhuxiu.reload();
+                                }
+                            }
+                        }
+
+                    },
+
+                    {
                         display: "接车人", name: "接车人", newline: true, type: "combobox",comboboxName:'fwgw',
                         options: {
                             valueField: '姓名',
                             textField: '姓名',
                             autocomplete: true,
                             url: '/index.php?g=Query&m=Consume&a=getfwgw',
-                            onChangeValue: function () {
-                                var selected = this.selected;
-                                var zhuxiu = liger.get('zhuxiu');
-                                var wxlx = liger.get('wxlx');
-                                if (zhuxiu) {
-                                    zhuxiu.setParm('shop', selected['部门']);
-                                    zhuxiu.setParm('wxlx','汽车美容');
-                                    zhuxiu.reload();
-                                }
-                            }
                         }
                     },
                     {
@@ -112,6 +124,10 @@
                             }
                             if (data['联系电话'] == '') {
                                 $.ligerDialog.alert('联系电话不能为空');
+                                return;
+                            }
+                            if (data['门店'] == '') {
+                                $.ligerDialog.alert('请选择门店');
                                 return;
                             }
                             var submitData = {

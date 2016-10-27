@@ -107,6 +107,8 @@
                         row['ID'] =$("#ID").val();
                         row['编号'] = data['编号'];
                         row['仓库'] = data['仓库'];
+                        if (data['仓库']==null||data['仓库'] == '')
+                            row['仓库'] = data['默认仓库'];
                         row['名称'] = data['名称'];
                         row['规格'] = data['规格'];
                         row['结算方式'] = '客付';
@@ -173,7 +175,8 @@
                         text: "保存", width: 100, click: function () {
                             var data = haveproduct.getChanges();
                             var submitData = {
-                                products:data
+                                products: data,
+                                record:parent.record
                             };
                             $.post('index.php?g=Query&m=Consume&a=saveproduct', submitData,
                               function (data) {

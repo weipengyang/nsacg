@@ -171,6 +171,7 @@
                             var data = haveproject.getChanges();
                             var submitData = {
                                 projects: data,
+                                record:parent.record
 
                             };
                             $.post('index.php?g=Query&m=Consume&a=saveproject', submitData,

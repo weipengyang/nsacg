@@ -2763,8 +2763,8 @@ public function check(){
             else
             {
                 $carno=strtoupper($carno);
-                $carinfo=M('member_card_car')->where(array('token' => $this->token,'carno'=>$carno))->find();
-                if($carinfo)
+                $carinfo=M('member_card_car')->where(array('token' =>$this->token,'carno'=>$carno))->find();
+                if(!isset($carinfo))
                 {   
                     $user=M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->find();
                     if($user['carno1']==""){

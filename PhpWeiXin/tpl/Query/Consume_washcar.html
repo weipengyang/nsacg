@@ -9,6 +9,10 @@
     <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
     <script type="text/javascript">
+        var data = [
+              { id: '塘坑店', name: '塘坑店' },
+              { id: '区府店', name: '区府店' },
+        ];
         $(function ()
         {
             var form = $("#form1").ligerForm({
@@ -52,26 +56,34 @@
                     },
                     { display: "联系人 ", name: "联系人", newline: true, type: "text", validate: { required: true } },
                     { display: "联系电话 ", name: "联系电话", newline: false, type: "text", validate: { required: true } },
+                     {
+                         display: "门店", name: "门店", newline: true, type: "combobox", comboboxName: 'mendian', options: {
+                             valueField: 'name',
+                             textField: 'name',
+                             data: data,
+                             onChangeValue: function () {
+                                 var selected = this.selected;
+                                 var zhuxiu = liger.get('zhuxiu');
+                                 if (zhuxiu) {
+                                     zhuxiu.setParm('shop', selected['name']);
+                                     zhuxiu.setParm('wxlx', '蜡水洗车');
+                                     zhuxiu.reload();
+                                 }
+                             }
+                         }
+
+                     },
                     {
-                        display: "接车人", name: "接车人", newline: true, type: "combobox",comboboxName:'fwgw',
+                        display: "接车人", name: "接车人", newline: false, type: "combobox",comboboxName:'fwgw',
                         options: {
                             valueField: '姓名',
                             textField: '姓名',
                             autocomplete: true,
                             url: '/index.php?g=Query&m=Consume&a=getfwgw',
-                            onChangeValue: function () {
-                                var selected = this.selected;
-                                var zhuxiu = liger.get('zhuxiu');
-                                if (zhuxiu) {
-                                    zhuxiu.setParm('shop', selected['部门']);
-                                    zhuxiu.setParm('wxlx','蜡水洗车');
-                                    zhuxiu.reload();
-                                }
-                            }
                         }
                     },
                     {
-                        display: "维修师傅", name: "主修人", newline: false, type: "combobox", comboboxName: 'zhuxiu',
+                        display: "美容技师", name: "主修人", newline: true, type: "combobox", comboboxName: 'zhuxiu',
                         options: {
                             valueField: '姓名',
                             textField: '姓名',
@@ -79,7 +91,7 @@
                             url: '/index.php?g=Query&m=Consume&a=getzhuxiu',
                         }
                     },
-                   { display: "定点金额", name: "money", newline: true, type: "text" },
+                   { display: "定点金额", name: "money", newline: false, type: "text" },
 
                 ],
                 buttons: [                    { text: "取消", width: 60, click: null },                    {
@@ -87,6 +99,10 @@
                             var data=form.getData();
                             if (data['车牌号码'] == '') {
                                 $.ligerDialog.alert('请输入车牌号码');
+                                return;
+                            }
+                            if (data['门店'] == '') {
+                                $.ligerDialog.alert('请选择门店');
                                 return;
                             }
                             var submitData = {

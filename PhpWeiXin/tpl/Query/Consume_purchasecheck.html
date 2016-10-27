@@ -153,6 +153,7 @@
                             cgd: row,
                             cgdmx: product.rows,
                         };
+                        return;
                         $.post('/index.php?g=Query&m=Consume&a=deletepurchase', data,
                           function (msg) {
                               $.ligerDialog.alert(msg);
@@ -162,7 +163,7 @@
                 });
             }
             else {
-                alert('选择审核记录');
+                alert('选择删除记录');
             }
         }
         function format(rowdata, index, value) {

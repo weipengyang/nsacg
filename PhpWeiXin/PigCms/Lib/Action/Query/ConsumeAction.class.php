@@ -22,7 +22,7 @@ class ConsumeAction extends Action{
             }
             else{
                 $username=cookie('username');
-                cookie('username',$username,3600);
+                cookie('username',$username,3600*24);
                 $this->assign('username',$username);
             }
         }
@@ -171,8 +171,12 @@ class ConsumeAction extends Action{
        if(IS_POST){
            $id=$_POST['id'];
            $zt=$_POST['zt'];
-           M('维修','dbo.','difo')->where(array('流水号'=>$id))->save(array('当前状态'=>$zt));
-           
+           $wx=$_POST['record'];
+           if($wx){
+               M('维修','dbo.','difo')->where(array('流水号'=>$id))->save(array('当前状态'=>$zt));
+               $this->writeLog($wx['ID'],$wx['业务编号'],$wx['维修类别'],'转到'.$zt);
+           }
+
        }
     }
     public  function getscoreinfo(){
@@ -968,10 +972,13 @@ class ConsumeAction extends Action{
    }
    public function deleteproject(){
        $projects=$_POST['projects'];
+       $wxrecord=$_POST['record'];
        foreach($projects as $project)
        {
               $num=$project['流水号'];
               M('维修项目','dbo.','difo')->where(array('流水号'=>$num))->delete();
+              $this->writeLog($project['ID'],$wxrecord['业务编号'],$wxrecord['维修类别'],'增加项目—'.$project['项目名称']);
+
        }
        $this->calprice($projects[0]['ID']);
 
@@ -990,6 +997,7 @@ class ConsumeAction extends Action{
    }
    public function saveproject(){
        $projects=$_POST['projects'];
+       $wxrecord=$_POST['record'];
        foreach($projects as $project)
        {
           if($project['__status']=='add')
@@ -1002,6 +1010,7 @@ class ConsumeAction extends Action{
             }
             M('维修项目','dbo.','difo')->add($project);
             M('维修','dbo.','difo')->where(array('ID'=>$project['ID'],'单据类别'=>'普通单'))->save(array('当前状态'=>'派工'));
+            $this->writeLog($project['ID'],$wxrecord['业务编号'],$wxrecord['维修类别'],'增加项目—'.$project['项目名称']);
 
           }
           elseif($project['__status']=='update'){
@@ -1010,6 +1019,8 @@ class ConsumeAction extends Action{
               $num=$project['流水号'];
               unset($project['流水号']);
               M('维修项目','dbo.','difo')->where(array('流水号'=>$num))->save($project);
+              $this->writeLog($project['ID'],$wxrecord['业务编号'],$wxrecord['维修类别'],'修改项目—'.$project['项目名称']);
+
           }
 
        }
@@ -1018,14 +1029,17 @@ class ConsumeAction extends Action{
    }
    public function saveprojectbyid(){
        $project=$_POST['project'];
+       $wxrecord=$_POST['record'];
         $num=$project['流水号'];
         unset($project['流水号']);
         M('维修项目','dbo.','difo')->where(array('流水号'=>$num))->save($project);
+        $this->writeLog($project['ID'],$wxrecord['业务编号'],$wxrecord['维修类别'],'修改项目—'.$project['项目名称']);
        $this->calprice($project['ID']);
        echo '保存成功';
    }
   public function saveproduct(){
        $products=$_POST['products'];
+       $wxrecord=$_POST['record'];
        foreach($products as $product)
        {
            if($product['__status']=='add')
@@ -1034,6 +1048,7 @@ class ConsumeAction extends Action{
               unset($product['流水号']);
               M('维修配件','dbo.','difo')->add($product);
               M('维修','dbo.','difo')->where(array('ID'=>$product['ID'],'单据类别'=>'普通单'))->save(array('当前状态'=>'领料'));
+              $this->writeLog($product['ID'],$wxrecord['业务编号'],$wxrecord['维修类别'],'增加配件—'.$product['名称']);
 
           }
           elseif($product['__status']=='update'){
@@ -1042,6 +1057,8 @@ class ConsumeAction extends Action{
               $num=$product['流水号'];
               unset($product['流水号']);
               M('维修配件','dbo.','difo')->where(array('流水号'=>$num))->save($product);
+              $this->writeLog($product['ID'],$wxrecord['业务编号'],$wxrecord['维修类别'],'修改配件—'.$product['名称']);
+
           }
            $this->calprice($products[0]['ID']);
        }
@@ -1053,6 +1070,7 @@ class ConsumeAction extends Action{
       unset($wxinfo['流水号']);
       M('维修','dbo.','difo')->where(array('流水号'=>$xh))->save($wxinfo);
       $this->calprice($wxinfo['ID']);
+      $this->writeLog($wxinfo['ID'],$wxinfo['业务编号'],$wxinfo['维修类别'],'更新维修资料');
       echo '保存成功';
   }
 
@@ -1071,6 +1089,8 @@ class ConsumeAction extends Action{
         $data['标志']='已结算';
         $code=$wx['流水号'];
         M('维修','dbo.','difo')->where(array('流水号'=>$code))->save($data);
+        $this->writeLog($wx['ID'],$wx['业务编号'],$wx['维修类别'],'维修结算');
+
     }else{
         $this->display();
     }
@@ -1241,6 +1261,8 @@ class ConsumeAction extends Action{
                     $crk['备注']=$product['备注'];
                     M('出入库明细','dbo.','difo')->add($crk);
                 }
+                $this->writeLog($cgd['引用ID'],$cgd['引用单号'],'采购审核','采购审核');
+
                 echo '审核通过';
                 exit;
            }
@@ -1258,8 +1280,8 @@ class ConsumeAction extends Action{
    public function deletepurchase(){
      
        if(IS_POST){
-           $crk=$_POST['crk'];
-           $crkmx=$_POST['crkmx'];
+           $crk=$_POST['cgd'];
+           $crkmx=$_POST['cgdmx'];
            if($crk['单据类别']=='出库'){
               if($crk['引用类别']=='维修领料'){
                  foreach($crkmx as $item){
@@ -1271,17 +1293,20 @@ class ConsumeAction extends Action{
 
                  }
                  M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->delete();
+                 $this->writeLog($crk['ID'],$crk['单据编号'],'出入库审核','删除维修领料出库单—'.$crk['单据编号']);
               }elseif($crk['引用类别']=='销售出库'){
                   foreach($crkmx as $item){
                       M('出入库明细','dbo.','difo')->where(array('流水号'=>$item['流水号']))->delete();
                   }
                   M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->delete();
+                  $this->writeLog($crk['ID'],$crk['单据编号'],'出入库审核','删除销售出库单—'.$crk['单据编号']);
+
               }
               echo '删除成功';
               exit;
            }
            else{
-           
+                
            }
 
        }
@@ -1346,6 +1371,8 @@ class ConsumeAction extends Action{
                  $crkitem['审核人']=cookie('username');
                  $crkitem['审核日期']=date('Y-m-d',time());
                  M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
+                 $this->writeLog($crk['ID'],$crk['单据编号'],'出库审核','维修领料出库审核');
+
                  
               }elseif($crk['引用类别']=='销售出库'){
                   foreach($crkmx as $item){
@@ -1360,7 +1387,8 @@ class ConsumeAction extends Action{
                   $crkitem['审核人']=cookie('username');
                   $crkitem['审核日期']=date('Y-m-d',time());
                   M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
-              }
+                  $this->writeLog($crk['ID'],$crk['单据编号'],'出库审核','销售出库审核');
+             }
               echo '审核通过';
               exit;
            }
@@ -1382,6 +1410,7 @@ class ConsumeAction extends Action{
                    $crkitem['审核人']=cookie('username');
                    $crkitem['审核日期']=date('Y-m-d',time());
                    M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
+                   $this->writeLog($crk['ID'],$crk['单据编号'],'入库审核','采购入库审核');
                }
            }
 
@@ -2062,8 +2091,8 @@ class ConsumeAction extends Action{
             $user=M('用户管理','dbo.','difo')->where(array('姓名'=>$username))->find();
             if($user&&$user['密码']==$password)
             {
-                cookie('username',$username,3600);
-                $this->redirect(U('Consume/newindex', array('token' => $this->token)));
+                cookie('username',$username,3600*24);
+                $this->redirect(U('Consume/main', array('token' => $this->token)));
                 exit();
             }
             else{
@@ -3216,7 +3245,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          }
          $data['业务编号']=$bianhao;
          M('维修','dbo.','difo')->add($data);
-         $this->writeLog($data['ID'],$bianhao,'维修','前台接车');
+         $this->writeLog($data['ID'],$bianhao,'维修','洗车录入');
          $row=array();
          $row['ID']=$data['ID'];
          $row['项目编号']=$xm['项目编号'];
@@ -3331,7 +3360,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             }
             $data['业务编号']=$bianhao;
             M('维修','dbo.','difo')->add($data);
-            $this->writeLog($data['ID'],$bianhao,'维修','前台接车');
+            $this->writeLog($data['ID'],$bianhao,'维修','洗车录入');
             $row=array();
             $row['ID']=$data['ID'];
             $row['项目编号']=$xm['项目编号'];

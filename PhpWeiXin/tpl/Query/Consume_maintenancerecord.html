@@ -309,7 +309,7 @@
             }
         }
         function assigntask() {
-            var row = project.getSelected();
+            var row =  project.getSelected();
             if (row) {
                 var url = '/index.php?g=Query&m=Consume&a=assigntask';
                 url += '&id=' + record['ID'];
@@ -378,18 +378,22 @@
                 };
                 $.post('/index.php?g=Query&m=Consume&a=changestate', data,
                   function (msg) {
-                      $('#' + opt).click();
-                      setTimeout(function () {
-                          for (var i = 0; i < grid.data.Rows.length; i++)
-                          {
-                              if (grid.data.Rows[i]['流水号'] == row['流水号'])
-                              {
-                                  grid.select(grid.data.Rows[i]);
+                      if (msg == '1') {
+                          $('#' + opt).click();
+                          setTimeout(function () {
+                              for (var i = 0; i < grid.data.Rows.length; i++) {
+                                  if (grid.data.Rows[i]['流水号'] == row['流水号']) {
+                                      grid.select(grid.data.Rows[i]);
 
+                                  }
                               }
-                          }
-                      }, 500);
-                  });
+                          }, 500);
+                      }
+                      else {
+                          $.ligerDialog.alert(msg);
+                      }
+                      });
+                  
             }
         }
         function reload() {
@@ -438,6 +442,12 @@
                 checkbox: checkbox
             };
             return options;
+        }
+        function reflash() {
+            $.post('/index.php?g=Query&m=Consume&a=getrecordbyid&id=' + record['ID'], null, function (result) {
+                record =JSON2.parse(result);
+                reload();
+            });
         }
         function inidata() {
             $("div[data-index='1']").html("<div id='projectgrid' style='margin:0;padding 0'><div>");
@@ -735,8 +745,15 @@
                                 { display: '应收金额', name: '应收金额', newline: false, type: 'text' },
                                 { display: '现收金额', name: '现收金额', newline: false, type: 'text' },
                                 { display: '结算日期', name: '结算日期', newline: true, type: 'date' },
-                                { display: '结算方式', name: '结算方式', newline: false , type: 'text' },
-                                { display: '结算人', name: '收款人', newline: false, type: 'text' },
+                                { display: '结算方式', name: '结算方式', newline: false , type: 'text',type: "combobox",
+                                    options: {
+                                        valueField: '名称',
+                                        textField: '名称',
+                                        autocomplete: true,
+                                        url: '/index.php?g=Query&m=Consume&a=getjsfs',
+                                    }
+                                },
+                                { display: '结算人', name: '收款人', newline: false, type: 'text',readonly:true },
                                 { display: '毛利', name: '毛利', newline: false, type: 'text' },
 
                             ]
@@ -827,7 +844,7 @@
                                              $.post('/index.php?g=Query&m=Consume&a=deleteproject', data,
                                                function (msg) {
                                                    $.ligerDialog.alert(msg);
-                                                   project.reload();
+                                                   parent.reflash();
                                                });
                                          } else {
                                              $.ligerDialog.alert('请选择要删除项目');
@@ -931,7 +948,7 @@
                                             $.post('/index.php?g=Query&m=Consume&a=deleteproduct', data,
                                               function (msg) {
                                                   alert(msg);
-                                                  product.reload();
+                                                  parent.reflash();
                                               });
                                         } else {
                                             $.ligerDialog.alert('请选择要删除项目');
@@ -1031,10 +1048,9 @@
                     url: '/index.php?g=Query&m=Consume&a=getlog',
                     pageSize: 10,
                     isScroll: true,
-                    urlParms: { id: record['业务编号'] },
-                    rownumbers: true,
                 });
                 historygrid = $("#historygrid").ligerGrid({
+                    height: '50%',
                     columns: [
                     { display: '当前状态', name: '当前状态', align: 'left', width: 60 },
                     {
@@ -1079,7 +1095,6 @@
                     isScroll: true,
                     pageSize: 10,
                     url: '/index.php?g=Query&m=Consume&a=getwxinfo',
-                    height: '50%',
                     onDblClickRow: function (data, rowindex, rowobj) {
                         wxinfo(data['流水号']);
                     }

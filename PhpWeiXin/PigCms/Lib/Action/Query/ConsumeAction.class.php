@@ -139,8 +139,14 @@ class ConsumeAction extends Action{
         $projects=M('维修项目','dbo.','difo')->where(array('ID'=>$id))->select();
         if($projects){
            foreach($projects as $project){
-               $projectprice+=$project['金额'];
-               $totalproject+=$project['金额'];
+               if(doubleval($project['虚增金额'])>0){
+                   $projectprice+=$project['虚增金额']*$project['折扣'];
+                   $totalproject+=$project['虚增金额'];
+               }else{
+                   $projectprice+=$project['金额']*$project['折扣'];
+                   $totalproject+=$project['金额'];
+               }
+             
            }
         }
         $productprice=0;
@@ -148,8 +154,15 @@ class ConsumeAction extends Action{
         $products=M('维修配件','dbo.','difo')->where(array('ID'=>$id,'仅内部核算成本'=>'0'))->select();
         if($products){
             foreach($products as $product){
-                $productprice+=$product['金额'];
-                $totalproduct+=$product['金额'];
+                if(doubleval($product['虚增金额'])>0){
+                    $productprice+=$product['虚增金额']*$product['折扣'];
+                    $totalproduct+=$product['虚增金额'];
+                }
+                else{
+                    $productprice+=$product['金额']*$product['折扣'];;
+                    $totalproduct+=$product['金额'];
+                }
+              
             }
         }
         $appendprice=M('附加费用','dbo.','difo')->where(array('ID'=>$id))->sum('金额');
@@ -160,8 +173,8 @@ class ConsumeAction extends Action{
         $data['工时费']=$projectprice;
         $data['附加费']=$appendprice;
         $data['款项总额']=$totalprice;
-        $data['客付金额']=$totalproduct+$totalproject+$appendprice;
-        $data['应收金额']=$totalproduct+$totalproject+$appendprice;
+        $data['客付金额']=$totalprice;
+        $data['应收金额']=$totalprice;
         //$data['材料成本']=;
         $data['人工成本']=0;
 
@@ -173,8 +186,17 @@ class ConsumeAction extends Action{
            $zt=$_POST['zt'];
            $wx=$_POST['record'];
            if($wx){
+               if($zt=='出厂'){
+                   $record=M('维修','dbo.','difo')->where(array('流水号'=>$id))->find();
+                   if($record['标志']!='已结算')
+                   {
+                       echo '请先结算后再出厂';
+                       return;
+                   }
+               }
                M('维修','dbo.','difo')->where(array('流水号'=>$id))->save(array('当前状态'=>$zt));
-               $this->writeLog($wx['ID'],$wx['业务编号'],$wx['维修类别'],'转到'.$zt);
+               $this->writeLog($wx['ID'],$wx['业务编号'],$wx['维修类别'],'转入'.$zt);
+               echo '1';
            }
 
        }
@@ -709,6 +731,12 @@ class ConsumeAction extends Action{
         echo json_encode($wxlb);
     
 } 
+    public  function getrecordbyid(){
+        $id=$_GET['id'];
+        $result=M('维修','dbo.','difo')->where(array('id'=>$id))->find();
+        echo json_encode($result);
+    
+} 
     public  function gethyfs(){
          
         $wxlb=M('货运方式','dbo.','difo')->where(array('方式'=>array('like','%'.$_POST['key'].'%')))->select();
@@ -965,9 +993,12 @@ class ConsumeAction extends Action{
     }
    public function getlog(){
        $id=$_GET['id'];
-       $carinfo=M('系统日志','dbo.','difo')->where(array('单据编号'=>$id))->select();
+       $page=$_POST['page'];
+       $pagesize=$_POST['pagesize'];
+       $count=M('系统日志','dbo.','difo')->where(array('单据编号'=>$id))->count();
+       $carinfo=M('系统日志','dbo.','difo')->where(array('单据编号'=>$id))->limit(($page-1)*$pagesize,$pagesize)->select();
        $data['Rows']=$carinfo;
-       $data['Total']=count($carinfo);
+       $data['Total']=$count;
        echo json_encode($data);
    }
    public function deleteproject(){
@@ -1009,7 +1040,7 @@ class ConsumeAction extends Action{
                 $project['班组']=$yg['班组'];
             }
             M('维修项目','dbo.','difo')->add($project);
-            M('维修','dbo.','difo')->where(array('ID'=>$project['ID'],'单据类别'=>'普通单'))->save(array('当前状态'=>'派工'));
+            //M('维修','dbo.','difo')->where(array('ID'=>$project['ID'],'单据类别'=>'普通单'))->save(array('当前状态'=>'派工'));
             $this->writeLog($project['ID'],$wxrecord['业务编号'],$wxrecord['维修类别'],'增加项目—'.$project['项目名称']);
 
           }
@@ -1047,7 +1078,7 @@ class ConsumeAction extends Action{
               unset($product['__status']);
               unset($product['流水号']);
               M('维修配件','dbo.','difo')->add($product);
-              M('维修','dbo.','difo')->where(array('ID'=>$product['ID'],'单据类别'=>'普通单'))->save(array('当前状态'=>'领料'));
+              //M('维修','dbo.','difo')->where(array('ID'=>$product['ID'],'单据类别'=>'普通单'))->save(array('当前状态'=>'领料'));
               $this->writeLog($product['ID'],$wxrecord['业务编号'],$wxrecord['维修类别'],'增加配件—'.$product['名称']);
 
           }
@@ -1084,11 +1115,13 @@ class ConsumeAction extends Action{
         $data['结算日期']=date('Y-m-d',time());
         $data['结算日期']=date('Y-m-d',time());
         $data['现收金额']=$wx['现收金额'];
+        $data['收款人']=cookie('username');
         $data['挂账金额']=$wx['挂账金额'];
         $data['优惠金额']=$wx['优惠金额'];
         $data['标志']='已结算';
         $code=$wx['流水号'];
         M('维修','dbo.','difo')->where(array('流水号'=>$code))->save($data);
+        M('维修项目','dbo.','difo')->where(array('ID'=>$wx['ID']))->save(array('完工时间'=>date('Y-m-d H:i',time())));
         $this->writeLog($wx['ID'],$wx['业务编号'],$wx['维修类别'],'维修结算');
 
     }else{
@@ -3234,6 +3267,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
              $xm['标准金额']=$money;
              $data['报价金额']=$money;
              $data['应收金额']=$money;
+             $data['客付金额']=$money;
+             $data['挂账金额']=$money;
          }
          elseif($carinfo['客户类别']=='三方合作'){
              $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0007'))->find();
@@ -3242,6 +3277,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
              $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0002'))->find();
              $data['报价金额']=35;
              $data['应收金额']=35;
+             $data['客付金额']=35;
+             $data['挂账金额']=35;
+
          }
          $data['业务编号']=$bianhao;
          M('维修','dbo.','difo')->add($data);

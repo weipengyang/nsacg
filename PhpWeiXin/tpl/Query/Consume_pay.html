@@ -19,6 +19,13 @@
             }
             return false;
         }
+        function calprice() {
+            var yh = $("input[ligeruiid='优惠金额']").val();
+            var sum = $("input[ligeruiid='客付金额']").val();
+            var xj = $("input[ligeruiid='现收金额']").val();
+            $("input[ligeruiid='应收金额']").val(sum - yh);
+            $("input[ligeruiid='挂账金额']").val(sum - yh - xj);
+        }
         $(function ()
         {
             var lastTime;
@@ -36,11 +43,7 @@
                     {
                         display: "优惠金额", name: "优惠金额", newline: false, type: "text", options: {
                             onBlur:function () {
-                                var yh = $("input[ligeruiid='优惠金额']").val();
-                                var sum = $("input[ligeruiid='客付金额']").val();
-                                var xj = $("input[ligeruiid='现收金额']").val();
-                                $("input[ligeruiid='应收金额']").val(sum - yh);
-                                $("input[ligeruiid='挂账金额']").val(sum - yh - xj);
+                                calprice();
                             }
 
                         }
@@ -53,11 +56,7 @@
                     {
                         display: "现收金额", name: "现收金额", newline: true, type: "text", options: {
                             onBlur:function () {
-                                var yh = $("input[ligeruiid='优惠金额']").val();
-                                var sum = $("input[ligeruiid='客付金额']").val();
-                                var xj = $("input[ligeruiid='现收金额']").val();
-                                $("input[ligeruiid='应收金额']").val(sum - yh);
-                                $("input[ligeruiid='挂账金额']").val(sum - yh - xj);
+                                calprice();
                             }
                         }
                     },
@@ -89,6 +88,7 @@
             var data = parent.grid.getSelectedRow();
             if (data) {
                 form.setData(data);
+                calprice();
             }
         });
 

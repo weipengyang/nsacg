@@ -180,7 +180,7 @@
                             };
                             $.post('index.php?g=Query&m=Consume&a=saveproduct', submitData,
                               function (data) {
-                                  window.parent.liger.get('productgrid').reload();
+                                  parent.reflash();
                                   haveproduct.reload();
                                   $.ligerDialog.alert(data);
                               });

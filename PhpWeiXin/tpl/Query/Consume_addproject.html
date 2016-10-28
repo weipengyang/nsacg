@@ -177,7 +177,7 @@
                             $.post('index.php?g=Query&m=Consume&a=saveproject', submitData,
                               function (data) {
                                   haveproject.reload();
-                                  window.parent.liger.get('projectgrid').reload();
+                                  parent.reflash();
                                   $.ligerDialog.alert(data);
                               });
                             //alert(JSON.stringify(data));

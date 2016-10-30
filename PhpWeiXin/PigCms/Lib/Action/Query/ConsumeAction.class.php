@@ -62,7 +62,7 @@ class ConsumeAction extends Action{
                 }
                 else
                 {
-                    $toolbarscript .= "disable:false, " ;
+                    $toolbarscript .="disable:false," ;
                 }
                 $toolbarscript .= "click: function () {";
                 $toolbarscript .= "f_according(" . $row["id"] .")";
@@ -490,8 +490,72 @@ class ConsumeAction extends Action{
             $where['_complex']=$searchwhere;
             
         }
-        $count=M('车辆档案','dbo.','difo')->join('left join 维修统计 on 车辆档案.车牌号码=维修统计.车牌')->where($where)->count();
-        $yelist=M('车辆档案','dbo.','difo')->join('left join 维修统计 on 车辆档案.车牌号码=维修统计.车牌')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $count=M('车辆资料','dbo.','difo')
+            ->join('left join 维修统计 on 车辆资料.车牌号码=维修统计.车牌')
+            ->where($where)->count();
+        $yelist=M('车辆资料','dbo.','difo')
+            ->join('left join 维修统计 on 车辆资料.车牌号码=维修统计.车牌')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
+    public function getuserconsume()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        if (isset($_POST['khlb'])&&trim($_POST['khlb'])!=''){
+            $where['客户类别']=$_POST['khlb'];
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        $where['车牌号码']=array('neq','0000');
+        if($_POST['where']!=''){
+            $cond=json_decode($_POST['where']);
+            $conditions=$cond->rules;
+            $opt=$cond->op;
+            $maps['equal']='eq';
+            $maps['notequal']='neq';
+            $maps['like']='like';
+            if($opt=='and'){
+                foreach($conditions as $condition){
+                    if($condition->op=='equal'||$condition->op=='notequal')
+                        $value=array($maps[$condition->op],$condition->value);
+                    else
+                        $value=array('like','%'.$condition->value.'%');
+                    $where[$condition->field]=$value;
+                }
+            }
+            else{
+                
+            }
+        }
+        if($searchkey){       
+            $searchwhere['车主']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['客户类别']=array('like',$searchkey);
+            $searchwhere['联系人']=array('like',$searchkey);
+            $searchwhere['联系电话']=array('like',$searchkey);
+            $searchwhere['保险公司']=array('like',$searchkey);
+            $searchwhere['发动机号']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $count=M('车辆资料','dbo.','difo')
+            ->join('left join 会员消费分析 on 车辆资料.车牌号码=会员消费分析.车牌')
+            ->where($where)->count();
+        $yelist=M('车辆资料','dbo.','difo')
+            ->join('left join 会员消费分析 on 车辆资料.车牌号码=会员消费分析.车牌')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
         $data['Rows']=$yelist;
         $data['Total']=$count;
         echo json_encode($data);
@@ -1108,7 +1172,7 @@ class ConsumeAction extends Action{
   public function pay(){
     if(IS_POST){
         $wx=$_POST['record']; 
-        $this->genbill($wx['现收金额'],$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID']);
+        $this->genwxbill($wx);
         $data['当前状态']='出厂'; 
         $data['出厂时间']=date('Y-m-d H:i',time());
         $data['实际完工']=date('Y-m-d H:i',time());
@@ -1118,6 +1182,7 @@ class ConsumeAction extends Action{
         $data['收款人']=cookie('username');
         $data['挂账金额']=$wx['挂账金额'];
         $data['优惠金额']=$wx['优惠金额'];
+        $data['结算方式']=$wx['结算方式'];
         $data['标志']='已结算';
         $code=$wx['流水号'];
         M('维修','dbo.','difo')->where(array('流水号'=>$code))->save($data);
@@ -1127,6 +1192,72 @@ class ConsumeAction extends Action{
     }else{
         $this->display();
     }
+  }
+  private function genwxbill($wx){
+
+      $paybill['ID']=$this->getcode(18,1,1);
+      $paybill['单位编号']=$wx['客户ID'];
+      $paybill['单位名称']=$wx['车主'];
+      $paybill['单据类别']=$wx['维修类别'];
+      $paybill['单据编号']=$wx['业务编号'];
+      $paybill['制单日期']=date('Y-m-d',time());
+      $paybill['制单人']=cookie('username');
+      $paybill['总金额']=$wx['应收金额'];
+      $paybill['已结算金额']=$wx['现收金额'];
+      $paybill['未结算金额']=$wx['挂账金额'];
+      $paybill['本次结算']=$wx['现收金额'];
+      $paybill['提醒日期']=date('Y-m-d',time());
+      $paybill['账款类别']='应收款';
+      $paybill['当前状态']='待审核';
+      $paybill['摘要']=$wx['维修类别'].'欠款';
+      if($wx['挂账金额']==0){
+       $paybill['当前状态']='已审核';
+       $paybill['摘要']=$wx['维修类别'];
+      }
+      $paybill['审核人']=cookie('username');
+      $paybill['审核日期']=date('Y-m-d',time());
+      $paybill['虚增价税']=0;
+      $paybill['挂账金额']=$wx['挂账金额'];
+      $paybill['车牌号码']=$wx['车牌号码'];
+      M('应收应付单','dbo.','difo')->add($paybill);
+      if(doubleval($wx['现收金额'])>0||$wx['结算方式']=='会员卡支付'){
+          $bianhao=$this->getcodenum("BI");
+          $data['单据编号']=$bianhao;
+          $data['ID']=$this->getcode(20,1,1);
+          $data['制单日期']=date('Y-m-d',time());
+          $data['制单人']=cookie('username');
+          $data['单位名称']=$wx['车主'];
+          $data['账款类别']='收款单';
+          $data['开户银行']='';
+          $data['银行账号']='';
+          $data['本次应付']=0;
+          $data['本次应收']=0;
+          $data['整单折扣']=1;
+          $data['实付金额']=0;
+          $data['实收金额']=$wx['现收金额'];
+          $data['折扣金额']=$wx['优惠金额'];
+          $data['结算方式']=$wx['结算方式'];
+          $data['结算账户']=$wx['结算账户'];
+          $data['支票号']=0;
+          $data['凭证号']=0;
+          $data['摘要']='维修收款('.$wx['业务编号'].')';
+          $data['收支项目']='维修收款';
+          $data['当前状态']='待审核';
+          $data['发票类别']='';
+          $data['发票号']='';
+          $data['单位编号']=$wx['客户ID'];
+          $data['取用预付']=0;
+          $data['取用预收']=0;
+          $data['本次冲账']=$wx['现收金额'];
+          $data['单据类别']='应收款';
+          $data['取用预存']=0;
+          M('日常收支','dbo.','difo')->add($data);
+
+          $dj['挂账ID']=$paybill['ID'];
+          $dj['收支ID']=$data['ID'];
+          $dj['金额']=$wx['现收金额'];
+          M('引用单据','dbo.','difo')->add($dj);
+      }
   }
 
    public function modifyproject()
@@ -1523,7 +1654,38 @@ class ConsumeAction extends Action{
         $this->assign('carinfo',json_encode($carinfo));
         $this->display();
     }
+   public function memberinfo()
+    {
+        if(IS_POST){
+            $carinfo=$_POST;
+            unset($carinfo['流水号']);
+            unset($carinfo['车辆图片']);
+            foreach($carinfo as $key=>$value){
+                if($carinfo[$key]==null||$carinfo[$key]=='null')
+                    unset($carinfo[$key]);
+            }
+            if(M('车辆档案','dbo.','difo')->where(array('流水号'=>$_POST['流水号']))->save($carinfo)){
+                echo '保存成功';
+            }
+            else{
+                  echo '保存失败';
+            
+            }
+            exit();
+
+        }
+        $carno=$_GET['carno'];
+        $memberinfo=M('往来单位','dbo.','difo')->where(array('名称'=>$carno))->find();
+        $this->assign('memberinfo',json_encode($memberinfo));
+        $this->display();
+    }
     public function carsinfo()
+    {
+        $lblist=M('车辆档案','dbo.','difo')->Distinct(true)->field('客户类别')->order('客户类别')->select();
+        $this->assign('lblist',$lblist);
+        $this->display();
+    }
+    public function userAnalyze()
     {
         $lblist=M('车辆档案','dbo.','difo')->Distinct(true)->field('客户类别')->order('客户类别')->select();
         $this->assign('lblist',$lblist);
@@ -2009,9 +2171,7 @@ class ConsumeAction extends Action{
             $where=array('shop'=>trim($_GET['shop']));
 
         }
-        else{
-            $where['shop']=array('neq','');
-        }
+        
         if($searchkey){       
             $searchwhere['tp_userinfo.carno']=array('like',$searchkey);
             $searchwhere['carno1']=array('like',$searchkey);

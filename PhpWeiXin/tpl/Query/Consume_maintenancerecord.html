@@ -207,7 +207,7 @@
                 }
                 else {
                     caldialog = $.ligerDialog.open({
-                        height: 320,
+                        height: 340,
                         url: '/index.php?g=Query&m=Consume&a=pay',
                         width: 600, 
                         showMax: false,
@@ -420,7 +420,7 @@
             $.post('/index.php?g=Query&m=Consume&a=savewxinfo', data,
               function (msg) {
                   $.ligerDialog.alert(msg);
-                  reload();
+                  reflash();
               });
 
         }
@@ -445,8 +445,17 @@
         }
         function reflash() {
             $.post('/index.php?g=Query&m=Consume&a=getrecordbyid&id=' + record['ID'], null, function (result) {
-                record =JSON2.parse(result);
-                reload();
+                grid.reload();
+                setTimeout(function () {
+                    record = JSON2.parse(result);
+                    $(grid.data.Rows).each(function () {
+                        if (record['ID'] == this['ID']) {
+                            grid.select(this);
+                        }
+
+                    });
+                }, 200);
+                //reload();
             });
         }
         function inidata() {
@@ -568,7 +577,7 @@
                 url: '/index.php?g=Query&m=Consume&a=getwxinfo',
                 height: '50%',
                 onDblClickRow: function (data, rowindex, rowobj) {
-                    wxinfo(data['流水号']);
+                   // wxinfo(data['流水号']);
                 },
                 onSelectRow: function (data, rowindex,rowobj) {
                     record = data;
@@ -844,7 +853,7 @@
                                              $.post('/index.php?g=Query&m=Consume&a=deleteproject', data,
                                                function (msg) {
                                                    $.ligerDialog.alert(msg);
-                                                   parent.reflash();
+                                                   reflash();
                                                });
                                          } else {
                                              $.ligerDialog.alert('请选择要删除项目');
@@ -948,7 +957,7 @@
                                             $.post('/index.php?g=Query&m=Consume&a=deleteproduct', data,
                                               function (msg) {
                                                   alert(msg);
-                                                  parent.reflash();
+                                                  reflash();
                                               });
                                         } else {
                                             $.ligerDialog.alert('请选择要删除项目');

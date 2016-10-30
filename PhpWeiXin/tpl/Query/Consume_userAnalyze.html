@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>爱养车</title>
+    <title>用户分析</title>
     <meta name="description" content="爱养车">
     <meta name="keywords" content="index">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -48,7 +48,7 @@
     <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
-        var cardialog,picdialog;
+        var cardialog,memberdialog;
         function carinfo(carno) {
             if (cardialog) {
                 cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
@@ -68,22 +68,22 @@
                 });
             }
         }
-        function picnfo(carno) {
-            if (picdialog) {
-                picdialog.setUrl('/index.php?g=Query&m=Consume&a=fileupload&carno=' + carno);
-                picdialog.show();
+        function memberinfo(carno) {
+            if (memberdialog) {
+                memberdialog.setUrl('/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno);
+                memberdialog.show();
             }
             else {
-                picdialog=$.ligerDialog.open({
+                memberdialog = $.ligerDialog.open({
                     height: 500,
-                    url: '/index.php?g=Query&m=Consume&a=fileupload&carno=' + carno,
+                    url: '/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno,
                     width: 900,
                     showMax: true,
                     showToggle: true,
                     showMin: true,
                     isResize: true,
                     modal: false,
-                    title: '车辆图片查看'
+                    title: '会员资料编辑'
                 });
             }
         }
@@ -139,46 +139,24 @@
                         { display: '联系电话', name: '联系电话', minWidth: 60 },
                         { display: '客户类别', name: '客户类别', minWidth: 60 },
                         { display: '会员等级', name: '会员等级', minWidth: 80 },
-                        {
-                            display: '品牌型号', name: '品牌', width: 90, render: function (rowdata, index, value) {
-
-                                return rowdata['品牌'] + '/' + rowdata['车型'];
-                            }
-                        },
-                        { display: '年份排量', name: '排量', minWidth: 120,hide:true},
-                        { display: '车架号', name: '车架号', width: 150, hide: true },
-                        { display: '发动机型号', name: '发动机型号', minWidth: 60, hide: true },
-                        { display: '轮胎规格', name: '轮胎规格', minWidth: 60 },
-                        { display: '品牌花纹', name: '品牌花纹', minWidth: 60, hide: true },
-                        { display: '服务顾问', name: '服务顾问', minWidth: 80 },
-                        { display: '机油格', name: '机油格', width: 50 },
-                        { display: '空气格', name: '空气格', width: 50 },
-                        { display: '冷气格', name: '冷气格', width: 50 },
-                        { display: '进厂次数', name: '进厂次数', minWidth: 60 },
-                        { display: '消费金额', name: '消费金额', minWidth: 60 },
-                        { display: '保险公司', name: '保险公司', minWidth: 60 },
-                        {
-                            display: '保险到期', name: '交保到期', minWidth: 100, render: function (rowdata, index, value) {
-                                return todate(value, false);
-                            }
-                        },
-                        {
-                            display: '年审到期', name: '年检日期', minWidth: 100, render: function (rowdata, index, value) {
-                                return todate(value, false);
-                            }
-                        },
-                        {
-                            display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
-                                return '<a href="javascript:void(0);" onclick="picnfo(\'' + rowdata.流水号 + '\');"><strong>查看图片</strong></a>';
-                            }
-                        }
+                        { display: '洗车次数', name: '洗车次数', minWidth: 60},
+                        { display: '洗车金额', name: '洗车金额', minWidth: 60 },
+                        { display: '美容次数', name: '美容次数', minWidth: 60 },
+                        { display: '美容金额', name: '美容金额', minWidth: 60 },
+                        { display: '维修次数', name: '维修数量', minWidth: 60 },
+                        { display: '维修金额', name: '维修金额', minWidth: 80 },
+                        { display: '保险次数', name: '保险次数', minWidth: 50 },
+                        { display: '保险金额', name: '保险金额', minWidth: 50 },
+                        { display: '代办次数', name: '代办次数', minWidth: 50 },
+                        { display: '代办金额', name: '代办金额', minWidth: 60 },
+                        
                 ],
                 isScroll: true,
                 pageSize: 20,
-                url: '/index.php?g=Query&m=Consume&a=getcarsinfo',
+                url: '/index.php?g=Query&m=Consume&a=getuserconsume',
                 height: '100%',
                 onDblClickRow: function (data, rowindex, rowobj) {
-                    carinfo(data['车牌号码']);
+                    memberinfo(data['车主']);
                 }
             });
             $('#search').click(function () {

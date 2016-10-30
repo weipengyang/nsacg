@@ -637,7 +637,7 @@ public function check(){
             $wx=M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->find();
             $this->genbill($price,$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID']);
             M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save(array('当前状态'=>'结束'));
-            $this->consumerecord($price,'汽车维修支付',$userinfo);
+            $this->consumerecord($price,'汽车维修支付',$userinfo,$wx['车牌号码'],$wx['门店']);
             $data['出厂时间']=date('Y-m-d H:i',time());
             $data['实际完工']=date('Y-m-d H:i',time());
             $data['结算日期']=date('Y-m-d',time());
@@ -669,7 +669,7 @@ public function check(){
              $data['审核人']='系统自动';
              $data['当前状态']='结束';
              M('车辆保险','dbo.','difo')->where(array('流水号'=>$itemid))->save($data);
-             $this->consumerecord($price,'汽车保险支付',$userinfo);
+             $this->consumerecord($price,'汽车保险支付',$userinfo,$bx['车牌号码']);
              echo '结算成功';
              exit;
          }
@@ -685,7 +685,7 @@ public function check(){
              $data['当前状态']='结束';
 
              M('车辆代办','dbo.','difo')->where(array('流水号'=>$itemid))->save($data);
-             $this->consumerecord($price,"代办".$db['代办类别']."支付",$userinfo);
+             $this->consumerecord($price,"代办".$db['代办类别']."支付",$userinfo,$db['车牌号码']);
              echo '结算成功';
              exit;
          }
@@ -735,7 +735,7 @@ public function check(){
        M('编号单','dbo.','difo')->add(array('单据编号'=>$bianhao,'队列'=>($code+1),'类别'=>"$type",'日期'=>date('Y-m-d', time())));
        return $bianhao;
    }
-   private function consumerecord($balance,$ordername,$userinfo){
+   private function consumerecord($balance,$ordername,$userinfo,$carno='',$shop=''){
    
        $single_orderid = date('YmdHis',time()).mt_rand(1000,9999);
        $record['orderid'] = $single_orderid;
@@ -747,6 +747,8 @@ public function check(){
        $record['price'] =$balance;
        $record['token'] = $this->token;
        $record['wecha_id'] = $this->wecha_id;
+       $record['shop'] = $shop;
+       $record['usecar'] = $carno;
        $record['type'] = 0;
        $record['notes'] =$ordername.'获取积分';
        M('Member_card_pay_record')->add($record);// 插入会员卡线下消费

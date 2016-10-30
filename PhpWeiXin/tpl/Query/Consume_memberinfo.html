@@ -12,69 +12,6 @@
     <script type="text/javascript">
         $(function ()
         {
-                  ,[联系电话]
-                  ,[手机号码]
-                  ,[备用电话]
-                  ,[传真]
-                  ,[Email]
-                  ,[通讯地址]
-                  ,[邮编]
-                  ,[登记时间]
-                  ,[备注]
-                  ,[助记码]
-                  ,[会员编号]
-                  ,[类别]
-                  ,[客户]
-                  ,[供应商]
-                  ,[发票类别]
-                  ,[结算方式]
-                  ,[区域]
-                  ,[销售折扣]
-                  ,[信用金额]
-                  ,[送货地址]
-                  ,[开户银行]
-                  ,[税号]
-                  ,[账号]
-                  ,[业务员]
-                  ,[货运方式]
-                  ,[等级]
-                  ,[网址]
-                  ,[预收款]
-                  ,[应收款]
-                  ,[应付款]
-                  ,[往来余款]
-                  ,[预付款]
-                  ,[来源]
-                  ,[跟踪周期]
-                  ,[采购数量]
-                  ,[采购金额]
-                  ,[采购税额]
-                  ,[最近交易]
-                  ,[交易类别]
-                  ,[单据编号]
-                  ,[制单人]
-                  ,[总金额]
-                  ,[销售数量]
-                  ,[销售实际货款]
-                  ,[销售实际税额]
-                  ,[销售虚增货款]
-                  ,[销售虚增税额]
-                  ,[销售毛利]
-                  ,[保险公司]
-                  ,[车管单位]
-                  ,[服务折扣]
-                  ,[会费]
-                  ,[当前积分]
-                  ,[会员到期]
-                  ,[会员]
-                  ,[入会日期]
-                  ,[退会日期]
-                  ,[性别]
-                  ,[出生日期]
-                  ,[QQ号码]
-                  ,[对账摘要]
-                  ,[身份证号]
-            FROM [qxqpt2009].[dbo].[往来单位]
             var form = $("#form1").ligerForm({
                 inputWidth: 160, labelWidth: 85, space: 20,
                 validate: true,
@@ -83,9 +20,9 @@
                         {
                             title: '基本信息',
                             fields: [
-                                { display: "流水号", name: "流水号", newline: true, type: "hidden", group: '车辆信息'},
-                                { display: "会员名称", name: "名称", newline: true, type: "text", group: '车辆信息' },
-                                { display: "联系人", name: "联系人", newline: true, type: "text", group: '车辆信息' },
+                                { display: "流水号", name: "流水号", newline: true, type: "hidden" },
+                                { display: "会员名称", name: "名称", newline: true, type: "text" },
+                                { display: "联系人", name: "联系人", newline: true, type: "text" },
                                 {
                                     display: "性别", name: "性别", newline: false, type: "combobox",
                                     options: {
@@ -96,7 +33,7 @@
                                     }
                                 },
                                 {
-                                    display: "车系", name: "车型", newline: false, type: "combobox",
+                                    display: "联系电话", name: "联系电话", newline: false, type: "combobox",
                                     options: {
                                         valueField: '车型',
                                         textField: '车型',
@@ -105,7 +42,7 @@
                                     },
 
                                 },
-                                { display: "车辆类型", name: "车辆类别", newline: true, type: "combobox",
+                                { display: "备用电话", name: "备用电话", newline: true, type: "combobox",
                                     options: {
                                         valueField: '类别',
                                         textField: '类别',
@@ -113,10 +50,10 @@
                                         url: '/index.php?g=Query&m=Consume&a=getcllb',
                                     },
                                 },
-                                { display: "年份 ", name: "年份", newline: false, type: "text" },
-                                { display: "排量", name: "排量", newline: false, type: "text" },
+                                { display: "传真 ", name: "传真", newline: false, type: "text" },
+                                { display: "Email", name: "Email", newline: false, type: "text" },
                                 {
-                                    display: "颜色", name: "颜色", newline: true, type: "combobox",
+                                    display: "通讯地址", name: "通讯地址", newline: true, type: "combobox",
                                     options: {
                                         valueField: '颜色',
                                         textField: '颜色',
@@ -125,7 +62,7 @@
                                     },
                                 },
                                 {
-                                    display: "外观", name: "外观", newline: false, type: "combobox",
+                                    display: "邮编", name: "邮编", newline: false, type: "combobox",
                                     options: {
                                         valueField: '外观',
                                         textField: '外观',
@@ -133,103 +70,28 @@
                                         url: '/index.php?g=Query&m=Consume&a=waiguan',
                                     },
                                 },
-                                { display: "座位数", name: "座位数", newline: false, type: "text" },
-                                { display: "车架号", name: "车架号", newline: true, type: "text"},
-                                { display: "轮胎规格", name: "轮胎规格",newline: false, type: "text" },
-                                { display: "机油格", name: "机油格", newline: false, type: "text" },
-                                { display: "空气格", name: "空气格", newline: true, type: "text" },
-                                { display: "冷气格", name: "冷气格", newline: false, type: "text" },
-                                { display: "汽油格", name: "汽油格", newline: false, type: "text" },
-                                { display: "刹车皮", name: "刹车皮", newline: true, type: "text" },
-                                { display: "合格证号", name: "合格证号", newline: false, type: "text" },
-                                { display: "发动机号", name: "发动机号", newline: false, type: "text" },
-                                { display: "燃料类别", name: "燃料类别", newline: true, type: "text" },
-                                { display: "运输证号", name: "运输证号", newline: false, type: "text" },
-                                 { display: "发动机型号", name: "发动机型号", newline: false, type: "text" },
-                               {
-                                    display: "车主", name: "车主", newline: true, type: "popup", options: {
-                                        condition: {
-                                            prefixID: 'condtion_',
-                                            fields: [{ name: 'searchkey', type: 'text', width: 120, label: '客户信息', labelWidth: 90 }]
-                                            
-                                        },
-                                        onSelected: function (e) {
-                                            alert(e.value);
-                                            var row = e.data[0];
-                                            $("input[name='联系电话']").val(row['联系电话']);
-                                        },
-                                        searchClick: function (e) {
-                                            e.grid.set('parms', { 'searchkey': e.rules[0]['value'] });
-                                            e.grid.reload();
-                                        },
-                                        grid: getGridOptions(false),
-                                        valueField: '名称',
-                                        textField: '名称',
-                                        width: 600
-                                    }, group: '车主信息'
-                                },
-                                {
-                                    display: "客户类别", name: "客户类别", newline: false, type: "combobox", group: '车主信息',
-                                    options: {
-                                        valueField: '类别',
-                                        textField: '类别',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=getkhlb',
-                                    }
-
-                                },
-                                { display: "联系人", name: "联系人", newline: false, type: "text", group: '车主信息' },
-                                { display: "联系电话", name: "联系电话", newline: true, type: "text", group: '车主信息' },
-                                { display: "手机号", name: "手机号码", newline: false, type: "text", group: '车主信息' },
-                                { display: "地址", name: "地址", newline: false, type: "text", group: '车主信息' },
-                                { display: "驾驶员", name: "驾驶员", newline: true, type: "text", group: '驾驶证信息' },
-                                {
-                                    display: "出生日期", name: "出生日期", newline: false, type: "date", group: '驾驶证信息',
-                                    options: {
-                                        format: "yyyy-MM-dd"
-                                    }
-                                },
-                                { display: "驾驶员电话", name: "驾驶员电话", newline: false, type: "text", group: '驾驶证信息' },
-                                { display: "驾驶证号", name: "驾驶证号", newline: true, type: "text", group: '驾驶证信息' },
-                                { display: "准驾车型", name: "准驾车型", newline: false, type: "text", group: '驾驶证信息' },
-                                { display: "档案编号", name: "档案编号", newline: false, type: "text", group: '驾驶证信息' },
-                                {
-                                    display: "领证日期 ", name: "领证日期", newline: true, type: "date", group: '行驶证信息',
-                                    options: {
-                                        format: "yyyy-MM-dd"
-                                    }
-                                },
-                                { display: "换证日期 ", name: "换证日期", newline: false, type: "date", group: '行驶证信息' },
-                                { display: "上牌日期 ", name: "上牌日期", newline: false, type: "date", group: '行驶证信息' },
-                                { display: "保险公司 ", name: "保险公司", newline: true, type: "combobox",
-                                    options: {
-                                        valueField: '名称',
-                                        textField: '名称',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=baoxian',
-                                    }, group: '保险信息' },
-                                { display: "首保日期 ", name: "首保日期", newline: false, type: "date", group: '保险信息' },
-                                { display: "交保到期 ", name: "交保到期", newline: false, type: "date", group: '保险信息' },
-                                { display: "交保单号 ", name: "交保单号", newline: true, type: "text", group: '保险信息' },
-                                { display: "商保到期 ", name: "商保到期", newline: false, type: "date", group: '保险信息' },
-                                { display: "商保单号 ", name: "商保单号", newline: false, type: "text", group: '保险信息' },
-                                { display: "最近维修 ", name: "最近维修", newline: true, type: "date", group: '维修保养' },
-                                { display: "最近保养 ", name: "最近保养", newline: false, type: "date", group: '维修保养',format:"yyyy-mm-dd" },
-                                { display: "保养里程 ", name: "保养里程", newline: false, type: "digits", group: '维修保养' },
-                                { display: "生产日期 ", name: "生产日期", newline: true, type: "date", group: '维修保养' },
-                                { display: "购买日期 ", name: "购买日期", newline: false, type: "date", group: '维修保养' },
-                                { display: "常规保养数 ", name: "常规保养数", newline: false, type: "text", group: '维修保养' },
-                                { display: "下次保养 ", name: "下次保养", newline: true, type: "date", group: '维修保养' },
-                                { display: "季检日期 ", name: "季检日期", newline: false, type: "date", group: '维修保养' },
-                                { display: "年检日期 ", name: "年检日期", newline: false, type: "date", group: '维修保养' },
-                                { display: "备注 ", name: "备注", newline: true,width: 470,type: "textarea",group: '维修保养' },
+                                { display: "登记时间", name: "登记时间", newline: false, type: "text" },
+                                { display: "备注", name: "备注", newline: true, type: "text"},
+                                { display: "助记码", name: "助记码",newline: false, type: "text" },
+                                { display: "会员编号", name: "会员编号", newline: false, type: "text" },
+                                { display: "类别", name: "类别", newline: true, type: "text" },
 
                             ]
 
                         },
                         {
-                            title: '车辆图片'
-                        }
+                            title: '维修记录'
+                        },
+                         {
+                             title: '销售记录'
+                         },
+                          {
+                              title: '保险记录'
+                          },
+                          {
+                              title: '代办记录'
+                          }
+
                     ]
                 }
 
@@ -282,22 +144,22 @@
             function setdata()
             {
                
-                var carinfo ={pigcms:$carinfo};
-                if (carinfo && carinfo != '') {
-                    carinfo = JSON2.stringify(carinfo);
-                    carinfo = JSON2.parse(carinfo);
-                    form.setData(carinfo);
-                    $("input[ligeruiid='车主']").val(carinfo['车主']);
-                    $("input[ligeruiid='车型']").val(carinfo['车型']);
-                    $("input[ligeruiid='客户类别']").val(carinfo['客户类别']);
-                    $("input[ligeruiid='品牌']").val(carinfo['品牌']);
-                    $("input[ligeruiid='车辆类别']").val(carinfo['车辆类别']);
-                    $("input[ligeruiid='颜色']").val(carinfo['颜色']);
-                    $("input[ligeruiid='外观']").val(carinfo['外观']);
-                    $("input[ligeruiid='保险公司']").val(carinfo['保险公司']);
-                    $("div[data-index='1']").html(
-                      '<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=fileupload&carno='+ carinfo['流水号']+ '"></iframe></div>'
-                     );
+                var memberinfo = { pigcms:$memberinfo };
+                if (memberinfo && memberinfo != '') {
+                    memberinfo = JSON2.stringify(memberinfo);
+                    memberinfo = JSON2.parse(memberinfo);
+                    form.setData(memberinfo);
+                    //$("input[ligeruiid='车主']").val(memberinfo['车主']);
+                    //$("input[ligeruiid='车型']").val(memberinfo['车型']);
+                    //$("input[ligeruiid='客户类别']").val(memberinfo['客户类别']);
+                    //$("input[ligeruiid='品牌']").val(memberinfo['品牌']);
+                    //$("input[ligeruiid='车辆类别']").val(memberinfo['车辆类别']);
+                    //$("input[ligeruiid='颜色']").val(memberinfo['颜色']);
+                    //$("input[ligeruiid='外观']").val(memberinfo['外观']);
+                    //$("input[ligeruiid='保险公司']").val(memberinfo['保险公司']);
+                    //$("div[data-index='1']").html(
+                    //  '<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=fileupload&carno='+ carinfo['流水号']+ '"></iframe></div>'
+                    // );
                 }
             }
         });

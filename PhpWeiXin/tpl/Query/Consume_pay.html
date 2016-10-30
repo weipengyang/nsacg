@@ -61,6 +61,24 @@
                         }
                     },
                     { display: "预收结算", name: "取用预存", newline: false, type: "text" },
+                    {
+                       display: '结算方式', name: '结算方式', newline: true,type:"combobox",
+                        options: {
+                            valueField: '名称',
+                            textField: '名称',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getjsfs',
+                            onChangeValue: function () {
+                                var selected = this.selected;
+                                if (selected)
+                                   $("input[name='结算账户']").val(selected['默认账户']);
+                            }
+                        }
+                    },
+                    {
+                        display: "结算账户", name: "结算账户", newline: false, type: "text", readonly: true
+
+                    },
 
                 ],
                 buttons: [                    {
@@ -70,9 +88,14 @@
                     },                    {
                         text: "保存", width: 60, click: function () {
                             var data = form.getData();
+                            if (data['结算方式'] == '') {
+                                $.ligerDialog.alert('请选择结算方式');
+                                return;
+                            }
                             row = parent.grid.getSelectedRow();
                             parent.grid.updateRow(row, data);
                             parent.form.setData(data);
+                            row['结算账户'] = data['结算账户'];
                             var data = {
                                 record: row
                             };

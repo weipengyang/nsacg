@@ -21,60 +21,54 @@
                             title: '基本信息',
                             fields: [
                                 { display: "流水号", name: "流水号", newline: true, type: "hidden" },
+                                { display: "ID", name: "ID", newline: true, type: "hidden" },
                                 { display: "会员名称", name: "名称", newline: true, type: "text" },
-                                { display: "联系人", name: "联系人", newline: true, type: "text" },
                                 {
-                                    display: "性别", name: "性别", newline: false, type: "combobox",
-                                    options: {
-                                        valueField: '品牌',
-                                        textField: '品牌',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=getpinpai',
-                                    }
-                                },
-                                {
-                                    display: "联系电话", name: "联系电话", newline: false, type: "combobox",
-                                    options: {
-                                        valueField: '车型',
-                                        textField: '车型',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=getchexing',
-                                    },
-
-                                },
-                                { display: "备用电话", name: "备用电话", newline: true, type: "combobox",
+                                    display: "类别", name: "类别", newline: false, type: "combobox",
                                     options: {
                                         valueField: '类别',
                                         textField: '类别',
                                         autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=getcllb',
-                                    },
+                                        url: '/index.php?g=Query&m=Consume&a=getkhtype',
+                                    }
+                                },
+                                {
+                                    display: "会员等级", name: "等级", newline: false, type: "combobox",
+                                    options: {
+                                        valueField: '等级',
+                                        textField: '等级',
+                                        autocomplete: true,
+                                        url: '/index.php?g=Query&m=Consume&a=getkhgrade',
+                                    }
+                                }, 
+                                { display: "联系人", name: "联系人", newline: true, type: "text" },
+                                {
+                                    display: "性别", name: "性别", newline: false, type: "text",
+                                    
+                                },
+                                {
+                                    display: "联系电话", name: "联系电话", newline: false, type: "text",
+                                  
+
+                                },
+                                { display: "备用电话", name: "备用电话", newline: true, type: "text",
+                                    
                                 },
                                 { display: "传真 ", name: "传真", newline: false, type: "text" },
                                 { display: "Email", name: "Email", newline: false, type: "text" },
                                 {
-                                    display: "通讯地址", name: "通讯地址", newline: true, type: "combobox",
-                                    options: {
-                                        valueField: '颜色',
-                                        textField: '颜色',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=yanse',
-                                    },
+                                    display: "通讯地址", name: "通讯地址", newline: true, type: "text",
+                                   
                                 },
                                 {
-                                    display: "邮编", name: "邮编", newline: false, type: "combobox",
-                                    options: {
-                                        valueField: '外观',
-                                        textField: '外观',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=waiguan',
-                                    },
+                                    display: "邮编", name: "邮编", newline: false, type: "text",
+                                   
                                 },
                                 { display: "登记时间", name: "登记时间", newline: false, type: "text" },
                                 { display: "备注", name: "备注", newline: true, type: "text"},
                                 { display: "助记码", name: "助记码",newline: false, type: "text" },
                                 { display: "会员编号", name: "会员编号", newline: false, type: "text" },
-                                { display: "类别", name: "类别", newline: true, type: "text" },
+                               
 
                             ]
 
@@ -101,13 +95,19 @@
             function submitForm() {
 
                 var form = liger.get("form1");
-                var data = form.getData();
-                data = JSON2.stringify(data);
-                data = JSON2.parse(data);
-                $.post('/index.php?g=Query&m=Consume&a=carinfo', data,
+                //var data = form.getChanges();
+                var data = {};
+                //data = JSON2.stringify(data);
+                //data = JSON2.parse(data);
+                data['流水号'] = $("input[id='流水号']").val();
+                data['ID'] = $("input[id='ID']").val();
+                data['等级'] = $("input[ligeruiid='等级']").val();
+                data['类别'] = $("input[ligeruiid='类别']").val();
+                $.post('/index.php?g=Query&m=Consume&a=memberinfo', data,
                   function (msg) {
-                      alert(msg);
-                      location.href = location.href;
+                      $.ligerDialog.alert(msg);
+                      parent.cargird.reload();
+                      //location.href = location.href;
                   });
 
             }
@@ -144,15 +144,15 @@
             function setdata()
             {
                
-                var memberinfo = { pigcms:$memberinfo };
+                var memberinfo = {pigcms:$memberinfo};
                 if (memberinfo && memberinfo != '') {
                     memberinfo = JSON2.stringify(memberinfo);
                     memberinfo = JSON2.parse(memberinfo);
                     form.setData(memberinfo);
                     //$("input[ligeruiid='车主']").val(memberinfo['车主']);
                     //$("input[ligeruiid='车型']").val(memberinfo['车型']);
-                    //$("input[ligeruiid='客户类别']").val(memberinfo['客户类别']);
-                    //$("input[ligeruiid='品牌']").val(memberinfo['品牌']);
+                    $("input[ligeruiid='类别']").val(memberinfo['类别']);
+                    $("input[ligeruiid='等级']").val(memberinfo['等级']);
                     //$("input[ligeruiid='车辆类别']").val(memberinfo['车辆类别']);
                     //$("input[ligeruiid='颜色']").val(memberinfo['颜色']);
                     //$("input[ligeruiid='外观']").val(memberinfo['外观']);

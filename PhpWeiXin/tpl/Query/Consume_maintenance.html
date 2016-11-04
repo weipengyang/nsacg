@@ -223,8 +223,18 @@
                 },
                 { display: '主修人', name: '主修人', width: 60, align: 'left' },
                 {
-                    display: '客户确认', name: '确认维修', align: 'center', minWidth: 50, render:function (rowdata, index, value) {
+                    display: '客户确认', name: '确认维修', align: 'center', width: 60, render:function (rowdata, index, value) {
                         if (value==null||value == '')
+                            value = '<span style="color:red">否</span>';
+                        else
+                            value = '<span style="color:blue">是</span>';
+
+                        return value;
+                    }
+                },
+                {
+                    display: '是否评论', name: '是否评论', align: 'center', width: 60, render: function (rowdata, index, value) {
+                        if (value == null || value == '')
                             value = '<span style="color:red">否</span>';
                         else
                             value = '<span style="color:blue">是</span>';
@@ -243,24 +253,58 @@
 
                     }
                 },
-                { display: '客户类别', name: '客户类别', minWidth: 140 },
+                {
+                    display: '客户类别', name: '客户类别', minWidth: 100, render: function (rowdata, index, value) {
+                        switch(value){
+                            case '1星客户':
+                                value = '<span style="color:#000933">' + value + '</span>';
+                                break;
+                            case '2星客户':
+                                value = '<span style="color:#000933">' + value + '</span>';
+                                break;
+                            case '3星客户':
+                                value = '<span style="color:red">' + value + '</span>';
+                                break;
+                            case '4星客户':
+                                value = '<span style="color:red">' + value + '</span>';
+                                break;
+                            case '5星客户':
+                                value = '<span style="color:red">' + value + '</span>';
+                                break;
+                            case '6星客户':
+                                value = '<span style="color:red">' + value + '</span>';
+                                break;
+                            case '7星客户':
+                                value = '<span style="color:red">' + value + '</span>';
+                                break;
+                            case '8星客户':
+                                value = '<span style="color:red">' + value + '</span>';
+                                break;
+                             
+                        }
+                       
+
+                        return value;
+                    }
+                },
                 { display: '联系人', name: '联系人', minWidth: 100 },
                 { display: '轮胎规格', name: '轮胎规格', minWidth: 60 },
-                { display: '机油格', name: '机油格', minWidth: 60 },
-                { display: '空气格', name: '空气格', minWidth: 60 },
-                { display: '冷气格', name: '冷气格', minWidth: 60 },
-                { display: '保险到期', name: '商保到期', minWidth: 100, render: function (rowdata, index, value) {
+                { display: '机油格', name: '机油格', minWidth: 60,hide:true},
+                { display: '空气格', name: '空气格', minWidth: 60, hide: true },
+                { display: '冷气格', name: '冷气格', minWidth: 60, hide: true },
+                {
+                    display: '保险到期', name: '商保到期', hide: true, minWidth: 100, render: function (rowdata, index, value) {
                     return todate(value,false);
                     }
                 },
-                {
-                    display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
-                        if (rowdata['制单人'] == '系统录单' && rowdata['主修人'] =='')
-                            return '<a href="javascript:void(0);" onclick="assigntask(\'' + rowdata.流水号 + '\');"><strong>派工</strong></a>';
-                        else
-                            return '';
-                    }
-                }
+                //{
+                //    display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
+                //        if (rowdata['制单人'] == '系统录单' && rowdata['主修人'] =='')
+                //            return '<a href="javascript:void(0);" onclick="assigntask(\'' + rowdata.流水号 + '\');"><strong>派工</strong></a>';
+                //        else
+                //            return '';
+                //    }
+                //}
                 ],
                 isScroll: true,
                 pageSize: 20,

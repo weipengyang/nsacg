@@ -28,7 +28,7 @@
                             }
                             $.post('/index.php?g=Query&m=Consume&a=assigntask', data,
                               function (msg) {
-                                  alert(msg);
+                                  $.ligerDialog.alert(msg);
                                   parent.grid.reload();
                                   parent.reload();
                                   //location.href = location.href;

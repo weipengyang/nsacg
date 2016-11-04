@@ -18,7 +18,7 @@
             var discount = $("input[ligeruiid='折扣']").val();
             var fax = $("input[ligeruiid='税率']").val();
             $("input[ligeruiid='金额']").val(price * num);
-            $("input[ligeruiid='税额']").val((price * num * fax * discount).toFixed(2));
+            $("input[ligeruiid='税额']").val((price * num * fax).toFixed(2));
         }
         $(function ()
         {

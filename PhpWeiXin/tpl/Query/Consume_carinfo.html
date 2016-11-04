@@ -25,7 +25,10 @@
             });
             wxdialog.max();
         }
-
+        var data=[
+         {name:'是'},
+         {name:'否'},
+        ];
         $(function ()
         {
             var form = $("#form1").ligerForm({
@@ -123,7 +126,13 @@
                                 { display: "联系人", name: "联系人", newline: false, type: "text", group: '车主信息' },
                                 { display: "联系电话", name: "联系电话", newline: true, type: "text", group: '车主信息' },
                                 { display: "手机号", name: "手机号码", newline: false, type: "text", group: '车主信息' },
-                                { display: "地址", name: "地址", newline: false, type: "text", group: '车主信息' },
+                                {
+                                    display: "保险客户", name: "保险客户", newline: false, type: "combobox", options: {
+                                    valueField: 'name',
+                                    textField: 'name',
+                                    data:data
+                                }, group: '车主信息' },
+                                { display: "地址", name: "地址", newline: true,width:430, type: "text", group: '车主信息' },
                                 { display: "驾驶员", name: "驾驶员", newline: true, type: "text", group: '驾驶证信息' },
                                 {
                                     display: "出生日期", name: "出生日期", newline: false, type: "date", group: '驾驶证信息',
@@ -229,8 +238,8 @@
                 data = JSON2.parse(data);
                 $.post('/index.php?g=Query&m=Consume&a=carinfo', data,
                   function (msg) {
-                      alert(msg);
-                      location.href = location.href;
+                      $.ligerDialog.alert(msg);
+                      parent.cargird.reload();
                   });
 
             }
@@ -258,6 +267,7 @@
                
                 var carinfo ={pigcms:$carinfo};
                 if (carinfo && carinfo != '') {
+                    carinfo['保险客户'] = $.trim(carinfo['保险客户']);
                     carinfo = JSON2.stringify(carinfo);
                     carinfo = JSON2.parse(carinfo);
                     form.setData(carinfo);
@@ -265,6 +275,7 @@
                     historygrid.reload();
                     $("input[ligeruiid='车主']").val(carinfo['车主']);
                     $("input[ligeruiid='车型']").val(carinfo['车型']);
+                    $("input[ligeruiid='保险客户']").val(carinfo['保险客户']);
                     $("input[ligeruiid='客户类别']").val(carinfo['客户类别']);
                     $("input[ligeruiid='品牌']").val(carinfo['品牌']);
                     $("input[ligeruiid='车辆类别']").val(carinfo['车辆类别']);

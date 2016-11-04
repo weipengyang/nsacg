@@ -511,6 +511,9 @@ private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',
                 $data[$key]=$carinfo[$key];
             } 
             $data['接车人']='系统自动';
+            if(isset($carinfo['服务顾问'])){
+                $data['接车人']=$carinfo['服务顾问'];
+            }
             $data['ID']=$this->getcode(10,0,1);
             $data['制单日期']=date('Y-m-d',time());
             $data['制单人']='系统录单';
@@ -2295,6 +2298,7 @@ public function check(){
         $data['是否评论'] = '是';
         $data['服务态度'] = $commnet['fwtd'];
         $data['服务质量'] = $commnet['fwzl'];
+        $data['前台接待'] = $commnet['qtjd'];
         $data['评论内容'] = htmlspecialchars($commnet['content']);
         $wx=M("维修",'dbo.','difo')->where(array('流水号' =>$id))->find();
         $cardid=M('member_card_create')->where(array('wecha_id'=>$this->wecha_id))->getField('cardid');

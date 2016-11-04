@@ -110,6 +110,8 @@
                         row['虚增类别'] ='';
                         row['主修人'] = getQueryString('zhuxiu');
                         row['折扣'] = getQueryString('discount');
+                        if (parent.record['维修类别'] == '保险理赔')
+                            row['折扣'] = 1;
                         row['金额'] = row['工时'] * row['单价'];
                         //row['金额'] = row['工时'] * row['单价'] * row['折扣'];
                         row['税率'] = 0;

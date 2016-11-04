@@ -140,11 +140,11 @@ class ConsumeAction extends Action{
         if($projects){
            foreach($projects as $project){
                if(doubleval($project['虚增金额'])>0){
-                   $projectprice+=$project['虚增金额']*$project['折扣'];
-                   $totalproject+=$project['虚增金额'];
+                   $projectprice+=$project['虚增金额']*$project['折扣']+$project['税额'];
+                   $totalproject+=$project['虚增金额']+$project['税额'];
                }else{
-                   $projectprice+=$project['金额']*$project['折扣'];
-                   $totalproject+=$project['金额'];
+                   $projectprice+=$project['金额']*$project['折扣']+$project['税额'];
+                   $totalproject+=$project['金额']+$project['税额'];
                }
              
            }
@@ -155,12 +155,12 @@ class ConsumeAction extends Action{
         if($products){
             foreach($products as $product){
                 if(doubleval($product['虚增金额'])>0){
-                    $productprice+=$product['虚增金额']*$product['折扣'];
-                    $totalproduct+=$product['虚增金额'];
+                    $productprice+=$product['虚增金额']*$product['折扣']+$product['税额'];
+                    $totalproduct+=$product['虚增金额']+$product['税额'];
                 }
                 else{
-                    $productprice+=$product['金额']*$product['折扣'];;
-                    $totalproduct+=$product['金额'];
+                    $productprice+=$product['金额']*$product['折扣']+$product['税额'];
+                    $totalproduct+=$product['金额']+$product['税额'];
                 }
               
             }
@@ -795,6 +795,16 @@ class ConsumeAction extends Action{
         echo json_encode($wxlb);
     
 } 
+    public  function getkhgrade(){
+        $wxlb=M('客户等级','dbo.','difo')->select();
+        echo json_encode($wxlb);
+    
+} 
+    public  function getkhtype(){
+        $wxlb=M('客商分类','dbo.','difo')->select();
+        echo json_encode($wxlb);
+    
+} 
     public  function getrecordbyid(){
         $id=$_GET['id'];
         $result=M('维修','dbo.','difo')->where(array('id'=>$id))->find();
@@ -1198,11 +1208,13 @@ class ConsumeAction extends Action{
       $paybill['ID']=$this->getcode(18,1,1);
       $paybill['单位编号']=$wx['客户ID'];
       $paybill['单位名称']=$wx['车主'];
-      $paybill['单据类别']=$wx['维修类别'];
+      //$paybill['单据类别']=$wx['维修类别'];
+      $paybill['单据类别']='维修';
       $paybill['单据编号']=$wx['业务编号'];
       $paybill['制单日期']=date('Y-m-d',time());
       $paybill['制单人']=cookie('username');
       $paybill['总金额']=$wx['应收金额'];
+      $paybill['引用ID']=$wx['ID'];
       $paybill['已结算金额']=$wx['现收金额'];
       $paybill['未结算金额']=$wx['挂账金额'];
       $paybill['本次结算']=$wx['现收金额'];
@@ -1650,21 +1662,18 @@ class ConsumeAction extends Action{
 
         }
         $carno=$_GET['carno'];
-        $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
+        $carinfo=M('车辆资料','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
         $this->assign('carinfo',json_encode($carinfo));
         $this->display();
     }
    public function memberinfo()
     {
         if(IS_POST){
-            $carinfo=$_POST;
-            unset($carinfo['流水号']);
-            unset($carinfo['车辆图片']);
-            foreach($carinfo as $key=>$value){
-                if($carinfo[$key]==null||$carinfo[$key]=='null')
-                    unset($carinfo[$key]);
-            }
-            if(M('车辆档案','dbo.','difo')->where(array('流水号'=>$_POST['流水号']))->save($carinfo)){
+            $memberinfo=$_POST;
+            $number=$memberinfo['流水号'];
+            unset($memberinfo['流水号']);
+            if(M('往来单位','dbo.','difo')->where(array('流水号'=>$number))->save($memberinfo)){
+                M('车辆档案','dbo.','difo')->where(array('客户ID'=>$_POST['ID']))->save(array('客户类别'=>$_POST['类别']));
                 echo '保存成功';
             }
             else{

@@ -14656,8 +14656,10 @@
     <Content Include="tpl\Other\default\style\js\registerSSO.js" />
     <Content Include="tpl\Other\index.html" />
     <Content Include="tpl\Query\Consume_addproduct.html" />
+    <Content Include="tpl\Query\Consume_presentcoupon.html" />
     <Content Include="tpl\Query\Consume_assigntask.html" />
     <Content Include="tpl\Query\Consume_addproject.html" />
+    <Content Include="tpl\Query\Consume_present.html" />
     <Content Include="tpl\Query\Consume_userAnalyze.html" />
     <Content Include="tpl\Query\Consume_crklist.html" />
     <Content Include="tpl\Query\Consume_main.html" />

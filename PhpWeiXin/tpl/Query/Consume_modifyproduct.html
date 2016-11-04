@@ -17,7 +17,7 @@
                 var price = $("input[ligeruiid='单价']").val();
                 var faxrate = $("input[ligeruiid='税率']").val();
                 var discount = $("input[ligeruiid='折扣']").val();
-                var fax =parseFloat((num * price * faxrate * discount).toFixed(2));
+                var fax =parseFloat((num * price * faxrate).toFixed(2));
                 $("input[ligeruiid='金额']").val(num * price);
                 $("input[ligeruiid='税额']").val(fax);
                 $("input[ligeruiid='含税价']").val((fax + (num * price)).toFixed(2));
@@ -74,9 +74,8 @@
                         text: "保存", width: 60, click: function () {
                             var data = form.getData();
                             var row = parent.product.getSelectedRow();
-                            parent.product.updateRow(row,data);
                             $.ligerDialog.alert('更新成功');
-                            parent.calprice();
+                            parent.refalsh();
                             parent.editproductdialog.hide();
                         }
                     }                ]            });            

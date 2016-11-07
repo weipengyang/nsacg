@@ -489,6 +489,7 @@ private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',
             $row['折扣']=1;
             $row['提成工时']=1;
             $row['提成金额']=0;
+            $row['备注']=$comment;
             $row['开工时间']=date('Y-m-d H:i',time());
             //$row['完工时间']=date('Y-m-d H:i',time());
             $row['是否同意']=1;

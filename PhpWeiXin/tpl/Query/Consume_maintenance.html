@@ -102,18 +102,24 @@
     <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
+        var memberdialog, wxdialog;
         function wxinfo(xh) {
-           var wxdialog= $.ligerDialog.open({
-                height: 540,
-                url: '/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh,
-                width: 950,
-                showMax: true,
-                showToggle: true,
-                showMin: true,
-                isResize: true,
-                modal: false,
-                title: '车辆维修详细信息'
-           });
+            if (wxdialog) {
+                wxdialog.setUrl('/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh);
+                wxdialog.show();
+                } else {
+                    wxdialog= $.ligerDialog.open({
+                        height: 540,
+                        url: '/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh,
+                        width: 950,
+                        showMax: true,
+                        showToggle: true,
+                        showMin: true,
+                        isResize: true,
+                        modal: false,
+                        title: '车辆维修详细信息'
+                    });
+                }
            wxdialog.max();
         }
         $("#wxtype").change(function () {
@@ -141,6 +147,26 @@
             });
             cardialog.max();
         }
+        function memberinfo(carno) {
+            if (memberdialog) {
+                memberdialog.setUrl('/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno);
+                memberdialog.show();
+            }
+            else {
+                memberdialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '会员资料编辑'
+                });
+            }
+        }
+
         function stopBubble(e) {
             //如果提供了事件对象，则这是一个非IE浏览器 
             if (e && e.stopPropagation)
@@ -245,7 +271,13 @@
                 { display: '制单人', name: '制单人', width: 60, align: 'left' },
                 { display: '接车人', name: '接车人', minWidth: 60 },
                 { display: '维修类别', name: '维修类别', minWidth: 80 },
-                { display: '车主', name: '车主', minWidth: 140 },
+                {
+                    display: '车主', name: '车主', minWidth: 140, render: function (rowdata, index, value) {
+
+                        return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                    }
+                },
                 {
                     display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
 

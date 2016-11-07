@@ -54,7 +54,7 @@
                     <button type="button" id="all" class="am-btn am-btn-primary am-btn-sm">所有未结算</button>
                 </div>
                 <div class="am-g">
-                    <div class="am-u-sm-10 am-u-md-9">
+                    <div class="am-u-sm-8 am-u-md-8">
                         门店
                         <select id="shop">
                             <option value="">所有门店</option>
@@ -74,7 +74,7 @@
                         <input type="text" id="searchkey">
                         <button id="search" type="button">模糊查询</button>
                     </div>
-                    <div class="am-u-sm-2 am-u-md-3" id="optdiv">
+                    <div class="am-u-sm-4 am-u-md-4" id="optdiv">
                         <div id="baojiadiv"  style="display:none"><button type="button" onclick="changeState('派工','paigong');" class="am-btn am-btn-primary am-round am-btn-sm"><i class="am-icon-hand-o-right"></i>主管派工</button>
                         </div>
                         <div id="paigongdiv" style="display:none">
@@ -115,7 +115,8 @@
     <script>
         var form, grid, project, product, append, opgrid, historygrid = null;
         var washdialog, caldialog, mrdialog, wxdialog, pickdialog,
-            cardialog, purchasedialog, addprojectdialog,editprojectdialog,editproductdialog,assigntaskdialog;
+            cardialog, purchasedialog, addprojectdialog, editprojectdialog,
+            memberdialog,editproductdialog, assigntaskdialog;
         var record, discount = {};
         function editproject() {
             var row = project.getSelectedRow();
@@ -223,6 +224,25 @@
                 });
             }
         }
+        function memberinfo(carno) {
+            if (memberdialog) {
+                memberdialog.setUrl('/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno);
+                memberdialog.show();
+            }
+            else {
+                memberdialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '会员资料编辑'
+                });
+            }
+        }
         function checkin() {
             var row = grid.getSelectedRow();
             if (row) {
@@ -246,7 +266,7 @@
 
             }
             else {
-                alert('选择审核记录');
+                $.ligerDialog.alert('选择审核记录');
             }
         }
         function purchasing() {
@@ -557,7 +577,7 @@
                 },
                 { display: '主修人', name: '主修人', width: 60, align: 'left' },
                 {
-                    display: '客户确认', name: '确认维修', align: 'center', minWidth: 50, render: function (rowdata, index, value) {
+                    display: '客户确认', name: '确认维修', align: 'center', width: 50, render: function (rowdata, index, value) {
                         if (value == null || value == '')
                             value = '<span style="color:red">否</span>';
                         else
@@ -576,7 +596,13 @@
 
                     }
                 },
-                { display: '车主', name: '车主', minWidth: 140 },
+                {
+                    display: '车主', name: '车主', minWidth: 140, render: function (rowdata, index, value) {
+
+                        return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                    }
+                },
                 { display: '客户类别', name: '客户类别', minWidth: 140 },
                 { display: '联系人', name: '联系人', minWidth: 100 },
                 { display: '轮胎规格', name: '轮胎规格', minWidth: 60 },
@@ -598,15 +624,16 @@
                 }
                 ],
                 isScroll: true,
-                pageSize: 10,
+                pageSize: 6,
+                pageSizeOptions: [5,8,10,20, 50],
                 url: '/index.php?g=Query&m=Consume&a=getwxinfo',
-                height: '50%',
+                height: '45%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                    // wxinfo(data['流水号']);
                 },
                 onSelectRow: function (data, rowindex,rowobj) {
                     record = data;
-                    reload();
+                    setTimeout(function () { reload(); }, 100);
                 },
                 onSuccess: function (data) {
                     if (data.Rows) {
@@ -621,6 +648,7 @@
             form = $("#form1").ligerForm({
                 inputWidth: 100, labelWidth: 80, space: 1,
                 validate: true,
+                height:'30%',
                 buttons: [
                     { text: "更新", width: 60, click: submitForm }
                 ],
@@ -683,7 +711,6 @@
                                             
                                         },
                                         onSelected: function (e) {
-                                            alert(e.value);
                                             var row = e.data[0];
                                             $("input[name='联系电话']").val(row['联系电话']);
                                             $("input[name='客户ID']").val(row['ID']);
@@ -809,7 +836,7 @@
             setTimeout(function () {
                 inidata();
                 project = $("#projectgrid").ligerGrid({
-                    height: '50%',
+                    height: '45%',
                     width: '100%',
                     columns: [
                     { display: '项目编号', name: '项目编号', minWidth: 80 },
@@ -877,7 +904,6 @@
                                              }
                                              $.post('/index.php?g=Query&m=Consume&a=deleteproject', data,
                                                function (msg) {
-                                                   $.ligerDialog.alert(msg);
                                                    reflash();
                                                });
                                          } else {
@@ -906,7 +932,7 @@
                     }
                 });
                 product = $("#productgrid").ligerGrid({
-                    height: '50%',
+                    height: '45%',
                     columns: [
                     { display: '仓库', name: '仓库', minWidth: 120 },
                     { display: '编号', name: '编号', minWidth: 100 },
@@ -976,12 +1002,18 @@
                                     if (yes) {
                                         var rows = product.getSelectedRows();
                                         if (rows.length > 0) {
+                                            for (var i = 0; i < rows.length; i++) {
+                                                var count = rows[i]['数量'] - rows[i]['已领料数量'] - rows[i]['待审核数量'] + rows[i]['已退料数量'];
+                                                if (count <= 0) {
+                                                    $.ligerDialog.alert(rows[i]['名称'] + "已经领料");
+                                                    return;
+                                                }
+                                            }
                                             var data = {
                                                 products: rows
                                             }
                                             $.post('/index.php?g=Query&m=Consume&a=deleteproduct', data,
                                               function (msg) {
-                                                  alert(msg);
                                                   reflash();
                                               });
                                         } else {
@@ -1033,7 +1065,7 @@
                     }
                 });
                 append = $("#appendgrid").ligerGrid({
-                    height: '50%',
+                    height: '45%',
                     columns: [
                     { display: '编号', name: '编号', minWidth: 100 },
                     { display: '名称', name: '名称', minWidth: 140 },
@@ -1071,7 +1103,7 @@
                     }
                 });
                 opgrid = $("#opgrid").ligerGrid({
-                    height: '50%',
+                    height: '45%',
                     columns: [
                     { display: '单据编号', name: '单据编号', align: 'left', width: 140, minWidth: 60 },
                     { display: '单据类别', name: '单据类别', minWidth: 140 },
@@ -1084,7 +1116,7 @@
                     isScroll: true,
                 });
                 historygrid = $("#historygrid").ligerGrid({
-                    height: '50%',
+                    height: '45%',
                     columns: [
                     { display: '当前状态', name: '当前状态', align: 'left', width: 60 },
                     {

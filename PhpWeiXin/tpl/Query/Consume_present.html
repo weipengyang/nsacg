@@ -66,7 +66,7 @@
                                 <tbody>
                                     <volist id="list" name="members">
                                         <TR>
-                                            <TD style='font-size:10px'>{pigcms:$list.number}</TD>
+                                            <TD style='font-size:10px'><a href="javascript:void(0);" onclick="memberinfo('{pigcms:$list.number}')">{pigcms:$list.number}</a></TD>
                                             <TD style='font-size:10px'>{pigcms:$list.wechaname}</TD>
                                             <TD style='font-size:10px'>
                                              <a href="javascript:void(0);" onclick="carinfo('{pigcms:$list.carno}')">{pigcms:$list.carno}</a>
@@ -95,8 +95,7 @@
                                                 {pigcms:$list.balance}
                                             </TD>
                                             <TD class="norightborder" style='font-size:12px'>
-                                                <a href="javascript:void(0);" onclick="memberCardRecharge('{pigcms:$list.wecha_id}')"><strong>送券</strong></a>
-                                                |
+                                                <a href="javascript:void(0);" onclick="presetcoupon('{pigcms:$list.wecha_id}')"><strong>送券</strong></a>
                                                 </TD>
                                         </TR>
                                     </volist>
@@ -124,24 +123,70 @@
     <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
+        var cardialog, coupondialog, memberdialog;;
         $(document).ready(function () {
             $('#search').click(function () {
-                location.href = '/index.php?g=Query&m=Consume&a=membercard&token=jifbjv1429543374&searchkey=' + $('#searchkey').val();
+                location.href = '/index.php?g=Query&m=Consume&a=present&token=jifbjv1429543374&searchkey=' + $('#searchkey').val();
 
             });
         });
+        function memberinfo(carno) {
+            if (memberdialog) {
+                memberdialog.setUrl('/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno);
+                memberdialog.show();
+            }
+            else {
+                memberdialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '会员资料编辑'
+                });
+            }
+        }
         function carinfo(carno) {
-            $.ligerDialog.open({
-                height: 500,
-                url: '/index.php?g=Query&m=Consume&a=carinfo&carno='+carno,
-                width: 900,
-                showMax: true,
-                showToggle: true,
-                showMin: true,
-                isResize: true,
-                modal: false,
-                title: '车俩信息编辑'
-            });
+            if (cardialog) {
+                cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
+                cardialog.show();
+            }
+            else {
+                cardialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '车俩信息编辑'
+                });
+            }
+        }
+
+        function presetcoupon(wechaid) {
+            if (coupondialog) {
+                coupondialog.setUrl('/index.php?g=Query&m=Consume&a=presentcoupon&wecha_id=' + wechaid);
+                coupondialog.show();
+            }
+            else {
+                coupondialog = $.ligerDialog.open({
+                    height: 300,
+                    url: '/index.php?g=Query&m=Consume&a=presentcoupon&wecha_id=' + wechaid,
+                    width: 460,
+                    showMax: false,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    title: '优惠券赠送'
+                });
+            }
         }
     </script>
 </body>

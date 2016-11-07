@@ -12,8 +12,11 @@
     <link rel="icon" type="image/png" href="/tpl/static/assets/i/favicon.png">
     <link rel="apple-touch-icon-precomposed" href="/tpl/static/assets/i/app-icon72x72@2x.png">
     <meta name="apple-mobile-web-app-title" content="爱养车" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
     <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.7.0/css/amazeui.min.css" />
     <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
 </head>
 <body >
   
@@ -75,9 +78,9 @@
                                     <volist id="rmb" name="rmb">
                                         <tr>
                                             <td>{pigcms:$rmb.truename}</td>
-                                            <td>{pigcms:$rmb.number}</td>
+                                            <td><a href="javascript:void(0);" onclick="memberinfo('{pigcms:$rmb.number}')">{pigcms:$rmb.number}</a></td>
                                             <td>{pigcms:$rmb.shop}</td>
-                                            <td>{pigcms:$rmb.usecar}</td>
+                                            <td><a href="javascript:void(0);" onclick="memberinfo('{pigcms:$rmb.usecar}')">{pigcms:$rmb.usecar}</a></td>
                                             <td>{pigcms:$rmb.createtime|date='Y-m-d H:i',###}</td>
                                             <td>{pigcms:$rmb.orderid}</td>
                                             <td>{pigcms:$rmb.ordername}</td>
@@ -109,10 +112,48 @@
         <!-- content end -->
     </div>
     <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
-    <script src="/tpl/static/assets/js/jquery.min.js"></script>
     <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
+        var cardialog, memberdialog;
+        function carinfo(carno) {
+            if (cardialog) {
+                cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
+                cardialog.show();
+            }
+            else {
+                cardialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '车俩信息编辑'
+                });
+            }
+        }
+        function memberinfo(carno) {
+            if (memberdialog) {
+                memberdialog.setUrl('/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno);
+                memberdialog.show();
+            }
+            else {
+                memberdialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '会员资料编辑'
+                });
+            }
+        }
         $(document).ready(function () {
             $('#search').click(function () {
                 location.href = '/index.php?g=Query&m=Consume&a=consume&searchkey=' + $('#searchkey').val()+"&shop="+$('#shop').val();

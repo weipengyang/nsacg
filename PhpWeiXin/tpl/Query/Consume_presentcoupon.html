@@ -12,7 +12,24 @@
         var form;
         $(function () {
             form = $("#form1").ligerForm();
-
+            $("#proposer").ligerComboBox({
+                valueField: '姓名',
+                textField: '姓名',
+                autocomplete: true,
+                url: '/index.php?g=Query&m=Consume&a=getfwgw',            });            $('#subimit').click(function () {
+                var data = form.getData();
+                if (data['proposer'] == '')
+                {
+                    $.ligerDialog.alert('请选择申请人');
+                    return;
+                }
+                $.post(location.href, data, function (msg) {
+                    $.ligerDialog.alert(msg);
+                    setTimeout(function () {
+                        parent.coupondialog.hide();
+                    }, 2000);
+                });
+            });
         });
 
         function getQueryString(name) {
@@ -32,47 +49,31 @@
 <body style="padding:0;margin:0">
     <form name="form1" method="post" id="form1">
         <div>
+           <p class="name">{pigcms:$truename}（{pigcms:$carno}）</p>
         </div>
         <table cellpadding="0" cellspacing="0" class="l-table-edit">
             <tr>
-                <td align="right" class="l-table-edit-td">会员编号:</td>
-                <td align="left" class="l-table-edit-td"><input name="txtName" type="text" id="txtName" ltype="text" /></td>
+                <td align="right" class="l-table-edit-td"></td>
+                <td align="left" class="l-table-edit-td"></td>
                 <td align="left"></td>
             </tr>
-            <tr>
-                <td align="right" class="l-table-edit-td">
-                    <table class="l-table-edit" style="margin-left:100px;" border="0" cellspacing="0" cellpadding="0" width="70%">
-                        <thead>
-                            <tr>
-                                <th>券名称</th>
-                                <th>赠送数量(张)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <volist id="list" name="list">
-                                <tr>
-                                    <td>{pigcms:$list.title}</td>
-                                    <td><input type="text" name="{pigcms:$list.id }" value="0" class="px" style="width:150px;" /></td>
-                                </tr>
-                            </volist>
-                            <tr>
-                                <th><br /></th>
-                                <td><br /></td>
-                            </tr>
-                        </tbody> 
-                    </table>
-                </td>
-            </tr>
+            <volist id="list" name="list">
+                <tr>
+                    <td  align="right" class="l-table-edit-td">{pigcms:$list.title}</td>
+                    <td align="left" class="l-table-edit-td"><input type="text" name="{pigcms:$list.id }" ltype="text" value="0" class="px" style="width:150px;" /></td>
+                    <td align="left">数量(张)</td>
+                </tr>
+            </volist>
             <tr>
                 <td align="right" class="l-table-edit-td">申请人:</td>
                 <td align="left" class="l-table-edit-td">
-                    <input name="txtAge" type="text" id="txtAge" ltype='spinner' ligerui="{type:'int'}" value="20" />
+                    <input name="proposer" type="text" id="proposer" ltype='combobox'  value="20" />
                 </td>
                 <td align="left"></td>
             </tr>
         </table>
         <br />
-        <input type="submit" value="提交" id="Button1" class="l-button l-button-submit" />
+        <input type="button" value="提交" id="subimit" class="l-button l-button-submit" />
         <input type="reset" value="重置" class="l-button l-button-reset" />
     </form>
 

@@ -88,35 +88,6 @@
             }
         }
 
-        function todate(num, istime) {
-            if (num && num.length > 8) {
-                num = num + "";
-                var date = "";
-                var month = new Array();
-                month["Jan"] = '01'; month["Feb"] = '02'; month["Mar"] = '03'; month["Apr"] = '04'; month["May"] = '05'; month["Jun"] = '06';
-                month["Jul"] = '07'; month["Aug"] = '08'; month["Sep"] = '09'; month["Oct"] = '10'; month["Nov"] = '11'; month["Dec"] = '12';
-                var str = num.split(" ");
-                var times = '';
-                if (str.length > 4) {
-                    date = str[3] + "-";
-                    date = date + month[str[0]] + "-" + str[2];
-                    times = str[4].split(':');
-                } else {
-                    date = str[2] + "-";
-                    date = date + month[str[0]] + "-" + str[1];
-                    times = str[3].split(':');
-                }
-                if (istime) {
-                    time = times[0] + ':' + times[1];
-                    if (times[2].indexOf('PM')) {
-                        time = (parseInt(time[0]) + 12) + ':' + times[1];
-                    }
-                    return date + ' ' + time;
-                }
-                return date;
-            }
-            return num;
-        }
         $('#khlb').change(function () {
             $('#search').click();
 
@@ -134,9 +105,13 @@
                         { display: '车牌号码', name: '车牌号码', width: 80, align: 'left',render: function (rowdata, index, value) {
                             return '<a href="javascript:void(0);" onclick="carinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
                         } },
-                        { display: '车主', name: '车主', minWidth: 140 },
+                        {
+                            display: '车主', name: '车主', minWidth: 140, render: function (rowdata, index, value) {
+                                return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+                            }
+                        },
                         { display: '联系人', name: '联系人', minWidth: 60 },
-                        { display: '联系电话', name: '联系电话', minWidth: 60 },
+                        { display: '联系电话', name: '联系电话', minWidth: 100 },
                         { display: '客户类别', name: '客户类别', minWidth: 60 },
                         { display: '会员等级', name: '会员等级', minWidth: 80 },
                         { display: '保险客户', name: '保险客户', minWidth: 80 },

@@ -1853,7 +1853,7 @@
         {
             var g = this, p = this.options;
              
-            if (p.readonly) return;
+            if (p.readonly) return; 
             if (!p.grid && !p.tree)
             {
                 if (g.selectBox.table.find("tr").length || (p.selectBoxRender && g.selectBoxInner.html()))

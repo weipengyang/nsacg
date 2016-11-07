@@ -66,7 +66,9 @@
                                 <tbody>
                                     <volist id="list" name="members">
                                         <TR>
-                                            <TD style='font-size:10px'>{pigcms:$list.number}</TD>
+                                            <TD style='font-size:10px'>
+                                                <a href="javascript:void(0);" onclick="memberinfo('{pigcms:$list.number}')">{pigcms:$list.number}</a>
+                                            </TD>
                                             <TD style='font-size:10px'>{pigcms:$list.wechaname}</TD>
                                             <TD style='font-size:10px'>
                                              <a href="javascript:void(0);" onclick="carinfo('{pigcms:$list.carno}')">{pigcms:$list.carno}</a>
@@ -254,19 +256,46 @@
 
             });
         });
+        var cardialog, memberdialog;
         function carinfo(carno) {
-            $.ligerDialog.open({
-                height: 500,
-                url: '/index.php?g=Query&m=Consume&a=carinfo&carno='+carno,
-                width: 900,
-                showMax: true,
-                showToggle: true,
-                showMin: true,
-                isResize: true,
-                modal: false,
-                title: '车俩信息编辑'
-            });
+            if (cardialog) {
+                cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
+                cardialog.show();
+            }
+            else {
+                cardialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '车俩信息编辑'
+                });
+            }
         }
+        function memberinfo(carno) {
+            if (memberdialog) {
+                memberdialog.setUrl('/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno);
+                memberdialog.show();
+            }
+            else {
+                memberdialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '会员资料编辑'
+                });
+            }
+        }
+
         function bingCard(wecha_id,cardno) {
             $('#doc-modal-2').modal({
                 relatedTarget: this,

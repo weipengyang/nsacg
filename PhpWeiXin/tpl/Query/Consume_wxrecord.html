@@ -35,6 +35,7 @@
                                         $("input[ligeruiid='联系人']").val(data['联系人']);
                                         $("input[ligeruiid='轮胎规格']").val(data['轮胎规格']);
                                         $("input[ligeruiid='联系电话']").val(data['联系电话']);
+                                        $("input[ligeruiid='fwgw']").val(data['服务顾问']);
                                     }
                                     else {
                                         $("input[ligeruiid='车主']").val('0000');
@@ -42,6 +43,8 @@
                                         $("input[ligeruiid='联系人']").val('');
                                         $("input[ligeruiid='轮胎规格']").val('');
                                         $("input[ligeruiid='联系电话']").val('');
+                                        $("input[ligeruiid='fwgw']").val();
+
                                     }
                                 }, 'JSON');
                            }
@@ -172,12 +175,28 @@
                             var submitData = {
                                 wxinfo: data
                             };
-                            $.post('index.php?g=Query&m=Consume&a=wxrecord', submitData,
-                              function (data) {
-                                  $.ligerDialog.alert(data);
-                                  window.parent.liger.get('maingrid4').reload();
+                            $.post('index.php?g=Query&m=Consume&a=haswxrecord', submitData,
+                                function (data) {
+                                    if (data == 1) {
+                                        $.ligerDialog.confirm('系统中已经存在同类型未结算维修单，确认继续录入？', function (yes) {
+                                            if (yes) {
+                                                $.post('index.php?g=Query&m=Consume&a=wxrecord', submitData,
+                                                 function (data) {
+                                                     $.ligerDialog.alert(data);
+                                                     window.parent.liger.get('maingrid4').reload();
+                                                 });
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        $.post('index.php?g=Query&m=Consume&a=wxrecord', submitData,
+                                          function (data) {
+                                              $.ligerDialog.alert(data);
+                                              window.parent.liger.get('maingrid4').reload();
+                                          });
+                                    }
 
-                              });
+                                });
                         }
                     }            ]            });
             

@@ -69,7 +69,7 @@
                 $.post('index.php?g=Wap&m=Store&a=pay', submitData,
                function (data) {
                    $.alert(data);
-                   location.href = 'index.php?g=Wap&m=Store&a=cats';
+                   location.href = 'index.php?g=Wap&m=Store&a=wxcomment&orid=' + submitData['id'];
                });
             });
         });

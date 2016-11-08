@@ -456,6 +456,7 @@ class ConsumeAction extends Action{
             $searchwhere['车牌号码']=array('like',$searchkey);
             $searchwhere['客户类别']=array('like',$searchkey);
             $searchwhere['联系人']=array('like',$searchkey);
+            $searchwhere['服务顾问']=array('like',$searchkey);
             $searchwhere['联系电话']=array('like',$searchkey);
             $searchwhere['保险公司']=array('like',$searchkey);
             $searchwhere['发动机号']=array('like',$searchkey);
@@ -534,6 +535,124 @@ class ConsumeAction extends Action{
         echo json_encode($data);
         
     }
+    public  function exportUseRecord(){
+		header("Content-Type: text/html; charset=utf-8");
+		header("Content-type:application/vnd.ms-execl");
+		header("Content-Disposition:filename=用户分析.xls");
+		$arr = array(
+			array('en'=>'车牌号码','cn'=>'车牌号码'),
+			array('en'=>'车主','cn'=>'车主'),
+			array('en'=>'联系人','cn'=>'联系人'),
+			array('en'=>'联系电话','cn'=>'联系电话'),
+			array('en'=>'客户类别','cn'=>'客户类别'),
+			array('en'=>'会员等级','cn'=>'会员等级'),
+			array('en'=>'保险客户','cn'=>'保险客户'),
+			array('en'=>'服务顾问','cn'=>'服务顾问'),
+			array('en'=>'洗车次数','cn'=>'洗车次数'),
+			array('en'=>'洗车金额','cn'=>'洗车金额'),
+            array('en'=>'美容次数','cn'=>'美容次数'),
+			array('en'=>'美容金额','cn'=>'美容金额'),
+			array('en'=>'维修数量','cn'=>'维修次数'),
+			array('en'=>'维修金额','cn'=>'维修金额'),
+			array('en'=>'保险次数','cn'=>'保险次数'),
+			array('en'=>'保险金额','cn'=>'保险金额'),
+			array('en'=>'代办次数','cn'=>'代办次数'),
+			array('en'=>'代办金额','cn'=>'代办金额')
+		);
+		
+		$i = 0;
+		$fieldCount = count($arr);
+		$s = 0;
+		//thead
+		foreach ($arr as $f){
+			if ($s<$fieldCount-1){
+				echo iconv('utf-8','gbk',$f['cn'])."\t";
+			}else {
+				echo iconv('utf-8','gbk',$f['cn'])."\n";
+			}
+			$s++;
+		}
+        $where['车牌号码']=array('neq','0000');
+		//data
+        if (isset($_GET['khlb'])&&trim($_GET['khlb'])!=''){
+            $where['客户类别']=$_GET['khlb'];
+        }
+        if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])!=''){
+            $searchkey='%'.trim($_GET['searchkey']).'%';
+        }
+        if($searchkey){       
+            $searchwhere['车主']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['客户类别']=array('like',$searchkey);
+            $searchwhere['联系人']=array('like',$searchkey);
+            $searchwhere['联系电话']=array('like',$searchkey);
+            $searchwhere['保险公司']=array('like',$searchkey);
+            $searchwhere['会员等级']=array('like',$searchkey);
+            $searchwhere['服务顾问']=array('like',$searchkey);
+            $searchwhere['保险客户']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $users=M('车辆资料','dbo.','difo')
+           ->join('left join 会员消费分析 on 车辆资料.车牌号码=会员消费分析.车牌')
+           ->where($where)->select();
+
+		if($users){
+			foreach ($users as $user){
+				$j = 0;
+				foreach ($arr as $field){			
+					$fieldValue = $user[$field['en']];
+                    //switch($field['en']){		
+						
+                    //}
+					
+					if ($j<$fieldCount-1){
+						echo iconv('utf-8','gbk',$fieldValue)."\t";
+					}else {
+						echo iconv('utf-8','gbk',$fieldValue)."\n";
+					}
+					$j++;
+				}
+				$i++;
+			}
+            
+		}
+		exit();
+        
+	}
+
+    public function getrecharge()
+    {
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        $where['1']=1;
+        if($_GET['khID'])
+        {
+            $where['tp_member_card_create.number']=trim($_GET['khID']);
+        }
+        if(!isset($sortname)){
+            $order='tp_member_card_pay_record.id desc';
+        }
+        else{
+            $order=$sortname.' '.$sortorder;
+        }
+        $count= M('Member_card_pay_record')
+            ->join('join tp_userinfo on tp_member_card_pay_record.wecha_id=tp_userinfo.wecha_id')
+             ->join('join tp_member_card_create on tp_member_card_pay_record.wecha_id=tp_member_card_create.wecha_id')
+           ->where($where)->count();
+		$rmb = M('Member_card_pay_record')
+            ->join('join tp_userinfo on tp_member_card_pay_record.wecha_id=tp_userinfo.wecha_id')
+            ->join('join tp_member_card_create on tp_member_card_pay_record.wecha_id=tp_member_card_create.wecha_id')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();   
+        $data['Rows']=$rmb;
+        $data['Total']=$count;
+        echo json_encode($data);
+		
+    }
+
     public  function getcouponinfo(){
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
@@ -923,16 +1042,36 @@ class ConsumeAction extends Action{
     }
     public  function getproject(){
         $id=$_GET['ID'];
-        $carinfo=M('维修项目','dbo.','difo')->where(array('ID'=>$id))->select();
-        $data['Rows']=$carinfo;
-        $data['Total']=count($carinfo);
-        echo json_encode($data);
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        $count=M('维修项目','dbo.','difo')->where(array('ID'=>$id))->count();
+        $carinfo=M('维修项目','dbo.','difo')->where(array('ID'=>$id))
+            ->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select(); 
+       $data['Rows']=$carinfo;
+       $data['Total']=$count;
+       echo json_encode($data);
     }
     public  function getproduct(){
         $id=$_GET['id'];
-        $carinfo=M('维修配件','dbo.','difo')->where(array('ID'=>$id))->select();
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        $count=M('维修配件','dbo.','difo')->where(array('ID'=>$id))->count();
+        $carinfo=M('维修配件','dbo.','difo')->where(array('ID'=>$id))
+            ->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
         $data['Rows']=$carinfo;
-        $data['Total']=count($carinfo);
+        $data['Total']=$count;
         echo json_encode($data);
     }
     public  function getpurchase()
@@ -1395,6 +1534,16 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         M('维修项目','dbo.','difo')->where(array('流水号'=>$num))->save($project);
         $this->writeLog($project['ID'],$wxrecord['业务编号'],$wxrecord['维修类别'],'修改项目—'.$project['项目名称']);
        $this->calprice($project['ID']);
+       echo '保存成功';
+   }
+   public function saveproductbyid(){
+       $product=$_POST['product'];
+       $wxrecord=$_POST['record'];
+       $num=$product['流水号'];
+       unset($product['流水号']);
+       M('维修配件','dbo.','difo')->where(array('流水号'=>$num))->save($product);
+       $this->writeLog($product['ID'],$wxrecord['业务编号'],$wxrecord['维修类别'],'修改配件—'.$product['项目名称']);
+       $this->calprice($product['ID']);
        echo '保存成功';
    }
    public function saveproduct(){
@@ -3077,6 +3226,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $data['单据类别']='快修单';
            $data['当前主修人']=$wxinfo['主修人'];
            $data['主修人']=$wxinfo['主修人'];
+           $data['门店']=$wxinfo['门店'];
            $data['结算客户']=$carinfo['车主'];;
            $data['结算客户ID']=$carinfo['客户ID'];
            //$data['送修人电话']=$carinfo['手机号码'];

@@ -118,6 +118,8 @@
                         text: "保存", width: 60, click: function () {
                             var data = form.getData();
                             data['维修类别'] = '汽车美容';
+                            data['接车人'] = $("input[ligeruiid='fwgw']").val();
+
                             if (data['车牌号码'] == '') {
                                 $.ligerDialog.alert('请输入车牌号码');
                                 return;
@@ -132,6 +134,14 @@
                             }
                             if (data['门店'] == '') {
                                 $.ligerDialog.alert('请选择门店');
+                                return;
+                            }
+                            if (data['接车人'] == '') {
+                                $.ligerDialog.alert('请选择接车人');
+                                return;
+                            }
+                            if (data['主修人'] == '') {
+                                $.ligerDialog.alert('请选择美容技师');
                                 return;
                             }
                             var submitData = {

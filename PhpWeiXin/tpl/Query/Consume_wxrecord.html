@@ -125,6 +125,7 @@
                 buttons: [                    { text: "取消", width: 60, click: null },                    {
                         text: "保存", width: 60, click: function () {
                             var data = form.getData();
+                            data['接车人'] = $("input[ligeruiid='fwgw']").val();
                             if (data['车牌号码'] == '') {
                                 $.ligerDialog.alert('请输入车牌号码');
                                 return;
@@ -133,6 +134,10 @@
                             //    $.ligerDialog.alert("请输入完整的车牌号码，格式如粤T83G5N");
                             //    return;
                             //}
+                            if (data['接车人'] == '') {
+                                $.ligerDialog.alert('请选择接车人');
+                                return;
+                            }
                             if (data['维修类别'] == '') {
                                 $.ligerDialog.alert('请选择维修类型');
                                 return;

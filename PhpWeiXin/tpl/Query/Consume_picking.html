@@ -12,7 +12,7 @@
         $(function ()
         {
             var form = $("#form1").ligerForm({
-                inputWidth: 140, labelWidth: 65, space: 20,
+                inputWidth: 140, labelWidth: 65, space: 10,
                 validate: true,
                 fields: [
                    {
@@ -31,7 +31,7 @@
                         }
                     },
                     {
-                        display: "备注", name: "备注", newline: true, width: 550, type: "textarea"
+                        display: "备注", name: "备注", newline: true, width: 570, type: "textarea"
                     },
                 ],
                 buttons: [                    {
@@ -108,6 +108,8 @@
                 this['本次领料'] = this['数量'];
             });
             product.addRows(window.parent.product.getSelectedRows());
+            setTimeout(function () { product.select(product.currentData.Rows[0]); }, 100);
+           
         });
 
 

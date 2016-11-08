@@ -11,7 +11,7 @@
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
     <script type="text/javascript">
         var form, memberinfo ;
-        var wxgrid, salegrid, bxgrid, dbgrid;
+        var wxgrid, salegrid, bxgrid, dbgrid,coupongrid,rechargegrid;
         function submitForm() {
             //var data = form.getChanges();
             var data = {};
@@ -142,6 +142,9 @@
                          },
                          {
                              title: '优惠券'
+                         },
+                         {
+                             title: '充值&消费'
                          }
 
                     ]
@@ -154,6 +157,7 @@
             $("div[data-index='3']").html("<div id='bxgrid'style='margin:0;padding 0'><div>");
             $("div[data-index='4']").html("<div id='dbgrid'style='margin:0;padding 0'><div>");
             $("div[data-index='5']").html("<div id='coupongrid'style='margin:0;padding 0'><div>");
+            $("div[data-index='6']").html("<div id='rechargegrid'style='margin:0;padding 0'><div>");
             wxgrid = $("#wxgrid").ligerGrid({
                 columns: [
                 { display: '当前状态', name: '当前状态', align: 'left', width: 60 },
@@ -243,6 +247,7 @@
                 },
                 { display: '制单人', name: '制单人', width: 60, align: 'left' },
                 { display: '业务员', name: '业务员', width: 60, align: 'left' },
+                { display: '车牌号码', name: '车牌号码', width: 80, align: 'left' },
                 { display: '保险公司', name: '保险公司', minWidth: 80 },
                 { display: '被保险人', name: '被保险人', minWidth: 80 },
                 { display: '结算方式', name: '结算方式', minWidth: 140 },
@@ -326,6 +331,41 @@
                 height: '80%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     
+                }
+            });
+            rechargegrid = $("#rechargegrid").ligerGrid({
+                columns: [
+                { display: '姓名', name: 'truename', align: 'left', width: 100 },
+                { display: '会员卡号', name: 'number', align: 'left', width: 120 },
+                { display: '门店', name: 'shop', width: 60, align: 'left' },
+                {
+                     display: '消费车辆', name: 'usecar', minWidth: 100,
+                 },
+                {
+                            display: '消费日期', name: 'createtime', minWidth: 100, render: function (rowdata, index, value) {
+                        if (value > 0)
+                            return formatdate('Y-m-d', value);
+                        return value;
+                    }
+                },
+                { display: '订单号', name: 'orderid', align: 'left', width: 150 },
+                { display: '订单名称', name: 'ordername', align: 'left', width: 150 },
+                { display: '交易金额', name: 'price', align: 'left', width: 80 },
+                { display: '状态', name: 'paid', align: 'left', width: 80, render: function (rowdata, index, value) {
+                        if (value == 1)
+                            return '交易成功';
+                        return '<font color="red">未付款</font>';
+                } },
+                { display: '备注', name: 'note', align: 'left', width: 100 },
+
+                ],
+                isScroll: true,
+                pageSize: 10,
+                urlParms: { khID: memberinfo['名称'] },
+                url: '/index.php?g=Query&m=Consume&a=getrecharge',
+                height: '80%',
+                onDblClickRow: function (data, rowindex, rowobj) {
+
                 }
             });
         });

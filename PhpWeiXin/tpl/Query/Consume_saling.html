@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>领料单</title>
+    <title>销售开单</title>
     <meta name="description" content="爱养车" />
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
@@ -13,7 +13,7 @@
 
     <script type="text/javascript">
         var form, product;
-        var editproductdialog;
+        var editproductdialog,addproductdialog;
         function reflash() {
             var rows = product.rows;
             var num = price = fax = 0;
@@ -30,12 +30,52 @@
             $("input[ligeruiid='总金额']").val(price + fax+yf);
             $("input[ligeruiid='价税合计']").val(price + fax);
         }
+        function addproduct() {
+            if (addproductdialog) {
+                addproductdialog.setUrl('index.php?&g=Query&m=Consume&a=addsaleproduct');
+                addproductdialog.show();
+            }
+            else {
+                addproductdialog= $.ligerDialog.open({
+                    height: 600,
+                    url: 'index.php?&g=Query&m=Consume&a=addsaleproduct',
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: true,
+                    title: '增加商品'
+                });
+
+            }
+        }
+        function editproduct() {
+            if (editproductdialog) {
+                editproductdialog.setUrl('/index.php?g=Query&m=Consume&a=modifyproduct');
+                editproductdialog.show();
+            }
+            else {
+                editproductdialog = $.ligerDialog.open({
+                    height: 500,
+                    url: 'index.php?&g=Query&m=Consume&a=modifyproduct',
+                    width: 580,
+                    showMax: false,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: true,
+                    title: '编辑商品'
+                });
+            }
+        }
+
         $(function ()
         {
-            function getGridOptions(checkbox) {
+            function getGridOptions(checkbox) { 
                 var options = {
                     columns: [
-                    { display: '供应商', name: '名称', align: 'left', width: 180},
+                    { display: '客户名称', name: '名称', align: 'left', width: 180},
                     { display: '联系人', name: '联系人', minWidth: 140, width: 100 },
                     { display: '联系电话', name: '联系电话', width: 100 },
                     { display: '手机号码', name: '手机号码', width: 100 },
@@ -44,32 +84,13 @@
                     { display: '通讯地址', name: '通讯地址', width: 100 },
                     ],
                     switchPageSizeApplyComboBox: false,
-                    url: '/index.php?g=Query&m=Consume&a=getuserinfo&type=1',
+                    url: '/index.php?g=Query&m=Consume&a=getuserinfo',
                     //data: $.extend({}, {}),
                     pageSize: 10,
                     checkbox: checkbox
                 };
                 return options;
-            }            function editproduct() {
-                if (editproductdialog) {
-                    editproductdialog.setUrl('/index.php?g=Query&m=Consume&a=modifyproduct');
-                    editproductdialog.show();
-                }
-                else {
-                    editproductdialog = $.ligerDialog.open({
-                        height: 500,
-                        url: 'index.php?&g=Query&m=Consume&a=modifyproduct',
-                        width: 580,
-                        showMax: false,
-                        showToggle: true,
-                        showMin: false,
-                        isResize: true,
-                        modal: true,
-                        title: '编辑配件'
-                    });
-                }
-            }
-             form = $("#form1").ligerForm({
+            }             form = $("#form1").ligerForm({
                 inputWidth: 140, labelWidth: 65, space: 20,
                 validate: true,
                 fields: [
@@ -77,10 +98,10 @@
                        display: "车牌号码 ", name: "车牌号码", newline: true, type: "text", readonly: true
                    },
                    {
-                         display: "供应商", name: "供应商", newline: false, type: "popup", options: {
+                       display: "客户名称", name: "客户名称", newline: false, type: "popup", options: {
                              condition: {
                                  prefixID: 'condtion_',
-                                 fields: [{ name: 'searchkey', type: 'text', width: 120, label: '供应商', labelWidth: 90 }]
+                                 fields: [{ name: 'searchkey', type: 'text', width: 120, label: '客户', labelWidth: 90 }]
 
                              },
                              onSelected:function (e) {
@@ -107,10 +128,10 @@
                         }
                     },
                      {
-                         display: "发票号 ", name: "发票号", newline: true, type: "text",
+                         display: "发票号 ", name: "发票号", newline: false, type: "text",
                      },
                       {
-                          display: "结算方式 ", name: "结算方式", newline: false, type: "combobox",
+                          display: "结算方式 ", name: "结算方式", newline: true, type: "combobox",
                           options: {
                               valueField: '名称',
                               textField: '名称',
@@ -128,20 +149,20 @@
                           }
                       },
                       {
-                          display: "运费 ", name: "运费", newline: true, type: "text", options: {
+                          display: "运费 ", name: "运费", newline: false, type: "text", options: {
                               onBlur: function (value) {
                                   reflash();
                               }
                           }
                       },
                       {
-                          display: "付款日期 ", name: "付款日期", newline: false, type: "date",
+                          display: "收款日期 ", name: "收款日期", newline: false, type: "date",
                       },
                       {
-                          display: "送货地址", name: "送货地址", newline: false, type: "text",
+                          display: "送货地址", name: "送货地址", newline: true, type: "text",
                       },
                       {
-                          display: "合计数量", name: "合计数量", newline: true, type: "text",
+                          display: "合计数量", name: "合计数量", newline: false, type: "text",
                       },
                     {
                         display: "合计货款", name: "合计货款", newline: false, type: "text",
@@ -161,17 +182,17 @@
                    
                 ],
                 buttons: [                    {
-                        text: "确定", width: 60, click: function () {
+                        text: "保存", width: 60, click: function () {
                             var data = form.getData();
-                            data['供应商ID'] = data['供应商'];
-                            data['供应商'] = $("input[ligeruiid='供应商']").val();
+                            data['客户ID'] = data['客户名称'];
+                            data['客户名称'] = $("input[ligeruiid='客户名称']").val();
                             data['付款日期'] = $("input[ligeruiid='付款日期']").val();
                             if (data['业务员'] == '') {
                                 $.ligerDialog.alert('请选择业务员');
                                 return;
                             }
-                            if (data['供应商'] == '') {
-                                $.ligerDialog.alert('请选择供应商');
+                            if (data['客户名称'] == '') {
+                                $.ligerDialog.alert('请选择客户');
                                 return;
                             }
                             if (data['结算方式'] == '') {
@@ -179,19 +200,20 @@
                                 return;
                             }
                             var submitData = {
-                                wxinfo: parent.record,
+                                //wxinfo: parent.record,
                                 products: product.rows,
                                 data:data
                             };
-                            $.post('index.php?g=Query&m=Consume&a=purchasing', submitData,
-                              function (data) {
-                                  $.ligerDialog.alert(data);
-                                  //window.parent.liger.get('maingrid4').reload();
+                            $.post('index.php?g=Query&m=Consume&a=saling', submitData,
+                              function (result) {
+                                  $.ligerDialog.alert(result);
+                                  parent.grid.reload();
+                                  parent.saledialog.hide();
 
                               });
                         }
                     }            ]            });
-            $("input[ligeruiid='车牌号码']").val(parent.record['车牌号码']);
+            //$("input[ligeruiid='车牌号码']").val(parent.record['车牌号码']);
              product = $("#productgrid").ligerGrid({
                 height:'100%',
                 columns: [
@@ -206,8 +228,8 @@
                 { display: '单位', name: '单位', minWidth: 80 },
                 { display: '税率', name: '税率', minWidth: 60 },
                 { display: '税额', name: '税额', minWidth: 60 },
-                { display: '含税价', name: '含税价', minWidth: 60 },
-                { display: '税价合计', name: '合计', minWidth: 60 },
+                { display: '虚增类别', name: '虚增类别', minWidth: 60 },
+                { display: '虚增金额', name: '虚增金额', minWidth: 60 },
                 { display: '适用车型', name: '适用车型', minWidth: 100 },
                 { display: '产地', name: '产地', minWidth: 100 },
                 { display: '备注', name: '备注', minWidth: 200 },
@@ -215,8 +237,13 @@
                 checkbox: true,
                 toolbar: {
                     items: [
+                        {
+                            id: 'addproduct',
+                            text: '增加', click:addproduct, icon: 'add'
+                        },
+                        { line: true },
                     {
-                        id:'addproduct',
+                        id:'modifyproduct',
                         text: '修改', click: function () {
                             var rows = product.getSelectedRow();
                             if (rows) {
@@ -244,10 +271,7 @@
 
                 }
             });
-             product.addRows(window.parent.product.getSelectedRows());
-             $("input[ligeruiid='运费']").val(0);
-
-             reflash();
+            //calprice();
         });
 
 

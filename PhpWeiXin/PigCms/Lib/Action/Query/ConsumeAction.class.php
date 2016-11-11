@@ -30,7 +30,7 @@ class ConsumeAction extends Action{
     public  function login()
     {
         if(IS_POST)
-        {
+        { 
             $username=$_POST['username'];
             $password=$_POST['password'];
             $user=M('用户管理','dbo.','difo')->where(array('姓名'=>$username))->find();
@@ -1118,6 +1118,53 @@ class ConsumeAction extends Action{
         $where['ID']=$_POST['id'];
         $count=M('采购明细','dbo.','difo')->where($where)->count();
         $yelist=M('采购明细','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
+    public  function getsalebill()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){       
+            $searchwhere['制单人']=array('like',$searchkey);
+            $searchwhere['业务员']=array('like',$searchkey);
+            $searchwhere['客户名称']=array('like',$searchkey);
+            $searchwhere['单据备注']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $count=M('销售单','dbo.','difo')->where($where)->count();
+        $yelist=M('销售单','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
+    public  function getsaledetail()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        $where['ID']=$_POST['id'];
+        $count=M('销售明细','dbo.','difo')->where($where)->count();
+        $yelist=M('销售明细','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
         $data['Rows']=$yelist;
         $data['Total']=$count;
         echo json_encode($data);
@@ -2759,6 +2806,76 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            
         }
         echo '开单成功，转入采购审核中';
+    }
+     else{ 
+
+         $this->display();
+     }
+   }
+   public function saling(){
+     if(IS_POST){
+         //$wxinfo=$_POST['wxinfo'];
+         $form=$_POST['data'];
+         $products=$_POST['products'];
+         $data['ID']=$this->getcode(20,1,1);
+         $data['单据编号']=$this->getcodenum('SS');
+         $data['制单日期']=date('Y-m-d',time());
+         $data['制单人']=cookie('username');
+         $data['客户名称']=$form['客户名称'];
+         $data['客户ID']=$form['客户ID'];
+         $data['发票类别']=$form['发票类别'];
+         $data['发票号码']=$form['发票号码'];
+         $data['运费']=$form['运费'];
+         $data['结算方式']=$form['结算方式'];
+         $data['货运方式']=$form['货运方式'];
+         $data['业务员']=cookie('username');
+         $data['整单折扣']=1;
+         $data['送货地址']=$form['业务员'];
+         $data['收款日期']=$form['收款日期'];
+         $data['当前状态']='待审核';
+         $data['实际货款']=$form['实际货款'];
+         $data['合计数量']=$form['合计数量'];
+         $data['实际税额']=$form['实际税额'];
+         $data['价税合计']=$form['价税合计'];
+         $data['总金额']=$form['总金额'];
+         $data['单据类别']='销售出库';
+         //$data['引用ID']=$wxID;
+         //$data['引用类别']='维修领料';
+         //$data['引用单号']=$wxinfo['业务编号'];
+         //$data['急件']=$form['急件'];
+         $data['应结金额']=$form['总金额'];
+         $data['现结金额']=0;
+         $data['挂账金额']=$form['总金额'];
+         //$data['车牌号码']=$wxinfo['车牌号码'];
+         //$data['原因']='维修领料';
+         $data['备注']=$form['备注'];
+        if($form['备注']==''){
+            $data['备注']='销售开单';
+        }
+        M('销售单','dbo.','difo')->add($data);
+        foreach($products as $product){
+            $crk['ID']=$data['ID'];
+            $crk['仓库']=$product['仓库'];
+            $crk['编号']=$product['编号'];
+            $crk['名称']=$product['名称'];
+            $crk['规格']=$product['规格'];
+            $crk['单位']=$product['单位'];
+            $crk['数量']=$product['数量'];
+            $crk['单价']=$product['单价'];
+            $crk['金额']=$product['金额'];
+            $crk['折扣']=$product['折扣'];
+            $crk['税率']=$product['税率'];
+            $crk['税额']=$product['税额'];
+            $crk['虚增类别']=$product['虚增类别'];
+            $crk['虚增金额']=$product['虚增金额'];
+            $crk['适用车型']=$product['适用车型'];
+            $crk['产地']=$product['产地'];
+            $crk['备注']=$product['备注'];
+            M('销售明细','dbo.','difo')->add($crk);
+           
+           
+        }
+        echo '开单成功';
     }
      else{ 
 

@@ -18,34 +18,22 @@ class WechatShare
 
 	public function getSgin(){
 		$now 	= time();
-
 		$share_data 	= M('Wxuser')->where(array('token'=>$this->token))->field('share_ticket,share_dated')->find();
-		
 		if( (empty($share_data['share_ticket']) || empty($share_data['share_dated']) ) || ($share_data['share_ticket']!='' && $share_data['share_dated']!='' && $share_data['share_dated'] < $now ) ){
-			$tokenData 	= $this->getToken();
-			if($tokenData['errcode']){
-				$this->error['token_error'] 	= array('errcode'=>$tokenData['errcode'],'errmsg'=>$tokenData['errmsg']);
+			$access_token 	= $this->get_access_token();
+			$ticketData 	= $this->getTicket($access_token);
+			if($ticketData['errcode']>0){
+				$this->error['ticket_error'] 	= array('errcode'=>$ticketData['errcode'],'errmsg'=>$ticketData['errmsg']);
 			}else{
-				$access_token 	= $tokenData['access_token'];
-				$ticketData 	= $this->getTicket($access_token);
-				if($ticketData['errcode']>0){
-					$this->error['ticket_error'] 	= array('errcode'=>$ticketData['errcode'],'errmsg'=>$ticketData['errmsg']);
-				}else{
-					M('Wxuser')->where(array('token'=>$this->token))->save(array('share_ticket'=>$ticketData['ticket'],'share_dated'=>$now+$ticketData['expires_in']));
-					$ticket 	= $ticketData['ticket'];
-				}
+				M('Wxuser')->where(array('token'=>$this->token))->save(array('share_ticket'=>$ticketData['ticket'],'share_dated'=>$now+$ticketData['expires_in']));
+				$ticket = $ticketData['ticket'];
 			}
 		}else{
-			$ticket 		= $share_data['share_ticket'];
+			$ticket = $share_data['share_ticket'];
 		}
-
-		//$url 		= $this->getUrl();
-		$url 		= "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-
+		$url = "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 		$sign_data 	= $this->addSign($ticket,$url);
-
 		$share_html = $this->createHtml($sign_data);
-
 		return $share_html;
 	}
 
@@ -113,7 +101,22 @@ class WechatShare
 		}
 		return join('&',$param);
 	}
-	
+    public function get_access_token()
+    {  
+        $access_token=S('weixin_access_token');
+        Log::write('从缓存中获取token->'.$access_token);
+        if(!$access_token){
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->appId."&secret=".$this->appSecret;
+            $json=json_decode($this->curlGet($url_get));
+            if (!$json->errmsg){
+                $access_token=$json->access_token;
+                Log::write('重新获取token->'.$access_token);
+                S('weixin_access_token',$access_token,7200);
+            }
+        }
+        return $access_token;
+    }
+
 	//获取token
 	public function  getToken(){
 		$url 	= "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$this->appId."&secret=".$this->appSecret;

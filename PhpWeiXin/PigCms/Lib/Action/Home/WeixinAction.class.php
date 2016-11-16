@@ -448,6 +448,7 @@ class WeixinAction extends Action{
             return array('成功退出微信墙对话模式', 'text');
         }
         $weixin = new Wechat($this->token,$this->wxuser);
+        $taglist=$weixin->gettaglist($this -> data['FromUserName']);
         if(strpos(strtoupper($data['Content']), '*#') === 0){
             $arr = explode("*#",$data['Content']);
             $key=$arr[1];
@@ -2553,15 +2554,20 @@ class WeixinAction extends Action{
 		}
 	}
 	private	function _getAccessToken(){
-		$where=array('token'=>$this->token);
-		$this->thisWxUser=M('Wxuser')->where($where)->find();
-		$url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
-		$json=json_decode($this->curlGet($url_get));
-		if (!$json->errmsg){
-		}else {
-			$this->error('获取access_token发生错误：错误代码'.$json->errcode.',微信返回错误信息：'.$json->errmsg);
-		}
-		return $json->access_token;
+        $access_token=S('weixin_access_token');
+        Log::write('从缓存中获取token->'.$access_token);
+        if(!$access_token){
+            $where=array('token'=>$this->token);
+            $this->thisWxUser=M('Wxuser')->where($where)->find();
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
+            $json=json_decode($this->curlGet($url_get));
+            if (!$json->errmsg){
+                $access_token=$json->access_token;
+                Log::write('重新获取token->'.$access_token);
+                S('weixin_access_token',$access_token,7200);
+            }
+        }
+        return $access_token;
 	}
 	private function curlGet($url,$method='get',$data=''){
 		$ch = curl_init();
@@ -2570,7 +2576,7 @@ class WeixinAction extends Action{
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($method));
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);

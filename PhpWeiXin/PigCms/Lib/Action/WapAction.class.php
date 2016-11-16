@@ -75,7 +75,7 @@ class WapAction extends BaseAction{
 			}
 			$fake=1;
 		}
-		$toAuth=0;
+		$toAuth=1;
 		if (C('server_topdomain')=='pigcms.cn'&&C('site_url')!='http://demo2.pigcms.cn'){
 			$toAuth=1;
 		}else {
@@ -580,6 +580,21 @@ EOM;
 			);
 	}
 
+    public function get_access_token()
+    {  
+        $access_token=S('weixin_access_token');
+        Log::write('从缓存中获取token->'.$access_token);
+        if(!$access_token){
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->wxuser['appid'].'&secret='.$this->wxuser['appsecret'];
+            $json=json_decode($this->curlGet($url_get));
+            if (!$json->errmsg){
+                $access_token=$json->access_token;
+                Log::write('重新获取token->'.$access_token);
+                S('weixin_access_token',$access_token,7200);
+            }
+        }
+        return $access_token;
+    }
 
 /**
  * 判断粉丝是否关注信息
@@ -591,14 +606,9 @@ EOM;
 		$wecha_id = $this->wecha_id;
 
 		if($this->wxuser['appid'] && $this->wxuser['appsecret'] && ($this->wxuser['winxintype'] == 3)){
-			
-			//认证服务号
-			$url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->wxuser['appid'].'&secret='.$this->wxuser['appsecret'];
-			$json=json_decode($this->curlGet($url_get));
-
-			$url='https://api.weixin.qq.com/cgi-bin/user/info?openid='.$wecha_id.'&access_token='.$json->access_token;
+			$access_token=$this->get_access_token();
+			$url='https://api.weixin.qq.com/cgi-bin/user/info?openid='.$wecha_id.'&access_token='.$access_token;
 			$classData=json_decode($this->curlGet($url));
-
 			if ($classData->subscribe == 0) {
 				//没有关注
 				return FALSE;

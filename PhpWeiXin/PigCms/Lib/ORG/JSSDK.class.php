@@ -64,28 +64,20 @@
       }
     return $ticket;
   }
-
-  private function getAccessToken() {
-    // access_token 应该全局存储与更新，以下代码以写入到文件中做示例
-      $data=null;
-      $data = S('accesstoken');
-      if (!empty($data)&&$data->expire_time > time()){
-          $data = S('accesstoken');
-          $access_token = $data->access_token;
+  private function getAccessToken()
+  {  
+      $access_token=S('weixin_access_token');
+      Log::write('从缓存中获取token->'.$access_token);
+      if(!$access_token){
+          $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->appId.'&secret='.$this->appSecret;
+          $json=json_decode($this->curlGet($url_get));
+          if (!$json->errmsg){
+              $access_token=$json->access_token;
+              Log::write('重新获取token->'.$access_token);
+              S('weixin_access_token',$access_token,7200);
+          }
       }
-   else{
-      // 如果是企业号用以下URL获取access_token
-      // $url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=$this->appId&corpsecret=$this->appSecret";
-      $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=$this->appId&secret=$this->appSecret";
-      $res = json_decode($this->httpGet($url));
-      $access_token = $res->access_token;
-      if ($access_token) {
-        $data->expire_time = time() + 7000;
-        $data->access_token = $access_token;
-        S('accesstoken',$data);
-      }
-    } 
-    return $access_token;
+      return $access_token;
   }
 
   private function httpGet($url) {

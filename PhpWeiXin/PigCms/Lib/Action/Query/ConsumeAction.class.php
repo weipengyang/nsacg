@@ -2882,6 +2882,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $this->display();
      }
    }
+   public function salebillcheck(){
+   
+   }
    public function maintenance()
     {  
        if(IS_POST){

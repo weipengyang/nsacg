@@ -251,15 +251,27 @@ class IndexAction extends ChatAction{
 	public function send(){
 		$this->send_info("人工客服－".session('name').":\n\r".$this->_post('keyword'),$this->_get('openid','htmlspecialchars'),session('userId'));
 	}
+    public function get_access_token()
+    {  
+        $access_token=S('weixin_access_token');
+        Log::write('从缓存中获取token->'.$access_token);
+        if(!$access_token){
+            $api=M('Diymen_set')->where(array('token'=>session('token')))->find();
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$api['appid'].'&secret='.$api['appsecret'];
+            $json=json_decode($this->curlGet($url_get));
+            if (!$json->errmsg){
+                $access_token=$json->access_token;
+                Log::write('重新获取token->'.$access_token);
+                S('weixin_access_token',$access_token,7200);
+            }
+        }
+        return $access_token;
+    }
+
 	public function send_info($content,$openid,$pid=1,$type=1){
-		//查询appid appkey是否存在
-		$api=M('Diymen_set')->where(array('token'=>session('token')))->find();
-		//dump($api);
-		if($api['appid']==false||$api['appsecret']==false){$this->error('必须先填写【AppId】【 AppSecret】');exit;}
-		//获取微信认证
-		$url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$api['appid'].'&secret='.$api['appsecret'];
-		$json=json_decode($this->curlGet($url_get));
-		$qrcode_url='https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token='.$json->access_token;
+		
+		$access_token=$this->get_access_token();
+		$qrcode_url='https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token='.$access_token;
 		$data='{
 			"touser":"'.$openid.'",
 			"msgtype":"text",
@@ -301,7 +313,7 @@ class IndexAction extends ChatAction{
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
@@ -324,7 +336,7 @@ class IndexAction extends ChatAction{
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);

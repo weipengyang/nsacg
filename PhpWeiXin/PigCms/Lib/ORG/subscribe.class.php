@@ -12,16 +12,27 @@ class subscribe {
 		$this->thisWxUser = M('Wxuser')->field('appid,appsecret,winxintype')->where(array('token'=>$token))->find();
 	}
 
+    public function get_access_token()
+    {  
+        $access_token=S('weixin_access_token');
+        Log::write('从缓存中获取token->'.$access_token);
+        if(!$access_token){
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
+            $json=json_decode($this->curlGet($url_get));
+            if (!$json->errmsg){
+                $access_token=$json->access_token;
+                Log::write('重新获取token->'.$access_token);
+                S('weixin_access_token',$access_token,7200);
+            }
+        }
+        return $access_token;
+    }
 
 	public function sub(){
 		
 		if($this->thisWxUser['appid'] && $this->thisWxUser['appsecret']&&$this->thisWxUser['winxintype']==3){
-			//服务号
-			$url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
-
-			$json=json_decode($this->curlGet($url_get));
-
-			$url='https://api.weixin.qq.com/cgi-bin/user/info?openid='.$this->wecha_id.'&access_token='.$json->access_token;
+			$access_token=$this->get_access_token();
+			$url='https://api.weixin.qq.com/cgi-bin/user/info?openid='.$this->wecha_id.'&access_token='.$access_token;
 			$classData=json_decode($this->curlGet($url));
 			
 			if ($classData->subscribe&&$classData->subscribe==1){
@@ -85,7 +96,7 @@ class subscribe {
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($method));
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);

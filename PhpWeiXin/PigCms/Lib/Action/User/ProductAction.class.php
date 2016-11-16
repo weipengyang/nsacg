@@ -559,24 +559,32 @@ class ProductAction extends UserAction{
             }
         }        
 	}
+    public function get_access_token()
+    {  
+        $access_token=S('weixin_access_token');
+        Log::write('从缓存中获取token->'.$access_token);
+        if(!$access_token){
+            $where=array('token'=>$this->token);
+            $thiswxuser=M('Wxuser')->where($where)->find();
+            //wecha_id   orderid   transactionid   
+            //deliver notify
+            $thiswxuser=M('Wxuser')->where(array('token'=>$this->token))->find();
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$thiswxuser['appid'].'&secret='.$thiswxuser['appsecret'];
+            $json=json_decode($this->curlGet($url_get));
+            if (!$json->errmsg){
+                $access_token=$json->access_token;
+                Log::write('重新获取token->'.$access_token);
+                S('weixin_access_token',$access_token,7200);
+            }
+        }
+        return $access_token;
+    }
+
 	function deliveryNotify(){
 		$pay_config_db=M('Alipay_config');
 		$this->payConfig=$pay_config_db->where(array('token'=>$this->token))->find();
-
-		$where=array('token'=>$this->token);
-		$thiswxuser=M('Wxuser')->where($where)->find();
-		//wecha_id   orderid   transactionid   
-		//deliver notify
-		$thiswxuser=M('Wxuser')->where(array('token'=>$this->token))->find();
-		$url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$thiswxuser['appid'].'&secret='.$thiswxuser['appsecret'];
-		$json=json_decode($this->curlGet($url_get));
-		if (!$json->errmsg){
-			//return array('rt'=>true,'errorno'=>0);
-		}else {
-			$this->error('获取access_token发生错误：错误代码'.$json->errcode.',微信返回错误信息：'.$json->errmsg);
-		}
-
-		$url='https://api.weixin.qq.com/pay/delivernotify?access_token='.$json->access_token;
+        $access_token=$this->get_access_token();
+		$url='https://api.weixin.qq.com/pay/delivernotify?access_token='.$access_token;
 		$now=time();
 		$payinfo=unserialize($this->payConfig['info']);
 		if (!$this->payConfig['paysignkey']){
@@ -596,7 +604,7 @@ class ProductAction extends UserAction{
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
@@ -623,7 +631,7 @@ class ProductAction extends UserAction{
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);

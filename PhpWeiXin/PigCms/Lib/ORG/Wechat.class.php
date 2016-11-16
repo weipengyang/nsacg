@@ -162,14 +162,55 @@ class Wechat
             return true;
         }
     }
-
-    public function send($content,$openid){
-        $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->wxuser['appid'].'&secret='.$this->wxuser['appsecret'];
-        $json=json_decode($this->curlGet($url_get));
-        if (!$json->errmsg){
-            $data='{"touser":"'.$openid.'","msgtype":"text","text":{"content":"'.$content.'"}}';
-            $rt=$this->curlPost('https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token='.$json->access_token,$data,0);
+    public function getuserinfo($openid){
+        $access_token=$this->get_access_token();
+        $url_get='https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
+        $userinfo=json_decode($this->curlGet($url_get));
+        Log::write('获取用户信息'.json_encode($userinfo));
+        return $userinfo;
+    }
+    public function get_access_token()
+    {  
+         $access_token=S('weixin_access_token');
+         Log::write('从缓存中获取token->'.$access_token);
+         if(!$access_token){
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->wxuser['appid'].'&secret='.$this->wxuser['appsecret'];
+            $json=json_decode($this->curlGet($url_get));
+            if (!$json->errmsg){
+                $access_token=$json->access_token;
+                Log::write('重新获取token->'.$access_token);
+                S('weixin_access_token',$access_token,7200);
+            }
         }
+        return $access_token;
+    }
+    public function remark($openid,$remark){
+      $data='{"openid":"'.$openid.'","remark":"'.$remark.'"}';
+      $rt=$this->curlPost('https://api.weixin.qq.com/cgi-bin/user/info/updateremark?access_token='.$this->get_access_token(),$data,0);
+      return $rt;
+    }
+    public function gettaglist($openid){
+      Log::write($openid);
+      $data='{"openid":"'.$openid.'"}';
+      $access_token=$this->get_access_token();
+      $rt=$this->curlPost('https://api.weixin.qq.com/cgi-bin/tags/getidlist?access_token='.$access_token,$data,0);
+      //$rt=json_decode($rt);
+      $taglist=$rt['msg']['tagid_list'];
+      return $taglist;
+    }
+   public function send($content,$openid){
+       if($content!=''){
+           $data='{"touser":"'.$openid.'","msgtype":"text","text":{"content":"'.$content.'"}}';
+           $access_token=$this->get_access_token();
+           $rt=$this->curlPost('https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token='.$access_token,$data,0);
+           if(!$rt['rt'])
+           {
+               Log::write('清空缓存');
+               S('weixin_access_token',null);
+               $rt=$this->send($content,$openid);
+           }
+       }
+        return $rt;
 	}
 	function curlPost($url, $data,$showError=1){
 		$ch = curl_init();
@@ -178,7 +219,7 @@ class Wechat
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
@@ -186,16 +227,19 @@ class Wechat
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$tmpInfo = curl_exec($ch);
 		$errorno=curl_errno($ch);
+        Log::write($tmpInfo);
 		if ($errorno) {
 			return array('rt'=>false,'errorno'=>$errorno);
 		}else{
 			$js=json_decode($tmpInfo,1);
 			if (intval($js['errcode']==0)){
-				return array('rt'=>true,'errorno'=>0,'media_id'=>$js['media_id'],'msg_id'=>$js['msg_id']);
+				return array('rt'=>true,'msg'=>$js);
 			}else {
-				if ($showError){
-					$this->error('发生了Post错误：错误代码'.$js['errcode'].',微信返回错误信息：'.$js['errmsg']);
-				}
+                if($js['errcode']==40001){
+                    Log::write('清空缓存---');
+                    S('weixin_access_token',null);
+                }
+                return array('rt'=>false,'errorno'=>$js['errcode'],'errmsg'=>$js['errmsg']);
 			}
 		}
 	}
@@ -206,14 +250,13 @@ class Wechat
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$temp = curl_exec($ch);
 		return $temp;
 	}
 }
-?>
+?> 

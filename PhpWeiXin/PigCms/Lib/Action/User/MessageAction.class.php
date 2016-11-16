@@ -67,14 +67,9 @@ class MessageAction extends UserAction{
 			for($i=0;$i<count($imgidsArr);$i++){
 				$imgs[$i] = M('Img')->where(array('id'=>$imgidsArr[$i]))->find();
 			}
-			//$imgs 	= M('Img')->where(array('id'=>array('in',$imgidsArr)))->select();
-
-			$url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
-			$json=json_decode($this->curlGet($url_get));
-
-			if (!$json->errmsg){
+                $access_token 	= $this->get_access_token();
 				$postMedia=array();
-				$postMedia['access_token']=$json->access_token;
+				$postMedia['access_token']=$access_token;
 				$postMedia['type']='image';
 				$str 	= '';
 				foreach ($imgs as $img){
@@ -129,11 +124,6 @@ class MessageAction extends UserAction{
 						$this->error('操作失败,curl_error:'.$rt['errorno']);
 					}
 				}
-			}else {
-				$this->error('获取access_token发生错误：错误代码'.$json->errcode.',微信返回错误信息：'.$json->errmsg);
-			}
-
-			//U('Message/tosendAll',array('imgids'=>$oimgids,'wechatgroupid'=>$wechatgroupid,'mediaids'=>$mediaids,'openid'=>$openid));
 		}else {
 			$this->display();
 		}
@@ -143,32 +133,21 @@ class MessageAction extends UserAction{
 		if (IS_GET){
 			$id 	= $this->_get('id','intval');
 			$info 	= M('Send_message')->where(array('token'=>$this->token,'id'=>$id))->find();
-
-			$url_get 	= 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
-			$json 		= json_decode($this->curlGet($url_get));
-			
-			if (!$json->errmsg){
-				$access_token 	=$json->access_token;
-				//OPENID就发送给个人
-				$openid 	= explode(',', $info['openid']);
-				
-				if($info['send_type'] == 1){
-					$sendrt=$this->curlPost('https://api.weixin.qq.com/cgi-bin/message/mass/sendall?access_token='.$access_token,'{"filter":{"group_id":"'.$info['groupid'].'"},"mpnews":{"media_id":"'.$info['mediaid'].'"},"msgtype":"mpnews"}');
-				}else if($info['send_type'] == 2){
-					$sendrt = $this->curlPost('https://api.weixin.qq.com/cgi-bin/message/mass/send?access_token='.$access_token,'{"touser":'.json_encode($openid).',"mpnews":{"media_id":"'.$info['mediaid'].'"},"msgtype":"mpnews"}');
-				}else{
-					$sendrt=$this->curlPost('https://api.weixin.qq.com/cgi-bin/message/mass/sendall?access_token='.$access_token,'{"filter":{"is_to_all":true},"mpnews":{"media_id":"'.$info['mediaid'].'"},"msgtype":"mpnews"}');
-				}
-
-				if($sendrt['rt']==false){
-					$this->error('操作失败,curl_error:'.$sendrt['errorno']);
-				}else{
-					M('Send_message')->where(array('id'=>$id))->save(array('msg_id'=>$sendrt['msg_id'],'status'=>1,'time'=>time()));
-					$this->success('发送任务已经启动，群发可能会在20分钟左右完成',U('Message/sendHistory',array('token'=>$this->token)));
-				}
-
-			}else {
-				$this->error('获取access_token发生错误：错误代码'.$json->errcode.',微信返回错误信息：'.$json->errmsg);
+			$access_token 	= $this->get_access_token();
+			//OPENID就发送给个人
+			$openid 	= explode(',', $info['openid']);
+			if($info['send_type'] == 1){
+				$sendrt=$this->curlPost('https://api.weixin.qq.com/cgi-bin/message/mass/sendall?access_token='.$access_token,'{"filter":{"group_id":"'.$info['groupid'].'"},"mpnews":{"media_id":"'.$info['mediaid'].'"},"msgtype":"mpnews"}');
+			}else if($info['send_type'] == 2){
+				$sendrt = $this->curlPost('https://api.weixin.qq.com/cgi-bin/message/mass/send?access_token='.$access_token,'{"touser":'.json_encode($openid).',"mpnews":{"media_id":"'.$info['mediaid'].'"},"msgtype":"mpnews"}');
+			}else{
+				$sendrt=$this->curlPost('https://api.weixin.qq.com/cgi-bin/message/mass/sendall?access_token='.$access_token,'{"filter":{"is_to_all":true},"mpnews":{"media_id":"'.$info['mediaid'].'"},"msgtype":"mpnews"}');
+			}
+			if($sendrt['rt']==false){
+				$this->error('操作失败,curl_error:'.$sendrt['errorno']);
+			}else{
+				M('Send_message')->where(array('id'=>$id))->save(array('msg_id'=>$sendrt['msg_id'],'status'=>1,'time'=>time()));
+				$this->success('发送任务已经启动，群发可能会在20分钟左右完成',U('Message/sendHistory',array('token'=>$this->token)));
 			}
 		}
 	}
@@ -208,25 +187,15 @@ class MessageAction extends UserAction{
 		if(IS_POST){
 			$openid 	= $this->_post('openid','trim');
 			if($openid){
-
-				$url_get 	= 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
-				$json 		= json_decode($this->curlGet($url_get));
-				if (!$json->errmsg){
-					$access_token 	=$json->access_token;
-					$sendrt = $this->curlPost('https://api.weixin.qq.com/cgi-bin/message/mass/preview?access_token='.$access_token,'{"touser":"'.$openid.'","mpnews":{"media_id":"'.$info['mediaid'].'"},"msgtype":"mpnews"}');
-					if($sendrt['rt']==false){
-						$this->error('操作失败,curl_error:'.$sendrt['errorno']);
-					}else{
-						$this->success('预览消息发送');
-					}
+				$access_token 	= $this->get_access_token();
+				$sendrt = $this->curlPost('https://api.weixin.qq.com/cgi-bin/message/mass/preview?access_token='.$access_token,'{"touser":"'.$openid.'","mpnews":{"media_id":"'.$info['mediaid'].'"},"msgtype":"mpnews"}');
+				if($sendrt['rt']==false){
+					$this->error('操作失败,curl_error:'.$sendrt['errorno']);
 				}else{
-					$this->error('获取access_token发生错误：错误代码'.$json->errcode.',微信返回错误信息：'.$json->errmsg);
+					$this->success('预览消息发送');
 				}
-
 			}else{
-
 				$this->error('请填写openid');
-
 			}
 		}else{
 			$this->display();
@@ -248,25 +217,12 @@ class MessageAction extends UserAction{
 	public function del(){
 		$id 	= $this->_get('id','intval');
 		$info 	= M('Send_message')->where(array('token'=>$this->token,'id'=>$id))->find();
-
 		if($info['msg_id']){
-			$url_get 	= 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
-			$json 		= json_decode($this->curlGet($url_get));
-
-			if (!$json->errmsg){
-				$access_token 	= $json->access_token;
-				$sendrt 		= $this->curlPost('https://api.weixin.qq.com/cgi-bin/message/mass/delete?access_token='.$access_token,'{"msg_id":'.$info['msg_id'].'}',0);
-
-				//if($sendrt['rt']==false){
-				//	$this->error('操作失败,curl_error:'.$sendrt['errorno']);
-				//}else{
-					if(M('Send_message')->where(array('token'=>$this->token,'id'=>$id))->delete()){
-						$this->success('删除成功');
-					}
-				//}
-			}else{
-				$this->error('获取access_token发生错误：错误代码'.$json->errcode.',微信返回错误信息：'.$json->errmsg);
-			}
+			$access_token 	= $this->get_access_token();
+			$sendrt 		= $this->curlPost('https://api.weixin.qq.com/cgi-bin/message/mass/delete?access_token='.$access_token,'{"msg_id":'.$info['msg_id'].'}',0);
+			if(M('Send_message')->where(array('token'=>$this->token,'id'=>$id))->delete()){
+				$this->success('删除成功');
+            }
 		}else{
 			if(M('Send_message')->where(array('token'=>$this->token,'id'=>$id))->delete()){
 				$this->success('删除成功');
@@ -322,9 +278,6 @@ class MessageAction extends UserAction{
 		$thisMessage=M('Send_message')->where(array('id'=>intval($_GET['id'])))->find();
 		if ($i<$count){
 			$fan=$fans[$i];
-			$url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
-			$json=json_decode($this->curlGet($url_get));
-			if (!$json->errmsg){	
 				switch ($thisMessage['msgtype']){
 					case 'text':
 						$data='{"touser":"'.$fan['openid'].'","msgtype":"text","text":{"content":"'.$thisMessage['text'].'"}}';
@@ -359,8 +312,8 @@ class MessageAction extends UserAction{
 						$data='{"touser":"'.$fan['openid'].'","msgtype":"'.$thisMessage['msgtype'].'","news":{"articles":[{"title":"'.$thisNews['title'].'","description":"'.$thisNews['text'].'","url":"'.$url.'","picurl":"'.$thisNews['pic'].'"}]}}';
 						break;
 				}
-				//
-				$rt=$this->curlPost('https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token='.$json->access_token,$data,0);
+				$access_token=$this->get_access_token();
+				$rt=$this->curlPost('https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token='.$access_token,$data,0);
 				if($rt['rt']==false){
 					//$this->error('操作失败,curl_error:'.$rt['errorno']);
 				}else{
@@ -368,15 +321,27 @@ class MessageAction extends UserAction{
 				}
 				$i++;
 				$this->success('发送中:'.$i.'/'.$count,U('Message/send',array('id'=>$thisMessage['id'],'i'=>$i)));
-			}else {
-				$this->error('获取access_token发生错误：错误代码'.$json->errcode.',微信返回错误信息：'.$json->errmsg);
-			}
 		}else {
 			$this->success('发送完成，发送成功'.$thisMessage['reachcount'].'条',U('Message/sendHistory'));
 		}
 	}
 	
-	
+    public function get_access_token()
+    {  
+        $access_token=S('weixin_access_token');
+        Log::write('从缓存中获取token->'.$access_token);
+        if(!$access_token){
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
+            $json=json_decode($this->curlGet($url_get));
+            if (!$json->errmsg){
+                $access_token=$json->access_token;
+                Log::write('重新获取token->'.$access_token);
+                S('weixin_access_token',$access_token,7200);
+            }
+        }
+        return $access_token;
+    }
+
 	function curlPost($url, $data,$showError=1){
 		$ch = curl_init();
 		$header = "Accept-Charset: utf-8";
@@ -384,7 +349,7 @@ class MessageAction extends UserAction{
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);

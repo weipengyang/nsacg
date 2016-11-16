@@ -12,6 +12,22 @@ class templateNews{
 
 	}
 
+    public function get_access_token()
+    {
+        $access_token=S('weixin_access_token');
+        if(!isset($access_token)){
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
+            $json=json_decode($this->curlGet($url_get));
+            if (!$json->errmsg){
+                $access_token=$json->access_token;
+                S('weixin_access_token',$access_token,7200);
+            }
+            else{
+                return $this->get_access_token();
+            }
+        }
+        return $access_token;
+    }
 
 	public function sendTempMsg($tempKey,$dataArr){
 
@@ -21,17 +37,8 @@ class templateNews{
         $data =$this->getData($keys,$dataArr,'#000000');
         $tempid=$templates["$tempKey"]['keys'];
 	//	获取access_token  $json->access_token
-		$url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
-		$json=json_decode($this->curlGet($url_get));
-
-		if ($json->errmsg){
-            Log::write($url_get,Log::DEBUG);
-            Log::write('获取access_token发生错误：错误代码'.$json->errcode.',微信返回错误信息：'.$json->errmsg,Log::DEBUG);
-			// $this->error('获取access_token发生错误：错误代码'.$json->errcode.',微信返回错误信息：'.$json->errmsg);
-		}
-
 	// 准备发送请求的数据 
-		$requestUrl = 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token='.$json->access_token;
+		$requestUrl = 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token='.$this->get_access_token();
 	    $sendData = '{"touser":"'.$dataArr["wecha_id"].'","template_id":"'.$tempid.'","url":"'.$dataArr["url"].'","topcolor":"#029700","data":'.$data.'}';
 
 		$this->postCurl($requestUrl,$sendData);
@@ -215,7 +222,7 @@ class templateNews{
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);

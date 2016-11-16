@@ -30,21 +30,34 @@ class RecognitionAction extends UserAction{
 			$this->display();
 		}
 	}
+    public function get_access_token()
+    {  
+        $access_token=S('weixin_access_token');
+        Log::write('从缓存中获取token->'.$access_token);
+        if(!$access_token){
+            $where=array('token'=>$this->token);
+            $thiswxuser=M('Wxuser')->where($where)->find();
+            //wecha_id   orderid   transactionid   
+            //deliver notify
+            $thiswxuser=M('Wxuser')->where(array('token'=>$this->token))->find();
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$thiswxuser['appid'].'&secret='.$thiswxuser['appsecret'];
+            $json=json_decode($this->curlGet($url_get));
+            if (!$json->errmsg){
+                $access_token=$json->access_token;
+                Log::write('重新获取token->'.$access_token);
+                S('weixin_access_token',$access_token,7200);
+            }
+        }
+        return $access_token;
+    }
+
 	public function get_code(){
 			$where=array('id'=>$this->_get('id','intval'),'token'=>session('token'));
 			$GetDb=M('Recognition');
 			$recognition=$GetDb->where($where)->field('id')->find();
 			if($recognition == false) $this->error('非法操作');
-			//查询appid appkey是否存在
-			$api=M('Diymen_set')->where(array('token'=>$this->token))->find();
-			//dump($api);
-			if($api['appid']==false||$api['appsecret']==false){$this->error('必须先填写【AppId】【 AppSecret】');exit;}
-			//获取微信认证
-
-			$url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.trim($api['appid']).'&secret='.trim($api['appsecret']);
-			$json=json_decode($this->curlGet($url_get));
-			$qrcode_url='https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token='.$json->access_token;
-			//{"action_name": "QR_LIMIT_SCENE", "action_info": {"scene": {"scene_id": 123}}}
+            $access_token=$this->get_access_token();
+			$qrcode_url='https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token='.$access_token;
 			$data['action_name']='QR_LIMIT_SCENE';
 			$data['action_info']['scene']['scene_id']=$recognition['id'];
 			$post=$this->api_notice_increment($qrcode_url,json_encode($data));
@@ -73,15 +86,9 @@ class RecognitionAction extends UserAction{
 			   $reg_id=$GetDb->add(array('token'=>session('token'),'title'=>'餐饮二维码','attention_num'=>0,'keyword'=>$tmp['keyword'],'scene_id'=>0,'status'=>0));
 				$db_dish_reply->where(array('id'=>$tmp['id']))->save(array('reg_id'=>$reg_id));
 			}
-			//查询appid appkey是否存在
-			$api=M('Diymen_set')->where(array('token'=>$this->token))->find();
-			if($api['appid']==false||$api['appsecret']==false){$this->error('必须先填写【AppId】【 AppSecret】');exit;}
-			//获取微信认证
-
-			$url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.trim($api['appid']).'&secret='.trim($api['appsecret']);
-			$json=json_decode($this->curlGet($url_get),true);
-			if(isset($json['access_token'])){
-			$qrcode_url='https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token='.$json['access_token'];
+			$access_token=$this->get_access_token();
+			if(isset($access_token)){
+                $qrcode_url='https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token='.$access_token;
 			//{"action_name": "QR_LIMIT_SCENE", "action_info": {"scene": {"scene_id": 123}}}
 			$data['action_name']='QR_LIMIT_SCENE';
 			$data['action_info']['scene']['scene_id']=$reg_id;
@@ -138,7 +145,7 @@ class RecognitionAction extends UserAction{
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
@@ -167,7 +174,7 @@ class RecognitionAction extends UserAction{
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);

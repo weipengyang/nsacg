@@ -217,7 +217,7 @@ class Wechat_groupAction extends UserAction{
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($method));
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
@@ -327,14 +327,37 @@ class Wechat_groupAction extends UserAction{
 	}
     public function groupDelete(){
 	}
+    public function get_access_token()
+    {
+        $access_token=S('weixin_access_token');
+        if(!isset($access_token)){
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->wxuser['appid'].'&secret='.$this->wxuser['appsecret'];
+            $json=json_decode($this->curlGet($url_get));
+            if (!$json->errmsg){
+                $access_token=$json->access_token;
+                S('weixin_access_token',$access_token,7200);
+            }
+            else{
+                return $this->get_access_token();
+            }
+        }
+        return $access_token;
+    }
+
     public function _getAccessToken(){
-		$url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
-		$json=json_decode($this->curlGet($url_get));
-		if (!$json->errmsg){
-		}else {
-			$this->error('获取access_token发生错误：错误代码'.$json->errcode.',微信返回错误信息：'.$json->errmsg);
-		}
-		return $json->access_token;
+        $access_token=S('weixin_access_token');
+        if(!isset($access_token)){
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
+            $json=json_decode($this->curlGet($url_get));
+            if (!$json->errmsg){
+                $access_token=$json->access_token;
+                S('weixin_access_token',$access_token,7200);
+            }
+            else{
+                return $this->get_access_token();
+            }
+        }
+        return $access_token;
 	}
 
 }

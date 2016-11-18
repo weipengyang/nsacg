@@ -204,6 +204,45 @@ class ConsumeAction extends Action{
         echo json_encode($data);
     
     }
+    public  function gettireinfo(){
+    
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        if($_GET[type]){
+            $where['type']=array('eq','3');        
+        }else{
+            $where['type']=array('neq','3');
+        }
+        $searchkey=$_POST['searchkey'];
+        $searchkey='%'.trim($searchkey).'%';
+        if($searchkey){       
+            $searchwhere['nickname']=array('like',$searchkey);
+            $searchwhere['code']=array('like',$searchkey);
+            $searchwhere['name']=array('like',$searchkey);
+            $searchwhere['type']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $order='optime desc';
+        }
+        else{
+            $order=$sortname.' '.$sortorder.',optime desc';
+        }
+        $scoreinfo=M('tire_query')
+           // ->join('join tp_userinfo on tp_member_card_sign.wecha_id=tp_userinfo.wecha_id')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+        $count=M('tire_query')
+           // ->join('join tp_userinfo on tp_member_card_sign.wecha_id=tp_userinfo.wecha_id')
+            ->where($where)->count();
+        $data['Rows']=$scoreinfo;
+        $data['Total']=$count;
+        echo json_encode($data);
+    
+    }
     public  function getuserinfo(){
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
@@ -1174,6 +1213,11 @@ class ConsumeAction extends Action{
         $meirong=M('项目目录','dbo.','difo')->where(array('类别'=>'洗车美容','项目编号'=>array('notlike','%AYC00%'),'项目名称'=>array('like','%'.$_POST['key'].'%')))->order('项目名称')->select();
         echo json_encode($meirong);
     }
+    public  function getcarnobypersonid(){
+        $id=$_POST['id'];
+        $carinfo=M('车辆档案','dbo.','difo')->where(array('客户ID'=>$id))->select();
+        echo json_encode($carinfo);
+    }
     public  function getkxproject(){
         $meirong=M('项目目录','dbo.','difo')->where(array('类别'=>'洗车美容','项目编号'=>array('notlike','%AYC00%'),'项目名称'=>array('like','%'.$_POST['key'].'%')))->order('项目名称')->select();
         echo json_encode($meirong);
@@ -1316,6 +1360,94 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            exit;
        }
    }
+    public  function deleteproductfile (){
+       
+       $user=M('用户管理','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();
+       if($user['权限']=='超级用户'){
+           $key=$_POST['key'];
+           $file='./uploads/rlydsv1453614397/products/'.$key;
+           if(unlink($file)){
+               echo 1;
+               exit;
+           } 
+           echo 0;
+           exit;
+       }
+   }
+    public  function productupload(){
+        $code=$_GET['code'];
+        $path='./uploads/'.$this->token.'/products/'.$code.'/';
+        $files=scandir($path);
+        $attrs=array();
+        foreach($files as $key=>$value){
+            if(!in_array($files[$key],array('.','..'))){
+                $files[$key]='http://www.nsayc.com/uploads/rlydsv1453614397/products/'.$code.'/'.$value;
+                $attr['key']=$code.'/'.$value;
+                $attr['showDelete']=true;
+                $attr['showZoom']=true;
+                $attr['width']='120px';
+                array_push($attrs,$attr);
+                
+            }
+            else
+                unset($files[$key]);
+        }
+        if($files){
+            $this->assign('files',json_encode(array_values($files)));
+        }else{
+            $this->assign('files','[]');
+        }
+        $this->assign('attrs',json_encode(array_values($attrs)));
+        $this->assign('code',$code);
+        $this->display();
+    }
+    function uploadproduct($filetypes=''){
+        import('ORG.Net.UploadFile');
+        $upload = new UploadFile();
+        $upload->maxSize  = intval(C('up_size'))*1024 ;
+        if (!$filetypes){
+            $upload->allowExts  = explode(',',C('up_exts'));
+        }else {
+            $upload->allowExts  = $filetypes;
+        }
+        $code=$_GET['code'];
+        $upload->autoSub=0;
+        $upload->saveRule=null;
+        $upload->thumbRemoveOrigin=true;
+        
+        $upload->savePath =  './uploads/'.$this->token.'/products/'.$code.'/';// 设置附件上传目录
+        //
+        if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/uploads')||!is_dir($_SERVER['DOCUMENT_ROOT'].'/uploads')){
+            mkdir($_SERVER['DOCUMENT_ROOT'].'/uploads',0777);
+        }
+        $firstLetterDir=$_SERVER['DOCUMENT_ROOT'].'/uploads/'.$this->token;
+        if (!file_exists($firstLetterDir)||!is_dir($firstLetterDir)){
+            mkdir($firstLetterDir,0777);
+        }
+        if (!file_exists($firstLetterDir.'/products')||!is_dir($firstLetterDir.'/products')){
+            mkdir($firstLetterDir.'/products',0777);
+        }
+        if (!file_exists($firstLetterDir.'/products/'.$code)||!is_dir($firstLetterDir.'/products/'.$code)){
+            mkdir($firstLetterDir.'/products/'.$code,0777);
+        }
+        //
+        
+        $upload->hashLevel=4;
+        if(!$upload->upload()) {// 上传错误提示错误信息
+            $msg=$upload->getErrorMsg();
+            echo $msg;
+            exit;
+
+        }else{// 上传成功 获取上传文件信息
+            $info =  $upload->getUploadFileInfo();
+            $this->siteUrl=$this->siteUrl?$this->siteUrl:C('site_url');
+            $msg=$this->siteUrl.substr($upload->savePath,1).$info[0]['savename'];
+            echo json_encode($info);
+            exit;
+
+        }
+        
+    }
    #region 上传文件
     public  function fileupload(){
         $carno=$_GET['carno'];
@@ -2839,6 +2971,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $data['价税合计']=$form['价税合计'];
          $data['总金额']=$form['总金额'];
          $data['单据类别']='销售出库';
+         $data['门店']=$form['门店'];
+         $data['车牌号码']=$form['车牌号码'];
          //$data['引用ID']=$wxID;
          //$data['引用类别']='维修领料';
          //$data['引用单号']=$wxinfo['业务编号'];
@@ -2883,7 +3017,109 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
      }
    }
    public function salebillcheck(){
-   
+       if(IS_POST){
+           $xsd=$_POST['xsd'];
+           $xsmx=$_POST['xsdmx'];
+           if($xsd['单据类别']=='销售出库'){
+               $sellbill['当前状态']='已审核';
+               $sellbill['审核人']=cookie('username');
+               $sellbill['审核日期']=date('Y-m-d',time());
+               $sellbill['应结金额']=$xsd['应结金额'];
+               $sellbill['现结金额']=$xsd['现结金额'];
+               $sellbill['挂账金额']=$xsd['挂账金额'];
+               $sellbill['优惠金额']=$xsd['优惠金额'];
+               M('销售单','dbo.','difo')->where(array('流水号'=>$xsd['流水号']))->save($sellbill);
+
+               $paybill['ID']=$this->getcode(18,1,1);
+               $paybill['单位编号']=$xsd['客户ID'];
+               $paybill['单位名称']=$xsd['客户名称'];
+               $paybill['单据类别']='销售出库';
+               $paybill['单据编号']=$xsd['单据编号'];
+               $paybill['制单日期']=date('Y-m-d',time());
+               $paybill['制单人']=cookie('username');
+               $paybill['总金额']=$xsd['总金额'];
+               $paybill['已结算金额']=$xsd['现结金额'];
+               $paybill['未结算金额']=$xsd['挂账金额'];
+               $paybill['本次结算']=$xsd['现结金额'];
+               $paybill['提醒日期']=date('Y-m-d',time());
+               $paybill['账款类别']='应收款';
+               $paybill['当前状态']='待审核';
+               $paybill['审核人']=cookie('username');
+               $paybill['审核日期']=date('Y-m-d',time());
+               $paybill['摘要']='销售出库';
+               $paybill['虚增价税']=0;
+               $paybill['挂账金额']=$xsd['挂账金额'];
+               $paybill['车牌号码']=$xsd['车牌号码'];
+               M('应收应付单','dbo.','difo')->add($paybill);
+
+               if(doubleval($xsd['现结金额'])>0||$xsd['结算方式']=='会员卡支付'){
+                   $inout['单据编号']=$this->getcodenum('BI');
+                   $inout['制单日期']=date('Y-m-d',time());
+                   $inout['制单人']=cookie('username');
+                   $inout['单位名称']=$xsd['客户名称'];
+                   $inout['账款类别']='收款单';
+                   $inout['实收金额']=$xsd['现结金额'];
+                   $inout['折扣金额']=0;
+                   $inout['结算方式']=$xsd['结算方式'];
+                   $inout['摘要']='销售出库收款('.$xsd['单据编号'].')';
+                   $inout['收支项目']='销售出库';
+                   $inout['当前状态']='待审核';
+                   $inout['发票类别']=$xsd['发票类别'];
+                   $inout['发票号']=$xsd['发票号'];
+                   $inout['ID']=$this->getcode(18,1,1);
+                   $inout['单位编号']=$xsd['客户ID'];
+                   $inout['本次冲账']=$xsd['现结金额'];
+                   $inout['单据类别']='应收款';
+                   $inout['取用预存']=0;
+                   M('日常收支','dbo.','difo')->add($inout);
+                   
+                   $dj['挂账ID']=$paybill['ID'];
+                   $dj['收支ID']=$inout['ID'];
+                   $dj['金额']=$xsd['现结金额'];
+                   M('引用单据','dbo.','difo')->add($dj);
+               }
+               $crkitem['ID']=$this->getcode(20,1,1);
+               $crkitem['引用单号']=$xsd['单据编号'];
+               $crkitem['引用ID']=$xsd['ID'];
+               $crkitem['引用类别']='销售出库';
+               $crkitem['单据编号']=$this->getcodenum('CK');
+               $crkitem['制单日期']=date('Y-m-d',time());;
+               $crkitem['制单人']=cookie('username');
+               $crkitem['车牌号码']=$xsd['车牌号码'];
+               $crkitem['当前状态']='待审核';
+               $crkitem['原因']='销售出库';
+               $crkitem['领料员']=cookie('username');
+               $crkitem['单据类别']='出库';
+               $crkitem['单据备注']='销售出库';
+               M('出入库单','dbo.','difo')->add($crkitem);
+               foreach($xsmx as $product){
+                   $crk['ID']=$crkitem['ID'];
+                   $crk['仓库']=$product['仓库'];
+                   $crk['编号']=$product['编号'];
+                   $crk['名称']=$product['名称'];
+                   $crk['规格']=$product['规格'];
+                   $crk['单位']=$product['单位'];
+                   $crk['数量']=$product['数量'];
+                   $crk['单价']=$product['单价'];
+                   $crk['金额']=$product['金额'];
+                   $crk['成本价']=$product['成本价'];
+                   $crk['适用车型']=$product['适用车型'];
+                   $crk['产地']=$product['产地'];
+                   $crk['备注']=$product['备注'];
+                   M('出入库明细','dbo.','difo')->add($crk);
+               }
+               $this->writeLog($xsd['引用ID'],$xsd['引用单号'],'销售审核','销售审核');
+
+               echo '审核通过';
+               exit;
+           }
+           else{
+               
+           }
+
+       }else{
+           $this->display();
+       }
    }
    public function maintenance()
     {  

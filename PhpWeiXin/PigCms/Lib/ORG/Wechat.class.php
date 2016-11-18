@@ -171,17 +171,17 @@ class Wechat
     }
     public function get_access_token()
     {  
-         $access_token=S('weixin_access_token');
-         Log::write('从缓存中获取token->'.$access_token);
-         if(!$access_token){
+         //$access_token=S('weixin_access_token');
+         //Log::write('从缓存中获取token->'.$access_token);
+         //if(!$access_token){
             $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->wxuser['appid'].'&secret='.$this->wxuser['appsecret'];
             $json=json_decode($this->curlGet($url_get));
             if (!$json->errmsg){
                 $access_token=$json->access_token;
-                Log::write('重新获取token->'.$access_token);
-                S('weixin_access_token',$access_token,7200);
+                //Log::write('重新获取token->'.$access_token);
+                //S('weixin_access_token',$access_token,7200);
             }
-        }
+        //}
         return $access_token;
     }
     public function remark($openid,$remark){
@@ -202,15 +202,10 @@ class Wechat
        if($content!=''){
            $data='{"touser":"'.$openid.'","msgtype":"text","text":{"content":"'.$content.'"}}';
            $access_token=$this->get_access_token();
-           $rt=$this->curlPost('https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token='.$access_token,$data,0);
-           if(!$rt['rt'])
-           {
-               Log::write('清空缓存');
-               S('weixin_access_token',null);
-               $rt=$this->send($content,$openid);
-           }
+           $result=$this->curlPost('https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token='.$access_token,$data,0);
+           return $result;
        }
-        return $rt;
+       return true;
 	}
 	function curlPost($url, $data,$showError=1){
 		$ch = curl_init();

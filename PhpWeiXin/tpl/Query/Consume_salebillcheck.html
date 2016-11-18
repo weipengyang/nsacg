@@ -74,8 +74,8 @@
                             row = parent.grid.getSelectedRow();
                             parent.grid.updateRow(row, data);
                             var data = {
-                                cgd: row,
-                                cgdmx:parent.product.rows,
+                                xsd: row,
+                                xsdmx:parent.product.rows,
                             };
                             $.post('/index.php?g=Query&m=Consume&a=salebillcheck', data,
                               function (msg) {

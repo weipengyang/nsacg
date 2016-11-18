@@ -13,7 +13,7 @@
 
     <script>
         var grid;
-        var editdialog,cardialog,crkialog;
+        var editdialog, cardialog, crkialog, picdialog;
         function editinfo(code) {
             if (editdialog) {
                 editdialog.setUrl('/index.php?g=Query&m=Consume&a=editproduct&code=' + code);
@@ -32,6 +32,26 @@
                 });
             }
         }
+        function picnfo(code) {
+            if (picdialog) {
+                picdialog.setUrl('/index.php?g=Query&m=Consume&a=productupload&code=' + code);
+                picdialog.show();
+            }
+            else {
+                picdialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=productupload&code=' + code,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '车辆图片查看'
+                });
+            }
+        }
+
         function viewcarinfo(code) {
             if (cardialog) {
                 cardialog.setUrl('/index.php?g=Query&m=Consume&a=usecars&code=' + code);
@@ -240,6 +260,11 @@
                         return value;
                     }
                 },
+                {
+                    display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
+                        return '<a href="javascript:void(0);" onclick="picnfo(\'' + rowdata.编号 + '\');"><strong>配件图片</strong></a>';
+                    }
+                }
         ],
                 isScroll: true,
                 pageSize: 20,

@@ -13,7 +13,11 @@
 
     <script type="text/javascript">
         var form, product;
-        var editproductdialog,addproductdialog;
+        var editproductdialog, addproductdialog;
+        var data = [
+               { id: '塘坑店', name: '塘坑店' },
+               { id: '区府店', name: '区府店' },
+        ];
         function reflash() {
             var rows = product.rows;
             var num = price = fax = 0;
@@ -31,14 +35,19 @@
             $("input[ligeruiid='价税合计']").val(price + fax);
         }
         function addproduct() {
+            var shop = liger.get('mendian').getValue();
+            if (shop == '') {
+                $.ligerDialog.alert('请先选择门店');
+                return;
+            }
             if (addproductdialog) {
-                addproductdialog.setUrl('index.php?&g=Query&m=Consume&a=addsaleproduct');
+                addproductdialog.setUrl('index.php?&g=Query&m=Consume&a=addsaleproduct&shop='+shop);
                 addproductdialog.show();
             }
             else {
                 addproductdialog= $.ligerDialog.open({
                     height: 600,
-                    url: 'index.php?&g=Query&m=Consume&a=addsaleproduct',
+                    url: 'index.php?&g=Query&m=Consume&a=addsaleproduct&shop='+shop,
                     width: 900,
                     showMax: true,
                     showToggle: true,
@@ -94,9 +103,14 @@
                 inputWidth: 140, labelWidth: 65, space: 20,
                 validate: true,
                 fields: [
-                   {
-                       display: "车牌号码 ", name: "车牌号码", newline: true, type: "text", readonly: true
-                   },
+                    {
+                        display: "门店", name: "门店", newline: false, type: "combobox", comboboxName: 'mendian', options: {
+                            valueField: 'name',
+                            textField: 'name',
+                            data: data,
+                        }
+
+                    },
                    {
                        display: "客户名称", name: "客户名称", newline: false, type: "popup", options: {
                              condition: {
@@ -107,6 +121,11 @@
                              onSelected:function (e) {
                                  var row = e.data[0];
                                  $("input[name='联系电话']").val(row['联系电话']);
+                                 var carno = liger.get('combcarno');
+                                 if (carno) {
+                                     carno.setParm('id', row['ID']);
+                                     carno.reload();
+                                 }
                              },
                              searchClick: function (e) {
                                  e.grid.set('parms', { 'searchkey':e.rules[0]['value'] });
@@ -176,8 +195,17 @@
                        {
                            display: "总金额", name: "总金额", newline: false, type: "text"
                        },
+                       {
+                           display: "备注", name: "备注", newline: false, type: "text"
+                       },
                     {
-                        display: "备注", name: "备注", newline: false, type: "text"
+                        display: "车牌号码", name: "车牌号码", newline: false, type: "combobox",comboboxName:'combcarno',
+                        options: {
+                            valueField: '车牌号码',
+                            textField: '车牌号码',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getcarnobypersonid',
+                        }
                     },
                    
                 ],
@@ -186,7 +214,7 @@
                             var data = form.getData();
                             data['客户ID'] = data['客户名称'];
                             data['客户名称'] = $("input[ligeruiid='客户名称']").val();
-                            data['付款日期'] = $("input[ligeruiid='付款日期']").val();
+                            data['收款日期'] = $("input[ligeruiid='收款日期']").val();
                             if (data['业务员'] == '') {
                                 $.ligerDialog.alert('请选择业务员');
                                 return;
@@ -264,10 +292,10 @@
                 },
                 data: window.parent.product.getSelectedRows(),
                 onDblClickRow: function (data, rowindex, rowobj) {
-                    product.deleteSelectedRow();
+                    //product.deleteSelectedRow();
                 },
                 onSelectRow: function (rowdata, rowid, rowobj) {
-                    $("input[ligeruiid='本次领料']").val(rowdata['本次领料']);
+                    //$("input[ligeruiid='本次领料']").val(rowdata['本次领料']);
 
                 }
             });

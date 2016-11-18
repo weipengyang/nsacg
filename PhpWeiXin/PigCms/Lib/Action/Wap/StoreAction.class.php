@@ -656,9 +656,10 @@ public function check(){
          }elseif($type==2){
              $xs=M('销售单','dbo.','difo')->where(array('流水号'=>$itemid))->find();
 
-             $this->genbill($price,$xs['客户名称'],'销售出库收款('.$xs['单据编号'].')',$xs['客户ID']);
+             $this->genbill($price,$xs['客户名称'],'销售出库收款('.$xs['单据编号'].')',$xs['客户ID'],'销售出库');
              M('销售单','dbo.','difo')->where(array('流水号'=>$itemid))->save(array('当前状态'=>'已审核'));
              $this->consumerecord($price,'汽车商品支付',$userinfo);
+
              echo '结算成功';
              exit;
          }
@@ -698,7 +699,7 @@ public function check(){
      $this->display();
    }
 
-   private function genbill($price,$chezhu,$zhaiyao,$daiwen){
+   private function genbill($price,$chezhu,$zhaiyao,$daiwen,$type=''){
 
        $bianhao=$this->getcodenum("BI");
        $data['单据编号']=$bianhao;
@@ -731,6 +732,90 @@ public function check(){
        $data['单据类别']='应收款';
        $data['取用预存']=0;
        M('日常收支','dbo.','difo')->add($data);
+
+       $paybill['ID']=$this->getcode(18,1,1);
+       $paybill['单位编号']=$xsd['客户ID'];
+       $paybill['单位名称']=$xsd['客户名称'];
+       $paybill['单据类别']='销售出库';
+       $paybill['单据编号']=$xsd['单据编号'];
+       $paybill['制单日期']=date('Y-m-d',time());
+       $paybill['制单人']='系统自动';
+       $paybill['总金额']=$xsd['总金额'];
+       $paybill['已结算金额']=$xsd['现结金额'];
+       $paybill['未结算金额']=$xsd['挂账金额'];
+       $paybill['本次结算']=$xsd['现结金额'];
+       $paybill['提醒日期']=date('Y-m-d',time());
+       $paybill['账款类别']='应收款';
+       $paybill['当前状态']='待审核';
+       $paybill['审核人']=cookie('username');
+       $paybill['审核日期']=date('Y-m-d',time());
+       $paybill['摘要']='销售出库';
+       $paybill['虚增价税']=0;
+       $paybill['挂账金额']=$xsd['挂账金额'];
+       $paybill['车牌号码']=$xsd['车牌号码'];
+       M('应收应付单','dbo.','difo')->add($paybill);
+
+       $dj['挂账ID']=$paybill['ID'];
+       $dj['收支ID']=$data['ID'];
+       $dj['金额']=$xsd['现结金额'];
+       M('引用单据','dbo.','difo')->add($dj);
+
+       if(doubleval($xsd['现结金额'])>0||$xsd['结算方式']=='会员卡支付'){
+           $inout['单据编号']=$this->getcodenum('BI');
+           $inout['制单日期']=date('Y-m-d',time());
+           $inout['制单人']=cookie('username');
+           $inout['单位名称']=$xsd['客户名称'];
+           $inout['账款类别']='收款单';
+           $inout['实收金额']=$xsd['现结金额'];
+           $inout['折扣金额']=0;
+           $inout['结算方式']=$xsd['结算方式'];
+           $inout['摘要']='销售出库收款('.$xsd['单据编号'].')';
+           $inout['收支项目']='销售出库';
+           $inout['当前状态']='待审核';
+           $inout['发票类别']=$xsd['发票类别'];
+           $inout['发票号']=$xsd['发票号'];
+           $inout['ID']=$this->getcode(18,1,1);
+           $inout['单位编号']=$xsd['客户ID'];
+           $inout['本次冲账']=$xsd['现结金额'];
+           $inout['单据类别']='应收款';
+           $inout['取用预存']=0;
+           M('日常收支','dbo.','difo')->add($inout);
+           
+         
+       }
+       if($type=='销售出库'){
+           $crkitem['ID']=$this->getcode(20,1,1);
+           $crkitem['引用单号']=$xsd['单据编号'];
+           $crkitem['引用ID']=$xsd['ID'];
+           $crkitem['引用类别']='销售出库';
+           $crkitem['单据编号']=$this->getcodenum('CK');
+           $crkitem['制单日期']=date('Y-m-d',time());;
+           $crkitem['制单人']=cookie('username');
+           $crkitem['车牌号码']=$xsd['车牌号码'];
+           $crkitem['当前状态']='待审核';
+           $crkitem['原因']='销售出库';
+           $crkitem['领料员']=cookie('username');
+           $crkitem['单据类别']='出库';
+           $crkitem['单据备注']='销售出库';
+           M('出入库单','dbo.','difo')->add($crkitem);
+           foreach($xsmx as $product){
+               $crk['ID']=$crkitem['ID'];
+               $crk['仓库']=$product['仓库'];
+               $crk['编号']=$product['编号'];
+               $crk['名称']=$product['名称'];
+               $crk['规格']=$product['规格'];
+               $crk['单位']=$product['单位'];
+               $crk['数量']=$product['数量'];
+               $crk['单价']=$product['单价'];
+               $crk['金额']=$product['金额'];
+               $crk['成本价']=$product['成本价'];
+               $crk['适用车型']=$product['适用车型'];
+               $crk['产地']=$product['产地'];
+               $crk['备注']=$product['备注'];
+               M('出入库明细','dbo.','difo')->add($crk);
+           }
+        $this->writeLog($xsd['引用ID'],$xsd['引用单号'],'销售审核','销售审核');
+      }
    }
    private function getcodenum($type)
    {

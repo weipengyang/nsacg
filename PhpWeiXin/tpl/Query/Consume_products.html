@@ -51,7 +51,6 @@
                 });
             }
         }
-
         function viewcarinfo(code) {
             if (cardialog) {
                 cardialog.setUrl('/index.php?g=Query&m=Consume&a=usecars&code=' + code);
@@ -71,15 +70,16 @@
                 });
             }
         }
-        function viewcrkinfo(code,lb){
+        function viewcrkinfo(code, lb) {
+            var url = '/index.php?g=Query&m=Consume&a=crklist&code=' + code + '&lb=' + lb+'&shop='+$('#shop').val()
             if (crkialog) {
-                crkialog.setUrl('/index.php?g=Query&m=Consume&a=crklist&code='+ code+'&lb='+lb);
+                crkialog.setUrl(url);
                 crkialog.show();
             }
             else {
                 crkialog = $.ligerDialog.open({
                     height: 470,
-                    url: '/index.php?g=Query&m=Consume&a=crklist&code='+code+'&lb='+lb,
+                    url: url,
                     width: 900,
                     showToggle: false,
                     showMin: false,
@@ -91,9 +91,14 @@
         }
         function searachbykey() {
             grid.changePage('first');
+            var parms = {};
             var yjml = $('#yjml').val();
             var ejml = $('#ejml').val();
             var sjml = $('#sjml').val();
+            var shop = $('#shop').val();
+            if (shop) {
+                parms['shop'] = shop;
+            }
             var lb = '';
             if (yjml != '') {
                 lb = yjml;
@@ -104,7 +109,6 @@
             if (sjml != '') {
                 lb += '>>' + sjml;
             }
-            var parms = {};
             if ($('#searchkey').val() != '')
                 parms['searchkey'] = $('#searchkey').val();
             if (lb)
@@ -113,13 +117,65 @@
             grid.set('parms', parms);
             grid.reload();
         }
+        function exportdata() {
+            var parms ='';
+            var yjml = $('#yjml').val();
+            var ejml = $('#ejml').val();
+            var sjml = $('#sjml').val();
+            var shop = $('#shop').val();
+            if (shop) {
+                parms='shop='+shop;
+            }
+            var lb = '';
+            if (yjml != '') {
+                lb = yjml;
+            }
+            if (ejml != '') {
+                lb += '>>' + ejml;
+            }
+            if (sjml != '') {
+                lb += '>>' + sjml;
+            }
+            if ($('#searchkey').val() != '')
+                parms+='&searchkey='+$('#searchkey').val();
+            if (lb)
+                parms+'&lb='+lb;
+            parms+='&flag=1';
+            location.href = 'index.php?g=Query&m=Consume&a=exportproductlist&' + parms;
+                  
+        }
+        function f_onAfterEdit(e) {
+            if (e.column.name == "警戒下限") {
+                var num = e.value;
+                if (num != 0) {
+                    var submitData = {
+                        流水号: e.record['流水号'],
+                        警戒下限: num
+                    };
+                    $.post('index.php?g=Query&m=Consume&a=changelowerbound', submitData,
+                     function (data) {
+                         if (data) {
+
+                         }
+                     }, 'JSON');
+                }
+            }
+        }
         $(document).ready(function () {
             var key = "{pigcms:$_GET['key']}";
+            $('#shop').change(function () {
+                $('#search').click();
+            });
             $('#search').click(function () {
                 grid.changePage('first');
+                var parms = {};
                 var yjml = $('#yjml').val();
                 var ejml = $('#ejml').val();
                 var sjml = $('#sjml').val();
+                var shop = $('#shop').val();
+                if (shop) {
+                    parms['shop'] = shop;
+                }
                 var lb = '';
                 if (yjml != '') {
                     lb = yjml;
@@ -130,7 +186,6 @@
                 if (sjml != '') {
                     lb += '>>' + sjml;
                 }
-                var parms ={ };
                 if (key)
                     parms['key']=key;
                 if ($('#searchkey').val() != '')
@@ -194,40 +249,51 @@
                 var detailgrid = document.createElement('div');
                 $(detailPanel).append(detailgrid);
                 $(detailgrid).ligerGrid({
-                    columns:
-                                [
-                                { display: '编号', name: '编号', width: 100 },
-                                { display: '仓库', name: '仓库' },
-                                { display: '库存', name: '库存' },
-                                { display: '盘点数量', name: '盘点数量' },
-                                ],
+                    columns:[
+                    { display: '编号', name: '编号', width: 100 },
+                    { display: '仓库', name: '仓库' },
+                    { display: '库存', name: '库存' },
+                    { display: '警戒下限', name: '警戒下限', editor: { type: 'int' } },
+                    { display: '盘点数量', name: '盘点数量' },
+                    ],
                     isScroll: false,
                     showToggleColBtn: false,
                     width: '50%',
                     usePager: false,
+                    enabledEdit: true,
                     parms:{code:row['编号']},
                     url: '/index.php?g=Query&m=Consume&a=getstockbycode',
                     showTitle: false,
                     columnWidth: 100,
+                    onAfterEdit:f_onAfterEdit,
                     onAfterShowData: callback,
                     frozen: false
                 });
             }
             grid = $("#maingrid4").ligerGrid({
                 columns: [
-                { display: '编号', name: '编号', align: 'left', width: 100 },
+                { display: '仓库', name: '仓库', align: 'left', width: 100 },
+                { display: '编号', name: '编号', width: 100 },
                 { display: '名称', name: '名称', width: 150},
                 { display: '规格', name: '规格', width: 120 },
                 { display: '品牌', name: '品牌', width: 120 },
                 {
-                    display: '库存', name: '库存', width: 60, align: 'left', render: function (rowdata, index, value) {
-                        if (value < rowdata['警戒下限'])
+                    display: '总库存', name: '库存', width: 60, render: function (rowdata, index, value) {
+                        if (value < rowdata['警戒线'])
                             return "<span style='color:red'>" + value + "</span>";
                         else
                             return value;
                     }
                 },
-                { display: '使用车辆数', name: '数量', width: 60, align: 'left',render: function (rowdata, index, value) {
+                 {
+                     display: '分库存', name: '分库存', width: 60, render: function (rowdata, index, value) {
+                         if (value < rowdata['警戒线'])
+                             return "<span style='color:red'>" + value + "</span>";
+                         else
+                             return value;
+                     }
+                 },
+                { display: '使用车辆数', name: '数量', width: 60,render: function (rowdata, index, value) {
                     if (value&&value>0)
                         return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + rowdata['编码'] + '\');"><strong>' + value + '</strong></a>';
                     else
@@ -242,14 +308,14 @@
                 }
                 },
                 {
-                    display: '出库数', name: '出库数量', width: 60, align: 'left', render: function (rowdata, index, value) {
+                    display: '出库数', name: '出库数量', width: 60, render: function (rowdata, index, value) {
                         if (value && value > 0)
                             return '<a href="javascript:void(0);" onclick="viewcrkinfo(\'' + rowdata['编号'] + '\',\'出库\');"><strong>' + value + '</strong></a>';
                         else
                             return value;
                     }
                 },
-                { display: '警戒下限', name: '警戒下限', width: 60, align: 'left' },
+                { display: '警戒下限', name: '警戒线', width: 60 },
                 { display: '最新进价', name: '最新进价', width: 60 },
                 { display: '参考进价', name: '参考进价', width: 60 },
                 { display: '参考售价', name: '参考售价', width: 60 },
@@ -262,7 +328,7 @@
                 },
                 {
                     display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
-                        return '<a href="javascript:void(0);" onclick="picnfo(\'' + rowdata.编号 + '\');"><strong>配件图片</strong></a>';
+                        return '<a href="javascript:void(0);" onclick="picnfo(\'' + rowdata.流水号 + '\');"><strong>配件图片</strong></a>';
                     }
                 }
         ],
@@ -297,6 +363,12 @@
                     <div class="am-g">
                         <div class="am-u-sm-10 am-u-md-9">
                             <div class="am-form-group">
+                                门店
+                                <select data-am-selected="{btnSize: 'sm'}" id="shop">
+                                    <option value="all">所有门店</option>
+                                    <option value="区府店">区府店</option>
+                                    <option value="塘坑店">塘坑店</option>
+                                </select>
                                 配件分类
                                 <select data-am-selected="{btnSize: 'sm'}" id="yjml">
                                     <option value="">所有分类</option>
@@ -311,6 +383,7 @@
                                     <option value="">所有分类</option>
                                 </select>
                                 <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="searachbykey();">低于警戒线</button>
+                                <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="exportdata();">导出数据</button>
                            </div>
                         </div>
                         <div class="am-u-sm-2 am-u-md-3">

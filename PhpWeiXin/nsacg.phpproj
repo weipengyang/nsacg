@@ -14657,6 +14657,8 @@
     <Content Include="tpl\Other\index.html" />
     <Content Include="tpl\Query\Consume_carinfo - Copy.html" />
     <Content Include="tpl\Query\Consume_memberquery.html" />
+    <Content Include="tpl\Query\Consume_couponquery.html" />
+    <Content Include="tpl\Query\Consume_newpurchasies.html" />
     <Content Include="tpl\Query\Consume_tirequery.html" />
     <Content Include="tpl\Query\Consume_usermanage.html" />
     <Content Include="tpl\Query\Consume_addsaleproduct.html" />

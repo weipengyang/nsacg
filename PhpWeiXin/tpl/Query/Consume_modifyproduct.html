@@ -30,7 +30,15 @@
                 validate: true,
                 fields: [
                     { display: "流水号", name: "流水号", newline: true, type: "hidden" },
-                    { display: "仓库 ", name: "仓库", newline: true, type: "text",readonly:true},
+                    {
+                        display: "仓库 ", name: "仓库", newline: true, type: "combobox",
+                        options: {
+                            valueField: '名称',
+                            textField: '名称',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getstorelist',
+                        }
+                    },
                     { display: "编号", name: "编号", newline: false, type: "text", readonly: true },
                     { display: "名称 ", name: "名称", newline: true, type: "text", readonly: true },
                     { display: "规格", name: "规格", newline: false, type: "text", readonly: true },
@@ -76,21 +84,29 @@
                             var row = form.getChanges();
                             row['流水号'] = productinfo['流水号'];
                             row['ID'] = productinfo['ID'];
-                            parent.product.updateRow(productinfo,row);
-                            var data = {
-                                product: row,
-                                record: parent.record,
-                            };
-                            $.post('/index.php?g=Query&m=Consume&a=saveproductbyid', data,
-                             function (msg) {
-                                 $.ligerDialog.alert(msg);
-                                 parent.editproductdialog.hide();
-                                 parent.reflash();
-                             });
+                            parent.product.updateRow(productinfo, row);
+                            var type = getQueryString('type');
+                            if (!type) {
+                                var data = {
+                                    product: row,
+                                    record: parent.record,
+                                };
+                                $.post('/index.php?g=Query&m=Consume&a=saveproductbyid', data,
+                                 function (msg) {
+                                     $.ligerDialog.alert(msg);
+                                     parent.editproductdialog.hide();
+                                     parent.reflash();
+                                 });
+                            } else {
+                                parent.editproductdialog.hide();
+                                parent.reflash();
+                            }
                         }
                     }                ]            });
             productinfo = parent.product.getSelectedRow();
             form.setData(productinfo);
+            $("input[ligeruiid='仓库']").val(productinfo['仓库']);
+
         });
 
 

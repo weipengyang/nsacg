@@ -96,7 +96,7 @@
                 isScroll: true,
                 pageSize: 10,
                 url: '/index.php?g=Query&m=Consume&a=getcrklist',
-                parms: { code: getQueryString('code'), lb: getQueryString('lb') },
+                parms: { code: getQueryString('code'), lb: getQueryString('lb'),shop:getQueryString('shop') },
                 height: '100%'
             });
             $('#search').click(function () {

@@ -9,10 +9,6 @@
     <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
     <script type="text/javascript">
-        var data = [
-              { id: '塘坑店', name: '塘坑店' },
-              { id: '区府店', name: '区府店' },
-        ];
         $(function ()
         {
             var form = $("#form1").ligerForm({
@@ -61,9 +57,10 @@
                     { display: "联系电话 ", name: "联系电话", newline: false, type: "text", validate: { required: true } },
                      {
                          display: "门店", name: "门店", newline: true, type: "combobox", comboboxName: 'mendian', options: {
-                             valueField: 'name',
-                             textField: 'name',
-                             data: data,
+                             valueField: '名称',
+                             textField: '名称',
+                             autocomplete: true,
+                             url: '/index.php?g=Query&m=Consume&a=getshoplist',
                              onChangeValue: function () {
                                  var selected = this.selected;
                                  var zhuxiu = liger.get('zhuxiu');

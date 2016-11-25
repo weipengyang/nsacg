@@ -23,14 +23,14 @@
             var num = price = fax = 0;
             $(rows).each(function () {
                 num += parseFloat(this['数量']);
-                price += parseFloat(this['金额']);
+                price += parseFloat(this['金额'] * this['折扣']);
                 fax += parseFloat(this['税额']);
             });
 
             var yf = parseFloat($("input[ligeruiid='运费']").val());
             $("input[ligeruiid='合计数量']").val(num);
-            $("input[ligeruiid='合计货款']").val(price);
-            $("input[ligeruiid='合计税额']").val(fax);
+            $("input[ligeruiid='实际货款']").val(price);
+            $("input[ligeruiid='实际税额']").val(fax);
             $("input[ligeruiid='总金额']").val(price + fax+yf);
             $("input[ligeruiid='价税合计']").val(price + fax);
         }
@@ -184,10 +184,10 @@
                           display: "合计数量", name: "合计数量", newline: false, type: "text",
                       },
                     {
-                        display: "合计货款", name: "合计货款", newline: false, type: "text",
+                        display: "合计货款", name: "实际货款", newline: false, type: "text",
                     },
                     {
-                        display: "合计税额", name: "合计税额", newline: false, type: "text",
+                        display: "合计税额", name: "实际税额", newline: false, type: "text",
                     },
                      {
                          display: "价税合计", name: "价税合计", newline: true, type: "text",
@@ -298,7 +298,8 @@
                     //$("input[ligeruiid='本次领料']").val(rowdata['本次领料']);
 
                 }
-            });
+             });
+             $("input[ligeruiid='运费']").val(0);
             //calprice();
         });
 

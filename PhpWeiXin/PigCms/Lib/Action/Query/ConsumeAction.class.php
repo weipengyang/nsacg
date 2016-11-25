@@ -9,6 +9,7 @@
  * @author Administrator
  */
 class ConsumeAction extends Action{
+    public $token;
     public  function _initialize(){
         $this->token='rlydsv1453614397';
         if(!in_array(ACTION_NAME, array('register', 'login'))){
@@ -180,7 +181,9 @@ class ConsumeAction extends Action{
         $pagesize=$_POST['pagesize'];
         $where['1']=1;
         $searchkey=$_POST['searchkey'];
-        $searchkey='%'.trim($searchkey).'%';
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
+            $searchkey='%'.trim($searchkey).'%';
+        }
         if($searchkey){       
             $searchwhere['carno']=array('like',$searchkey);
             $searchwhere['truename']=array('like',$searchkey);
@@ -214,7 +217,9 @@ class ConsumeAction extends Action{
             $where['type']=array('neq','3');
         }
         $searchkey=$_POST['searchkey'];
-        $searchkey='%'.trim($searchkey).'%';
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
+            $searchkey='%'.trim($searchkey).'%';
+        }
         if($searchkey){       
             $searchwhere['nickname']=array('like',$searchkey);
             $searchwhere['code']=array('like',$searchkey);
@@ -237,6 +242,44 @@ class ConsumeAction extends Action{
             ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
         $count=M('tire_query')
            // ->join('join tp_userinfo on tp_member_card_sign.wecha_id=tp_userinfo.wecha_id')
+            ->where($where)->count();
+        $data['Rows']=$scoreinfo;
+        $data['Total']=$count;
+        echo json_encode($data);
+    
+    }
+    public  function getpresentcoupons(){
+    
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $searchkey=$_POST['searchkey'];
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
+            $searchkey='%'.trim($searchkey).'%';
+        }
+        $where['1']=1;
+        if($searchkey){       
+            $searchwhere['number']=array('like',$searchkey);
+            $searchwhere['optuser']=array('like',$searchkey);
+            $searchwhere['proposer']=array('like',$searchkey);
+            $searchwhere['comment']=array('like',$searchkey);
+            $searchwhere['coupon_name']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $order='addtime desc';
+        }
+        else{
+            $order=$sortname.' '.$sortorder.',addtime desc';
+        }
+        $scoreinfo=M('member_present')
+            ->join('left join tp_member_card_create on tp_member_present.wecha_id=tp_member_card_create.wecha_id')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+        $count=M('member_present')
+            ->join('left join tp_member_card_create on tp_member_present.wecha_id=tp_member_card_create.wecha_id')
             ->where($where)->count();
         $data['Rows']=$scoreinfo;
         $data['Total']=$count;
@@ -376,8 +419,12 @@ class ConsumeAction extends Action{
             $where['类别']=array('like','%'.trim($_POST['lb'].'%'));
             
         }
-        if($searchkey){       
-            $searchwhere['编号']=array('like',$searchkey);
+        if($searchkey){                  
+            if(in_array($_POST['shop'],array('区府店','塘坑店'))){
+                $searchwhere['配件目录.编号']=array('like',$searchkey);
+             }else{
+                 $searchwhere['编号']=array('like',$searchkey);
+            }
             $searchwhere['名称']=array('like',$searchkey);
             $searchwhere['规格']=array('like',$searchkey);
             $searchwhere['备注']=array('like',$searchkey);
@@ -391,15 +438,153 @@ class ConsumeAction extends Action{
         }
         if($_POST['flag'])
         {
-            $where['_string']='isnull(库存,0)<isnull(警戒下限,0)';
+            if(in_array($_POST['shop'],array('区府店','塘坑店'))){
+                $where['_string']='isnull(出入库统计.库存,0)<isnull(出入库统计.警戒下限,0)';
+            }else{
+                $where['_string']='isnull(配件库存.库存,0)<isnull(配件库存.警戒下限,0)';
+            }
         }
-        $count=M('配件库存','dbo.','difo')->where($where)->count();
-        $yelist=M('配件库存','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        if(in_array($_POST['shop'],array('区府店','塘坑店'))){
+            $cangku='塘坑门店仓库';
+            if($_POST['shop']=='区府店')
+                $cangku='区府门店仓库';
+            $yelist=M('配件目录','dbo.','difo')
+                   ->join(' join 出入库统计  on 配件目录.编号=出入库统计.编号  and  出入库统计.仓库=\''.$cangku.'\' left join 信息分类统计  on 配件目录.编码=信息分类统计.类型')
+                   ->field('配件目录.*,出入库统计.仓库,isnull(出入库统计.库存,0) 分库存,isnull(出入库统计.警戒下限,0) 警戒线,出入库统计.出库数量,出入库统计.入库数量,信息分类统计.数量')
+                   ->where($where)->limit(($page-1)*$pagesize,$pagesize)
+                   ->order("$sortname  $sortorder")
+                   ->select();
+            $count=M('配件目录','dbo.','difo')->where($where)
+                   ->join(' join 出入库统计  on 配件目录.编号=出入库统计.编号  and  出入库统计.仓库=\''.$cangku.'\' left join 信息分类统计  on 配件目录.编码=信息分类统计.类型')
+                ->count();
+
+        }
+        else{
+            $count=M('配件库存','dbo.','difo')->where($where)->count();
+            $yelist=M('配件库存','dbo.','difo')->where($where)
+                ->limit(($page-1)*$pagesize,$pagesize)
+                ->field('配件库存.*,配件库存.警戒下限 警戒线')
+                ->order("$sortname  $sortorder")->select();
+        }
+       
         $data['Rows']=$yelist;
         $data['Total']=$count;
         echo json_encode($data);
         
     }
+    public  function exportproductlist(){
+        $filename=date('Y_m_d',time());
+		header("Content-Type: text/html; charset=utf-8");
+		header("Content-type:application/vnd.ms-execl");
+		header("Content-Disposition:filename=进货数据$filename.xls");
+		$arr = array(
+			array('en'=>'仓库','cn'=>'仓库'),
+			array('en'=>'编号','cn'=>'编号'),
+			array('en'=>'名称','cn'=>'名称'),
+			array('en'=>'规格','cn'=>'规格'),
+			array('en'=>'品牌','cn'=>'品牌'),
+			array('en'=>'库存','cn'=>'总库存'),
+			array('en'=>'分库存','cn'=>'分库存'),
+            array('en'=>'警戒线','cn'=>'警戒线'),
+            array('en'=>'进货数量','cn'=>'进货数量'),
+			array('en'=>'数量','cn'=>'使用车辆数'),
+			array('en'=>'入库数量','cn'=>'入库数量'),
+			array('en'=>'出库数量','cn'=>'出库数量'),
+			array('en'=>'最新进价','cn'=>'最新进价'),
+			array('en'=>'参考进价','cn'=>'参考进价'),
+			array('en'=>'参考售价','cn'=>'参考售价'),
+			array('en'=>'批发价','cn'=>'批发价'),
+			array('en'=>'备注','cn'=>'适用车型'),
+		);
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        $where['1']=1;
+        if(!isset($sortname)){
+            $sortname='编号';
+            $sortorder='asc';
+        }
+        if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+            $searchkey='%'.trim($_GET['searchkey']).'%';
+        }
+        if($_GET['lb']&&trim($_GET['lb'])!='')
+        {
+            $where['类别']=array('like','%'.trim($_GET['lb'].'%'));
+            
+        }
+        if($searchkey){                  
+            if(in_array($_GET['shop'],array('区府店','塘坑店'))){
+                $searchwhere['配件目录.编号']=array('like',$searchkey);
+            }else{
+                $searchwhere['编号']=array('like',$searchkey);
+            }
+            $searchwhere['名称']=array('like',$searchkey);
+            $searchwhere['规格']=array('like',$searchkey);
+            $searchwhere['备注']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        if($_GET['flag'])
+        {
+            if(in_array($_GET['shop'],array('区府店','塘坑店'))){
+                $where['_string']='isnull(出入库统计.库存,0)<isnull(出入库统计.警戒下限,0)';
+            }else{
+                $where['_string']='isnull(配件库存.库存,0)<isnull(配件库存.警戒下限,0)';
+            }
+        }
+        if(in_array($_GET['shop'],array('区府店','塘坑店'))){
+            $cangku='塘坑门店仓库';
+            if($_GET['shop']=='区府店')
+                $cangku='区府门店仓库';
+            $products=M('配件目录','dbo.','difo')
+                   ->join(' join 出入库统计  on 配件目录.编号=出入库统计.编号  and  出入库统计.仓库=\''.$cangku.'\' left join 信息分类统计  on 配件目录.编码=信息分类统计.类型')
+                   ->field('配件目录.*,出入库统计.仓库,isnull(出入库统计.库存,0) 分库存,isnull(出入库统计.警戒下限,0) 警戒线,出入库统计.出库数量,出入库统计.入库数量,信息分类统计.数量,出入库统计.警戒下限-出入库统计.库存 进货数量')
+                   ->where($where)->order("$sortname  $sortorder")
+                   ->select();
+
+        }
+        else{
+            $products=M('配件库存','dbo.','difo')->where($where)
+                ->field('配件库存.*,配件库存.警戒下限 警戒线,配件库存.警戒下限-配件库存.库存 进货数量')
+                ->order("$sortname  $sortorder")->select();
+        }
+		$i = 0;
+		$fieldCount = count($arr);
+		$s = 0;
+		//thead
+		foreach ($arr as $f){
+			if ($s<$fieldCount-1){
+				echo iconv('utf-8','gbk',$f['cn'])."\t";
+			}else {
+				echo iconv('utf-8','gbk',$f['cn'])."\n";
+			}
+			$s++;
+		}
+       
+		if($products){
+			foreach ($products as $product){
+				$j = 0;
+				foreach ($arr as $field){			
+					$fieldValue = $product[$field['en']];
+                    //switch($field['en']){		
+                    
+                    //}
+					
+					if ($j<$fieldCount-1){
+						echo iconv('utf-8','gbk',$fieldValue)."\t";
+					}else {
+						echo iconv('utf-8','gbk',$fieldValue)."\n";
+					}
+					$j++;
+				}
+				$i++;
+			}
+            
+		}
+		exit();
+        
+	}
+
     public  function getcrklist()
     {   
 
@@ -423,6 +608,14 @@ class ConsumeAction extends Action{
         if($_POST['code']&&trim($_POST['code'])!='')
         {
             $where['编号']=$_POST['code'];
+            
+        }
+        if($_POST['shop']&&trim($_POST['shop'])!='all')
+        {   
+            $cangku='塘坑门店仓库';
+            if($_POST['shop']=='区府店')
+                $cangku='区府门店仓库';
+           $where['仓库']=$cangku;
             
         }
         if($searchkey){       
@@ -937,7 +1130,7 @@ class ConsumeAction extends Action{
     public  function getproductbyname(){
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
-        $where['1']=1;
+        $where['停用']=0;
         $shop=$_GET['shop'];
         $cangku='塘坑门店仓库';
         if($shop=='区府店')
@@ -1037,7 +1230,13 @@ class ConsumeAction extends Action{
         echo json_encode($wxlb);
     
 } 
-    public  function getjsfs(){
+     public  function getzones(){
+         
+         $wxlb=M('区域列表','dbo.','difo')->where(array('区域'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($wxlb);
+    
+} 
+   public  function getjsfs(){
          
         $wxlb=M('结算方式','dbo.','difo')->where(array('名称'=>array('like','%'.$_POST['key'].'%')))->select();
         echo json_encode($wxlb);
@@ -1045,6 +1244,16 @@ class ConsumeAction extends Action{
 } 
     public  function getkhgrade(){
         $wxlb=M('客户等级','dbo.','difo')->select();
+        echo json_encode($wxlb);
+    
+} 
+    public  function getshoplist(){
+        $wxlb=M('门店目录','dbo.','difo')->select();
+        echo json_encode($wxlb);
+    
+} 
+    public  function getstorelist(){
+        $wxlb=M('仓库目录','dbo.','difo')->select();
         echo json_encode($wxlb);
     
 } 
@@ -1113,6 +1322,52 @@ class ConsumeAction extends Action{
         $data['Total']=$count;
         echo json_encode($data);
     }
+    public  function getpick()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if(isset($_POST['zt'])){
+            if($_POST['zt']!='all'){
+                $where['当前状态']=$_POST['zt'];
+            }
+        }else
+        {
+            $where['当前状态']='待审核';
+        }
+        if(isset($_POST['lb'])&&$_POST['lb']!='all'){
+            $where['单据类别']=$_POST['lb'];
+
+        }
+        if($searchkey){       
+            $searchwhere['制单人']=array('like',$searchkey);
+            $searchwhere['领料员']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['引用单号']=array('like',$searchkey);
+            $searchwhere['单据备注']=array('like',$searchkey);
+            $searchwhere['单据类别']=array('like',$searchkey);
+            $searchwhere['单据编号']=array('like',$searchkey);
+            $searchwhere['领料员']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $count=M('出入库单','dbo.','difo')->where($where)->count();
+        $yelist=M('出入库单','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
+
     public  function getpurchase()
     {   
         $page=$_POST['page'];
@@ -1126,13 +1381,27 @@ class ConsumeAction extends Action{
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
             $searchkey='%'.trim($_POST['searchkey']).'%';
         }
-        $where['当前状态']='待审核';
+        if(isset($_POST['zt'])){
+            if($_POST['zt']!='all'){
+                $where['当前状态']=$_POST['zt'];
+            }
+        }else
+        {
+          $where['当前状态']='待审核';
+        }
+        if(isset($_POST['shop'])&&$_POST['shop']!='all'){
+            $where['门店']=$_POST['shop'];
+
+        }
+        if(isset($_POST['lb'])&&$_POST['lb']!='all'){
+            $where['单据类别']=$_POST['lb'];
+
+        }
         if($searchkey){       
             $searchwhere['制单人']=array('like',$searchkey);
             $searchwhere['业务员']=array('like',$searchkey);
             $searchwhere['车牌号码']=array('like',$searchkey);
             $searchwhere['单据备注']=array('like',$searchkey);
-            $searchwhere['领料员']=array('like',$searchkey);
             $searchwhere['_logic']='OR';
             $where['_complex']=$searchwhere;
             
@@ -1171,6 +1440,18 @@ class ConsumeAction extends Action{
         if(!isset($sortname)){
             $sortname='流水号';
             $sortorder='desc';
+        }
+        if(isset($_POST['zt'])){
+            if($_POST['zt']!='all'){
+                $where['当前状态']=$_POST['zt'];
+            }
+        }else
+        {
+            $where['当前状态']='待审核';
+        }
+        if(isset($_POST['shop'])&&$_POST['shop']!='all'){
+            $where['门店']=$_POST['shop'];
+
         }
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
             $searchkey='%'.trim($_POST['searchkey']).'%';
@@ -1221,37 +1502,6 @@ class ConsumeAction extends Action{
     public  function getkxproject(){
         $meirong=M('项目目录','dbo.','difo')->where(array('类别'=>'洗车美容','项目编号'=>array('notlike','%AYC00%'),'项目名称'=>array('like','%'.$_POST['key'].'%')))->order('项目名称')->select();
         echo json_encode($meirong);
-    }
-    public  function getpick()
-    {   
-        $page=$_POST['page'];
-        $pagesize=$_POST['pagesize'];
-        $sortname=$_POST['sortname'];
-        $sortorder=$_POST['sortorder'];
-        if(!isset($sortname)){
-            $sortname='流水号';
-            $sortorder='desc';
-        }
-        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
-            $searchkey='%'.trim($_POST['searchkey']).'%';
-        }
-        $where['当前状态']='待审核';
-        if($searchkey){       
-            $searchwhere['制单人']=array('like',$searchkey);
-            $searchwhere['业务员']=array('like',$searchkey);
-            $searchwhere['车牌号码']=array('like',$searchkey);
-            $searchwhere['单据备注']=array('like',$searchkey);
-            $searchwhere['领料员']=array('like',$searchkey);
-            $searchwhere['_logic']='OR';
-            $where['_complex']=$searchwhere;
-            
-        }
-        $count=M('出入库单','dbo.','difo')->where($where)->count();
-        $yelist=M('出入库单','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
-        $data['Rows']=$yelist;
-        $data['Total']=$count;
-        echo json_encode($data);
-        
     }
     public  function getcarno(){
         
@@ -1937,6 +2187,15 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        }
 
    }
+   public function changelowerbound(){
+     
+       if(IS_POST){
+           $id=$_POST['流水号'];
+           $num=$_POST['警戒下限'];
+           M('配件仓位','dbo.','difo')->where(array('流水号'=>$id))->save(array('警戒下限'=>$num));
+           echo '保存成功';
+       }
+   }
    public function pickcheck(){
      
        if(IS_POST){
@@ -2000,6 +2259,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                    $crkitem['审核日期']=date('Y-m-d',time());
                    M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
                    $this->writeLog($crk['ID'],$crk['单据编号'],'入库审核','采购入库审核');
+                   echo '审核通过';
+                   exit;
                }
            }
 
@@ -2082,6 +2343,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $memberinfo=$_POST;
             $number=$memberinfo['流水号'];
             unset($memberinfo['流水号']);
+            unset($memberinfo['balance']);
+            unset($memberinfo['expensetotal']);
+            unset($memberinfo['total_score']);
             if(M('往来单位','dbo.','difo')->where(array('流水号'=>$number))->save($memberinfo)){
                 M('车辆档案','dbo.','difo')->where(array('客户ID'=>$_POST['ID']))->save(array('客户类别'=>$_POST['类别']));
                 echo '保存成功';
@@ -2095,7 +2359,11 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         }
         $carno=$_GET['carno'];
         $memberinfo=M('往来单位','dbo.','difo')->where(array('名称'=>$carno))->find();
+        $wxmemberinfo=M('userinfo')
+            ->join('join tp_member_card_create on tp_userinfo.wecha_id=tp_member_card_create.wecha_id')
+            ->where(array('tp_member_card_create.number'=>$carno))->find();
         $this->assign('memberinfo',json_encode($memberinfo));
+        $this->assign('wxmemberinfo',json_encode($wxmemberinfo));
         $this->display();
     }
    public function carsinfo()
@@ -2159,6 +2427,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                             $data['is_use'] 			= 0;
                             $data['wecha_id'] 		= $_GET['wecha_id'];
                             $data['coupon_type'] 	=  $item['type'];
+                            $data['coupon_name']=$item['title'];
                             $coupon_num=date('YmdHis',time()).mt_rand(1000,9999);
                             $data['coupon_num'] 	=  $coupon_num;
                             M('Member_card_coupon_record')->add($data);
@@ -2178,6 +2447,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                         $coupon['wecha_id']=$_GET['wecha_id'];
                         $coupon['token']=$this->token;
                         $coupon['coupon_id']=$item['id'];
+                        $coupon['coupon_name']=$item['title'];
+                        $coupon['comment']=$_POST['comment'];
                         $coupon['num']=$this->_post($item['id'],'intval');
                         $coupon['addtime']=time();
                         $coupon['optuser']=cookie('username');
@@ -2870,7 +3141,11 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
      if(IS_POST){
          $wxinfo=$_POST['wxinfo'];
          $form=$_POST['data'];
-         $wxID=$wxinfo['ID'];
+         if($wxinfo){
+             $data['引用ID']=$wxinfo['ID'];
+             $data['引用单号']=$wxinfo['业务编号'];
+             $data['车牌号码']=$wxinfo['车牌号码'];
+         }
          $products=$_POST['products'];
          $data['ID']=$this->getcode(20,1,1);
          $data['单据编号']=$this->getcodenum('PK');
@@ -2880,12 +3155,12 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $data['供应商ID']=$form['供应商ID'];
          $data['发票类别']=$form['发票类别'];
          $data['发票号码']=$form['发票号码'];
-         $data['运费']=0;
+         $data['运费']=$form['运费'];
          $data['结算方式']=$form['结算方式'];
          $data['货运方式']=$form['货运方式'];
-         $data['业务员']=cookie('username');
+         $data['业务员']=$form['业务员'];
          $data['整单折扣']=1;
-         $data['送货地址']=$form['领料员'];
+         $data['送货地址']=$form['送货地址'];
          $data['付款日期']=$form['付款日期'];
          $data['当前状态']='待审核';
          $data['合计货款']=$form['合计货款'];
@@ -2894,15 +3169,12 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $data['价税合计']=$form['价税合计'];
          $data['总金额']=$form['总金额'];
          $data['单据类别']='采购进货';
-         $data['引用ID']=$wxID;
          //$data['引用类别']='维修领料';
-         //$data['引用单号']=$wxinfo['业务编号'];
          //$data['急件']=$form['急件'];
+         //$data['原因']='维修领料';
          $data['应结金额']=$form['总金额'];
          $data['现结金额']=0;
          $data['挂账金额']=$form['总金额'];
-         $data['车牌号码']=$wxinfo['车牌号码'];
-         //$data['原因']='维修领料';
          $data['备注']=$form['备注'];
         if($form['备注']==''){
             $data['备注']='维修采购';
@@ -2926,15 +3198,18 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $crk['适用车型']=$product['适用车型'];
             $crk['产地']=$product['产地'];
             $crk['备注']=$product['备注'];
-            $crk['车型']=$wxinfo['车型'];
-            $crk['品牌']=$wxinfo['品牌'];
-            $crk['排量']=$wxinfo['排量'];
-            $crk['年份']=$wxinfo['年份'];
-            $crk['车牌号码']=$wxinfo['车牌号码'];
+            if($wxinfo){
+                $crk['车牌号码']=$wxinfo['车牌号码'];
+                $crk['车型']=$wxinfo['车型'];
+                $crk['品牌']=$wxinfo['品牌'];
+                $crk['排量']=$wxinfo['排量'];
+                $crk['年份']=$wxinfo['年份'];
+                $code=$crk['编号'];
+                $wxID=$wxinfo['ID'];
+                M('维修配件','dbo.','difo')->execute("UPDATE 维修配件 SET 是否采购=1 WHERE  编号='$code' and ID='$wxID'");
+            }
             M('采购明细','dbo.','difo')->add($crk);
-            $code=$crk['编号'];
             //M('配件目录','dbo.','difo')->execute("UPDATE 配件目录 SET 维修领用=维修领用+$num WHERE 编号='$code'");
-            M('维修配件','dbo.','difo')->execute("UPDATE 维修配件 SET 是否采购=1 WHERE  编号='$code' and ID='$wxID'");
            
         }
         echo '开单成功，转入采购审核中';
@@ -3044,6 +3319,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $paybill['提醒日期']=date('Y-m-d',time());
                $paybill['账款类别']='应收款';
                $paybill['当前状态']='待审核';
+               if($xsd['挂账金额']==0){
+                   $paybill['当前状态']='已审核';
+               }
                $paybill['审核人']=cookie('username');
                $paybill['审核日期']=date('Y-m-d',time());
                $paybill['摘要']='销售出库';

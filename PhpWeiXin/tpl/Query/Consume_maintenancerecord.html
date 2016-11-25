@@ -58,8 +58,6 @@
                         门店
                         <select id="shop">
                             <option value="">所有门店</option>
-                            <option value="塘坑店">塘坑店</option>
-                            <option value="区府店">区府店</option>
                         </select>
                         类别
                         <select id="lb">
@@ -119,6 +117,10 @@
             memberdialog,editproductdialog, assigntaskdialog;
         var record, discount = {};
         function editproject() {
+            if (record['当前状态'] == '结束') {
+                $.ligerDialog.alert('结束状态不能修改项目信息');
+                return;
+            }
             var row = project.getSelectedRow();
             if (row) {
                 if (editprojectdialog) {
@@ -144,6 +146,10 @@
 
         }
         function editproduct() {
+            if (record['当前状态'] == '结束') {
+                $.ligerDialog.alert('结束状态不能修改配件信息');
+                return;
+            }
             var row = product.getSelectedRow();
             if (row) {
                 if (editproductdialog) {
@@ -169,10 +175,15 @@
 
         }
         function addproject() {
-            if (discount['服务折扣1'] == null) {
-                discount['服务折扣1'] = 1;
+            if (record['当前状态'] == '结束') {
+                $.ligerDialog.alert('结束状态不能增加维修项目');
+                return;
             }
-            var url='index.php?&g=Query&m=Consume&a=addproject&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + discount['服务折扣1'] + "&zhuxiu=" + record['当前主修人'];
+            var c = 1;
+            if (discount&&discount['服务折扣1'] != null) {
+                c = discount['服务折扣1'];
+            }
+            var url='index.php?&g=Query&m=Consume&a=addproject&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + c + "&zhuxiu=" + record['当前主修人'];
             if (addprojectdialog) {
                 addprojectdialog.setUrl(url);
                 addprojectdialog.show();
@@ -206,6 +217,10 @@
            wxdialog.max();
         }
         function pick() {
+            if (record['当前状态'] == '结束') {
+                $.ligerDialog.alert('结束状态不能领料');
+                return;
+            }
             if (pickdialog) {
                 pickdialog.setUrl('/index.php?g=Query&m=Consume&a=picking');
                 pickdialog.show();
@@ -245,6 +260,10 @@
         }
         function checkin() {
             var row = grid.getSelectedRow();
+            if (row['当前状态'] == '结束') {
+                $.ligerDialog.alert('不要重复结算');
+                return;
+            }
             if (row) {
                 if (caldialog) {
                     caldialog.setUrl('/index.php?g=Query&m=Consume&a=pay');
@@ -270,6 +289,11 @@
             }
         }
         function purchasing() {
+            if (record['当前状态'] == '结束')
+            {
+                $.ligerDialog.alert('结束状态不能开采购单');
+                return;
+            }
             if (purchasedialog) {
                 purchasedialog.setUrl('/index.php?g=Query&m=Consume&a=purchasing');
                 purchasedialog.show();
@@ -567,6 +591,16 @@
             return todate(value);
         }
         $(function () {
+            $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {
+                if (data) {
+                    $('#shop').empty();
+                    $('#shop').append("<option value=''>所有门店</option>");
+                    $(data).each(function () {
+                        var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                        $('#shop').append(option);
+                    });
+                }
+            },'JSON');
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                 { display: '当前状态', name: '当前状态', align: 'left', width: 60 },
@@ -895,6 +929,10 @@
                          {
                              id: 'deleteproject',
                              text: '删除', click: function () {
+                                 if (record['当前状态'] == '结束') {
+                                     $.ligerDialog.alert('结束状态不能删除项目');
+                                     return;
+                                 }
                                  $.ligerDialog.confirm('确定要删除?', function (yes) {
                                      if (yes) {
                                          var rows = project.getSelectedRows();
@@ -980,9 +1018,17 @@
                         {
                             id:'addproduct',
                             text: '增加', click: function () {
+                                if (record['当前状态'] == '结束') {
+                                    $.ligerDialog.alert('结束状态不能增加配件');
+                                    return;
+                                }
+                                var c = 1;
+                                if (discount && discount['服务折扣1'] != null) {
+                                    c = discount['服务折扣1'];
+                                }
                                 $.ligerDialog.open({
                                     height: 600,
-                                    url: 'index.php?&g=Query&m=Consume&a=addproduct&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + discount['销售折扣1'] + "&shop=" + record['门店'],
+                                    url: 'index.php?&g=Query&m=Consume&a=addproduct&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + c + "&shop=" + record['门店'],
                                     width: 900,
                                     showMax: true,
                                     showToggle: true,
@@ -998,6 +1044,10 @@
                         {
                             text: '删除',
                             click: function () {
+                                if (record['当前状态'] == '结束') {
+                                    $.ligerDialog.alert('结束状态不能删除配件');
+                                    return;
+                                }
                                 $.ligerDialog.confirm('确定要删除?', function (yes) {
                                     if (yes) {
                                         var rows = product.getSelectedRows();
@@ -1027,6 +1077,7 @@
                         { id: 'btnmodify', text: '修改', click: editproduct, icon: 'modify' },
                         {
                             id: 'btnlingliao', text: '领料', click: function () {
+
                                 var rows = product.getSelectedRows();
                                 if (rows.length > 0) {
                                     for (var i = 0; i < rows.length; i++) {
@@ -1049,7 +1100,7 @@
                                 var rows = product.getSelectedRows();
                                 if (rows.length > 0) {
                                     for (var i = 0; i < rows.length; i++) {
-                                        if (rows[i]['是否采购']=='是') {
+                                        if (rows[i]['是否采购']=='1') {
                                             $.ligerDialog.alert(rows[i]['名称'] + "已开采购单");
                                             return;
                                         }
@@ -1168,7 +1219,7 @@
                 setdisabled();
                 //setClickEvent();
                 grid.select(grid.data.Rows[0]);
-            }, 300);
+            }, 500);
             $("#lb").change(function () {
                 $('#search').click();
             });

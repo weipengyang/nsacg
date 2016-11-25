@@ -90,14 +90,30 @@
 
                     },
                     { display: "虚增金额", name: "虚增金额", newline: false, type: "text", readonly: true },
-                    { display: "备注", name: "备注", newline: true, type: "text",width:320 }
+                    {
+                        display: "开工时间", name: "开工时间", newline: true, type: "date", options: {
+                            showTime: true,
+                        }
+                    },
+                    {
+                        display: "完工时间", name: "完工时间", newline: false, type: "date", options: {
+                            showTime: true,
+                        }
+                    },
+                    { display: "备注", name: "备注", newline: true, type: "text", width: 320 }
                 ],
                 buttons: [                    {
                         text: "保存", width: 60, click: function () {
                             var row = form.getChanges();
                             row['流水号'] = projectinfo['流水号'];
                             row['ID'] = projectinfo['ID'];
-                            var data = {
+                            if($("input[ligeruiid='开工时间']").val()!=''){
+                                row['开工时间'] = $("input[ligeruiid='开工时间']").val();
+                            }
+                            if ($("input[ligeruiid='完工时间']").val() != '') {
+                                row['完工时间'] = $("input[ligeruiid='完工时间']").val();
+                            }
+                            var data = { 
                                 project: row,
                                 record: parent.record,
                             };
@@ -111,8 +127,10 @@
                     }                ]            });
             projectinfo = {pigcms:$projectinfo};
             if (projectinfo && projectinfo != '') {
-                projectinfo = JSON2.stringify(projectinfo);
-                projectinfo = JSON2.parse(projectinfo);
+                //projectinfo = JSON2.stringify(projectinfo);
+                //projectinfo = JSON2.parse(projectinfo);
+                projectinfo['开工时间'] = todate(projectinfo['开工时间'], true);
+                projectinfo['完工时间'] = todate(projectinfo['完工时间'], true);
                 form.setData(projectinfo);
             }
             

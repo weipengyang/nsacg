@@ -1,4 +1,4 @@
-<?php
+ <?php
 class StoreAction extends WapAction{
 	//public $token;
 	//public $wecha_id = '';
@@ -34,7 +34,7 @@ class StoreAction extends WapAction{
         }
         else{
                 $user = M('Userinfo')->where(array('token' => $this->token, 'wecha_id' => $this->wecha_id))->find();
-                if(empty($user)||empty($user['carno'])){
+                if(empty($user)||(empty($user['carno'])&&empty($user['carno1'])&&empty($user['carno2']))){
                     $this->redirect(U('Store/userinfo', array('token' => $this->token)));
 
                 }
@@ -128,9 +128,10 @@ class StoreAction extends WapAction{
         if (IS_POST) {
    		    $tel= isset($_POST['tel']) ? htmlspecialchars($_POST['tel']) : '';
             $carno=isset($_POST['carno']) ? htmlspecialchars(strtoupper($_POST['carno'])) : '';
+            $carno=trim($carno);
             //如果原来有用户就迁移数据
             $user = M('Userinfo','','acg')->where(array('token'=>'jifbjv1429543374','tel'=>$tel))->find();
-            if(isset($user)&&$user['carno']!=$carno){
+            if(isset($user)&&trim($user['carno'])!=$carno){
                 echo '车牌号码与原来注册车牌不一致';exit;
             }
             $password = isset($_POST['password']) ? htmlspecialchars($_POST['password']) : '';
@@ -272,6 +273,10 @@ class StoreAction extends WapAction{
                 $czinfo['等级']='★';
             }
             if(!empty($car)){
+                if($car['客户类别']=='定点签约'){
+                    echo '定点签约用户不能注册';
+                    return;
+                }
                 $item['车主']=$card['number'];
                 $item['联系人']=$user['truename'];
                 $item['联系电话']=$user['tel'];
@@ -302,7 +307,6 @@ class StoreAction extends WapAction{
                 $czinfo['手机号码']=$user['tel'];
                 $czinfo['类别']=$lb;
                 M('往来单位','dbo.','difo')->add($czinfo);
-                $czinfo=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
                 $item['车主']=$card['number'];
                 $item['车牌号码']=$user['carno'];
                 $item['客户ID']=$czinfo['ID'];
@@ -654,18 +658,49 @@ public function check(){
             exit;
 
          }elseif($type==2){
-             $xs=M('销售单','dbo.','difo')->where(array('流水号'=>$itemid))->find();
-
-             $this->genbill($price,$xs['客户名称'],'销售出库收款('.$xs['单据编号'].')',$xs['客户ID'],'销售出库');
-             M('销售单','dbo.','difo')->where(array('流水号'=>$itemid))->save(array('当前状态'=>'已审核'));
              $this->consumerecord($price,'汽车商品支付',$userinfo);
+             $xsd=M('销售单','dbo.','difo')->where(array('流水号'=>$itemid))->find();
+             $xsmx=M('销售明细','dbo.','difo')->where(array('ID'=>$xsd['ID']))->select();
+             $this->genbill($price,$xsd['客户名称'],'销售出库收款('.$xsd['单据编号'].')',$xsd['客户ID'],'销售','销售出库');
+             M('销售单','dbo.','difo')->where(array('流水号'=>$itemid))->save(array('当前状态'=>'已审核'));
+            $crkitem['ID']=$this->getcode(20,1,1);
+            $crkitem['引用单号']=$xsd['单据编号'];
+            $crkitem['引用ID']=$xsd['ID'];
+            $crkitem['引用类别']='销售出库';
+            $crkitem['单据编号']=$this->getcodenum('CK');
+            $crkitem['制单日期']=date('Y-m-d',time());;
+            $crkitem['制单人']='系统自动';
+            $crkitem['车牌号码']=$xsd['车牌号码'];
+            $crkitem['当前状态']='待审核';
+            $crkitem['原因']='销售出库';
+            $crkitem['领料员']='微信系统';
+            $crkitem['单据类别']='出库';
+            $crkitem['单据备注']='销售出库';
+            M('出入库单','dbo.','difo')->add($crkitem);
+            foreach($xsmx as $product){
+                $crk['ID']=$crkitem['ID'];
+                $crk['仓库']=$product['仓库'];
+                $crk['编号']=$product['编号'];
+                $crk['名称']=$product['名称'];
+                $crk['规格']=$product['规格'];
+                $crk['单位']=$product['单位'];
+                $crk['数量']=$product['数量'];
+                $crk['单价']=$product['单价'];
+                $crk['金额']=$product['金额'];
+                $crk['成本价']=$product['成本价'];
+                $crk['适用车型']=$product['适用车型'];
+                $crk['产地']=$product['产地'];
+                $crk['备注']=$product['备注'];
+                M('出入库明细','dbo.','difo')->add($crk);
+            }
+             
 
              echo '结算成功';
              exit;
          }
          elseif($type==3){
              $bx=M('车辆保险','dbo.','difo')->where(array('流水号'=>$itemid))->find();
-             $this->genbill($price,$bx['车主'],'保险收款('.$bx['业务编号'].')',$bx['客户ID']);
+             $this->genbill($price,$bx['车主'],'保险收款('.$bx['业务编号'].')',$bx['客户ID'],'保险');
              $data['挂账金额']=0;
              $data['现收金额']=$price;
              $data['结束日期']=date('Y-m-d',time());
@@ -699,7 +734,7 @@ public function check(){
      $this->display();
    }
 
-   private function genbill($price,$chezhu,$zhaiyao,$daiwen,$type=''){
+   private function genbill($price,$chezhu,$zhaiyao,$daiwen,$type='维修',$billtype='维修收款'){
 
        $bianhao=$this->getcodenum("BI");
        $data['单据编号']=$bianhao;
@@ -721,7 +756,7 @@ public function check(){
        $data['支票号']=0;
        $data['凭证号']=0;
        $data['摘要']=$zhaiyao;
-       $data['收支项目']='维修收款';
+       $data['收支项目']=$billtype;
        $data['当前状态']='待审核';
        $data['发票类别']='';
        $data['发票号']='';
@@ -734,88 +769,32 @@ public function check(){
        M('日常收支','dbo.','difo')->add($data);
 
        $paybill['ID']=$this->getcode(18,1,1);
-       $paybill['单位编号']=$xsd['客户ID'];
-       $paybill['单位名称']=$xsd['客户名称'];
-       $paybill['单据类别']='销售出库';
-       $paybill['单据编号']=$xsd['单据编号'];
+       $paybill['单位编号']=$daiwen;
+       $paybill['单位名称']=$chezhu;
+       $paybill['单据类别']=$type;
+       $paybill['单据编号']=$bianhao;
        $paybill['制单日期']=date('Y-m-d',time());
        $paybill['制单人']='系统自动';
-       $paybill['总金额']=$xsd['总金额'];
-       $paybill['已结算金额']=$xsd['现结金额'];
-       $paybill['未结算金额']=$xsd['挂账金额'];
-       $paybill['本次结算']=$xsd['现结金额'];
+       $paybill['总金额']=$price;
+       $paybill['已结算金额']=$price;
+       $paybill['未结算金额']=0;
+       $paybill['本次结算']=$price;
        $paybill['提醒日期']=date('Y-m-d',time());
        $paybill['账款类别']='应收款';
-       $paybill['当前状态']='待审核';
+       $paybill['当前状态']='已审核';
        $paybill['审核人']=cookie('username');
        $paybill['审核日期']=date('Y-m-d',time());
-       $paybill['摘要']='销售出库';
+       $paybill['摘要']=$zhaiyao;
        $paybill['虚增价税']=0;
-       $paybill['挂账金额']=$xsd['挂账金额'];
-       $paybill['车牌号码']=$xsd['车牌号码'];
+       $paybill['挂账金额']=0;
+       //$paybill['车牌号码']=$xsd['车牌号码'];
        M('应收应付单','dbo.','difo')->add($paybill);
 
        $dj['挂账ID']=$paybill['ID'];
        $dj['收支ID']=$data['ID'];
-       $dj['金额']=$xsd['现结金额'];
+       $dj['金额']=$price;
        M('引用单据','dbo.','difo')->add($dj);
-
-       if(doubleval($xsd['现结金额'])>0||$xsd['结算方式']=='会员卡支付'){
-           $inout['单据编号']=$this->getcodenum('BI');
-           $inout['制单日期']=date('Y-m-d',time());
-           $inout['制单人']=cookie('username');
-           $inout['单位名称']=$xsd['客户名称'];
-           $inout['账款类别']='收款单';
-           $inout['实收金额']=$xsd['现结金额'];
-           $inout['折扣金额']=0;
-           $inout['结算方式']=$xsd['结算方式'];
-           $inout['摘要']='销售出库收款('.$xsd['单据编号'].')';
-           $inout['收支项目']='销售出库';
-           $inout['当前状态']='待审核';
-           $inout['发票类别']=$xsd['发票类别'];
-           $inout['发票号']=$xsd['发票号'];
-           $inout['ID']=$this->getcode(18,1,1);
-           $inout['单位编号']=$xsd['客户ID'];
-           $inout['本次冲账']=$xsd['现结金额'];
-           $inout['单据类别']='应收款';
-           $inout['取用预存']=0;
-           M('日常收支','dbo.','difo')->add($inout);
-           
-         
-       }
-       if($type=='销售出库'){
-           $crkitem['ID']=$this->getcode(20,1,1);
-           $crkitem['引用单号']=$xsd['单据编号'];
-           $crkitem['引用ID']=$xsd['ID'];
-           $crkitem['引用类别']='销售出库';
-           $crkitem['单据编号']=$this->getcodenum('CK');
-           $crkitem['制单日期']=date('Y-m-d',time());;
-           $crkitem['制单人']=cookie('username');
-           $crkitem['车牌号码']=$xsd['车牌号码'];
-           $crkitem['当前状态']='待审核';
-           $crkitem['原因']='销售出库';
-           $crkitem['领料员']=cookie('username');
-           $crkitem['单据类别']='出库';
-           $crkitem['单据备注']='销售出库';
-           M('出入库单','dbo.','difo')->add($crkitem);
-           foreach($xsmx as $product){
-               $crk['ID']=$crkitem['ID'];
-               $crk['仓库']=$product['仓库'];
-               $crk['编号']=$product['编号'];
-               $crk['名称']=$product['名称'];
-               $crk['规格']=$product['规格'];
-               $crk['单位']=$product['单位'];
-               $crk['数量']=$product['数量'];
-               $crk['单价']=$product['单价'];
-               $crk['金额']=$product['金额'];
-               $crk['成本价']=$product['成本价'];
-               $crk['适用车型']=$product['适用车型'];
-               $crk['产地']=$product['产地'];
-               $crk['备注']=$product['备注'];
-               M('出入库明细','dbo.','difo')->add($crk);
-           }
-        $this->writeLog($xsd['引用ID'],$xsd['引用单号'],'销售审核','销售审核');
-      }
+      
    }
    private function getcodenum($type)
    {
@@ -1963,6 +1942,7 @@ public function check(){
                             $data['coupon_type']		= '1';
                             $data['cardid']		= $card['cardid'];
                             $data['add_time']	= time(); 
+                            $data['coupon_name']=$mycoupon['title'];
                             $days=$mycoupon['days'];
                             $data['over_time']=strtotime(date('Y-m-d',time())."+$days day");
                             if($c['num']>0){
@@ -2538,19 +2518,17 @@ public function check(){
                 $arr['shop']		= $this->_post('address');
                 $arr['carno']		= $this->_post('carno');
                 $arr['usecount']	= $useTime;
-                $arr['notes']		= $this->_post('notes','trim').'线下消费'.$couponname['title'].'一张';
+                $arr['notes']		= $this->_post('notes','trim').'线下消费'.$r_record['coupon_name'].'一张';
                 $arr['score'] 		=0;
-
                 M('Member_card_use_record')->add($arr);	//添加消费券使用记录					
                
-                $couponnum=M('Member_card_coupon_record')->where($rwhere)->find();
                 M('Member_card_coupon_record')->where($rwhere)->save(array('use_time'=>time(),'is_use'=>'1','carno'=>$arr['carno'],'shop'=>$arr['shop']));//会员优惠券记录修改为已使用
                 $model  = new templateNews();
                 $dataKey    = 'TM151214';
                 $dataArr    = array(
                     'productType'      =>'券名称',
-                    'name'      =>$couponname['title'],
-                    'certificateNumber' =>$couponnum["coupon_num"],
+                    'name'      =>$r_record['coupon_name'],
+                    'certificateNumber' =>$r_record["coupon_num"],
                     'number'      =>'1张',
                     'wecha_id'      => $this->wecha_id,
                     'remark'        => '注意：此消息作为您本次消费凭证，请妥善保存，如有疑问，请致电020-39053199联系我们,或发消息到微信平台上进行咨询。',
@@ -2568,7 +2546,7 @@ public function check(){
                     $this->genwxrecord(0,$arr['carno'],'AYC0001','蜡水洗车',$arr['shop'],'蜡水洗车');
                }
                 else{
-                    $this->genwxrecord(0,$arr['carno'],'AYC0001','普通快修',$arr['shop'],$couponname['title']);
+                    $this->genwxrecord(0,$arr['carno'],'AYC0001','普通快修',$arr['shop'],$r_record['coupon_name']);
 
                 }
                 echo "线下消费成功";	
@@ -2668,17 +2646,17 @@ public function check(){
                 $arr['shop']		= $this->_post('address');
                 $arr['carno']		= $this->_post('carno');
                 $arr['usecount']	= 1;
-                $arr['notes']		= $this->_post('notes','trim').'线下消费'.$couponname['title'].'一张';
+                $arr['notes']		= $this->_post('notes','trim').'线下消费'.$r_record['coupon_name'].'一张';
                 $arr['score'] 		=0;
                 //更新记录
                 M('Member_card_use_record')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id,'itemid'=>$r_record['id']))->save($arr);
                 $db->where(array('id'=>$itemid))->setInc('usetime',1);
                 //优惠劵使用记录
                 M('Member_card_coupon_record')->where($rwhere)->save(array('use_time'=>time(),'is_use'=>'1'));
-                if(strpos($couponname['title'], '打蜡') !== false){
+                if(strpos($r_record['coupon_name'], '打蜡') !== false){
                     $this->genwxrecord(0,$arr['carno'],'AYC0001','汽车美容',$arr['shop']);
                 }
-                elseif(strpos($couponname['title'], '救援') !== false){
+                elseif(strpos($r_record['coupon_name'], '救援') !== false){
                     $this->genwxrecord(0,$arr['carno'],'AYC0001','普通快修',$arr['shop']);
                  }
                 else{
@@ -3033,6 +3011,7 @@ public function check(){
     	$now 	= time();
         $user=M('userinfo')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
     	$integral 	= M('Member_card_integral')->where(array('token'=>$this->token,'id'=>$data['coupon_id'],'ispublic'=>'1'))->find();
+    	$data['coupon_name'] 	=$integral['title'];
         $count1=M('Member_card_coupon_record')->where(array('token'=>$this->token,'coupon_id'=>$integral['id'],'coupon_type'=>$data['coupon_type']))->count();
         if($user['total_score']<$integral['integral']){
     		echo  '你的积分不足'.$integral['integral'];

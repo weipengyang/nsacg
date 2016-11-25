@@ -10,17 +10,17 @@
     <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
     <script type="text/javascript">
-        var form, memberinfo ;
+        var form, memberinfo,wxmemberinfo;
         var wxgrid, salegrid, bxgrid, dbgrid,coupongrid,rechargegrid;
         function submitForm() {
-            //var data = form.getChanges();
-            var data = {};
+            var data = form.getData();
             //data = JSON2.stringify(data);
             //data = JSON2.parse(data);
             data['流水号'] = $("input[id='流水号']").val();
             data['ID'] = $("input[id='ID']").val();
             data['等级'] = $("input[ligeruiid='等级']").val();
             data['类别'] = $("input[ligeruiid='类别']").val();
+            alert(JSON2.stringify(data));
             $.post('/index.php?g=Query&m=Consume&a=memberinfo', data,
               function (msg) {
                   $.ligerDialog.alert(msg);
@@ -48,10 +48,12 @@
             return options;
         }        function setdata() {
             memberinfo ={pigcms:$memberinfo};
+            wxmemberinfo ={pigcms:$wxmemberinfo};
             if (memberinfo && memberinfo != '') {
                 memberinfo = JSON2.stringify(memberinfo);
                 memberinfo = JSON2.parse(memberinfo);
                 form.setData(memberinfo);
+                form.setData(wxmemberinfo);
                 //$("input[ligeruiid='车主']").val(memberinfo['车主']);
                 //$("input[ligeruiid='车型']").val(memberinfo['车型']);
                 $("input[ligeruiid='类别']").val(memberinfo['类别']);
@@ -119,11 +121,30 @@
                                     display: "邮编", name: "邮编", newline: false, type: "text",
                                    
                                 },
-                                { display: "登记时间", name: "登记时间", newline: false, type: "text" },
-                                { display: "备注", name: "备注", newline: true, type: "text"},
+                                { display: "出生日期", name: "出生日期", newline: false, type: "date" },
+                                { display: "业务员", name: "业务员", newline: false, type: "text" },
+                                { display: "备注", name: "备注", newline: false, type: "text"},
                                 { display: "助记码", name: "助记码",newline: false, type: "text" },
                                 { display: "会员编号", name: "会员编号", newline: false, type: "text" },
-                               
+                                { display: "身份证号", name: "身份证号", newline: false, type: "text" },
+                                {
+                                    display: "区域", name: "区域", newline: false, type: "combobox",
+                                    options: {
+                                        valueField: '区域',
+                                        textField: '区域',
+                                        autocomplete: true,
+                                        url: '/index.php?g=Query&m=Consume&a=getzones',
+                                    },
+                                },
+                                { display: "来自", name: "来源", newline: false, type: "text" },
+                                { display: "最近交易", name: "最近交易", newline: false, type: "date" },
+                                { display: "跟踪周期", name: "跟踪周期", newline: false, type: "text" },
+                                { display: "消费总额", name: "expensetotal", newline: false, type: "text",readonly:true },
+                                { display: "余额", name: "balance", newline: false, type: "text", readonly: true },
+                                { display: "积分", name: "total_score", newline: false, type: "text", readonly: true },
+                                { display: "服务折扣", name: "服务折扣", newline: false, type: "text" },
+                                { display: "销售折扣", name: "销售折扣", newline: false, type: "text" },
+
 
                             ]
 
@@ -300,7 +321,7 @@
             });
             coupongrid = $("#coupongrid").ligerGrid({
                 columns: [
-                { display: '券名称', name: 'title', align: 'left', width: 180 },
+                { display: '券名称', name: 'coupon_name', align: 'left', width: 180 },
                 { display: '券码', name: 'coupon_num', width: 120, align: 'left' },
                 {
                     display: '购领时间', name: 'add_time', minWidth: 120, render: function (rowdata, index, value) {
@@ -312,7 +333,7 @@
                 {
                     display: '过期时间', name: 'over_time', minWidth: 120, render: function (rowdata, index, value) {
                         if (value > 0)
-                            return formatdate('Y-m-d', value);
+                            return formatdate('Y-m-d', value); 
                         return value;
                     }
                 },

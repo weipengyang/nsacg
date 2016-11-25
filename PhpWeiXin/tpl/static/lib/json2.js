@@ -280,6 +280,16 @@ function formatdate(format, timestamp) {
         return ret;
     });
 }
+function getQueryString(name) {
+    var now_url = document.location.search.slice(1), q_array = now_url.split('&');
+    for (var i = 0; i < q_array.length; i++) {
+        var v_array = q_array[i].split('=');
+        if (v_array[0] == name) {
+            return v_array[1];
+        }
+    }
+    return false;
+}
 
 function todate(num, istime) {
     if (num && num.length > 8) {
@@ -301,7 +311,7 @@ function todate(num, istime) {
         }
         if (istime) {
             time = times[0] + ':' + times[1];
-            if (str[3].indexOf('PM') > 0) {
+            if (times[0]!=12&&str[3].indexOf('PM') > 0) {
                 time = (parseInt(times[0]) + 12) + ':' + times[1];
             }
             return date + ' ' + time;

@@ -45,25 +45,28 @@
                     <div class="am-u-sm-10 am-u-md-9">
                         门店
                         <select id="shop">
-                            <option value="">所有门店</option>
+                            <option value="all">所有门店</option>
                             <option value="塘坑店">塘坑店</option>
                             <option value="区府店">区府店</option>
                         </select>
                         类别
                         <select id="lb">
-                            <option value="">所有分类</option>
-                            <option value="蜡水洗车">蜡水洗车</option>
-                            <option value="汽车美容">汽车美容</option>
-                            <option value="普通快修">普通快修</option>
-                            <option value="常规保养">常规保养</option>
-                            <option value="保险理赔">保险理赔</option>
-                            <option value="汽车维修">汽车维修</option>
+                            <option value="all">所有分类</option>
+                            <option value="采购进货">采购进货</option>
+                            <option value="采购退货">采购退货</option>
+                        </select>
+                        状态
+                        <select id="zt">
+                            <option value="all">所有状态</option>
+                            <option value="待审核">待审核</option>
+                            <option value="已审核">已审核</option>
                         </select>
                         <input type="text" id="searchkey">
                         <button id="search" type="button">模糊查询</button>
                     </div>
                     <div class="am-u-sm-2 am-u-md-3" id="optdiv">
                         <div id="paigongdiv">
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="add();"><i class="am-icon-hand-o-left"></i>采购开单</button>
                             <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="check();"><i class="am-icon-hand-o-left"></i>审核通过</button>
                             <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="deleterecord();"><i class="am-icon-hand-o-right"></i>删除</button>
                         </div>
@@ -82,22 +85,50 @@
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         var  grid, product = null;
-        var  wxdialog, cardialog,caldialog;
+        var wxdialog, cardialog, caldialog, wxdialog, purchasedialog;
         var record
         function wxinfo(xh) {
-           var wxdialog= $.ligerDialog.open({
-                height: 540,
-                url: '/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh,
-                width: 950,
-                showMax: true,
-                showToggle: true,
-                showMin: true,
-                isResize: true,
-                modal: false,
-                title: '车辆维修详细信息'
-           });
+            if (wxdialog) {
+                wxdialog.setUrl('/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh);
+                wxdialog.show();
+            }
+            else {
+                wxdialog = $.ligerDialog.open({
+                    height: 540,
+                    url: '/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh,
+                    width: 950,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '车辆维修详细信息'
+                });
+            }
            wxdialog.max();
         }
+        function add() {
+            if (purchasedialog) {
+                purchasedialog.setUrl('/index.php?g=Query&m=Consume&a=newpurchasies');
+                purchasedialog.show();
+            }
+            else {
+                purchasedialog = $.ligerDialog.open({
+                    height: 650,
+                    url: '/index.php?g=Query&m=Consume&a=newpurchasies',
+                    width: 1000,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    title: '采购开单'
+                });
+            }
+            //saledialog.max();
+
+        }
+
         function viewcarinfo(carno) {
             if (cardialog) {
                 cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
@@ -118,9 +149,14 @@
                 cardialog.max();
             }
         }
+
         function check() {
             var row = grid.getSelectedRow();
             if (row) {
+                if (row['当前状态'] == '已审核') {
+                    $.ligerDialog.alert('请不要重复审核');
+                    return;
+                }
                 if (caldialog) {
                     caldialog.setUrl('/index.php?g=Query&m=Consume&a=editpurchase');
                     caldialog.show();
@@ -172,6 +208,13 @@
         $(function () {
             grid = $("#maingrid4").ligerGrid({
                 columns: [
+                {
+                    display: '当前状态', name: '当前状态', align: 'left', width: 60, render: function (rowdata, index, value) {
+                        if (value == '待审核')
+                            value = '<span style="color:red">' + value + '</span>';
+                        return value;
+                    }
+                },
                 { display: '单据编号', name: '单据编号', align: 'left', width: 100 },
                 {
                     display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
@@ -180,7 +223,7 @@
                 },
                 { display: '单据类别', name: '单据类别', width: 100, align: 'left' },
                 { display: '制单人', name: '制单人', width: 100, align: 'left' },
-                { display: '业务员', name: '领料员', minWidth: 100 },
+                { display: '业务员', name: '业务员', minWidth: 100 },
                 { display: '供应商', name: '供应商', minWidth: 100 },
                 { display: '发票类别', name: '发票类别', minWidth: 100 },
                 { display: '结算方式', name: '结算方式', minWidth: 100 },
@@ -251,7 +294,9 @@
             $("#shop").change(function () {
                 $('#search').click();
             });
-
+            $("#zt").change(function () {
+                $('#search').click();
+            });
             $('#search').click(function () {
                 grid.changePage('first');
                 var parms = {};
@@ -261,15 +306,15 @@
                 var lb = $('#lb').val();
                 if (lb != '')
                     parms.lb = lb;
+                var zt = $('#zt').val();
+                if (zt != '')
+                    parms.zt = zt;
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     parms.searchkey = searchkey;
                 grid.set('parms', parms);
                 grid.reload();
-                setdisabled();
-                $('#optdiv').find('div').each(function () {
-                    $(this).hide();
-                });
+               
             });
         });
     </script>

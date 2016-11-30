@@ -37,14 +37,14 @@
         <div class="content">
             <div class="card">
                 <div class="card-content">
-                    <div class="swiper-container" data-space-between='10'>
+                    <div class="swiper-container" style="height:220px" data-space-between='10'>
                         <div class="swiper-wrapper">
                             <if condition="empty($imageList) neq true">
                                 <volist name="imageList" id="img">
                                     <div class="swiper-slide"><img src="{pigcms:$img.image}" style="width:100%;height:100%"></div>
                                 </volist>
                                 <else />
-                                <div class="swiper-slide"><img src="{pigcms:$product.logourl}"></div>
+                                <div class="swiper-slide"><img src="{pigcms:$product.logourl}" style="width:100%;height:100%"></div>
                             </if>
                         </div>
                         <div class="swiper-pagination"></div>

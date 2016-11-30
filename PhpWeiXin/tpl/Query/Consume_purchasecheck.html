@@ -66,8 +66,9 @@
                     </div>
                     <div class="am-u-sm-2 am-u-md-3" id="optdiv">
                         <div id="paigongdiv">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="add();"><i class="am-icon-hand-o-left"></i>采购开单</button>
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="check();"><i class="am-icon-hand-o-left"></i>审核通过</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="add();"><i class="am-icon-hand-o-left"></i>开单</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="check();"><i class="am-icon-hand-o-left"></i>审核</button>
+                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="printbill();"><i class="am-icon-hand-o-right"></i>打印</button>
                             <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="deleterecord();"><i class="am-icon-hand-o-right"></i>删除</button>
                         </div>
                     </div>
@@ -86,7 +87,32 @@
     <script>
         var  grid, product = null;
         var wxdialog, cardialog, caldialog, wxdialog, purchasedialog;
-        var record
+        var record, printdialog;
+        function printbill() {
+            var row = grid.getSelectedRow();
+            if (row) {
+                if (printdialog) {
+                    printdialog.setUrl('/index.php?g=Query&m=Consume&a=printpurchasebill&ID=' + row['ID']);
+                    printdialog.show();
+                } else {
+                    printdialog = $.ligerDialog.open({
+                        height: 600,
+                        url: '/index.php?g=Query&m=Consume&a=printpurchasebill&ID=' + row['ID'],
+                        width: 950,
+                        showMax: true,
+                        showToggle: true,
+                        showMin: true,
+                        isResize: true,
+                        modal: false,
+                        title: '打印采购单'
+                    });
+                }
+            }
+            else {
+                $.ligerDialog.alert('请选择要打印的单');
+            }
+        }
+
         function wxinfo(xh) {
             if (wxdialog) {
                 wxdialog.setUrl('/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh);
@@ -225,7 +251,15 @@
                 { display: '制单人', name: '制单人', width: 100, align: 'left' },
                 { display: '业务员', name: '业务员', minWidth: 100 },
                 { display: '供应商', name: '供应商', minWidth: 100 },
-                { display: '发票类别', name: '发票类别', minWidth: 100 },
+                { display: '配件供应商', name: '发票类别', minWidth: 100 },
+                 {
+                     display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
+                         if (value == null || value == 'null')
+                             return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + rowdata['发票号码'] + '\');"><strong>' + rowdata['发票号码'] + '</strong></a>';
+                         else
+                             return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+                     }
+                 },
                 { display: '结算方式', name: '结算方式', minWidth: 100 },
                 { display: '货运方式', name: '货运方式', minWidth: 100 },
                 { display: '付款日期', name: '付款日期', minWidth: 100,render: function (rowdata, index, value) {
@@ -240,13 +274,6 @@
                 { display: '价税合计', name: '价税合计', minWidth: 100 },
                 { display: '运费', name: '运费', minWidth: 100 },
                 { display: '总金额', name: '总金额', minWidth: 100 },
-                {
-                    display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
-
-                        return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
-
-                    }
-                },
                 { display: '备注', name: '备注', minWidth: 120 },
                 ],
                 isScroll: true,

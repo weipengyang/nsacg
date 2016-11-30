@@ -71,8 +71,9 @@
                 columns: [          
                 { display: '编号', name: '编号', width: 80 },
                 { display: '名称', name: '名称', width: 120 },
-                { display: '参考售价', name: '参考售价', width: 80 },
+                { display: '参考进价', name: '参考进价', minWidth: 80 },
                 { display: '批发价', name: '一级批发价', width: 80 },
+                { display: '参考售价', name: '参考售价', width: 80 },
                 { display: '品牌', name: '品牌', width: 100 },
                 { display: '规格', name: '规格', width: 100 },
                 { display: '分库存', name: '分库存', width: 60 },
@@ -81,7 +82,6 @@
                 { display: '原厂编号', name: '原厂编号', width: 120 },
                 { display: '产地', name: '产地', minWidth: 120 },
                 { display: '适用车型', name: '适用车型', minWidth: 120 },
-                { display: '参考进价', name: '参考进价', minWidth: 120 },
                 { display: '备注', name: '备注', minWidth: 240 }
                 ],
                 url: '/index.php?g=Query&m=Consume&a=getproductbyname&shop='+getQueryString('shop'),
@@ -109,15 +109,18 @@
                         row['规格'] = data['规格'];
                         row['结算方式'] = '客付';
                         row['单位'] = data['库存单位'];
-                        row['虚增类别'] ='';
+                        row['虚增类别'] = '';
                         row['单价'] = data['参考售价'];
+                        if (getQueryString('type') == '1') {
+                            row['单价'] = data['参考进价'];
+                        }
                         row['折扣'] = 1;
                         row['数量'] = 1;
                         row['金额'] = row['数量'] * row['单价'];
                         //row['金额'] = row['数量'] * row['单价'] * row['折扣'];
                         row['税率'] = 0;
                         row['税额'] = row['金额'] * row['税率'];
-                        row['备注'] = data['备注'];
+                        row['备注'] = data['备注']; 
                         form.setData(row);
                         haveproduct.add(row);
                         haveproduct.select(row);

@@ -70,7 +70,7 @@
                 }
             }
              form = $("#form1").ligerForm({
-                inputWidth: 140, labelWidth: 65, space: 20,
+                inputWidth: 140, labelWidth: 80, space: 20,
                 validate: true,
                 fields: [
                    {
@@ -107,16 +107,9 @@
                        }
                    },
                     {
-                        display: "发票类型 ", name: "发票类型", newline: false, type: "combobox",
-                        options: {
-                            valueField: '类别',
-                            textField: '类别',
-                            autocomplete: true,
-                            url: '/index.php?g=Query&m=Consume&a=getfplb',
-                        }
-                    },
+                        display: "配件供应商 ", name: "发票类别", newline: false, type: "text" },
                      {
-                         display: "发票号 ", name: "发票号", newline: false, type: "text",
+                         display: "发票号 ", name: "发票号码", newline: false, type: "text",
                      },
                       {
                           display: "结算方式 ", name: "结算方式", newline: false, type: "combobox",
@@ -252,8 +245,11 @@
                     //$("input[ligeruiid='本次领料']").val(rowdata['本次领料']);
 
                 }
-            });
-             product.addRows(window.parent.product.getSelectedRows());
+             });
+             $(window.parent.product.getSelectedRows()).each(function () {
+                 this['折扣'] = 1;
+                 product.addRows(this);
+             });
              $("input[ligeruiid='运费']").val(0);
 
              reflash();

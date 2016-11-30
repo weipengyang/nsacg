@@ -289,7 +289,6 @@ class ConsumeAction extends Action{
     public  function getuserinfo(){
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
-        $where['供应商']=0;
         if($_GET['type']){
             $where['供应商']=1;
         }
@@ -1050,6 +1049,7 @@ class ConsumeAction extends Action{
             $searchwhere['制单人']=array('like',$searchkey);
             $searchwhere['接车人']=array('like',$searchkey);
             $searchwhere['维修类别']=array('like',$searchkey);
+            $searchwhere['业务编号']=array('like',$searchkey);
             $searchwhere['车主']=array('like',$searchkey);
             $searchwhere['车牌号码']=array('like',$searchkey);
             $searchwhere['客户类别']=array('like',$searchkey);
@@ -1058,7 +1058,7 @@ class ConsumeAction extends Action{
             $searchwhere['送修人']=array('like',$searchkey);
             $searchwhere['联系电话']=array('like',$searchkey);
             $searchwhere['当前状态']=array('like',$searchkey);
-            $searchwhere['_logic']='OR';
+            $searchwhere['_logic']='OR';  
             $where['_complex']=$searchwhere;
 
         }
@@ -1400,8 +1400,10 @@ class ConsumeAction extends Action{
         if($searchkey){       
             $searchwhere['制单人']=array('like',$searchkey);
             $searchwhere['业务员']=array('like',$searchkey);
+            $searchwhere['单据编号']=array('like',$searchkey);
+            $searchwhere['发票号码']=array('like',$searchkey);
             $searchwhere['车牌号码']=array('like',$searchkey);
-            $searchwhere['单据备注']=array('like',$searchkey);
+            $searchwhere['备注']=array('like',$searchkey);
             $searchwhere['_logic']='OR';
             $where['_complex']=$searchwhere;
             
@@ -2062,6 +2064,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 $paybill['单位名称']=$cgd['供应商'];
                 $paybill['单据类别']='采购进货';
                 $paybill['单据编号']=$cgd['单据编号'];
+                $paybill['引用ID']=$cgd['ID'];
                 $paybill['制单日期']=date('Y-m-d',time());
                 $paybill['制单人']=cookie('username');
                 $paybill['总金额']=$cgd['总金额'];
@@ -2070,40 +2073,42 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 $paybill['本次结算']=$cgd['现结金额'];
                 $paybill['提醒日期']=date('Y-m-d',time());
                 $paybill['账款类别']='应付款';
-                $paybill['当前状态']='已审核';
+                $paybill['当前状态']='待审核';
+                if($cgd['挂账金额']==0){
+                    $paybill['当前状态']='已审核';
+                }
                 $paybill['审核人']=cookie('username');
                 $paybill['审核日期']=date('Y-m-d',time());
                 $paybill['摘要']='采购进货';
                 $paybill['虚增价税']=0;
-                $paybill['挂账金额']=0;
+                $paybill['挂账金额']=$cgd['挂账金额'];
                 $paybill['车牌号码']=$cgd['车牌号码'];
                 M('应收应付单','dbo.','difo')->add($paybill);
-
-                $inout['单据编号']=$this->getcodenum('BE');
-                $inout['制单日期']=date('Y-m-d',time());
-                $inout['制单人']=cookie('username');
-                $inout['单位名称']=$cgd['供应商'];
-                $inout['账款类别']='付款单';
-                $inout['实付金额']=$cgd['现结金额'];
-                $inout['折扣金额']=0;
-                $inout['结算方式']='支出';
-                $inout['摘要']='采购进货付款('.$cgd['单据编号'].')';
-                $inout['收支项目']='采购进货';
-                $inout['当前状态']='待审核';
-                $inout['发票类别']=$cgd['发票类别'];;
-                $inout['发票号']=$cgd['发票号'];;
-                $inout['ID']=$this->getcode(18,1,1);
-                $inout['单位编号']=$cgd['供应商ID'];
-                $inout['本次冲账']=$cgd['现结金额'];
-                $inout['单据类别']='应付款';
-                $inout['取用预存']=0;
-                M('日常收支','dbo.','difo')->add($inout);
-                
-                $dj['挂账ID']=$paybill['ID'];
-                $dj['收支ID']=$inout['ID'];
-                $dj['金额']=$cgd['现收金额'];
-                M('引用单据','dbo.','difo')->add($dj);
-
+                if($cgd['挂账金额']==0){
+                    $inout['单据编号']=$this->getcodenum('BE');
+                    $inout['制单日期']=date('Y-m-d',time());
+                    $inout['制单人']=cookie('username');
+                    $inout['单位名称']=$cgd['供应商'];
+                    $inout['账款类别']='付款单';
+                    $inout['实付金额']=$cgd['现结金额'];
+                    $inout['折扣金额']=0;
+                    $inout['结算方式']='支出';
+                    $inout['摘要']='采购进货付款('.$cgd['单据编号'].')';
+                    $inout['收支项目']='采购进货';
+                    $inout['当前状态']='待审核';
+                    $inout['发票类别']=$cgd['发票类别'];
+                    $inout['发票号']=$cgd['发票号码'];
+                    $inout['ID']=$this->getcode(18,1,1);
+                    $inout['单位编号']=$cgd['供应商ID'];
+                    $inout['本次冲账']=$cgd['现结金额'];
+                    $inout['单据类别']='应付款';
+                    $inout['取用预存']=0;
+                    M('日常收支','dbo.','difo')->add($inout);
+                    $dj['挂账ID']=$paybill['ID'];
+                    $dj['收支ID']=$inout['ID'];
+                    $dj['金额']=$cgd['现收金额'];
+                    M('引用单据','dbo.','difo')->add($dj);
+                }
                 $crkitem['ID']=$this->getcode(20,1,1);
                 $crkitem['引用单号']=$cgd['单据编号'];
                 $crkitem['引用ID']=$cgd['ID'];
@@ -3141,12 +3146,15 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
      if(IS_POST){
          $wxinfo=$_POST['wxinfo'];
          $form=$_POST['data'];
+         $products=$_POST['products'];
+
+         $data['门店']=$form['门店'];
          if($wxinfo){
              $data['引用ID']=$wxinfo['ID'];
              $data['引用单号']=$wxinfo['业务编号'];
              $data['车牌号码']=$wxinfo['车牌号码'];
+             $data['门店']=$wxinfo['门店'];
          }
-         $products=$_POST['products'];
          $data['ID']=$this->getcode(20,1,1);
          $data['单据编号']=$this->getcodenum('PK');
          $data['制单日期']=date('Y-m-d',time());
@@ -3163,6 +3171,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $data['送货地址']=$form['送货地址'];
          $data['付款日期']=$form['付款日期'];
          $data['当前状态']='待审核';
+         if(!isset($data['车牌号码'])){
+             $data['车牌号码']=$form['发票号码'];
+         }
          $data['合计货款']=$form['合计货款'];
          $data['合计数量']=$form['合计数量'];
          $data['合计税额']=$form['合计税额'];
@@ -3171,7 +3182,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $data['单据类别']='采购进货';
          //$data['引用类别']='维修领料';
          //$data['急件']=$form['急件'];
-         //$data['原因']='维修领料';
          $data['应结金额']=$form['总金额'];
          $data['现结金额']=0;
          $data['挂账金额']=$form['总金额'];
@@ -3532,6 +3542,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         if($searchkey){       
             $searchwhere['制单人']=array('like',$searchkey);
             $searchwhere['接车人']=array('like',$searchkey);
+            $searchwhere['业务编号']=array('like',$searchkey);
             $searchwhere['维修类别']=array('like',$searchkey);
             $searchwhere['车主']=array('like',$searchkey);
             $searchwhere['车牌号码']=array('like',$searchkey);
@@ -3647,6 +3658,37 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $this->display();
         
     }
+
+   public function printbill(){
+       $id=$_GET['ID'];
+        $wxrecord=M('维修','dbo.','difo')->where(array('ID'=>$id))->find();
+        $items=M('维修项目','dbo.','difo')->where(array('ID'=>$id))->select();
+        $peijian=M('维修配件','dbo.','difo')->where(array('ID'=>$id,'仅内部核算成本'=>0))->select();
+        $this->assign('wxrecord',$wxrecord);
+        $this->assign('items',$items);
+        $this->assign('peijian',$peijian);
+        $this->display();
+   }
+   public function printsellbill(){
+       $id=$_GET['ID'];
+        $wxrecord=M('销售单','dbo.','difo')->where(array('ID'=>$id))->find();
+        $userinfo=M('往来单位','dbo.','difo')->where(array('ID'=>$wxrecord['客户ID']))->find();
+        $items=M('销售明细','dbo.','difo')->where(array('ID'=>$id))->select();
+        $this->assign('xsrecord',$wxrecord);
+        $this->assign('items',$items);
+        $this->assign('userinfo',$userinfo);
+        $this->display();
+   }
+   public function printpurchasebill(){
+       $id=$_GET['ID'];
+        $wxrecord=M('采购单','dbo.','difo')->where(array('ID'=>$id))->find();
+        $userinfo=M('往来单位','dbo.','difo')->where(array('ID'=>$wxrecord['供应商ID']))->find();
+        $items=M('采购明细','dbo.','difo')->where(array('ID'=>$id))->select();
+        $this->assign('cgrecord',$wxrecord);
+        $this->assign('userinfo',$userinfo);
+        $this->assign('items',$items);
+        $this->display();
+   }
    public function purchase()
     {
          $parms=$_GET;

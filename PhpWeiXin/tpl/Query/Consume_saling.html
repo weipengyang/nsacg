@@ -227,6 +227,11 @@
                                 $.ligerDialog.alert('请选择结算方式');
                                 return;
                             }
+                            if (product.rows.length == 0)
+                            {
+                                $.ligerDialog.alert('还没添加任何商品');
+                                return;
+                            }
                             var submitData = {
                                 //wxinfo: parent.record,
                                 products: product.rows,

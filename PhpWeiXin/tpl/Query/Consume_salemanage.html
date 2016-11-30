@@ -60,8 +60,9 @@
                     </div>
                     <div class="am-u-sm-2 am-u-md-3" id="optdiv">
                         <div id="paigongdiv">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="add();"><i class="am-icon-hand-o-left"></i>销售开单</button>
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="check();"><i class="am-icon-hand-o-left"></i>审核通过</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="add();"><i class="am-icon-hand-o-left"></i>开单</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="check();"><i class="am-icon-hand-o-left"></i>审核</button>
+                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="printbill();"><i class="am-icon-hand-o-right"></i>打印</button>
                             <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="deleterecord();"><i class="am-icon-hand-o-right"></i>删除</button>
                         </div>
                     </div>
@@ -79,8 +80,33 @@
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         var  grid, product = null;
-        var  wxdialog, cardialog,caldialog,saledialog;
-        var record
+        var wxdialog, cardialog, caldialog, saledialog, printdialog;
+        var record;
+        function printbill() {
+            var row = grid.getSelectedRow();
+            if (row) {
+                if (printdialog) {
+                    printdialog.setUrl('/index.php?g=Query&m=Consume&a=printsellbill&ID=' + row['ID']);
+                    printdialog.show();
+                } else {
+                    printdialog = $.ligerDialog.open({
+                        height: 600,
+                        url: '/index.php?g=Query&m=Consume&a=printsellbill&ID=' + row['ID'],
+                        width: 950,
+                        showMax: true,
+                        showToggle: true,
+                        showMin: true,
+                        isResize: true,
+                        modal: false,
+                        title: '打印销售单'
+                    });
+                }
+            }
+            else {
+                $.ligerDialog.alert('请选择要打印的单');
+            }
+        }
+
         function wxinfo(xh) {
            var wxdialog= $.ligerDialog.open({
                 height: 540,

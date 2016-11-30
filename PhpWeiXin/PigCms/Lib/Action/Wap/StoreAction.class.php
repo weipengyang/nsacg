@@ -693,14 +693,16 @@ public function check(){
                 $crk['备注']=$product['备注'];
                 M('出入库明细','dbo.','difo')->add($crk);
             }
-             
-
              echo '结算成功';
              exit;
          }
          elseif($type==3){
              $bx=M('车辆保险','dbo.','difo')->where(array('流水号'=>$itemid))->find();
-             $this->genbill($price,$bx['车主'],'保险收款('.$bx['业务编号'].')',$bx['客户ID'],'保险');
+             $this->genbill($price,$bx['车主'],'保险收款('.$bx['业务编号'].')',$bx['客户ID'],'保险','保险收款');
+             if($bx['总金额']>0){
+                 $wldw=M('往来单位','dbo.','difo')->where(array('名称'=>$bx['保险公司']))->find();
+                 $this->gendbbill($bx['总金额'],$bx['保险公司'],'代办保险付款('.$bx['业务编号'].')',$wldw['ID'],$bx['业务编号'],'保险代办',$bx['ID'],$bx['车牌号码']);
+             }
              $data['挂账金额']=0;
              $data['现收金额']=$price;
              $data['结束日期']=date('Y-m-d',time());
@@ -715,8 +717,11 @@ public function check(){
          }
          else{
              $db=M('车辆代办','dbo.','difo')->where(array('流水号'=>$itemid))->find();
-             $this->genbill($price,$db['车主'],'代办收款('.$db['业务编号'].')',$db['客户ID']);
-             //$this->genbill($price,$db['车主'],'代办收款('.$db['业务编号'].')',$db['客户ID']);
+             $this->genbill($price,$db['车主'],'代办收款('.$db['业务编号'].')',$db['客户ID'],'代办服务','代办服务收款');
+             if($db['代办费用']>0){
+                 $wldw=M('往来单位','dbo.','difo')->where(array('名称'=>$db['车管单位']))->find();
+                 $this->gendbbill($db['代办费用'],$db['车管单位'],'代办'.$db['代办类型'].'付款('.$db['业务编号'].')',$wldw['ID'],$db['业务编号'],'其它代办',$db['ID'],$db['车牌号码']);
+             }
              $data['挂账金额']=0;
              $data['现收金额']=$price;
              $data['结束日期']=date('Y-m-d',time());
@@ -733,7 +738,30 @@ public function check(){
      }
      $this->display();
    }
-
+   private function gendbbill($price,$chezhu,$zhaiyao,$daiwen,$bianhao,$type,$yyid,$carno){
+       $paybill['ID']=$this->getcode(18,1,1);
+       $paybill['单位编号']=$daiwen;
+       $paybill['单位名称']=$chezhu;
+       $paybill['单据类别']=$type;
+       $paybill['引用ID']=$yyid;
+       $paybill['单据编号']=$bianhao;
+       $paybill['制单日期']=date('Y-m-d',time());
+       $paybill['制单人']='微信系统';
+       $paybill['总金额']=$price;
+       $paybill['已结算金额']=0;
+       $paybill['未结算金额']=$price;
+       $paybill['本次结算']=0;
+       $paybill['提醒日期']=date('Y-m-d',time());
+       $paybill['账款类别']='应付款';
+       $paybill['当前状态']='待审核';
+       //$paybill['审核人']=cookie('username');
+       //$paybill['审核日期']=date('Y-m-d',time());
+       $paybill['摘要']=$zhaiyao;
+       $paybill['虚增价税']=0;
+       $paybill['挂账金额']=$price; 
+       $paybill['车牌号码']=$carno;
+       M('应收应付单','dbo.','difo')->add($paybill);
+   }
    private function genbill($price,$chezhu,$zhaiyao,$daiwen,$type='维修',$billtype='维修收款'){
 
        $bianhao=$this->getcodenum("BI");
@@ -3075,7 +3103,7 @@ public function check(){
     		$data[$k]['info']	= html_entity_decode($n['info']);
     		$cwhere = array('token'=>$this->token,'coupon_type'=>$type,'coupon_id'=>$n['id']);
     		$count 	= M('Member_card_coupon_record')->where($cwhere)->count();
-            $leftcount=$n['people']-$count/$n['num']-$data[$k]['basenum'];
+            $leftcount=($n['people']-$count)/$n['num']-$data[$k]['basenum'];
             $data[$k]['get_count'] 	= $leftcount>0?$leftcount:0;//剩余多少张
     		$data[$k]['count'] 	= $n['people'];//总共多少张
             $data[$k]['count1'] = $count/$n['num']+$data[$k]['basenum'];//
@@ -3091,7 +3119,8 @@ public function check(){
     	$data['info']	= html_entity_decode($data['info']);
     	$cwhere = array('token'=>$this->token,'coupon_type'=>3,'coupon_id'=>$data['id']);
     	$count 	= M('Member_card_coupon_record')->where($cwhere)->count();
-        $leftcount=$data['people']-$count/$data['num']-$data['basenum'];
+        $leftcount=($data['people']-$count)/$data['num']-$data['basenum'];
+        $data['people']=$data['people']/$data['num'];
         $data['get_count'] 	= $leftcount>0?$leftcount:0;//剩余多少张
         $remainSeconds=$data['enddate']-time();
     	$this->assign('remainSeconds',$remainSeconds);

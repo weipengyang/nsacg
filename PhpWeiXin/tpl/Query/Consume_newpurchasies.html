@@ -41,13 +41,13 @@
                 return;
             }
             if (addproductdialog) {
-                addproductdialog.setUrl('index.php?&g=Query&m=Consume&a=addsaleproduct&shop=' + shop);
+                addproductdialog.setUrl('index.php?&g=Query&m=Consume&a=addsaleproduct&type=1&shop=' + shop);
                 addproductdialog.show();
             }
             else {
                 addproductdialog = $.ligerDialog.open({
                     height: 600,
-                    url: 'index.php?&g=Query&m=Consume&a=addsaleproduct&shop=' + shop,
+                    url: 'index.php?&g=Query&m=Consume&a=addsaleproduct&type=1&shop=' + shop,
                     width: 900,
                     showMax: true,
                     showToggle: true,
@@ -118,7 +118,7 @@
                 }
             }
              form = $("#form1").ligerForm({
-                inputWidth: 140, labelWidth: 65, space: 20,
+                inputWidth: 140, labelWidth: 75, space: 20,
                 validate: true,
                 fields: [
                   {
@@ -159,17 +159,9 @@
                            url: '/index.php?g=Query&m=Consume&a=getfwgw',
                        }
                    },
-                    {
-                        display: "发票类型 ", name: "发票类型", newline: false, type: "combobox",
-                        options: {
-                            valueField: '类别',
-                            textField: '类别',
-                            autocomplete: true,
-                            url: '/index.php?g=Query&m=Consume&a=getfplb',
-                        }
-                    },
+                    { display: "配件供应商", name: "发票类别", newline: false, type: "text" },
                      {
-                         display: "发票号 ", name: "发票号码", newline: false, type: "text",
+                         display: "车牌号码 ", name: "发票号码", newline: false, type: "text"
                      },
                       {
                           display: "结算方式 ", name: "结算方式", newline: false, type: "combobox",

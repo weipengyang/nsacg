@@ -24,6 +24,7 @@
     <IncludeDebugInformation>false</IncludeDebugInformation>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="main.php" />
     <Compile Include="admin.php" />
     <Compile Include="agent.php" />
     <Compile Include="cms\config\cmsContent.config.php" />
@@ -14656,9 +14657,13 @@
     <Content Include="tpl\Other\default\style\js\registerSSO.js" />
     <Content Include="tpl\Other\index.html" />
     <Content Include="tpl\Query\Consume_carinfo - Copy.html" />
+    <Content Include="tpl\Query\Consume_crklist - Copy.html" />
     <Content Include="tpl\Query\Consume_memberquery.html" />
     <Content Include="tpl\Query\Consume_couponquery.html" />
     <Content Include="tpl\Query\Consume_newpurchasies.html" />
+    <Content Include="tpl\Query\Consume_printpurchasebill.html" />
+    <Content Include="tpl\Query\Consume_printsellbill.html" />
+    <Content Include="tpl\Query\Consume_printbill.html" />
     <Content Include="tpl\Query\Consume_tirequery.html" />
     <Content Include="tpl\Query\Consume_usermanage.html" />
     <Content Include="tpl\Query\Consume_addsaleproduct.html" />

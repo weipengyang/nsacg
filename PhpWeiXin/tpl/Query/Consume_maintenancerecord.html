@@ -73,28 +73,28 @@
                         <button id="search" type="button">模糊查询</button>
                     </div>
                     <div class="am-u-sm-4 am-u-md-4" id="optdiv">
-                        <div id="baojiadiv"  style="display:none"><button type="button" onclick="changeState('派工','paigong');" class="am-btn am-btn-primary am-round am-btn-sm"><i class="am-icon-hand-o-right"></i>主管派工</button>
+                        <div id="baojiadiv"  style="display:none"><button type="button" onclick="changeState('派工', '派工', 'paigong');" class="am-btn am-btn-primary am-round am-btn-sm"><i class="am-icon-hand-o-right"></i>主管派工</button>
                         </div>
                         <div id="paigongdiv" style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('报价','baojia');" ><i class="am-icon-hand-o-left"></i>维修报价</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('领料','lingliao');"><i class="am-icon-hand-o-right"></i>维修领料</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('派工','报价','baojia');" ><i class="am-icon-hand-o-left"></i>维修报价</button>
+                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('派工','领料','lingliao');"><i class="am-icon-hand-o-right"></i>维修领料</button>
                         </div>
                         <div id="lingliaodiv"  style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('派工','paigong');"><i class="am-icon-hand-o-left"></i>主管派工</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('审核','shenhe');"><i class="am-icon-hand-o-right"></i>完工审核</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('领料', '派工', 'paigong');"><i class="am-icon-hand-o-left"></i>主管派工</button>
+                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('领料','审核','shenhe');"><i class="am-icon-hand-o-right"></i>完工审核</button>
                         </div>
                         <div id="shenhediv"  style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('派工','paigong');"><i class="am-icon-hand-o-left"></i>驳回派工</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('结算','jiesuan');"><i class="am-icon-hand-o-right"></i>维修结算</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('审核', '派工', 'paigong');"><i class="am-icon-hand-o-left"></i>驳回派工</button>
+                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('审核','结算','jiesuan');"><i class="am-icon-hand-o-right"></i>维修结算</button>
                         </div>
                         <div id="jiesuandiv"  style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('审核','shenhe');"><i class="am-icon-hand-o-left"></i>完工审核</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('出厂','chuchang');"><i class="am-icon-hand-o-right"></i>车辆出厂</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('结算', '审核', 'shenhe');"><i class="am-icon-hand-o-left"></i>完工审核</button>
+                            <!--<button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('结算','出厂','chuchang');"><i class="am-icon-hand-o-right"></i>车辆出厂</button>-->
                             <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="checkin();"><i class="am-icon-check"></i>确认结算</button>
                        </div>
                         <div id="chuchangdiv"  style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('结算','jiesuan');"><i class="am-icon-hand-o-left"></i>维修结算</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('结束','baojia');"><i class="am-icon-hand-o-right"></i>确认出厂</button>
+                            <!--<button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('出厂', '结算', 'jiesuan');"><i class="am-icon-hand-o-left"></i>维修结算</button>-->
+                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('出厂','结束','baojia');"><i class="am-icon-hand-o-right"></i>确认出厂</button>
                         </div>
                     </div>
                 </div>
@@ -437,7 +437,7 @@
                 });
             }
         }
-        function changeState(zt, opt) {
+        function changeState(oldzt,zt, opt) {
             var row = grid.getSelectedRow();
             if (row) {
                 var data = {
@@ -445,6 +445,18 @@
                     zt: zt,
                     record:record
                 };
+                if (oldzt == '领料' && zt == '审核') {
+                    var rows = product.rows;
+                    if (rows.length > 0) {
+                        for (var i = 0; i < rows.length; i++) {
+                            var count = rows[i]['数量'] - rows[i]['已领料数量'] + rows[i]['已退料数量'];
+                            if (count > 0) {
+                                $.ligerDialog.alert(rows[i]['名称'] + "未领料，不能转完工");
+                                return;
+                            }
+                        }
+                    }
+                }
                 $.post('/index.php?g=Query&m=Consume&a=changestate', data,
                   function (msg) {
                       if (msg == '1') {

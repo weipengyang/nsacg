@@ -51,7 +51,7 @@ class StoreAction extends WapAction{
 		
 		$this->product_model = M('Product');
 		$this->product_cat_model = M('Product_cat');
-		$this->mainCompany = M('Company')->where("`token`='{$this->token}' AND `isbranch`=0")->find();
+		$this->mainCompany = M('Company')->where("`token`='{$this->token}' AND `isbranch`=0")->find(); 
 		
 		if (C('zhongshuai')) {
 			$cid = $this->mainCompany['id'];
@@ -2883,10 +2883,15 @@ public function check(){
                     $item['联系人']=$user['truename'];
                     $item['联系电话']=$user['tel'];
                     $item['商保到期']=$baoxian;
-                    $item['里程']=$licheng;
+                    $item['里程']=$licheng; 
                     $item['年检日期']=$nianjian;
                     $item['客户类别']=$czinfo['类别'];
-                    M('车辆档案','dbo.','difo')->add($item);
+                    $mycar=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
+                    if($mycar){
+                        M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->save($item);
+                    }else{
+                        M('车辆档案','dbo.','difo')->add($item);
+                    }
                     echo '添加成功';
                     exit();
                 }

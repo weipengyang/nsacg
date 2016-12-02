@@ -2207,66 +2207,48 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $crk=$_POST['crk'];
            $crkmx=$_POST['crkmx'];
            if($crk['单据类别']=='出库'){
-              if($crk['引用类别']=='维修领料'){
-                 foreach($crkmx as $item){
-                     $num=$item['数量'];
-                     $code=$item['编号'];
-                     $ck=$item['仓库'];
-                     $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
-                     $data['待审核数量']=0;
-                     $data['已领料数量']=$pj['已领料数量']+ $num;
-                     M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
-                     M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num where 编号='$code'");
-                     M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓库='$ck'");
-
-                 }
-                 $crkitem['当前状态']='已审核';
-                 $crkitem['审核人']=cookie('username');
-                 $crkitem['审核日期']=date('Y-m-d',time());
-                 M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
-                 $this->writeLog($crk['ID'],$crk['单据编号'],'出库审核','维修领料出库审核');
-
-                 
-              }elseif($crk['引用类别']=='销售出库'){
-                  foreach($crkmx as $item){
-                      $num=$item['数量'];
-                      $code=$item['编号'];
-                      $ck=$item['仓库'];
-                      M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num where 编号='$code'");
-                      M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓库='$ck'");
-
-                  }
-                  $crkitem['当前状态']='已审核';
-                  $crkitem['审核人']=cookie('username');
-                  $crkitem['审核日期']=date('Y-m-d',time());
-                  M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
-                  $this->writeLog($crk['ID'],$crk['单据编号'],'出库审核','销售出库审核');
-             }
-              echo '审核通过';
-              exit;
-           }
-           else{
-               if($crk['引用类别']=='采购进货'){
-                   foreach($crkmx as $item){
-                       $num=$item['数量'];
-                       $code=$item['编号'];
-                       $ck=$item['仓库'];
-                       //$pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
-                       //$data['待审核数量']=0;
-                       //$data['已领料数量']=$pj['已领料数量']+ $num;
-                       //M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
-                       M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存+$num where 编号='$code'");
-                       M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存+$num where 编号='$code' and 仓库='$ck'");
-
+               foreach($crkmx as $item){
+                   $num=$item['数量'];
+                   $code=$item['编号'];
+                   $ck=$item['仓库'];
+                   if($crk['引用类别']=='维修领料'){
+                       $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
+                       $data['待审核数量']=0;
+                       $data['已领料数量']=$pj['已领料数量']+ $num;
+                       M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
+                       M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num where 编号='$code'");
+                       M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓库='$ck'");
                    }
                    $crkitem['当前状态']='已审核';
                    $crkitem['审核人']=cookie('username');
                    $crkitem['审核日期']=date('Y-m-d',time());
                    M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
-                   $this->writeLog($crk['ID'],$crk['单据编号'],'入库审核','采购入库审核');
-                   echo '审核通过';
-                   exit;
+                   $this->writeLog($crk['ID'],$crk['单据编号'],'出库审核',$crk['单据类别'].'出库审核');
                }
+               echo '审核通过';
+               exit;
+           }
+           else{
+               foreach($crkmx as $item){
+                   $num=$item['数量'];
+                   $code=$item['编号'];
+                   $ck=$item['仓库'];
+                   if($crk['引用类别']!='维修退料'){
+                       $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
+                       $data['已退料数量']=$num;
+                       $data['已领料数量']=$pj['已领料数量']-$num;
+                       M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
+                   }
+                   M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存+$num where 编号='$code'");
+                   M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存+$num where 编号='$code' and 仓库='$ck'");
+               }
+               $crkitem['当前状态']='已审核';
+               $crkitem['审核人']=cookie('username');
+               $crkitem['审核日期']=date('Y-m-d',time());
+               M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
+               $this->writeLog($crk['ID'],$crk['单据编号'],'入库审核','采购入库审核');
+               echo '审核通过';
+               exit;
            }
 
        }
@@ -3149,10 +3131,12 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $products=$_POST['products'];
 
          $data['门店']=$form['门店'];
+         $data['发票号码']=$form['发票号码'];
          if($wxinfo){
              $data['引用ID']=$wxinfo['ID'];
              $data['引用单号']=$wxinfo['业务编号'];
              $data['车牌号码']=$wxinfo['车牌号码'];
+             $data['发票号码']=$wxinfo['车牌号码'];
              $data['门店']=$wxinfo['门店'];
          }
          $data['ID']=$this->getcode(20,1,1);
@@ -3162,7 +3146,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $data['供应商']=$form['供应商'];
          $data['供应商ID']=$form['供应商ID'];
          $data['发票类别']=$form['发票类别'];
-         $data['发票号码']=$form['发票号码'];
          $data['运费']=$form['运费'];
          $data['结算方式']=$form['结算方式'];
          $data['货运方式']=$form['货运方式'];

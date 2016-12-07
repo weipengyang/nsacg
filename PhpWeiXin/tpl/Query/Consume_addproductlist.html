@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>库存商品编辑</title>
+    <title>新增配件目录</title>
     <meta name="description" content="爱养车" />
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
@@ -9,16 +9,6 @@
     <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
     <script type="text/javascript">
-        function getQueryString(name) {
-            var now_url = document.location.search.slice(1), q_array = now_url.split('&');
-            for (var i = 0; i < q_array.length; i++) {
-                var v_array = q_array[i].split('=');
-                if (v_array[0] == name) {
-                    return v_array[1];
-                }
-            }
-            return false;
-        }
         $(function ()
         {
             var form = $("#form1").ligerForm({
@@ -28,9 +18,13 @@
                     {
                         display: "编号", name: "编号", newline: true, type: "text", readonly: true
                     },
-                    {
-                        display: "名称", name: "名称", newline: false, type: "text", readonly: true
+                     { display: "原厂编号 ", name: "原厂编号", newline: false, type: "text" },
+                    { display: "类别", name: "类别", newline: false, type: "text", readonly: true },
+                   {
+                        display: "名称", name: "名称", newline: false, type: "text"
                     },
+                    { display: "品牌 ", name: "品牌", newline: false, type: "text" },
+                    { display: "规格 ", name: "规格", newline: false, type: "text" },
                     { display: "最新进价 ", name: "最新进价", newline: false, type: "text", validate: { required: true } },
                     { display: "参考进价 ", name: "参考进价", newline: false, type: "text", validate: { required: true } },
                     { display: "参考售价", name: "参考售价", newline: false, type: "text" },
@@ -39,8 +33,14 @@
                         display: "警戒下限", name: "警戒下限", newline: false, type: "text"
 
                     },
+                 { display: "库存单位 ", name: "库存单位", newline: false, type: "text" },
+                 { display: "产地", name: "产地", newline: false, type: "text" },
+                 { display: "等级", name: "等级", newline: false, type: "text" },
+                 { display: "适用车型 ", name: "适用车型", newline: false, type: "text" },
+                 { display: "默认厂商 ", name: "默认厂商", newline: false, type: "text" },
+                 { display: "默认仓库 ", name: "默认仓库", newline: false, type: "text" },
                  { display: "编码", name: "编码", newline: false, type: "text" },
-                 { display: "类别", name: "类别", newline: false, type: "text", readonly: true },
+                 { display: "年份", name: "年份", newline: false, type: "text" },
                  { display: "年份", name: "年份", newline: false, type: "text" },
                  { display: '配套车型', name: '备注', type: "textarea", width: 430, height: 100 },
 
@@ -57,6 +57,7 @@
                                 return;
                             }
                             var submitData = {
+                                type:'add',
                                 stockinfo: data
                             };
                             $.post('index.php?g=Query&m=Consume&a=savestock', submitData,
@@ -68,12 +69,14 @@
                               });
                         }
                     }            ]            });
-            $.post('index.php?g=Query&m=Consume&a=getstock&code=' + getQueryString('code'), null,
-                     function (data) {
-                         if (data) {
-                             form.setData(data);
-                         }
-                     }, 'JSON');
+            var dialog = frameElement.dialog;
+            var data = dialog.get('data');
+            $("input[ligeruiid='类别']").val(data['type']);
+            $.post('index.php?g=Query&m=Consume&a=genproductcode&type='+data['type'],null,
+            function (code) {
+                $("input[ligeruiid='编号']").val(code);
+
+            });
         });
 
 

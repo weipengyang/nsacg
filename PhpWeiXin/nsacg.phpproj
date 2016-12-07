@@ -9104,7 +9104,6 @@
     <Content Include="PigCms\Common\index.html" />
     <Content Include="PigCms\index.html" />
     <Content Include="PigCms\Lib\Action\Home\index.html" />
-    <Content Include="PigCms\Lib\Action\Home\WeixinAction.class.php.bak" />
     <Content Include="PigCms\Lib\Action\index.html" />
     <Content Include="PigCms\Lib\Action\Other\index.html" />
     <Content Include="PigCms\Lib\Action\System\index.html" />
@@ -14656,7 +14655,8 @@
     <Content Include="tpl\Other\default\style\js\email.js" />
     <Content Include="tpl\Other\default\style\js\registerSSO.js" />
     <Content Include="tpl\Other\index.html" />
-    <Content Include="tpl\Query\Consume_carinfo - Copy.html" />
+    <Content Include="tpl\Query\Consume_addproductlist.html" />
+    <Content Include="tpl\Query\Consume_productlist.html" />
     <Content Include="tpl\Query\Consume_memberquery.html" />
     <Content Include="tpl\Query\Consume_couponquery.html" />
     <Content Include="tpl\Query\Consume_newpurchasies.html" />

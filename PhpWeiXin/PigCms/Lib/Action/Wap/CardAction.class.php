@@ -18,7 +18,7 @@ class CardAction extends WapAction{
         if(!in_array(ACTION_NAME, array('scanpay'))){
 
             $user = M('Userinfo')->where(array('token' => $this->token, 'wecha_id' => $this->wecha_id))->find();
-            if(empty($user)||empty($user['carno'])){
+            if(empty($user)||(empty($user['carno'])&&empty($user['carno1'])&&empty($user['carno2']))){
                 $this->redirect(U('Store/userinfo', array('token' => $this->token)));
 
             }

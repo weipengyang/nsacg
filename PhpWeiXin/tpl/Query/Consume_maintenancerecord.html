@@ -449,10 +449,31 @@
                     var rows = product.rows;
                     if (rows.length > 0) {
                         for (var i = 0; i < rows.length; i++) {
-                            var count = rows[i]['数量'] - rows[i]['已领料数量'] + rows[i]['已退料数量'];
-                            if (count > 0) {
-                                $.ligerDialog.alert(rows[i]['名称'] + "未领料，不能转完工");
-                                return;
+                            if (rows[i]['虚增类别'] == null||rows[i]['虚增类别'] == '') {
+                                var count = rows[i]['数量'] - rows[i]['已领料数量'] + rows[i]['已退料数量'];
+                                if (count > 0) {
+                                    $.ligerDialog.alert(rows[i]['名称'] + "未领料，不能转完工");
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (oldzt == '派工' && zt == '领料') {
+                    var rows = project.rows;
+                    if (rows.length > 0) {
+                        for (var i = 0; i < rows.length; i++) {
+                            if (rows[i]['虚增类别'] == null || rows[i]['虚增类别'] == '') {
+                                if (rows[i]['主修人'] == null || rows[i]['主修人'] == '') {
+                                    $.ligerDialog.alert(rows[i]['项目名称'] + "没有派工");
+                                    return;
+                                }
+                                if (rows[i]['开工时间'] == null || rows[i]['开工时间'] == '' || todate(rows[i]['开工时间'], true) == '1900-01-1 12:00')
+                                {
+                                    $.ligerDialog.alert(rows[i]['项目名称'] + "开工时间为空");
+                                    return;
+                                }
+                               
                             }
                         }
                     }
@@ -1065,8 +1086,8 @@
                                         var rows = product.getSelectedRows();
                                         if (rows.length > 0) {
                                             for (var i = 0; i < rows.length; i++) {
-                                                var count = rows[i]['数量'] - rows[i]['已领料数量'] - rows[i]['待审核数量'] + rows[i]['已退料数量'];
-                                                if (count <= 0) {
+                                                var count = rows[i]['数量'] + rows[i]['已退料数量'] - rows[i]['已领料数量'] - rows[i]['待审核数量'];
+                                                if (count<0) {
                                                     $.ligerDialog.alert(rows[i]['名称'] + "已经领料");
                                                     return;
                                                 }

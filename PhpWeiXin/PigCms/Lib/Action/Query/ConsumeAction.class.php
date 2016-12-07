@@ -1099,8 +1099,13 @@ class ConsumeAction extends Action{
     public  function savestock()
     {
         if(IS_POST){
+            $type=$_POST['type'];
             $stockinfo=$_POST['stockinfo'];
-            M('配件目录','dbo.','difo')->where(array('编号'=>$stockinfo['编号']))->save($stockinfo);
+            if($type&&$type=='add'){
+               M('配件目录','dbo.','difo')->add($stockinfo);
+            }else{
+                M('配件目录','dbo.','difo')->where(array('编号'=>$stockinfo['编号']))->save($stockinfo);
+            }
             echo '保存成功';
         }
     }
@@ -1130,6 +1135,12 @@ class ConsumeAction extends Action{
     public  function getproductbyname(){
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='编号';
+            $sortorder='asc';
+        }
         $where['停用']=0;
         $shop=$_GET['shop'];
         $cangku='塘坑门店仓库';
@@ -1149,12 +1160,52 @@ class ConsumeAction extends Action{
             $where['_complex']=$searchwhere;
 
         }
+
         $product=M('配件目录','dbo.','difo')
             ->join('left join 配件仓位 on 配件目录.编号=配件仓位.编号  and  配件仓位.仓库=\''.$cangku.'\'')
             ->field('配件目录.*,配件仓位.仓库,配件仓位.库存 分库存')
+            ->order("$sortname  $sortorder")
             ->where($where)->limit(($page-1)*$pagesize,$pagesize)->select();
         $count=M('配件目录','dbo.','difo')
             ->join('left join 配件仓位 on 配件目录.编号=配件仓位.编号  and  配件仓位.仓库=\''.$cangku.'\'')
+            ->where($where)->count();
+        $data['Rows']=$product;
+        $data['Total']=$count;
+        echo json_encode($data);
+    
+    }
+    public  function getproductlist(){
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='编号';
+            $sortorder='asc';
+        }
+        $where['1']=1;
+        if (isset($_POST['type'])&&trim($_POST['type'])!=''){
+            $where['类别']=array('like',$_POST['type'].'%');
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){
+            $searchwhere['品牌']=array('like',$searchkey);
+            $searchwhere['名称']=array('like',$searchkey);
+            $searchwhere['类别']=array('like',$searchkey);
+            $searchwhere['配件目录.编号']=array('like',$searchkey);
+            $searchwhere['原厂编号']=array('like',$searchkey);
+            $searchwhere['助记码']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $product=M('配件目录','dbo.','difo')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)
+            ->order("$sortname $sortorder")
+            ->select();
+        $count=M('配件目录','dbo.','difo')
             ->where($where)->count();
         $data['Rows']=$product;
         $data['Total']=$count;
@@ -2048,7 +2099,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
      
        if(IS_POST){
            $cgd=$_POST['cgd'];
-           $cgmx=$_POST['cgdmx'];
+           $cgmx=M('采购明细','dbo.','difo')->where(array('ID'=>$cgd['ID']))->select();
            if($cgd['单据类别']=='采购进货'){
                 $purchase['当前状态']='已审核';
                 $purchase['审核人']=cookie('username');
@@ -2205,7 +2256,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
      
        if(IS_POST){
            $crk=$_POST['crk'];
-           $crkmx=$_POST['crkmx'];
+           $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
            if($crk['单据类别']=='出库'){
                foreach($crkmx as $item){
                    $num=$item['数量'];
@@ -2233,7 +2284,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                    $num=$item['数量'];
                    $code=$item['编号'];
                    $ck=$item['仓库'];
-                   if($crk['引用类别']!='维修退料'){
+                   if($crk['引用类别']=='维修退料'){
                        $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
                        $data['已退料数量']=$num;
                        $data['已领料数量']=$pj['已领料数量']-$num;
@@ -3644,7 +3695,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
 
    public function printbill(){
        $id=$_GET['ID'];
-        $wxrecord=M('维修','dbo.','difo')->where(array('ID'=>$id))->find();
+        $wxrecord=M('维修','dbo.','difo')->where(array('ID'=>$id))->find(); 
         $items=M('维修项目','dbo.','difo')->where(array('ID'=>$id))->select();
         $peijian=M('维修配件','dbo.','difo')->where(array('ID'=>$id,'仅内部核算成本'=>0))->select();
         $this->assign('wxrecord',$wxrecord);
@@ -3892,7 +3943,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $data['当前状态']='结算';
            $data['维修状态']='结算';
            $data['预计完工']=date('Y-m-d',time());
-           $data['进厂时间']=date('Y-m-d',time());
+           $data['进厂时间']=date('Y-m-d H:i',time());
            unset($data['出厂时间']);
            unset($data['下次保养']);
            unset($data['实际完工']);
@@ -3919,10 +3970,14 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            }
            else{
                $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0002'))->find();
-               $data['报价金额']=35;
-               $data['应收金额']=35;
-               $data['客付金额']=35;
-               $data['挂账金额']=35;
+               $price=35;
+               if($wxinfo['门店']=='塘坑店'){
+                   $price=30;
+               }
+               $data['报价金额']=$price;
+               $data['应收金额']=$price;
+               $data['客付金额']=$price;
+               $data['挂账金额']=$price;
 
            }
            $data['业务编号']=$bianhao;
@@ -4012,8 +4067,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $data['结算客户ID']=$carinfo['客户ID'];
            $data['当前状态']='结算';
            $data['维修状态']='结算';
-           $data['进厂时间']=date('Y-m-d',time());
-           $data['结算日期']=date('Y-m-d',time());
+           $data['进厂时间']=date('Y-m-d H:i',time());
+           $data['结算日期']=date('Y-m-d H:i',time());
            unset($data['出厂时间']);
            unset($data['下次保养']);
            unset($data['实际完工']);
@@ -4297,7 +4352,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         unset($data['结束日期']);
         unset($data['预计完工']);
         unset($data['结算日期']);
-        $data['进厂时间']=date('Y-m-d',time());
+        $data['进厂时间']=date('Y-m-d H:i',time());
         //$data['结算日期']=date('Y-m-d',time());
         $data['维修类别']=$wxlb;
         $data['报称故障']=$fault;
@@ -4354,6 +4409,32 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        M('编号单','dbo.','difo')->add(array('单据编号'=>$bianhao,'队列'=>($code+1),'类别'=>"$type",'日期'=>date('Y-m-d', time())));
        return $bianhao;
    }
+   private function genproductnum($type)
+   {
+       $code=M('配件目录','dbo.','difo')->where(array('类别'=>"$type"))->max('号码');
+       if(!$code){
+           $code=M('配件目录','dbo.','difo')->max('号码');
+       }
+       $right=substr($code,-4);
+       $right=intval($right)+1;
+       $right=str_pad($right,4,'0',STR_PAD_LEFT);
+       $bianhao=substr_replace($code,$right,-4);
+       return $bianhao;
+   }
+   public function genproductcode()
+   {
+       $type=$_GET['type'];
+       $code=M('配件目录','dbo.','difo')->where(array('类别'=>"$type"))->max('编号');
+       if(!$code){
+           $code=M('配件目录','dbo.','difo')->max('编号');
+       }
+       $right=substr($code,-4);
+       $right=intval($right)+1;
+       $right=str_pad($right,4,'0',STR_PAD_LEFT);
+       $bianhao=substr_replace($code,$right,-4);
+       echo $bianhao;
+   }
+
    private function getcode($randLength=6,$attatime=1,$includenumber=0){
        if ($includenumber){
            $chars='abcdefghijklmnopqrstuvwxyzABCDEFGHJKLMNPQEST123456789';

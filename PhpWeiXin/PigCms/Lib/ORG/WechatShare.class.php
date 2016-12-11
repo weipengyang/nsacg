@@ -103,24 +103,48 @@ class WechatShare
 	}
     public function get_access_token()
     {  
-        $access_token=S('weixin_access_token');
-        Log::write('从缓存中获取token->'.$access_token);
-        if(!$access_token){
-            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->appId."&secret=".$this->appSecret;
-            $json=json_decode($this->curlGet($url_get));
-            if (!$json->errmsg){
-                $access_token=$json->access_token;
-                Log::write('重新获取token->'.$access_token);
-                S('weixin_access_token',$access_token,7200);
-            }
+        $data=null;
+        $data = S('weixin_access_token');
+        if (!empty($data)&&$data->expire_time > time()){
+            $access_token = $data->access_token;
+            Log::write('wechatshare从缓存中获取token->'.$access_token);
         }
+        else{
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->appId."&secret=".$this->appSecret;
+            $res = json_decode($this->https_request($url_get));
+            $access_token = $res->access_token;
+            if ($access_token) {
+                Log::write('wechatshare重新获取token->'.$access_token);
+
+                $data->expire_time = time() + 7000;
+                $data->access_token = $access_token;
+                S('weixin_access_token',$data);
+            }
+        } 
         return $access_token;
     }
-
+     
 	//获取token
 	public function  getToken(){
-		$url 	= "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$this->appId."&secret=".$this->appSecret;
-		return $this->https_request($url);
+		$data=null;
+        $data = S('weixin_access_token');
+        if (!empty($data)&&$data->expire_time > time()){
+            $access_token = $data->access_token;
+            Log::write('wechatshare从缓存中获取token->'.$access_token);
+        }
+        else{
+
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->appId."&secret=".$this->appSecret;
+            $res = json_decode($this->https_request($url_get));
+            $access_token = $res->access_token;
+            if ($access_token) {
+                $data->expire_time = time() + 7000;
+                Log::write('wechatshare重新获取token->'.$access_token);
+                $data->access_token = $access_token;
+                S('weixin_access_token',$data);
+            }
+        } 
+        return $access_token;
 	}
 
 	public function getTicket($token){

@@ -14,6 +14,12 @@ function selectall(name) {
 		});
 	}
 }
+function updatemark() {
+    $.post('index.php?g=User&m=Wechat_group&a=updateremark', null,
+                        function (data) {
+                            alert(data);
+                        }, 'JSON');
+}
 </script>
 <script src="/tpl/static/fushionCharts/JSClass/FusionCharts.js" type="text/javascript"></script>   
 <link rel="stylesheet" type="text/css" href="./tpl/User/default/common/css/cymain.css" />
@@ -53,7 +59,10 @@ function selectall(name) {
 				<a href="{pigcms::U('User/Wechat_group/send')}" class="btnGrayS vm bigbtn">
 					<img src="tpl/User/default/common/images/text.png" class="vm">更新列表
 				</a>
-				<a href="{pigcms::U('User/Wechat_group/send_info',array('all'=>1))}" class="btnGrayS vm bigbtn">
+                <a href="#" class="btnGrayS vm bigbtn" onclick="updatemark();">
+                    <img src="tpl/User/default/common/images/text.png" class="vm">更新备注
+                </a>
+                	<a href="{pigcms::U('User/Wechat_group/send_info',array('all'=>1))}" class="btnGrayS vm bigbtn">
 					<img src="tpl/User/default/common/images/text.png" class="vm">刷新所有粉丝信息
 				</a>
             </div>

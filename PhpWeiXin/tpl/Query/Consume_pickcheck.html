@@ -138,13 +138,15 @@
         function deleterecord() {
             var row = grid.getSelectedRow();
             if (row) {
+                if (row['当前状态'] == '已审核') {
+                    $.ligerDialog.alert('不能删除已审核记录');
+                    return;
+                }
                 $.ligerDialog.confirm('你确定要删除此记录', function (flag) {
                     if (flag) {
                         var data = {
-                            crk: row,
-                            crkmx: product.rows,
+                            crk: row
                         };
-                        return;
                         $.post('/index.php?g=Query&m=Consume&a=deletepick', data,
                           function (msg) {
                               $.ligerDialog.alert(msg);

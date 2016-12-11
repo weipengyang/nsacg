@@ -451,7 +451,7 @@ class WapAction extends BaseAction{
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
@@ -559,40 +559,39 @@ EOM;
 
 /**
  * 获取会员的会员卡信息
- * @return 没有会员卡返回 NULL ; 有会员卡返回 卡号，余额，积分
+ * 没有会员卡返回NULL ; 有会员卡返回 卡号，余额，积分
  */
 	protected function getCardInfo($token = '' ,$wecha_id = ''){
 
 		$wecha_id = $wecha_id ? $wecha_id : $this->wecha_id;
 		$token    = $token ? $token : $this->token;
 		$where    = array('token'=>$token,'wecha_id'=>$wecha_id);
-		
 		$number   = M('Member_card_create')->where($where)->getField('number');
-
 		if (!$number) return NULL;
-		
 		$cardInfo = M('Userinfo')->where($where)->field('balance,total_score')->find();
-		
-		return array(
-				'number' => $number, 
-				'balance' => $cardInfo['balance'], 
-				'score' => $cardInfo['total_score'], 
-			);
+		return array('number' => $number,'balance' => $cardInfo['balance'], 'score' => $cardInfo['total_score']);
 	}
 
     public function get_access_token()
     {  
-        $access_token=S('weixin_access_token');
-        Log::write('从缓存中获取token->'.$access_token);
-        if(!$access_token){
-            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->wxuser['appid'].'&secret='.$this->wxuser['appsecret'];
-            $json=json_decode($this->curlGet($url_get));
-            if (!$json->errmsg){
-                $access_token=$json->access_token;
-                Log::write('重新获取token->'.$access_token);
-                S('weixin_access_token',$access_token,7200);
-            }
+        $data=null;
+        $data = S('weixin_access_token');
+        if (!empty($data)&&$data->expire_time > time()){
+            $access_token = $data->access_token;
+            Log::write('wap从缓存中获取token->'.$access_token);
         }
+        else{
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->wxuser['appid'].'&secret='.$this->wxuser['appsecret'];
+            $res = json_decode($this->curlGet($url_get));
+            $access_token = $res->access_token;
+            if ($access_token) {
+                $data->expire_time = time() + 7000;
+                $data->access_token = $access_token;
+                S('weixin_access_token',$data);
+                Log::write('wap重新获取token->'.$access_token);
+
+            }
+        } 
         return $access_token;
     }
 

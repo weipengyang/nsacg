@@ -225,6 +225,17 @@
                      }, 'JSON');
                 }
             });
+            $.post('index.php?g=Query&m=Consume&a=getstorelist', null,
+                    function (data) {
+                        if (data) {
+                            $('#shop').empty();
+                            $('#shop').append("<option value='all'>所有仓库</option>");
+                            $(data).each(function () {
+                                var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                                $('#shop').append(option);
+                            });
+                        }
+                    }, 'JSON');
             $("#ejml").change(function () {
                 var code = $('#ejml').val();
                 var submitData = {
@@ -337,7 +348,7 @@
                         return '<a href="javascript:void(0);" onclick="picnfo(\'' + rowdata.流水号 + '\');"><strong>配件图片</strong></a>';
                     }
                 }
-        ],
+               ],
                 isScroll: true,
                 pageSize: 20,
                 detailHeight: 120,
@@ -369,9 +380,9 @@
                     <div class="am-g">
                         <div class="am-u-sm-10 am-u-md-9">
                             <div class="am-form-group">
-                                门店
+                                仓库
                                 <select data-am-selected="{btnSize: 'sm'}" id="shop">
-                                    <option value="all">所有门店</option>
+                                    <option value="all">所有仓库</option>
                                     <option value="区府店">区府店</option>
                                     <option value="塘坑店">塘坑店</option>
                                 </select>

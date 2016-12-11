@@ -419,7 +419,7 @@ class ConsumeAction extends Action{
             
         }
         if($searchkey){                  
-            if(in_array($_POST['shop'],array('区府店','塘坑店'))){
+            if($_POST['shop']&&$_POST['shop']!='all'){
                 $searchwhere['配件目录.编号']=array('like',$searchkey);
              }else{
                  $searchwhere['编号']=array('like',$searchkey);
@@ -437,16 +437,14 @@ class ConsumeAction extends Action{
         }
         if($_POST['flag'])
         {
-            if(in_array($_POST['shop'],array('区府店','塘坑店'))){
+            if($_POST['shop']&&$_POST['shop']!='all'){
                 $where['_string']='isnull(出入库统计.库存,0)<isnull(出入库统计.警戒下限,0)';
             }else{
                 $where['_string']='isnull(配件库存.库存,0)<isnull(配件库存.警戒下限,0)';
             }
         }
-        if(in_array($_POST['shop'],array('区府店','塘坑店'))){
-            $cangku='塘坑门店仓库';
-            if($_POST['shop']=='区府店')
-                $cangku='区府门店仓库';
+        if($_POST['shop']&&$_POST['shop']!='all'){
+            $cangku=$_POST['shop'];
             $yelist=M('配件目录','dbo.','difo')
                    ->join(' join 出入库统计  on 配件目录.编号=出入库统计.编号  and  出入库统计.仓库=\''.$cangku.'\' left join 信息分类统计  on 配件目录.编码=信息分类统计.类型')
                    ->field('配件目录.*,出入库统计.仓库,isnull(出入库统计.库存,0) 分库存,isnull(出入库统计.警戒下限,0) 警戒线,出入库统计.出库数量,出入库统计.入库数量,信息分类统计.数量')
@@ -511,7 +509,7 @@ class ConsumeAction extends Action{
             
         }
         if($searchkey){                  
-            if(in_array($_GET['shop'],array('区府店','塘坑店'))){
+            if($_GET['shop']&&$_GET['shop']!='all'){
                 $searchwhere['配件目录.编号']=array('like',$searchkey);
             }else{
                 $searchwhere['编号']=array('like',$searchkey);
@@ -525,16 +523,14 @@ class ConsumeAction extends Action{
         }
         if($_GET['flag'])
         {
-            if(in_array($_GET['shop'],array('区府店','塘坑店'))){
+            if($_GET['shop']&&$_GET['shop']!='all'){
                 $where['_string']='isnull(出入库统计.库存,0)<isnull(出入库统计.警戒下限,0)';
             }else{
                 $where['_string']='isnull(配件库存.库存,0)<isnull(配件库存.警戒下限,0)';
             }
         }
-        if(in_array($_GET['shop'],array('区府店','塘坑店'))){
-            $cangku='塘坑门店仓库';
-            if($_GET['shop']=='区府店')
-                $cangku='区府门店仓库';
+        if($_GET['shop']&&$_GET['shop']!='all'){
+            $cangku=$_GET['shop'];
             $products=M('配件目录','dbo.','difo')
                    ->join(' join 出入库统计  on 配件目录.编号=出入库统计.编号  and  出入库统计.仓库=\''.$cangku.'\' left join 信息分类统计  on 配件目录.编码=信息分类统计.类型')
                    ->field('配件目录.*,出入库统计.仓库,isnull(出入库统计.库存,0) 分库存,isnull(出入库统计.警戒下限,0) 警戒线,出入库统计.出库数量,出入库统计.入库数量,信息分类统计.数量,出入库统计.警戒下限-出入库统计.库存 进货数量')
@@ -1102,6 +1098,7 @@ class ConsumeAction extends Action{
             $type=$_POST['type'];
             $stockinfo=$_POST['stockinfo'];
             if($type&&$type=='add'){
+               $stockinfo['号码']=$this->genproductnum($stockinfo['类别']);
                M('配件目录','dbo.','difo')->add($stockinfo);
             }else{
                 M('配件目录','dbo.','difo')->where(array('编号'=>$stockinfo['编号']))->save($stockinfo);
@@ -1173,7 +1170,7 @@ class ConsumeAction extends Action{
         $data['Total']=$count;
         echo json_encode($data);
     
-    }
+    } 
     public  function getproductlist(){
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
@@ -2206,42 +2203,22 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
 
    }
    public function deletepurchase(){
-     
        if(IS_POST){
-           $crk=$_POST['cgd'];
-           $crkmx=$_POST['cgdmx'];
-           if($crk['单据类别']=='出库'){
-              if($crk['引用类别']=='维修领料'){
-                 foreach($crkmx as $item){
-                     $data['待审核数量']=0;
-                     M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
-                     //M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存+$num where 编号='$code'");
-                     //M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存+$num where 编号='$code' and 仓位='$ck'");
-                     M('出入库明细','dbo.','difo')->where(array('流水号'=>$item['流水号']))->delete();
-
-                 }
-                 M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->delete();
-                 $this->writeLog($crk['ID'],$crk['单据编号'],'出入库审核','删除维修领料出库单—'.$crk['单据编号']);
-              }elseif($crk['引用类别']=='销售出库'){
-                  foreach($crkmx as $item){
-                      M('出入库明细','dbo.','difo')->where(array('流水号'=>$item['流水号']))->delete();
-                  }
-                  M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->delete();
-                  $this->writeLog($crk['ID'],$crk['单据编号'],'出入库审核','删除销售出库单—'.$crk['单据编号']);
-
-              }
-              echo '删除成功';
-              exit;
+           $cgd=$_POST['cgd'];
+           if($cgd['引用ID']!=''){
+               $cgmx=M('采购明细','dbo.','difo')->where(array('ID'=>$cgd['ID']))->select();
+               foreach($cgmx as $item){
+                   $data['是否采购']=0;
+                   M('维修配件','dbo.','difo')->where(array('ID'=>$cgd['引用ID'],'编号'=>$item['编号']))->save($data);
+               }
+               //$this->writeLog($crk['ID'],$crk['单据编号'],'出入库审核','删除维修领料出库单—'.$crk['单据编号']);
            }
-           else{
-                
-           }
-
+           M('采购明细','dbo.','difo')->where(array('ID'=>$cgd['ID']))->delete();
+           M('采购单','dbo.','difo')->where(array('流水号'=>$cgd['流水号']))->delete();
+           echo '删除成功';
+           exit;
        }
-       else{
-           $this->display();
-       }
-
+       
    }
    public function changelowerbound(){
      
@@ -2264,6 +2241,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                    $ck=$item['仓库'];
                    if($crk['引用类别']=='维修领料'){
                        $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
+                       $num=$pj['待审核数量'];
                        $data['待审核数量']=0;
                        $data['已领料数量']=$pj['已领料数量']+ $num;
                        M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
@@ -2286,9 +2264,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                    $ck=$item['仓库'];
                    if($crk['引用类别']=='维修退料'){
                        $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
-                       $data['已退料数量']=$num;
-                       $data['已领料数量']=$pj['已领料数量']-$num;
-                       M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
+                       $num=$pj['已退料数量'];
                    }
                    M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存+$num where 编号='$code'");
                    M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存+$num where 编号='$code' and 仓库='$ck'");
@@ -2309,33 +2285,31 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
 
    }
    public function deletepick(){
-     
        if(IS_POST){
            $crk=$_POST['crk'];
-           $crkmx=$_POST['crkmx'];
            if($crk['单据类别']=='出库'){
-              if($crk['引用类别']=='维修领料'){
-                 foreach($crkmx as $item){
-                     $data['待审核数量']=0;
-                     M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
-                     //M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存+$num where 编号='$code'");
-                     //M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存+$num where 编号='$code' and 仓位='$ck'");
-                     M('出入库明细','dbo.','difo')->where(array('流水号'=>$item['流水号']))->delete();
-
-                 }
-                 M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->delete();
-              }elseif($crk['引用类别']=='销售出库'){
-                  foreach($crkmx as $item){
-                      M('出入库明细','dbo.','difo')->where(array('流水号'=>$item['流水号']))->delete();
-                  }
-                  M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->delete();
-              }
-              echo '删除成功';
-              exit;
+               if($crk['引用类别']=='维修领料'){
+                   $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
+                   foreach($crkmx as $item){
+                       $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
+                       $data['待审核数量']=$pj['待审核数量']+$item['数量'];
+                       M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
+                   }
+               }
+           }else{
+               if($crk['引用类别']=='维修退料'){
+                   $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
+                   foreach($crkmx as $item){
+                       $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
+                       $data['已退料数量']=$pj['已退料数量']-$item['数量'];
+                       M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
+                   }
+               }
            }
-           else{
-           
-           }
+           M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->delete();
+           M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->delete();
+           echo '删除成功';
+           exit;
 
        }
        else{
@@ -3165,7 +3139,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $code=$product['编号'];
             M('出入库明细','dbo.','difo')->add($crk);
             M('配件目录','dbo.','difo')->execute("UPDATE 配件目录 SET 维修领用=维修领用+$num WHERE 编号='$code'");
-            M('维修配件','dbo.','difo')->execute("UPDATE 维修配件 SET 待审核数量=$num WHERE ID='$wxID'and 编号='$code'");
+            M('维修配件','dbo.','difo')->execute("UPDATE 维修配件 SET 待审核数量=isnull(待审核数量,0)+$num WHERE ID='$wxID'and 编号='$code'");
            
         }
         echo '领料成功';
@@ -3175,7 +3149,163 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $this->display();
      }
    }
-   public function purchasing(){
+   public function backpick(){
+     if(IS_POST){
+         $wxinfo=$_POST['wxinfo'];
+         $form=$_POST['data'];
+         $wxID=$wxinfo['ID'];
+         $products=$_POST['products'];
+         $data['ID']=$this->getcode(20,1,1);
+         $data['引用单号']=$wxinfo['业务编号'];
+         $data['引用ID']=$wxID;
+         $data['引用类别']='维修退料';
+         $data['单据编号']=$this->getcodenum('RK');
+         $data['制单日期']=date('Y-m-d',time());
+         $data['制单人']=cookie('username');
+         $data['车牌号码']=$wxinfo['车牌号码'];
+         $data['当前状态']='待审核';
+         $data['原因']='维修退料';
+         $data['领料员']=$form['退料员'];
+         $data['单据类别']='入库';
+         $data['单据备注']=$form['备注'];
+        if($form['备注']==''){
+            $data['单据备注']='维修退料';
+        }
+        M('出入库单','dbo.','difo')->add($data);
+        foreach($products as $product){
+            $crk['ID']=$data['ID'];
+            $crk['仓库']=$product['仓库'];
+            $crk['编号']=$product['编号'];
+            $crk['名称']=$product['名称'];
+            $crk['规格']=$product['规格'];
+            $crk['单位']=$product['单位'];
+            $crk['数量']=$product['本次退料'];
+            $crk['单价']=$product['单价'];
+            $crk['金额']=$product['金额'];
+            $crk['成本价']=$product['成本价'];
+            $crk['适用车型']=$product['适用车型'];
+            $crk['产地']=$product['产地'];
+            $crk['备注']=$product['备注'];
+            $num=$product['本次退料'];
+            $code=$product['编号'];
+            M('出入库明细','dbo.','difo')->add($crk);
+            M('维修配件','dbo.','difo')->execute("UPDATE 维修配件 SET 已退料数量=isnull(已退料数量,0)+$num WHERE ID='$wxID'and 编号='$code'");
+           
+        }
+        echo '退料成功';
+    }
+     else{ 
+
+         $this->display();
+     }
+   }
+
+   private function sumpurchaseprice($id){
+       $products=M('采购明细','dbo.','difo')->where(array('ID'=>$id))->select();
+       foreach($products as $product){
+           $data['合计货款']+=$product['金额'];
+           $data['合计数量']+=$product['数量'];
+           $data['合计税额']+=$product['税额'];
+           $data['价税合计']=$product['价税合计'];
+           $data['总金额']+=$product['价税合计'];
+           $data['应结金额']+=$product['价税合计'];
+           $data['挂账金额']+=$product['价税合计'];
+       }
+       M('采购单','dbo.','difo')->where(array('ID'=>$id))->save($data);
+   }
+   private function sumsaleprice($id){
+       $products=M('销售明细','dbo.','difo')->where(array('ID'=>$id))->select();
+       foreach($products as $product){
+           $data['实际货款']+=$product['金额'];
+           $data['合计数量']+=$product['数量'];
+           $data['实际税额']+=$product['税额'];
+           $data['价税合计']=$product['价税合计'];
+           $data['总金额']+=$product['价税合计'];
+           $data['应结金额']+=$product['价税合计'];
+           $data['挂账金额']+=$product['价税合计'];
+       }
+       M('销售单','dbo.','difo')->where(array('ID'=>$id))->save($data);
+
+   }
+   public function deletesaleproduct(){
+       if(IS_POST){
+           $xsd=$_POST['xsd'];
+           M('销售明细','dbo.','difo')->where(array('ID'=>$xsd['ID']))->delete();
+           M('销售单','dbo.','difo')->where(array('流水号'=>$xsd['流水号']))->delete();
+           echo '删除成功';
+           exit;
+       }
+       
+   }
+
+   public function deletepurchaseitem(){
+       $ID=$_POST['ID'];
+       $code=$_POST['code'];
+       M('采购明细','dbo.','difo')->where(array('流水号'=>$code))->delete();
+       $this->sumpurchaseprice($ID);
+       echo '操作成功';
+   }
+   public function deletesaleitem(){
+       $ID=$_POST['ID'];
+       $code=$_POST['code'];
+       M('销售明细','dbo.','difo')->where(array('流水号'=>$code))->delete();
+       $this->sumsaleprice($ID);
+       echo '操作成功';
+   }
+   public function savesaleproduct(){
+       $products=$_POST['products'];
+       $ID=$_POST['ID'];
+       foreach($products as $product){
+           $crk['ID']=$ID;
+           $crk['仓库']=$product['仓库'];
+           $crk['编号']=$product['编号'];
+           $crk['名称']=$product['名称'];
+           $crk['规格']=$product['规格'];
+           $crk['单位']=$product['单位'];
+           $crk['数量']=$product['数量'];
+           $crk['单价']=$product['单价'];
+           $crk['金额']=$product['金额'];
+           $crk['折扣']=$product['折扣'];
+           $crk['税率']=$product['税率'];
+           $crk['税额']=$product['税额'];
+           $crk['虚增类别']=$product['虚增类别'];
+           $crk['虚增金额']=$product['虚增金额'];
+           $crk['适用车型']=$product['适用车型'];
+           $crk['产地']=$product['产地'];
+           $crk['备注']=$product['备注'];
+           M('销售明细','dbo.','difo')->add($crk);
+       }
+       $this->sumsaleprice($ID);
+       echo '操作成功';
+   }
+
+   public function savepurchase(){
+       $products=$_POST['products'];
+       $ID=$_POST['ID'];
+       foreach($products as $product){
+           $crk['ID']=$ID;
+           $crk['仓库']=$product['仓库'];
+           $crk['编号']=$product['编号'];
+           $crk['名称']=$product['名称'];
+           $crk['规格']=$product['规格'];
+           $crk['单位']=$product['单位'];
+           $crk['数量']=$product['数量'];
+           $crk['单价']=$product['单价'];
+           $crk['金额']=$product['金额'];
+           $crk['折扣']=$product['折扣'];
+           $crk['税率']=$product['税率'];
+           $crk['税额']=$product['税额'];
+           $crk['含税价']=$product['含税价'];
+           $crk['价税合计']=$product['价税合计'];
+           $crk['适用车型']=$product['适用车型'];
+           $crk['产地']=$product['产地'];
+           $crk['备注']=$product['备注'];
+           M('采购明细','dbo.','difo')->add($crk);
+       }
+       $this->sumpurchaseprice($ID);
+       echo '操作成功';
+   }
+   public function  purchasing(){
      if(IS_POST){
          $wxinfo=$_POST['wxinfo'];
          $form=$_POST['data'];
@@ -4504,7 +4634,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $paybill['提醒日期']=date('Y-m-d',time());
        $paybill['账款类别']='应收款';
        $paybill['当前状态']='待审核';
-       $paybill['摘要']=$wx['维修类别'].'欠款';
+       $paybill['摘要']='['.$wx['门店'].']'.$wx['维修类别'].'欠款';
        if($wx['挂账金额']==0){
            $paybill['当前状态']='已审核';
            $paybill['摘要']=$wx['维修类别'];
@@ -4526,7 +4656,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $data['开户银行']='';
            $data['银行账号']='';
            $data['本次应付']=0;
-           $data['本次应收']=0;
+           $data['本次应收']==$wx['现收金额'];
            $data['整单折扣']=1;
            $data['实付金额']=0;
            $data['实收金额']=$wx['现收金额'];
@@ -4538,8 +4668,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $data['摘要']='维修收款('.$wx['业务编号'].')';
            $data['收支项目']='维修收款';
            $data['当前状态']='待审核';
-           $data['发票类别']='';
-           $data['发票号']='';
+           $data['发票类别']=$wx['门店'];
+           $data['发票号']=$wx['车牌号码'];
            $data['单位编号']=$wx['客户ID'];
            $data['取用预付']=0;
            $data['取用预收']=0;

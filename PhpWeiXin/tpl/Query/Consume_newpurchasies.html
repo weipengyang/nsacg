@@ -245,7 +245,9 @@
                             $.post('index.php?g=Query&m=Consume&a=purchasing', submitData,
                               function (data) {
                                   $.ligerDialog.alert(data);
-                                  //window.parent.liger.get('maingrid4').reload();
+                                  parent.product.reload();
+                                  parent.grid.reload();
+                                  frameElement.dialog.hide();
 
                               });
                         }

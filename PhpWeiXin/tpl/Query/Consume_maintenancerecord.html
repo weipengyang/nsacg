@@ -114,7 +114,7 @@
         var form, grid, project, product, append, opgrid, historygrid = null;
         var washdialog, caldialog, mrdialog, wxdialog, pickdialog,
             cardialog, purchasedialog, addprojectdialog, editprojectdialog,
-            memberdialog,editproductdialog, assigntaskdialog;
+            memberdialog,editproductdialog, assigntaskdialog,backpickdialog;
         var record, discount = {};
         function editproject() {
             if (record['当前状态'] == '结束') {
@@ -229,6 +229,29 @@
                   pickdialog = $.ligerDialog.open({
                     height: 540,
                     url: '/index.php?g=Query&m=Consume&a=picking',
+                    width: 800,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    title: '维修领料'
+                });
+            }
+        }
+        function backpick() {
+            if (record['当前状态'] == '结束') {
+                $.ligerDialog.alert('结束状态不能退料');
+                return;
+            }
+            if (backpickdialog) {
+                backpickdialog.setUrl('/index.php?g=Query&m=Consume&a=backpick');
+                backpickdialog.show();
+            }
+            else {
+                backpickdialog = $.ligerDialog.open({
+                    height: 540,
+                    url: '/index.php?g=Query&m=Consume&a=backpick',
                     width: 800,
                     showMax: true,
                     showToggle: true,
@@ -781,6 +804,7 @@
                                             var row = e.data[0];
                                             $("input[name='联系电话']").val(row['联系电话']);
                                             $("input[name='客户ID']").val(row['ID']);
+                                            $("input[name='客户类别']").val(row['类别']);
                                             $("input[name='结算客户ID']").val(row['ID']);
                                             $("input[name='手机号码']").val(row['手机号码']);
                                             $("input[name='联系人']").val(row['联系人']);
@@ -1127,7 +1151,23 @@
                                 }
                             }, icon: 'ad icon iconfont icon-lingliao'
                         },
-                        { id: 'btntuiliao', text: '退料', click: null, icon: 'ad icon iconfont icon-jianqu' },
+                        {
+                            id: 'btntuiliao', text: '退料', click: null, icon: 'ad icon iconfont icon-jianqu', click: function () {
+                                var rows = product.getSelectedRows();
+                                if (rows.length > 0) {
+                                    for (var i = 0; i < rows.length; i++) {
+                                        var count = rows[i]['已领料数量']-rows[i]['已退料数量'];
+                                        if (count <= 0) {
+                                            $.ligerDialog.alert(rows[i]['名称'] + "无需退料");
+                                            return;
+                                        }
+                                    }
+                                    backpick();
+                                } else {
+                                    $.ligerDialog.alert('请选择要退料的配件');
+                                }
+                            }
+                        },
                         {
                             id: 'btncaigou', text: '采购开单', click: function () {
                                 var rows = product.getSelectedRows();

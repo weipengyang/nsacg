@@ -88,6 +88,53 @@ class Wechat_groupAction extends UserAction{
 		}
 		$this->display();
 	}
+    public function updateremark(){
+     if(IS_POST){
+         $uerinfo=M('member_card_create')->where(array('token'=>$this->token,'wecha_id'=>array('neq','')))->select();
+         foreach($uerinfo as $user){
+             $this->remark($user['wecha_id'],$user['number']);
+         }
+         echo '更新完毕';
+     }
+
+    }
+    private function remark($openid,$remark){
+        $data='{"openid":"'.$openid.'","remark":"'.$remark.'"}';
+        $rt=$this->curlPost('https://api.weixin.qq.com/cgi-bin/user/info/updateremark?access_token='.$this->get_access_token(),$data,0);
+        return $rt;
+    }
+    function curlPost($url, $data,$showError=1){
+		$ch = curl_init();
+		$header = "Accept-Charset: utf-8";
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$tmpInfo = curl_exec($ch);
+		$errorno=curl_errno($ch);
+        Log::write($tmpInfo);
+		if ($errorno) {
+			return array('rt'=>false,'errorno'=>$errorno);
+		}else{
+			$js=json_decode($tmpInfo,1);
+			if (intval($js['errcode']==0)){
+				return array('rt'=>true,'msg'=>$js);
+			}else {
+                if($js['errcode']==40001){
+                    Log::write('清空缓存---');
+                    S('weixin_access_token',null);
+                }
+                return array('rt'=>false,'errorno'=>$js['errcode'],'errmsg'=>$js['errmsg']);
+			}
+		}
+	}
+
 	public function  send(){
 		if(IS_GET){
 			$access_token=$this->_getAccessToken();
@@ -329,34 +376,44 @@ class Wechat_groupAction extends UserAction{
 	}
     public function get_access_token()
     {
-        $access_token=S('weixin_access_token');
-        if(!isset($access_token)){
-            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->wxuser['appid'].'&secret='.$this->wxuser['appsecret'];
-            $json=json_decode($this->curlGet($url_get));
-            if (!$json->errmsg){
-                $access_token=$json->access_token;
-                S('weixin_access_token',$access_token,7200);
-            }
-            else{
-                return $this->get_access_token();
-            }
+        $data=null;
+        $data = S('weixin_access_token');
+        if (!empty($data)&&$data->expire_time > time()){
+            $access_token = $data->access_token;
+            Log::write('wechat_group从缓存中获取token->'.$access_token);
         }
+        else{
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
+            $res = json_decode($this->curlGet($url_get));
+            $access_token = $res->access_token;
+            if ($access_token) {
+                $data->expire_time = time() + 7000;
+                $data->access_token = $access_token;
+                S('weixin_access_token',$data);
+            }
+        } 
         return $access_token;
     }
 
     public function _getAccessToken(){
-        $access_token=S('weixin_access_token');
-        if(!isset($access_token)){
-            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
-            $json=json_decode($this->curlGet($url_get));
-            if (!$json->errmsg){
-                $access_token=$json->access_token;
-                S('weixin_access_token',$access_token,7200);
-            }
-            else{
-                return $this->get_access_token();
-            }
+        $data=null;
+        $data = S('weixin_access_token');
+        if (!empty($data)&&$data->expire_time > time()){
+            $access_token = $data->access_token;
+            Log::write('wechat_group从缓存中获取token->'.$access_token);
         }
+        else{
+            $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
+            $res = json_decode($this->curlGet($url_get));
+            $access_token = $res->access_token;
+            if ($access_token) {
+                $data->expire_time = time() + 7000;
+                $data->access_token = $access_token;
+                S('weixin_access_token',$data);
+                Log::write('wechat_group重新获取token->'.$access_token);
+
+            }
+        } 
         return $access_token;
 	}
 

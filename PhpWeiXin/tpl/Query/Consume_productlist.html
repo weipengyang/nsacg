@@ -16,10 +16,12 @@
         }
     </style>
     <script type="text/javascript">
-        var tree, form, editdialog,adddialog, product, havaproduct,type;
+        var tree, form,adddialog, product, havaproduct,type;
         function add() {
             if (adddialog) {
                 adddialog.set('data', { type: type });
+                adddialog.set('opt', 'add');
+
                 adddialog.setUrl('/index.php?g=Query&m=Consume&a=addproductlist&type=' + type);
                 adddialog.show();
             }
@@ -32,24 +34,29 @@
                     showMin: false,
                     isResize: true,
                     modal: false,
+                    opt:'add',
                     data:{type:type},
                     title: '配件目录'
                 });
             }
         }
         function editinfo(code) {
-            if (editdialog) {
-                editdialog.setUrl('/index.php?g=Query&m=Consume&a=editproduct&code=' + code);
-                editdialog.show();
+            if (adddialog) {
+                adddialog.set('data', { type: type });
+                adddialog.set('opt', 'modify');
+                adddialog.setUrl('/index.php?g=Query&m=Consume&a=addproductlist&code=' + code);
+                adddialog.show();
             }
             else {
-                editdialog = $.ligerDialog.open({
+                adddialog = $.ligerDialog.open({
                     height: 500,
-                    url: '/index.php?g=Query&m=Consume&a=editproduct&code=' + code,
+                    url: '/index.php?g=Query&m=Consume&a=addproductlist&code=' + code,
                     width: 850,
+                    opt:'modify',
                     showToggle: false,
                     showMin: false,
                     isResize: true,
+                    data:{type:type},
                     modal: false,
                     title: '配件目录编辑'
                 });
@@ -127,7 +134,7 @@
                     }
                 }, 500);
             });
-            product = $("#productgrid").ligerGrid({
+            product = $("#maingrid4").ligerGrid({
                 height: '95%',
                 width: '100%',
                 columns: [          
@@ -176,7 +183,7 @@
                     <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="deleterecord();"><i class="am-icon-hand-o-right"></i>批量处理</button>
                 </div>
             </div>
-         <div id="productgrid" style="margin:0; padding:0;height:90%"></div>
+         <div id="maingrid4" style="margin:0; padding:0;height:90%"></div>
         </div>
     </div>
 

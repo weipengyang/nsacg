@@ -93,7 +93,7 @@
                     var flag = false;
                     for (var i = 0; i < haveproduct.rows.length; i++)
                     {
-                        if (haveproduct.rows[i]['编号'] == data['编号']) {
+                        if (haveproduct.rows[i]['编号'] == data['号码']) {
                             flag = true;
                             haveproduct.select(haveproduct.rows[i]);
                         }
@@ -101,7 +101,7 @@
                     if (!flag) {
                         var row = {};
                         row['ID'] =$("#ID").val();
-                        row['编号'] = data['编号'];
+                        row['编号'] = data['号码'];
                         row['仓库'] = data['仓库'];
                         if (data['仓库']==null||data['仓库'] == '')
                             row['仓库'] = data['默认仓库'];
@@ -120,7 +120,8 @@
                         //row['金额'] = row['数量'] * row['单价'] * row['折扣'];
                         row['税率'] = 0;
                         row['税额'] = row['金额'] * row['税率'];
-                        row['备注'] = data['备注']; 
+                        row['价税合计'] = row['金额'] + row['税额'];
+                        row['备注'] = data['备注'];
                         form.setData(row);
                         haveproduct.add(row);
                         haveproduct.select(row);
@@ -170,13 +171,41 @@
                         text: "更新", width: 100, click: updateRow
                     },                    {
                         text: "保存", width: 100, click: function () {
-                            parent.product.addRows(haveproduct.data.Rows);
-                            parent.reflash();
-                            parent.addproductdialog.hide();
+                            if (getQueryString('type') == 'purchase') {
+                                var data = haveproduct.data.Rows;
+                                var submitData = {
+                                    products: data,
+                                    ID:getQueryString('ID')
+                                };
+                                $.post('index.php?g=Query&m=Consume&a=savepurchase', submitData,
+                                  function (data) {
+                                      parent.product.reload();
+                                      parent.grid.reload();
+                                      frameElement.dialog.hide();
+                                  });
+                            }
+                            else if (getQueryString('type') == 'sale') {
+                                var data = haveproduct.data.Rows;
+                                var submitData = {
+                                    products: data,
+                                    ID: getQueryString('ID')
+                                };
+                                $.post('index.php?g=Query&m=Consume&a=savesaleproduct', submitData,
+                                  function (data) {
+                                      parent.product.reload();
+                                      parent.grid.reload();
+                                      frameElement.dialog.hide();
+                                  });
+                            }
+                            else {
+                                parent.product.addRows(haveproduct.data.Rows);
+                                parent.reflash();
+                                parent.addproductdialog.hide();
+                            }
                         }
                     }                ],                fields: [
                     { display: "流水号", name: "流水号", newline: true, type: "hidden" },
-                    {
+                    { 
                         display: "结算类别", name: "结算方式", newline: true, type: "combobox", options: {
                             valueField: 'name',
                             textField: 'name',

@@ -643,7 +643,7 @@ public function check(){
          if($type==1)
          {
             $wx=M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->find();
-            $this->genbill($price,$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID']);
+            $this->genbill($price,$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID'],$wx['车牌号码'],$wx['门店']);
             M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save(array('当前状态'=>'结束'));
             $this->consumerecord($price,'汽车维修支付',$userinfo,$wx['车牌号码'],$wx['门店']);
             $data['出厂时间']=date('Y-m-d H:i',time());
@@ -661,7 +661,7 @@ public function check(){
              $this->consumerecord($price,'汽车商品支付',$userinfo);
              $xsd=M('销售单','dbo.','difo')->where(array('流水号'=>$itemid))->find();
              $xsmx=M('销售明细','dbo.','difo')->where(array('ID'=>$xsd['ID']))->select();
-             $this->genbill($price,$xsd['客户名称'],'销售出库收款('.$xsd['单据编号'].')',$xsd['客户ID'],'销售','销售出库');
+             $this->genbill($price,$xsd['客户名称'],'销售出库收款('.$xsd['单据编号'].')',$xsd['客户ID'],'销售','销售出库',$xsd['车牌号码'],$xsd['门店']);
              M('销售单','dbo.','difo')->where(array('流水号'=>$itemid))->save(array('当前状态'=>'已审核'));
             $crkitem['ID']=$this->getcode(20,1,1);
             $crkitem['引用单号']=$xsd['单据编号'];
@@ -762,7 +762,7 @@ public function check(){
        $paybill['车牌号码']=$carno;
        M('应收应付单','dbo.','difo')->add($paybill);
    }
-   private function genbill($price,$chezhu,$zhaiyao,$daiwen,$type='维修',$billtype='维修收款'){
+   private function genbill($price,$chezhu,$zhaiyao,$daiwen,$type='维修',$billtype='维修收款',$carno='',$shop=''){
 
        $bianhao=$this->getcodenum("BI");
        $data['单据编号']=$bianhao;
@@ -786,8 +786,8 @@ public function check(){
        $data['摘要']=$zhaiyao;
        $data['收支项目']=$billtype;
        $data['当前状态']='待审核';
-       $data['发票类别']='';
-       $data['发票号']='';
+       $data['发票类别']=$shop;
+       $data['发票号']=$carno;
        $data['单位编号']=$daiwen;
        $data['取用预付']=0;
        $data['取用预收']=0;

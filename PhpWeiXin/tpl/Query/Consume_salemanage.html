@@ -199,11 +199,9 @@
                 $.ligerDialog.confirm('你确定要删除此记录', function (flag) {
                     if (flag) {
                         var data = {
-                            cgd: row,
-                            cgdmx: product.rows,
+                            xsd: row
                         };
-                        return;
-                        $.post('/index.php?g=Query&m=Consume&a=deletepurchase', data,
+                        $.post('/index.php?g=Query&m=Consume&a=deletesaleproduct', data,
                           function (msg) {
                               $.ligerDialog.alert(msg);
                               grid.reload();
@@ -215,7 +213,27 @@
                 alert('选择删除记录');
             }
         }
-
+        function additem() {
+            var row = grid.getSelectedRow();
+            if (row) {
+                if (row['当前状态'] == '已审核') {
+                    $.ligerDialog.alert('已审核不能再添加产品');
+                    return;
+                }
+                $.ligerDialog.open({
+                    height: 600,
+                    url: 'index.php?&g=Query&m=Consume&a=addsaleproduct&type=sale&itemID=' + row['流水号'] + '&ID=' + row['ID'] + "&shop=" + row['门店'],
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: true,
+                    title: '增加销售商品'
+                });
+            }
+        }
+        function editproduct() { }
         function format(rowdata, index, value) {
             return todate(value);
         }
@@ -298,7 +316,45 @@
                 onSelectRow: function (rowdata, rowid, rowobj) {
                   
 
-                }
+                },
+                toolbar: {
+                items: [
+                {
+                    id:'addproduct',
+                    text: '增加', click:additem, icon: 'add'
+                },
+                { line: true },
+                {
+                    text: '删除',
+                    click: function () {
+                        if (record['当前状态'] == '结束') {
+                            $.ligerDialog.alert('结束状态不能删除配件');
+                            return;
+                        }
+                        $.ligerDialog.confirm('确定要删除?', function (yes) {
+                            if (yes) {
+                                var row = product.getSelectedRow();
+                                if (row) {
+                                    var data = {
+                                        code: row['流水号'],
+                                        ID: row['ID']
+                                    }
+                                    $.post('/index.php?g=Query&m=Consume&a=deletesaleitem', data,
+                                      function (msg) {
+                                          $.ligerDialog.alert(msg);
+                                      });
+                                } else {
+                                    $.ligerDialog.alert('请选择要删除商品');
+                                }
+                            }
+                        });
+                    }, icon: 'delete'
+                },
+                { line: true },
+                { id: 'btnmodify', text: '修改', click: editproduct, icon: 'modify' },
+                ]
+            }
+
             });
 
             $("#shop").change(function () {

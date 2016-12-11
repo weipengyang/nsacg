@@ -561,22 +561,29 @@ class ProductAction extends UserAction{
 	}
     public function get_access_token()
     {  
-        $access_token=S('weixin_access_token');
-        Log::write('从缓存中获取token->'.$access_token);
-        if(!$access_token){
+        $data=null;
+        $data = S('weixin_access_token');
+        if (!empty($data)&&$data->expire_time > time()){
+            $access_token = $data->access_token;
+            Log::write('product从缓存中获取token->'.$access_token);
+        }
+        else{
             $where=array('token'=>$this->token);
             $thiswxuser=M('Wxuser')->where($where)->find();
             //wecha_id   orderid   transactionid   
             //deliver notify
             $thiswxuser=M('Wxuser')->where(array('token'=>$this->token))->find();
             $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$thiswxuser['appid'].'&secret='.$thiswxuser['appsecret'];
-            $json=json_decode($this->curlGet($url_get));
-            if (!$json->errmsg){
-                $access_token=$json->access_token;
-                Log::write('重新获取token->'.$access_token);
-                S('weixin_access_token',$access_token,7200);
+            $res = json_decode($this->curlGet($url_get));
+            $access_token = $res->access_token;
+            if ($access_token) {
+                $data->expire_time = time() + 7000;
+                $data->access_token = $access_token;
+                S('weixin_access_token',$data);
+                Log::write('product重新获取token->'.$access_token);
+
             }
-        }
+        } 
         return $access_token;
     }
 

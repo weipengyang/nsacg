@@ -490,7 +490,7 @@ class ConsumeAction extends Action{
 			array('en'=>'最新进价','cn'=>'最新进价'),
 			array('en'=>'参考进价','cn'=>'参考进价'),
 			array('en'=>'参考售价','cn'=>'参考售价'),
-			array('en'=>'批发价','cn'=>'批发价'),
+			array('en'=>'一级批发价','cn'=>'批发价'),
 			array('en'=>'备注','cn'=>'适用车型'),
 		);
         $sortname=$_POST['sortname'];
@@ -669,6 +669,72 @@ class ConsumeAction extends Action{
                 
             }
         }
+        if($searchkey){       
+            $searchwhere['品牌']=array('like',$searchkey);
+            $searchwhere['轮胎规格']=array('like',$searchkey);
+            $searchwhere['车型']=array('like',$searchkey);
+            $searchwhere['运输证号']=array('like',$searchkey);
+            $searchwhere['车架号']=array('like',$searchkey);
+            $searchwhere['机油格']=array('like',$searchkey);
+            $searchwhere['空气格']=array('like',$searchkey);
+            $searchwhere['冷气格']=array('like',$searchkey);
+            $searchwhere['汽油格']=array('like',$searchkey);
+            $searchwhere['车主']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['客户类别']=array('like',$searchkey);
+            $searchwhere['联系人']=array('like',$searchkey);
+            $searchwhere['服务顾问']=array('like',$searchkey);
+            $searchwhere['联系电话']=array('like',$searchkey);
+            $searchwhere['保险公司']=array('like',$searchkey);
+            $searchwhere['发动机号']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $count=M('车辆资料','dbo.','difo')
+            ->join('left join 维修统计 on 车辆资料.车牌号码=维修统计.车牌')
+            ->where($where)->count();
+        $yelist=M('车辆资料','dbo.','difo')
+            ->join('left join 维修统计 on 车辆资料.车牌号码=维修统计.车牌')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
+    public  function getcarsAnnual()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='年检日期';
+            $sortorder='asc';
+        }
+        if (isset($_POST['khlb'])&&trim($_POST['khlb'])!=''){
+            $where['客户类别']=$_POST['khlb'];
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        $where['车牌号码']=array('neq','0000');
+        if($_POST['startDate']&&trim($_POST['startDate'])!='')
+        {
+            $where['年检日期']=array('egt',trim($_POST['startDate']));
+            
+        }
+        if($_POST['endDate']&&trim($_POST['endDate'])!='')
+        {
+            $where['年检日期']=array('elt',trim($_POST['endDate']));
+            
+        }
+        if(trim($_POST['startDate'])!=''&&trim($_POST['endDate'])!='')
+        {
+            $where['年检日期']=array('BETWEEN',array(trim($_POST['startDate']),trim($_POST['endDate'])));
+            
+        }
+        $where['_string']="年检日期 is not null and 年检日期<>'1900-01-01'";
         if($searchkey){       
             $searchwhere['品牌']=array('like',$searchkey);
             $searchwhere['轮胎规格']=array('like',$searchkey);
@@ -1628,6 +1694,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         $pinpai=M('车辆外观','dbo.','difo')->where(array('外观'=>array('like','%'.$_POST['key'].'%')))->select();
         echo json_encode($pinpai);
     }
+    
     public  function yanse(){
         $pinpai=M('车辆颜色','dbo.','difo')->where(array('颜色'=>array('like','%'.$_POST['key'].'%')))->select();
         echo json_encode($pinpai);
@@ -2245,7 +2312,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                        $data['待审核数量']=0;
                        $data['已领料数量']=$pj['已领料数量']+ $num;
                        M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
-                       M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num where 编号='$code'");
+                       M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num where 号码='$code'");
                        M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓库='$ck'");
                    }
                    $crkitem['当前状态']='已审核';
@@ -2262,11 +2329,12 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                    $num=$item['数量'];
                    $code=$item['编号'];
                    $ck=$item['仓库'];
+                   $price=$item['单价'];
                    if($crk['引用类别']=='维修退料'){
                        $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
                        $num=$pj['已退料数量'];
                    }
-                   M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存+$num where 编号='$code'");
+                   M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存+$num,最新进价=$price where 号码='$code'");
                    M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存+$num where 编号='$code' and 仓库='$ck'");
                }
                $crkitem['当前状态']='已审核';
@@ -2292,7 +2360,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                    $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
                    foreach($crkmx as $item){
                        $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
-                       $data['待审核数量']=$pj['待审核数量']+$item['数量'];
+                       $data['待审核数量']=$pj['待审核数量']-$item['数量'];
                        M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
                    }
                }

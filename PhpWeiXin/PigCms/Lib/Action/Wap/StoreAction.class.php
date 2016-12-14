@@ -643,7 +643,7 @@ public function check(){
          if($type==1)
          {
             $wx=M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->find();
-            $this->genbill($price,$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID'],$wx['车牌号码'],$wx['门店']);
+            $this->genbill($price,$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID'],'维修收款',$wx['车牌号码'],$wx['门店']);
             M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save(array('当前状态'=>'结束'));
             $this->consumerecord($price,'汽车维修支付',$userinfo,$wx['车牌号码'],$wx['门店']);
             $data['出厂时间']=date('Y-m-d H:i',time());
@@ -717,7 +717,7 @@ public function check(){
          }
          else{
              $db=M('车辆代办','dbo.','difo')->where(array('流水号'=>$itemid))->find();
-             $this->genbill($price,$db['车主'],'代办收款('.$db['业务编号'].')',$db['客户ID'],'代办服务','代办服务收款');
+             $this->genbill($price,$db['车主'],'代办收款('.$db['业务编号'].')',$db['客户ID'],'代办服务','代办服务收款',$db['车牌号码']);
              if($db['代办费用']>0){
                  $wldw=M('往来单位','dbo.','difo')->where(array('名称'=>$db['车管单位']))->find();
                  $this->gendbbill($db['代办费用'],$db['车管单位'],'代办'.$db['代办类型'].'付款('.$db['业务编号'].')',$wldw['ID'],$db['业务编号'],'其它代办',$db['ID'],$db['车牌号码']);
@@ -2388,25 +2388,26 @@ public function check(){
 	public function wxcommentSave()
 	{
 		$id = isset($_POST['orid']) && intval($_POST['orid'])? intval($_POST['orid']):0;
-        $commnet=$_POST['comment'];		
-        $data['是否评论'] = '是';
-        $data['服务态度'] = $commnet['fwtd'];
-        $data['服务质量'] = $commnet['fwzl'];
-        $data['前台接待'] = $commnet['qtjd'];
-        $data['评论内容'] = htmlspecialchars($commnet['content']);
         $wx=M("维修",'dbo.','difo')->where(array('流水号' =>$id))->find();
-        $cardid=M('member_card_create')->where(array('wecha_id'=>$this->wecha_id))->getField('cardid');
-        $score=M('member_card_exchange')->where(array('cardid'=>$cardid))->getField('comment');
-        $sign['token'] = $this->token;
-        $sign['wecha_id'] = $this->wecha_id;
-        $sign['sign_time'] = time();
-        $sign['is_sign'] = 0;
-        $sign['score_type'] =3;
-        $sign['expense'] =$score;
-        M("维修",'dbo.','difo')->where(array('流水号' =>$id))->save($data);
-        M('member_card_sign')->add($sign);
-        M('userinfo')->where(array('wecha_id'=>$this->wecha_id,'token'=>$this->token))->setInc('total_score',$score);
-
+        if($wx['是否评论']!='是'){
+            $commnet=$_POST['comment'];		
+            $data['是否评论'] = '是';
+            $data['服务态度'] = $commnet['fwtd'];
+            $data['服务质量'] = $commnet['fwzl'];
+            $data['前台接待'] = $commnet['qtjd'];
+            $data['评论内容'] = htmlspecialchars($commnet['content']);
+            $cardid=M('member_card_create')->where(array('wecha_id'=>$this->wecha_id))->getField('cardid');
+            $score=M('member_card_exchange')->where(array('cardid'=>$cardid))->getField('comment');
+            $sign['token'] = $this->token;
+            $sign['wecha_id'] = $this->wecha_id;
+            $sign['sign_time'] = time();
+            $sign['is_sign'] = 0;
+            $sign['score_type'] =3;
+            $sign['expense'] =$score;
+            M("维修",'dbo.','difo')->where(array('流水号' =>$id))->save($data);
+            M('member_card_sign')->add($sign);
+            M('userinfo')->where(array('wecha_id'=>$this->wecha_id,'token'=>$this->token))->setInc('total_score',$score);
+        }
 	    echo U('Store/carinfo',array('carno' =>$wx['车牌号码'] ));
         exit;
 		

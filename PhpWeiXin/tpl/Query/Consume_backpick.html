@@ -37,7 +37,8 @@
                 buttons: [                    {
                         text: "更新", width: 60, click: function () {
                             var row = product.getSelectedRow();
-                            product.updateRow(row, { 本次退料: $("input[ligeruiid='本次退料']").val() });
+                            var price = $("input[ligeruiid='本次退料']").val() * row['单价'];
+                            product.updateRow(row, { 本次退料: $("input[ligeruiid='本次退料']").val(),金额:price });
 
                         }  
                     },                    {
@@ -96,7 +97,7 @@
                 ],
                 data: window.parent.product.getSelectedRows(),
                 onDblClickRow: function (data, rowindex, rowobj) {
-                    product.deleteSelectedRow();
+                    //product.deleteSelectedRow();
                 },
                 onSelectRow: function (rowdata, rowid, rowobj) {
                     $("input[ligeruiid='本次退料']").val(rowdata['本次退料']);
@@ -106,6 +107,7 @@
             var rows = window.parent.product.getSelectedRows();
             $(rows).each(function () {
                 this['本次退料'] = this['数量'];
+                this['金额'] = this['数量'] * this['单价'];
             });
             product.addRows(window.parent.product.getSelectedRows());
             setTimeout(function () { product.select(product.currentData.Rows[0]); }, 100);

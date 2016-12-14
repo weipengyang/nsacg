@@ -97,7 +97,7 @@
                     var flag = false;
                     for (var i = 0; i < haveproduct.rows.length; i++)
                     {
-                        if (haveproduct.rows[i]['编号'] == data['号码']) {
+                        if (haveproduct.rows[i]['编号'] == data['编号']) {
                             flag = true;
                             haveproduct.select(haveproduct.rows[i]);
                         }
@@ -105,7 +105,7 @@
                     if (!flag) {
                         var row = {};
                         row['ID'] =$("#ID").val();
-                        row['编号'] = data['号码'];
+                        row['编号'] = data['编号'];
                         row['仓库'] = data['仓库'];
                         if (data['仓库']==null||data['仓库'] == '')
                             row['仓库'] = data['默认仓库'];

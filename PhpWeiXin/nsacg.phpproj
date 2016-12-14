@@ -14657,6 +14657,7 @@
     <Content Include="tpl\Other\index.html" />
     <Content Include="tpl\Query\Consume_addproductlist.html" />
     <Content Include="tpl\Query\Consume_backpick.html" />
+    <Content Include="tpl\Query\Consume_Annual.html" />
     <Content Include="tpl\Query\Consume_productlist.html" />
     <Content Include="tpl\Query\Consume_memberquery.html" />
     <Content Include="tpl\Query\Consume_couponquery.html" />

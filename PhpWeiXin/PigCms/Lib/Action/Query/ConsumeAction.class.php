@@ -768,6 +768,72 @@ class ConsumeAction extends Action{
         echo json_encode($data);
         
     }
+    public  function getinsurances()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='交保到期';
+            $sortorder='asc';
+        }
+        if (isset($_POST['khlb'])&&trim($_POST['khlb'])!=''){
+            $where['客户类别']=$_POST['khlb'];
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        $where['车牌号码']=array('neq','0000');
+        if($_POST['startDate']&&trim($_POST['startDate'])!='')
+        {
+            $where['交保到期']=array('egt',trim($_POST['startDate']));
+            
+        }
+        if($_POST['endDate']&&trim($_POST['endDate'])!='')
+        {
+            $where['交保到期']=array('elt',trim($_POST['endDate']));
+            
+        }
+        if(trim($_POST['startDate'])!=''&&trim($_POST['endDate'])!='')
+        {
+            $where['交保到期']=array('BETWEEN',array(trim($_POST['startDate']),trim($_POST['endDate'])));
+            
+        }
+        $where['_string']="交保到期 is not null and 交保到期<>'1900-01-01'";
+        if($searchkey){       
+            $searchwhere['品牌']=array('like',$searchkey);
+            $searchwhere['轮胎规格']=array('like',$searchkey);
+            $searchwhere['车型']=array('like',$searchkey);
+            $searchwhere['运输证号']=array('like',$searchkey);
+            $searchwhere['车架号']=array('like',$searchkey);
+            $searchwhere['机油格']=array('like',$searchkey);
+            $searchwhere['空气格']=array('like',$searchkey);
+            $searchwhere['冷气格']=array('like',$searchkey);
+            $searchwhere['汽油格']=array('like',$searchkey);
+            $searchwhere['车主']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['客户类别']=array('like',$searchkey);
+            $searchwhere['联系人']=array('like',$searchkey);
+            $searchwhere['服务顾问']=array('like',$searchkey);
+            $searchwhere['联系电话']=array('like',$searchkey);
+            $searchwhere['保险公司']=array('like',$searchkey);
+            $searchwhere['发动机号']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $count=M('车辆资料','dbo.','difo')
+            ->join('left join 维修统计 on 车辆资料.车牌号码=维修统计.车牌')
+            ->where($where)->count();
+        $yelist=M('车辆资料','dbo.','difo')
+            ->join('left join 维修统计 on 车辆资料.车牌号码=维修统计.车牌')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
     public  function getuserconsume()
     {   
         $page=$_POST['page'];
@@ -896,6 +962,123 @@ class ConsumeAction extends Action{
 				$j = 0;
 				foreach ($arr as $field){			
 					$fieldValue = $user[$field['en']];
+                    //switch($field['en']){		
+						
+                    //}
+					
+					if ($j<$fieldCount-1){
+						echo iconv('utf-8','gbk',$fieldValue)."\t";
+					}else {
+						echo iconv('utf-8','gbk',$fieldValue)."\n";
+					}
+					$j++;
+				}
+				$i++;
+			}
+            
+		}
+		exit();
+        
+	}
+    public  function exportcarsinfo(){
+		header("Content-Type: text/html; charset=utf-8");
+		header("Content-type:application/vnd.ms-execl");
+		header("Content-Disposition:filename=车辆数据.xls");
+		$arr = array(
+			array('en'=>'车牌号码','cn'=>'车牌号码'),
+			array('en'=>'车主','cn'=>'车主'),
+			array('en'=>'联系人','cn'=>'联系人'),
+			array('en'=>'联系电话','cn'=>'联系电话'),
+			array('en'=>'客户类别','cn'=>'客户类别'),
+			array('en'=>'会员等级','cn'=>'会员等级'),
+			array('en'=>'保险客户','cn'=>'保险客户'),
+			array('en'=>'服务顾问','cn'=>'服务顾问'),
+			array('en'=>'交保到期','cn'=>'保险到期'),
+			array('en'=>'保险公司','cn'=>'保险公司'),
+			array('en'=>'年审到期','cn'=>'年检日期'),
+            array('en'=>'年份','cn'=>'年份'),
+            array('en'=>'品牌','cn'=>'品牌'),
+			array('en'=>'车型','cn'=>'车型'),
+			array('en'=>'排量','cn'=>'年份排量'),
+			array('en'=>'车架号','cn'=>'车架号'),
+			array('en'=>'机油格','cn'=>'机油格'),
+			array('en'=>'空气格','cn'=>'空气格'),
+			array('en'=>'冷气格','cn'=>'冷气格'),
+			array('en'=>'进厂次数','cn'=>'进厂次数'),
+			array('en'=>'消费金额','cn'=>'消费金额')
+		);
+		
+		$i = 0;
+		$fieldCount = count($arr);
+		$s = 0;
+		//thead
+		foreach ($arr as $f){
+			if ($s<$fieldCount-1){
+				echo iconv('utf-8','gbk',$f['cn'])."\t";
+			}else {
+				echo iconv('utf-8','gbk',$f['cn'])."\n";
+			}
+			$s++;
+		}
+        $where['车牌号码']=array('neq','0000');
+
+        if($_GET['type']=='1')
+            $sortname='交保到期';
+        else
+            $sortname='年审到期';
+        $sortorder='asc';
+        if (isset($_GET['khlb'])&&trim($_GET['khlb'])!=''){
+            $where['客户类别']=$_GET['khlb'];
+        }
+        if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])!=''){
+            $searchkey='%'.trim($_GET['searchkey']).'%';
+        }
+        if($_GET['startDate']&&trim($_GET['startDate'])!='')
+        {
+            $where["$sortname"]=array('egt',trim($_GET['startDate']));
+            
+        }
+        if($_GET['endDate']&&trim($_GET['endDate'])!='')
+        {
+            $where["$sortname"]=array('elt',trim($_GET['endDate']));
+            
+        }
+        if(trim($_GET['startDate'])!=''&&trim($_GET['endDate'])!='')
+        {
+            $where["$sortname"]=array('BETWEEN',array(trim($_GET['startDate']),trim($_GET['endDate'])));
+            
+        }
+        $where['_string']="$sortname is not null and $sortname<>'1900-01-01'";
+        if($searchkey){       
+            $searchwhere['品牌']=array('like',$searchkey);
+            $searchwhere['轮胎规格']=array('like',$searchkey);
+            $searchwhere['车型']=array('like',$searchkey);
+            $searchwhere['运输证号']=array('like',$searchkey);
+            $searchwhere['车架号']=array('like',$searchkey);
+            $searchwhere['机油格']=array('like',$searchkey);
+            $searchwhere['空气格']=array('like',$searchkey);
+            $searchwhere['冷气格']=array('like',$searchkey);
+            $searchwhere['汽油格']=array('like',$searchkey);
+            $searchwhere['车主']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['客户类别']=array('like',$searchkey);
+            $searchwhere['联系人']=array('like',$searchkey);
+            $searchwhere['服务顾问']=array('like',$searchkey);
+            $searchwhere['联系电话']=array('like',$searchkey);
+            $searchwhere['保险公司']=array('like',$searchkey);
+            $searchwhere['发动机号']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $carsinfo=M('车辆资料','dbo.','difo')
+            ->join('left join 维修统计 on 车辆资料.车牌号码=维修统计.车牌')
+            ->where($where)->order("$sortname  $sortorder")->select();
+		if($carsinfo){
+			foreach ($carsinfo as $car){
+				$j = 0;
+				foreach ($arr as $field){			
+					$fieldValue = $car[$field['en']];
                     //switch($field['en']){		
 						
                     //}
@@ -1172,8 +1355,30 @@ class ConsumeAction extends Action{
             echo '保存成功';
         }
     }
-    public  function getprojectbyname(){
-        $page=$_POST['page'];
+    public  function savetrace()
+    {
+        if(IS_POST){
+            $type=$_POST['type'];
+            $tracedata=$_POST['tracedata'];
+            if($type&&$type=='add'){
+                unset($tracedata['年审到期']);
+                $tracedata['跟踪时间']=date('Y-m-d H:i',time());
+                $tracedata['类别']='年审';
+                M('客户跟踪','dbo.','difo')->add($tracedata);
+            }else{
+                M('客户跟踪','dbo.','difo')->where(array('流水号'=>$tracedata['流水号']))->save($tracedata);
+            }
+            echo '保存成功';
+        }
+    }
+    public function gettraceinfo(){
+       $traceinfo=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$_POST['code']))->select();
+       $data['Rows']=$traceinfo;
+       $data['Total']=count($traceinfo);
+       echo json_encode($data);
+    }
+   public  function getprojectbyname(){
+        $page=$_POST['page']; 
         $pagesize=$_POST['pagesize'];
         $where['1']=1;
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
@@ -1320,6 +1525,12 @@ class ConsumeAction extends Action{
         echo json_encode($zxlist);
     
    }
+    public  function getywy(){
+        
+        $zxlist=M('员工目录','dbo.','difo')->where(array('业务员'=>'1','姓名'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($zxlist);
+        
+    }
     public  function getchexing(){
          
         $pinpai=M('常见车型','dbo.','difo')->where(array('车型'=>array('like','%'.$_POST['key'].'%')))->select();
@@ -1338,6 +1549,12 @@ class ConsumeAction extends Action{
         echo json_encode($wxlb);
     
 } 
+    public  function getgzlb(){
+        
+        $wxlb=M('回访方式','dbo.','difo')->where(array('方式'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($wxlb);
+        
+    } 
     public  function getfplb(){
          
         $wxlb=M('发票类别','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
@@ -2447,6 +2664,12 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         $this->display();
     }
    public function carsinfo()
+    {
+        $lblist=M('车辆档案','dbo.','difo')->Distinct(true)->field('客户类别')->order('客户类别')->select();
+        $this->assign('lblist',$lblist);
+        $this->display();
+    }
+   public function annual()
     {
         $lblist=M('车辆档案','dbo.','difo')->Distinct(true)->field('客户类别')->order('客户类别')->select();
         $this->assign('lblist',$lblist);
@@ -4367,6 +4590,131 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $this->display();
        }
    }
+   public function sendbatchmessage(){
+      if(IS_POST){
+          $sortname='年检日期';
+          $sortorder='asc';
+          $where['车牌号码']=array('neq','0000');
+          $where['年检日期']=array('BETWEEN',array(date('Y-m-d',time())),trim(date('Y-m-d',time()+3600*24*60)));
+          $where['_string']="年检日期 is not null and 年检日期<>'1900-01-01' and 车主 like 'AYC%'";
+          $carsinfo=M('车辆资料','dbo.','difo')->where($where)->order("$sortname  $sortorder")->select();
+          $model  = new templateNews();
+          $dataKey='';
+          $dataArr=array();
+          foreach($carsinfo as $carinfo){
+              $trace=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y'),'跟踪类型'=>'模板信息'))->find();
+              if($trace){
+                  $card=M('Member_card_create')->where(array('token'=>$this->token,'number'=>$carinfo['车主']))->find();
+                  $user=M('userinfo')->where(array('token'=>$this->token,'wecha_id'=>$card['wecha_id']))->find();
+                  $dataKey    = 'OPENTM206161737';
+                  $dataArr    = array(
+                      'first'         => '尊敬的['.$user['carno'].']车主您好，您的车辆年检即将到期。',
+                      'keyword1'      =>$user['truename'],
+                      'keyword2'      =>date('Y-m-d',strtotime($carinfo['年检日期'])),
+                      'wecha_id'      => $card['wecha_id'],
+                      'remark'        => '回复字母Y可预约,或致电020-39099139进行电话预约。',
+                      'url'      => U('Wap/Store/daiban',array('token'=>$this->token,'carno'=>$carinfo['车牌号码'],'type'=>'年审'),true,false,true),
+                  );
+                  $model->sendTempMsg($dataKey,$dataArr);
+                  $data['车主']=$carinfo['车主'];
+                  $data['车牌号码']=$carinfo['车牌号码'];
+                  $data['跟踪时间']=date('Y-m-d H:i',time());
+                  $data['跟踪人']='系统';
+                  $data['跟踪类型']='模板信息';
+                  $data['类别']='年审';
+                  $data['年份']=date('Y');
+                  $data['内容']='系统发送年审到期模板信息';
+                  M('客户跟踪','dbo.','difo')->add($data);
+              }
+          }
+          echo "发送成功";
+      }
+   }
+   public function sendmessage()
+   {
+       if(IS_POST){
+           $model  = new templateNews();
+           $dataKey='';
+           $dataArr=array();
+           $card=M('Member_card_create')->where(array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id']))->find();
+           $cardid=$card['cardid'];
+           $user=M('userinfo')->where(array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id']))->find();
+           $carinfo =M('车辆资料','dbo.','difo')->where(array('车牌号码'=>$user['carno']))->find();
+           switch($_POST['mtype']){
+               case '1'://维修服务完成
+                   $dataKey    = 'TM151213';
+                   $wxinfo=M('维修','dbo.','difo')->where(array('车牌号码'=>$user['carno']))->order('流水号 desc')->find();
+                   $dataArr    = array(
+                       'first'         => '尊敬的车主，您的爱车已经维修完毕。',
+                       'keyword1'      =>$user['carno'],//车牌号
+                       'keyword2'      => date("Y-m-d",time()),//完工时间
+                       'keyword3'      => $wxinfo['接车人'].'（电话：'.$wxinfo['接车人电话'].')',//接车人与联系电话
+                       'keyword4'      => $wxinfo['应收金额'].'元',//维修费用
+                       'wecha_id'      => $_GET['wecha_id'],
+                       'remark'        => '请您安排时间到店取车，如有疑问，请致电020-39099139联系我们,或发消息到微信平台上进行咨询。',
+                       'url'      => U('Wap/Store/cats',array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id'],'cardid'=>$cardid),true,false,true),
+                   );
+                   break;
+               case '2'://保险到期通知
+                   $dataKey    = 'TM151126';
+                   $dataArr    = array(
+                       'first'         => '尊敬的['.$user['carno'].']车主您好，您的爱车保险即将到期',
+                       'keyword1'      => $user['truename'],
+                       'keyword2'      =>$user['carno'],
+                       'keyword3'      =>$carinfo['车型'],
+                       'keyword4'      =>date('Y-m-d',strtotime($carinfo['商保到期'])),
+                       'wecha_id'      => $_GET['wecha_id'],
+                       'remark'        => '买保险送保养，如您有需要，请致电020-39099139联系我们,或发消息到微信平台上进行咨询。',
+                       'url'      => U('Wap/Store/cats',array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id'],'cardid'=>$cardid),true,false,true),
+                   );
+                   break;
+               case '3'://年检通知
+                   $dataKey    = 'OPENTM206161737';
+                   $dataArr    = array(
+                       'first'         => '尊敬的['.$user['carno'].']车主您好，您的车辆年检即将到期。',
+                       'keyword1'      =>$user['truename'],
+                       'keyword2'      =>date('Y-m-d',strtotime($carinfo['年检日期'])),
+                       'wecha_id'      => $_GET['wecha_id'],
+                       'remark'        => '在办理年检之前，请确认无任何未处理违法记录。我们提供代办年检业务，可以立刻在微信平台上进行预约,或致电020-39099139进行电话预约。',
+                       'url'      => U('Wap/Store/cats',array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id'],'cardid'=>$cardid),true,false,true),
+                   );
+                   break;
+               case '4':
+                   $dataKey    = 'TM160112';
+                   $dataArr    = array(
+                       'first'         => '尊敬的['.$user['carno'].']白金卡会员您好，您参加的白金会员卡洗车活动有重大的变更，请注意我们的会员通知。',
+                       'keyword1'      =>'白金卡会员充值洗车服务',
+                       'keyword2'      =>'洗车业务由原来会员卡支付升级成洗车券消费，价格由原来的19.9元调整为25元，券的有效期为1年，对于白金卡会员我们推出买4张送1张的优惠活动，活动截止日期2016年1月18日，为了保障您的权益，请您安排时间尽快购买。',
+                       'wecha_id'      => $_GET['wecha_id'],
+                       'remark'        => '您可以致电020-39099139联系我们,或发消息到微信平台上进行咨询。',
+                       'url'      => U('wap/Card/wallet',array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id'],'cardid'=>$cardid),true,false,true),
+                   );
+                   break;
+               default://保养通知
+                   $dataKey    = 'TM151215';
+                   $dataArr    = array(
+                       'first'         => '尊敬的车主您好，您车牌为'.$user['carno'].'的汽车保养已到期。',
+                       'keynote1'      =>date('Y-m-d',strtotime($carinfo['下次保养'])),//保养到期时间
+                       'keynote2'      =>date('Y-m-d',strtotime($carinfo['最近保养'])),//上次保养时间
+                       'keynote3'      => $carinfo['保养里程'].'公里',//上次保养里程
+                       'wecha_id'      => $_GET['wecha_id'],
+                       'remark'        => '如有需要，致电020-39099139联系我们,或发消息到微信平台上进行咨询。',
+                       'url'      => U('Wap/Store/cats',array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id'],'cardid'=>$cardid),true,false,true),
+                   );
+                   break;
+
+           }
+           $model->sendTempMsg($dataKey,$dataArr);
+           echo "发送成功";
+           
+       }
+       else{
+           $this->assign('truename',$_GET['truename']);
+           $this->assign('carno',$_GET['carno']);
+           $this->display();
+       }
+   }
+
    public function mrrecord()
    {
        $carno=$_POST['carno'];

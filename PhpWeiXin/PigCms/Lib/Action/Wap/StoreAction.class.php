@@ -1057,6 +1057,17 @@ public function check(){
         $this->display();
     }
     public function daiban(){
+        if($_GET['type']){
+            $data['车主']=$_GET['车主'];
+            $data['车牌号码']=$_GET['车牌号码'];
+            $data['跟踪时间']=date('Y-m-d H:i',time());
+            $data['跟踪人']='系统';
+            $data['跟踪类型']='微信';
+            $data['类别']='年审';
+            $data['年份']=date('Y');
+            $data['内容']='客户查看模板消息';
+            M('客户跟踪','dbo.','difo')->add($data);
+        }
         $this->display();
     }
 	/**

@@ -473,7 +473,7 @@
                     if (rows.length > 0) {
                         for (var i = 0; i < rows.length; i++) {
                             if (rows[i]['虚增类别'] == null||rows[i]['虚增类别'] == '') {
-                                var count = rows[i]['数量'] - rows[i]['已领料数量'] + rows[i]['已退料数量'];
+                                var count = rows[i]['数量'] - rows[i]['已领料数量'];
                                 if (count > 0) {
                                     $.ligerDialog.alert(rows[i]['名称'] + "未领料，不能转完工");
                                     return;

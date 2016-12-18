@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>年审跟踪</title>
+    <title>保险跟踪</title>
     <meta name="description" content="爱养车">
     <meta name="keywords" content="index">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -109,24 +109,23 @@
             if (adddialog) {
                 adddialog.set('data', data);
                 adddialog.set('type', 'add');
-                adddialog.setUrl('/index.php?g=Query&m=Consume&a=annualtrace');
+                adddialog.setUrl('/index.php?g=Query&m=Consume&a=insurancetrace');
                 adddialog.show(); 
             }
             else {
                 adddialog = $.ligerDialog.open({
                     height: 350,
-                    url: '/index.php?g=Query&m=Consume&a=annualtrace' ,
+                    url: '/index.php?g=Query&m=Consume&a=insurancetrace',
                     width: 850,
                     showToggle: false,
                     showMin: false,
                     isResize: true,
                     modal: false,
                     data: data,
-                    title: '年审跟踪'
+                    title: '保险跟踪'
                 });
             }
         }
-
         function memberinfo(carno) {
             if (memberdialog) {
                 memberdialog.setUrl('/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno);
@@ -150,6 +149,22 @@
             $('#search').click();
 
         });
+        function exportdata() {
+            var url = '/index.php?g=Query&m=Consume&a=exportcarsinfo&type=1';
+            var khlb = $('#khlb').val();
+            var startDate = $("#startDate").val();
+            var endDate = $("#endDate").val();
+            var searchkey = $('#searchkey').val();
+            if (khlb != '')
+                url += "&khlb=" + khlb;
+            if (startDate != '')
+                url += "&startDate=" + startDate;
+            if (endDate != '')
+                url += "&endDate=" + endDate;
+            if (searchkey != '')
+                url += "&searchkey=" + searchkey;
+            location.href = url;
+        }
         var cargird;
         function f_onAfterEdit() { }
         function f_showdetail(row, detailPanel, callback) {
@@ -176,23 +191,6 @@
                 frozen: false
             });
         }
-        function exportdata() {
-            var url = '/index.php?g=Query&m=Consume&a=exportcarsinfo&type=2';
-            var khlb = $('#khlb').val();
-            var startDate = $("#startDate").val();
-            var endDate = $("#endDate").val();
-            var searchkey = $('#searchkey').val();
-            if (khlb != '')
-                url += "&khlb=" + khlb;
-            if (startDate != '')
-                url += "&startDate=" + startDate;
-            if (endDate != '')
-                url += "&endDate=" + endDate;
-            if (searchkey != '')
-                url += "&searchkey=" + searchkey;
-            location.href = url;
-        }
-
         function sendmessage() {
             $.ligerDialog.waitting('正在发送,请稍候...');
             $.post('index.php?g=Query&m=Consume&a=getstock&type=1', null,
@@ -208,10 +206,11 @@
             cargird = $("#maingrid4").ligerGrid({
                 columns: [
                         {
-                            display: '年审到期', name: '年检日期', minWidth: 100, render: function (rowdata, index, value) {
+                            display: '保险到期', name: '交保到期', minWidth: 100, render: function (rowdata, index, value) {
                                 return todate(value, false);
                             }
                         },
+                        { display: '保险公司', name: '保险公司', minWidth: 80 },
                         { display: '车牌号码', name: '车牌号码', width: 80, align: 'left',render: function (rowdata, index, value) {
                             return '<a href="javascript:void(0);" onclick="carinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
                         } },
@@ -249,9 +248,8 @@
                         { display: '电池', name: '电池 ', width: 50 },
                         { display: '进厂次数', name: '进厂次数', minWidth: 60 },
                         { display: '消费金额', name: '消费金额', minWidth: 60 },
-                        { display: '保险公司', name: '保险公司', minWidth: 80 },
                         {
-                            display: '保险到期', name: '交保到期', minWidth: 100, render: function (rowdata, index, value) {
+                            display: '年审到期', name: '年检日期', minWidth: 100, render: function (rowdata, index, value) {
                                 return todate(value, false);
                             }
                         }
@@ -259,7 +257,7 @@
                 ],
                 isScroll: true,
                 pageSize: 20,
-                url: '/index.php?g=Query&m=Consume&a=getcarsAnnual',
+                url: '/index.php?g=Query&m=Consume&a=getinsurances',
                 height: '100%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     addtrace(data);

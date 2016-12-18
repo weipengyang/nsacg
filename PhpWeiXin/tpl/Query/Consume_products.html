@@ -207,21 +207,20 @@
                 if (code != '') {
                     $.post('index.php?g=Query&m=Consume&a=products&key=' + key, submitData,
                      function (data) {
+                         $('#ejml').empty();
+                         $('#ejml').append("<option value=''>请选择</option>");
+                         $('#sjml').empty();
+                         $('#sjml').append("<option value=''>请选择</option>");
                          if (data) {
-                             $('#ejml').empty();
-                             $('#ejml').append("<option value=''>请选择</option>");
-                             $('#sjml').empty();
-                             $('#sjml').append("<option value=''>请选择</option>");
                              $(data).each(function () {
                                  var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
                                  $('#ejml').append(option);
                              });
-                             var parms = {};
-                             parms['lb'] = code;
-                             grid.set('parms', parms);
-                             grid.reload();
-
                          }
+                         var parms = {};
+                         parms['lb'] = code;
+                         grid.set('parms', parms);
+                         grid.reload();
                      }, 'JSON');
                 }
             });
@@ -338,7 +337,7 @@
                 { display: '参考售价', name: '参考售价', width: 60 },
                 { display: '批发价', name: '一级批发价', width: 60 },
                 {
-                    display: '配套车型', name: '备注', minWidth: 200,render: function (rowdata, index, value) {
+                    display: '配套车型', name: '备注',hide:true,minWidth: 200,render: function (rowdata, index, value) {
 
                         return value;
                     }
@@ -356,9 +355,9 @@
                 url: '/index.php?g=Query&m=Consume&a=getstacks',
                 height: '100%',
                 onDblClickRow: function (data, rowindex, rowobj) {
-                    editinfo(data['编号']);
+                    editinfo(data['编号']);  
                 },
-                detail:{ onShowDetail: f_showdetail },
+                detail:{onShowDetail:f_showdetail},
             });
         });
     </script>

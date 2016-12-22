@@ -348,8 +348,8 @@
                 {
                     text: '删除',
                     click: function () {
-                        if (record['当前状态'] == '结束') {
-                            $.ligerDialog.alert('结束状态不能删除配件');
+                        if (record['当前状态'] == '已审核') {
+                            $.ligerDialog.alert('已审核状态不能删除配件');
                             return;
                         }
                         $.ligerDialog.confirm('确定要删除?', function (yes) {

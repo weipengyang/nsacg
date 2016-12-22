@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>年审跟踪</title>
+    <title>维修跟踪</title>
     <meta name="description" content="爱养车" />
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
@@ -9,6 +9,7 @@
     <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
     <script type="text/javascript">
+        var dialog;
         function getQueryString(name) {
             var now_url = document.location.search.slice(1), q_array = now_url.split('&');
             for (var i = 0; i < q_array.length; i++) {
@@ -26,13 +27,15 @@
                 validate: true,
                 fields: [
                     {
-                        display: "年度", name: "年份", newline: true, type: "text", readonly: true
+                        display: "业务编号", name: "业务编号", newline: false, type: "text", readonly: true
                     },
+                     {
+                         display: "年度", name: "年份", newline: false, type: "text", readonly: true
+                     },
                     {
                         display: "车主", name: "车主", newline: false, type: "text", readonly: true
                     },
                     { display: "车牌号码 ", name: "车牌号码", newline: false, type: "text", readonly: true },
-                    { display: "年审到期 ", name: "年审到期", newline: false, type: "date" },
                     { display: "跟踪方式",  name: "跟踪类型", newline: false, type: "text", type: "combobox",
                         options: {
                             valueField: '方式',
@@ -60,12 +63,11 @@
                     },                    {
                         text: "保存", width: 60, click: function () {
                             var data = form.getData();
-                            
                             var submitData = {
                                 type:'add',
                                 tracedata: data
                             };
-                            $.post('index.php?g=Query&m=Consume&a=savetrace', submitData,
+                            $.post('index.php?g=Query&m=Consume&a=savewxtrace', submitData,
                               function (data) {
                                   $.ligerDialog.alert(data);
                                   window.parent.liger.get('maingrid4').reload();
@@ -78,9 +80,9 @@
             var data = dialog.get('data');
             $("input[ligeruiid='车牌号码']").val(data['车牌号码']);
             $("input[ligeruiid='车主']").val(data['车主']);
-            var myDate = new Date();           
+            $("input[ligeruiid='业务编号']").val(data['业务编号']);
+            var myDate = new Date();
             $("input[ligeruiid='年份']").val(myDate.getFullYear());
-            $("input[ligeruiid='年审到期']").val(todate(data['年检日期'],false));
         });
 
 

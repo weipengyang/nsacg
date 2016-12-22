@@ -286,7 +286,13 @@
                     frozen: false
                 });
             }
-            grid = $("#maingrid4").ligerGrid({
+            function f_totalRender(data, currentPageData) {
+                return " 总库存:" + data.StockTotal.总库存
+                    + "  总入库数:" + data.StockTotal.总入库数
+                    + "  总出库数:" + data.StockTotal.总出库数
+                    + "  总参考进价:" + data.StockTotal.总进货价
+                    + "  总参考售价:" + data.StockTotal.总价值;
+            }            grid = $("#maingrid4").ligerGrid({
                 columns: [
                 { display: '仓库', name: '仓库', align: 'left', width: 100 },
                 { display: '编号', name: '编号', width: 100 },
@@ -333,7 +339,7 @@
                 },
                 { display: '警戒下限', name: '警戒线', width: 60 },
                 { display: '最新进价', name: '最新进价', width: 60 },
-                { display: '参考进价', name: '参考进价', width: 60 },
+                { display: '参考进价', name: '参考进价', width: 60, totalSummary:{type:'sum'} },
                 { display: '参考售价', name: '参考售价', width: 60 },
                 { display: '批发价', name: '一级批发价', width: 60 },
                 {
@@ -351,8 +357,8 @@
                 isScroll: true,
                 pageSize: 20,
                 detailHeight: 120,
-                fixedCellHeight:false,
-                url: '/index.php?g=Query&m=Consume&a=getstacks',
+                fixedCellHeight: false,
+                totalRender: f_totalRender,                url: '/index.php?g=Query&m=Consume&a=getstacks',
                 height: '100%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     editinfo(data['编号']);  
@@ -371,11 +377,6 @@
         <!-- content start -->
         <div class="admin-content">
                 <div class="admin-content-body">
-                    <div id="doc-qrcode" class="am-text-center"></div>
-                    <div class="am-cf am-padding am-padding-bottom-0">
-                        <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">配件库存查询</strong> </div>
-                    </div>
-                    <hr>
                     <div class="am-g">
                         <div class="am-u-sm-10 am-u-md-9">
                             <div class="am-form-group">
@@ -399,7 +400,7 @@
                                     <option value="">所有分类</option>
                                 </select>
                                 低于警戒线
-                                <select data-am-selected="{btnSize: 'sm'}" id="flag" >
+                                <select data-am-selected="{btnSize:'sm'}" id="flag" >
                                     <option value="0">否</option>
                                     <option value="1">是</option>
                                 </select>

@@ -521,6 +521,9 @@ class WeixinAction extends Action{
         if(strpos(strtoupper($data['Content']), '会员卡') !== false){
             return array('turn on transfer_customer_service','transfer_customer_service');
         }
+        if(strpos(strtoupper($data['Content']), '会员') !== false){
+            return array('turn on transfer_customer_service','transfer_customer_service');
+        }
         if(strpos(strtoupper($data['Content']), '#') === 0){
             $arr = explode("#",$data['Content']);
             $key=$arr[1];

@@ -10,6 +10,7 @@
     <meta name="renderer" content="webkit">
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
     <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.7.0/css/amazeui.min.css" />
     <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
@@ -40,35 +41,6 @@
     <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
-        function todate(num, istime) {
-            if (num && num.length > 8) {
-                num = num + "";
-                var date = "";
-                var month = new Array();
-                month["Jan"] = '01'; month["Feb"] = '02'; month["Mar"] = '03'; month["Apr"] = '04'; month["May"] = '05'; month["Jun"] = '06';
-                month["Jul"] = '07'; month["Aug"] = '08'; month["Sep"] = '09'; month["Oct"] = '10'; month["Nov"] = '11'; month["Dec"] = '12';
-                var str = num.split(" ");
-                var times = '';
-                if (str.length > 4) {
-                    date = str[3] + "-";
-                    date = date + month[str[0]] + "-" + str[2];
-                    times = str[4].split(':');
-                } else {
-                    date = str[2] + "-";
-                    date = date + month[str[0]] + "-" + str[1];
-                    times = str[3].split(':');
-                }
-                if (istime) {
-                    time = times[0] + ':' + times[1];
-                    if (times[2].indexOf('PM')) {
-                        time = (parseInt(time[0]) + 12) + ':' + times[1];
-                    }
-                    return date + ' ' + time;
-                }
-                return date;
-            }
-            return num;
-        }
         function getQueryString(name) {
             var now_url = document.location.search.slice(1), q_array = now_url.split('&');
             for (var i = 0; i < q_array.length; i++) {
@@ -86,6 +58,7 @@
                 columns: [
                         { display: '单据编号', name: '单据编号', minWidth: 120},
                         { display: '仓库', name: '仓库', minWidth: 60, },
+                        { display: '客户名称', name: '客户名称', minWidth: 60, },
                         { display: '原因', name: '原因', minWidth: 60 },
                         { display: '规格', name: '规格', minWidth: 60 },
                         { display: '单位', name: '单位', width: 50 },

@@ -234,7 +234,7 @@
                     showToggle: true,
                     showMin: false,
                     isResize: true,
-                    modal: false,
+                    modal: true,
                     title: '维修领料'
                 });
             }
@@ -257,7 +257,7 @@
                     showToggle: true,
                     showMin: false,
                     isResize: true,
-                    modal: false,
+                    modal: true,
                     title: '维修领料'
                 });
             }
@@ -1138,7 +1138,7 @@
                                 var rows = product.getSelectedRows();
                                 if (rows.length > 0) {
                                     for (var i = 0; i < rows.length; i++) {
-                                        var count = rows[i]['数量'] - rows[i]['已领料数量'] - rows[i]['待审核数量'] + rows[i]['已退料数量'];
+                                        var count = rows[i]['数量'] - rows[i]['已领料数量'] - rows[i]['待审核数量'];
                                         if (count <= 0)
                                         {
                                             $.ligerDialog.alert(rows[i]['名称'] + "已经领料");

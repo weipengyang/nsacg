@@ -119,7 +119,7 @@ padding-left: 15px;
 
 .l-grid-row-alt .l-grid-row-cell
 {
-    background:#F5F5F5 url('../images/ui/gridalt.gif') top repeat-x;
+    background:#F5F5F5;
 }
 .l-grid-row-over .l-grid-row-cell,.l-grid-row-over
 {

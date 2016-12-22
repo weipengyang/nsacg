@@ -14656,10 +14656,12 @@
     <Content Include="tpl\Other\default\style\js\registerSSO.js" />
     <Content Include="tpl\Other\index.html" />
     <Content Include="tpl\Query\Consume_addproductlist.html" />
+    <Content Include="tpl\Query\Consume_append.html" />
     <Content Include="tpl\Query\Consume_insurance.html" />
+    <Content Include="tpl\Query\Consume_wxtrace.html" />
     <Content Include="tpl\Query\Consume_insurancetrace.html" />
     <Content Include="tpl\Query\Consume_backpick.html" />
-    <Content Include="tpl\Query\Consume_annual.html" />
+    <Content Include="tpl\Query\Consume_Annual.html" />
     <Content Include="tpl\Query\Consume_annualtrace.html" />
     <Content Include="tpl\Query\Consume_productlist.html" />
     <Content Include="tpl\Query\Consume_memberquery.html" />

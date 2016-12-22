@@ -23,7 +23,9 @@
                     $.ligerDialog.alert('请选择申请人');
                     return;
                 }
+                $.ligerDialog.waitting('赠送中,请稍候...');
                 $.post(location.href, data, function (msg) {
+                    $.ligerDialog.closeWaitting();
                     $.ligerDialog.alert(msg);
                     setTimeout(function () {
                         parent.coupondialog.hide();

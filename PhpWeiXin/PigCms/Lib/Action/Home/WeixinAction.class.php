@@ -558,7 +558,7 @@ class WeixinAction extends Action{
             if($key&&strlen($key)>4){
                 $serch['类别']=array('like','轮胎%');
                 $serch['停用']=0;
-                $serch['一级批发价']=array('gt',0);
+                $serch['参考售价']=array('gt',0);
                 if(strlen($key)>5){
                     $serchkey=substr($key,0,3).'/'.substr($key,3,2).'R';
                     $serchkey.=substr($key,5,2);
@@ -573,14 +573,13 @@ class WeixinAction extends Action{
                     $serch['_complex']=$searchwhere;
                 }
                 $list=M('配件目录','dbo.','difo')->where($serch)->order('库存 desc')->limit(0,20)->select();
-                $content="送货电话:02039099139\r\n";
-                $content.="手机号码:18922761808\r\n\r\n";
+                $content="";
                 foreach($list as $item){
                     $content.="规格:".$item['名称']."\r\n";
                     $content.="品牌:".$item['品牌']."\r\n";
                     $content.="花纹:".$item['规格']."\r\n";
                     $content.="库存:".$item['库存']."\r\n";
-                    $content.="价格:".$item['一级批发价']."\r\n\r\n";
+                    $content.="价格:".$item['参考售价']."\r\n\r\n";
                 }
                 $weixin->send($content,$data['FromUserName']);
                 return array('turn on transfer_customer_service','transfer_customer_service');

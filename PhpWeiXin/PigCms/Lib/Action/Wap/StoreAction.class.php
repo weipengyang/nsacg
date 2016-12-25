@@ -8,6 +8,7 @@ class StoreAction extends WapAction{
 	public $_cid = 0;
 	public $_set;
 	public $_isgroup = 0;
+	public $weixin;
 	
 	public $mainCompany = null;
 	
@@ -23,9 +24,10 @@ class StoreAction extends WapAction{
 		parent::_initialize();
 		
 		$tpl = $this->wxuser;
-		
+
+        $this->weixin=new JSSDK($this->wxuser['appid'],$this->wxuser['appsecret']);
+
 		$tpl['color_id'] = intval($tpl['color_id']);
-		
 		$this->tpl = $tpl;
         if(!in_array(ACTION_NAME, array('register', 'login','userinfo'))){
         if(!$this->wecha_id){
@@ -468,6 +470,24 @@ private function sellbill($price,$name){
 
 }
 
+private function weixinmessage($content,$depart){
+    $this->weixin->send($content,'ohD3dvseioQevapZCmHQyCPtOBOY');
+    $this->weixin->send($content,'ohD3dvqz0EpNooXm4MgE4Xth8UVM');
+    $this->weixin->send($content,'ohD3dvtYWyjpTMAlWyLF2UPZKSv8');
+    if($depart=='塘坑店'){
+        $this->weixin->send($content,'ohD3dvmcameEiedmp6t5Q4Grj4Pk');
+        $this->weixin->send($content,'ohD3dvk9a0B4eCoK8TKiigcPmbqU');
+    }else{
+        $this->weixin->send($content,'ohD3dvhb9V5DXEoCZO5yMfg6clgc');
+        $this->weixin->send($content,'ohD3dvlwa5PgS7n6z3s1tAK2NnTY');
+        $this->weixin->send($content,'ohD3dvnoP57_LF0vXtTIbN1L4PZo');
+        $this->weixin->send($content,'ohD3dvtYWyjpTMAlWyLF2UPZKSv8');
+        $this->weixin->send($content,'ohD3dviFloHSvcl9ieoXFibqPFJM');
+
+    }
+}
+
+
 private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',$shop='',$comment){
     //if($this->wecha_id=='ohD3dviFloHSvcl9ieoXFibqPFJM')
     {
@@ -564,6 +584,22 @@ private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',
             $row['是否同意']=1;
             $row['已维修']='0小时'; 
             M('维修项目','dbo.','difo')->add($row);
+            if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
+                if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
+                    $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
+                    $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已进厂'.$wxlb;
+                    $content.=',请服务顾问做好跟踪';
+                    $this->weixinmessage($content,$shop);
+                }
+            }
+            if(date('Y-m-d',strtotime($carinfo['年检日期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['年检日期']))!='1970-01-01'){
+                if(strtotime($carinfo['年检日期'])-(time()+90*24*3600)<0){
+                    $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
+                    $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$wxlb;
+                    $content.=',请做好跟踪服务';
+                    $this->weixinmessage($content,$shop);
+                }
+            }
         }
     }
 } 

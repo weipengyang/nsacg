@@ -10,8 +10,13 @@
  */
 class ConsumeAction extends Action{
     public $token;
-    public  function _initialize(){
+    public $weixin;
+    public $wxuser;
+   public  function _initialize(){
         $this->token='rlydsv1453614397';
+        $this->wxuser=D('Wxuser')->where(array('token'=>$this->token))->find();
+        $this->weixin=new JSSDK($this->wxuser['appid'],$this->wxuser['appsecret']);
+
         if(!in_array(ACTION_NAME, array('register', 'login'))){
             if(!cookie('username')){
                 if(ACTION_NAME=='products' and $_GET['key']=='39099139'){
@@ -456,7 +461,7 @@ class ConsumeAction extends Action{
                 ->count();
             $StockTotal=M('配件目录','dbo.','difo')
                   ->join(' join 出入库统计  on 配件目录.编号=出入库统计.编号  and  出入库统计.仓库=\''.$cangku.'\' left join 信息分类统计  on 配件目录.编码=信息分类统计.类型')
-                  ->field('sum(出入库统计.库存) 分库存,sum(库存) 总库存,sum(参考进价*库存) 总进货价,sum(参考售价*库存) 总价值,sum(出入库统计.出库数量) 总出库数,sum(出入库统计.入库数量) 总入库数')
+                  ->field('sum(出入库统计.库存) 分库存,sum(配件目录.库存) 总库存,sum(参考进价*配件目录.库存) 总进货价,sum(参考售价*配件目录.库存) 总价值,sum(出入库统计.出库数量) 总出库数,sum(出入库统计.入库数量) 总入库数')
                   ->where($where)->find();
 
         }
@@ -1164,11 +1169,9 @@ class ConsumeAction extends Action{
         }
        
         $count=M('member_card_coupon_record')
-           ->join('join tp_member_card_coupon on tp_member_card_coupon_record.coupon_id=tp_member_card_coupon.id')
            ->join('join tp_member_card_create on tp_member_card_create.wecha_id=tp_member_card_coupon_record.wecha_id')
            ->where($where)->count();
         $coupons=M('member_card_coupon_record')
-            ->join('join tp_member_card_coupon on tp_member_card_coupon_record.coupon_id=tp_member_card_coupon.id')
             ->join('join tp_member_card_create on tp_member_card_create.wecha_id=tp_member_card_coupon_record.wecha_id')
             ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();        
         $data['Rows']=$coupons;
@@ -2582,9 +2585,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                        $data['待审核数量']=0;
                        $data['已领料数量']=$pj['已领料数量']+ $num;
                        M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
-                       M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num where 编号='$code'");
-                       M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓库='$ck'");
                    }
+                   M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num where 编号='$code'");
+                   M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓库='$ck'");
                    $crkitem['当前状态']='已审核';
                    $crkitem['审核人']=cookie('username');
                    $crkitem['审核日期']=date('Y-m-d',time());
@@ -4389,6 +4392,22 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                foreach($data as $key=>$value){
                    $data[$key]=$carinfo[$key];
                }
+               if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
+                   if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
+                       $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
+                       $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已进厂洗车';
+                       $content.=',请服务顾问做好跟踪';
+                       $this->weixinmessage($content,$wxinfo['门店']);
+                   }
+               }
+               if(date('Y-m-d',strtotime($carinfo['年检日期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['年检日期']))!='1970-01-01'){
+                   if(strtotime($carinfo['年检日期'])-(time()+90*24*3600)<0){
+                       $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
+                       $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂洗车';
+                       $content.=',请做好跟踪服务';
+                       $this->weixinmessage($content,$wxinfo['门店']);
+                   }
+               }
            }
            else{
                $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
@@ -4877,7 +4896,22 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
    public function notices(){
        $this->display();
    }
+   private function weixinmessage($content,$depart){
+       $this->weixin->send($content,'ohD3dvseioQevapZCmHQyCPtOBOY');
+       $this->weixin->send($content,'ohD3dvqz0EpNooXm4MgE4Xth8UVM');
+       $this->weixin->send($content,'ohD3dvtYWyjpTMAlWyLF2UPZKSv8');
+       if($depart=='塘坑店'){
+           $this->weixin->send($content,'ohD3dvmcameEiedmp6t5Q4Grj4Pk');
+           $this->weixin->send($content,'ohD3dvk9a0B4eCoK8TKiigcPmbqU');
+       }else{
+           $this->weixin->send($content,'ohD3dvhb9V5DXEoCZO5yMfg6clgc');
+           $this->weixin->send($content,'ohD3dvlwa5PgS7n6z3s1tAK2NnTY');
+           $this->weixin->send($content,'ohD3dvnoP57_LF0vXtTIbN1L4PZo');
+           $this->weixin->send($content,'ohD3dvtYWyjpTMAlWyLF2UPZKSv8');
+           $this->weixin->send($content,'ohD3dviFloHSvcl9ieoXFibqPFJM');
 
+       }
+   }
    private function genwxrecord($carno,$type='AYC0002',$wxlb='蜡水洗车',$person,$fwgw,$licheng=null,$youwei=null,$lxr=null,$phone=null,$luntai=null,$fault=null){
       
         $data=M('维修','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
@@ -4904,6 +4938,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 $carinfo['里程']=$licheng;
             }
             if($wxlb=='常规保养'){
+
                 $carinfo['最近保养']=date("Y-m-d",time());
                 $carinfo['下次保养']=date("Y-m-d",strtotime("+182 day"));
                 if(isset($licheng)){
@@ -4916,6 +4951,22 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->save($carinfo);
             foreach($data as $key=>$value){
                 $data[$key]=$carinfo[$key];
+            }
+            if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
+                if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
+                    $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
+                    $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已进厂'.$wxlb;
+                    $content.=',请服务顾问做好跟踪';
+                    $this->weixinmessage($content,$yg['部门']);
+                }
+            }
+            if(date('Y-m-d',strtotime($carinfo['年检日期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['年检日期']))!='1970-01-01'){
+                if(strtotime($carinfo['年检日期'])-(time()+90*24*3600)<0){
+                    $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
+                    $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$wxlb;
+                    $content.=',请做好跟踪服务';
+                    $this->weixinmessage($content,$yg['部门']);
+                }
             }
         }
         else{ 

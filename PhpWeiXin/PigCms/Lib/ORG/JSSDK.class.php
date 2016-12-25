@@ -87,6 +87,82 @@
       } 
       return $access_token;
   }
+  public function remark($openid,$remark){
+      $data='{"openid":"'.$openid.'","remark":"'.$remark.'"}';
+      $rt=$this->curlPost('https://api.weixin.qq.com/cgi-bin/user/info/updateremark?access_token='.$this->getAccessToken(),$data,0);
+      return $rt;
+  }
+  public function gettaglist($openid){
+      Log::write($openid);
+      $data='{"openid":"'.$openid.'"}';
+      $access_token=$this->getAccessToken();
+      $rt=$this->curlPost('https://api.weixin.qq.com/cgi-bin/tags/getidlist?access_token='.$access_token,$data,0);
+      //$rt=json_decode($rt);
+      $taglist=$rt['msg']['tagid_list'];
+      return $taglist;
+  }
+  public function send($content,$openid){
+      if($content!=''){
+          $data='{"touser":"'.$openid.'","msgtype":"text","text":{"content":"'.$content.'"}}';
+          $access_token=$this->getAccessToken();
+          $result=$this->curlPost('https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token='.$access_token,$data,0);
+          return $result;
+      }
+      return true;
+  }
+  function curlPost($url, $data,$showError=1){
+      $ch = curl_init();
+      $header = "Accept-Charset: utf-8";
+      curl_setopt($ch, CURLOPT_URL, $url);
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+      curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+      curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
+      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+      curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      $tmpInfo = curl_exec($ch);
+      $errorno=curl_errno($ch);
+      Log::write($tmpInfo);
+      if ($errorno) {
+          return array('rt'=>false,'errorno'=>$errorno);
+      }else{
+          $js=json_decode($tmpInfo,1);
+          if (intval($js['errcode']==0)){
+              return array('rt'=>true,'msg'=>$js);
+          }else {
+              if($js['errcode']==40001){
+                  Log::write('清空缓存---');
+                  S('weixin_access_token',null);
+              }
+              return array('rt'=>false,'errorno'=>$js['errcode'],'errmsg'=>$js['errmsg']);
+          }
+      }
+  }
+  function curlGet($url){
+      $ch = curl_init();
+      $header = "Accept-Charset: utf-8";
+      curl_setopt($ch, CURLOPT_URL, $url);
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+      curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+      curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
+      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+      curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      $temp = curl_exec($ch);
+      return $temp;
+  }
+  public function getuserinfo($openid){
+      $access_token=$this->get_access_token();
+      $url_get='https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
+      $userinfo=json_decode($this->curlGet($url_get));
+      Log::write('获取用户信息'.json_encode($userinfo));
+      return $userinfo;
+  }
 
   private function httpGet($url) {
     $curl = curl_init();

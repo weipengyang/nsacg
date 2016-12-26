@@ -60,8 +60,9 @@
                     </div>
                     <div class="am-u-sm-2 am-u-md-3" id="optdiv">
                         <div id="paigongdiv" >
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="check();" ><i class="am-icon-hand-o-left"></i>审核通过</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="check();" ><i class="am-icon-hand-o-left"></i>审核</button>
                             <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="deleterecord();"><i class="am-icon-hand-o-right"></i>删除</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="uncheck();"><i class="am-icon-hand-o-left"></i>反审</button>
                         </div>
                     </div>
                 </div>
@@ -135,6 +136,27 @@
                 alert('选择审核记录');
             }
         }
+        function uncheck() {
+            var row = grid.getSelectedRow();
+            if (row) {
+                if (row['当前状态'] == '待审核') {
+                    $.ligerDialog.alert('不需要反审核');
+                    return;
+                }
+                var data = {
+                    crk: row,
+                    crkmx: product.rows,
+                };
+                $.post('/index.php?g=Query&m=Consume&a=unpickcheck', data,
+                  function (msg) {
+                      $.ligerDialog.alert(msg);
+                      grid.reload();
+                  });
+            }
+            else {
+                $.ligerDialog.alert('选择反审核记录');
+            }
+        }
         function deleterecord() {
             var row = grid.getSelectedRow();
             if (row) {
@@ -156,7 +178,7 @@
                 });
             }
             else {
-                alert('选择删除记录');
+                $.ligerDialog.alert('选择删除记录');
             }
         }
         function format(rowdata, index, value) {

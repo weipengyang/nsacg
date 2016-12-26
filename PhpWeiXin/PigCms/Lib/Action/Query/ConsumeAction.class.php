@@ -1320,6 +1320,7 @@ class ConsumeAction extends Action{
             $searchwhere['业务编号']=array('like',$searchkey);
             $searchwhere['车主']=array('like',$searchkey);
             $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['主修人']=array('like',$searchkey);
             $searchwhere['客户类别']=array('like',$searchkey);
             $searchwhere['联系人']=array('like',$searchkey);
             $searchwhere['门店']=array('like',$searchkey);
@@ -1972,20 +1973,97 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         $pinpai=M('车辆颜色','dbo.','difo')->where(array('颜色'=>array('like','%'.$_POST['key'].'%')))->select();
         echo json_encode($pinpai);
     }
-    public  function deletefile(){
-       
-       $user=M('用户管理','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();
-       if($user['权限']=='超级用户'){
-           $key=$_POST['key'];
-           $file='./uploads/rlydsv1453614397/cars/'.$key;
-           if(unlink($file)){
-               echo 1;
-               exit;
-           } 
-           echo 0;
-           exit;
-       }
-   }
+    #region 维修跟踪附件
+    public  function deletetracefile(){
+        
+        $user=M('用户管理','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();
+        if($user['权限']=='超级用户'){
+            $key=$_POST['key'];
+            $file='./uploads/rlydsv1453614397/tracefiles/'.$key;
+            if(unlink($file)){
+                echo 1;
+                exit;
+            } 
+            echo 0;
+            exit;
+        }
+    }
+    function uploadtrcefile($filetypes=''){
+        import('ORG.Net.UploadFile');
+        $upload = new UploadFile();
+        $upload->maxSize  = intval(C('up_size'))*1024 ;
+        if (!$filetypes){
+            $upload->allowExts  = explode(',',C('up_exts'));
+        }else {
+            $upload->allowExts  = $filetypes;
+        }
+        $wxno=$_GET['carno'];
+        $upload->autoSub=0;
+        $upload->saveRule=null;
+        $upload->thumbRemoveOrigin=true;
+        
+        $upload->savePath =  './uploads/'.$this->token.'/tracefiles/'.$wxno.'/';// 设置附件上传目录
+        //
+        if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/uploads')||!is_dir($_SERVER['DOCUMENT_ROOT'].'/uploads')){
+            mkdir($_SERVER['DOCUMENT_ROOT'].'/uploads',0777);
+        }
+        $firstLetterDir=$_SERVER['DOCUMENT_ROOT'].'/uploads/'.$this->token;
+        if (!file_exists($firstLetterDir)||!is_dir($firstLetterDir)){
+            mkdir($firstLetterDir,0777);
+        }
+        if (!file_exists($firstLetterDir.'/tracefiles')||!is_dir($firstLetterDir.'/tracefiles')){
+            mkdir($firstLetterDir.'/wxfiles',0777);
+        }
+        if (!file_exists($firstLetterDir.'/tracefiles/'.$wxno)||!is_dir($firstLetterDir.'/tracefiles/'.$wxno)){
+            mkdir($firstLetterDir.'/tracefiles/'.$wxno,0777);
+        }
+        //
+        
+        $upload->hashLevel=4;
+        if(!$upload->upload()) {// 上传错误提示错误信息
+            $msg=$upload->getErrorMsg();
+            echo $msg;
+            exit;
+
+        }else{// 上传成功 获取上传文件信息
+            $info =  $upload->getUploadFileInfo();
+            $this->siteUrl=$this->siteUrl?$this->siteUrl:C('site_url');
+            $msg=$this->siteUrl.substr($upload->savePath,1).$info[0]['savename'];
+            echo json_encode($info);
+            exit;
+
+        }
+        
+    }
+    public  function appendupload(){
+        $wxno=$_GET['carno'];
+        $path='./uploads/'.$this->token.'/tracefiles/'.$wxno.'/';
+        $files=scandir($path);
+        $attrs=array();
+        foreach($files as $key=>$value){
+            if(!in_array($files[$key],array('.','..'))){
+                $files[$key]='http://www.nsayc.com/uploads/rlydsv1453614397/tracefiles/'.$wxno.'/'.$value;
+                $attr['key']=$wxno.'/'.$value;
+                $attr['showDelete']=true;
+                $attr['showZoom']=true;
+                $attr['width']='120px';
+                array_push($attrs,$attr);
+                
+            }
+            else
+                unset($files[$key]);
+        }
+        if($files){
+            $this->assign('files',json_encode(array_values($files)));
+        }else{
+            $this->assign('files','[]');
+        }
+        $this->assign('attrs',json_encode(array_values($attrs)));
+        $this->assign('carno',$wxno);
+        $this->display();
+    }
+    #endregion
+    #region 维修附件管理
     public  function deletewxfile(){
        
        $user=M('用户管理','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();
@@ -2000,6 +2078,82 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            exit;
        }
    }
+    function uploadwxfile($filetypes=''){
+        import('ORG.Net.UploadFile');
+        $upload = new UploadFile();
+        $upload->maxSize  = intval(C('up_size'))*1024 ;
+        if (!$filetypes){
+            $upload->allowExts  = explode(',',C('up_exts'));
+        }else {
+            $upload->allowExts  = $filetypes;
+        }
+        $wxno=$_GET['wxno'];
+        $upload->autoSub=0;
+        $upload->saveRule=null;
+        $upload->thumbRemoveOrigin=true;
+        
+        $upload->savePath =  './uploads/'.$this->token.'/wxfiles/'.$wxno.'/';// 设置附件上传目录
+        //
+        if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/uploads')||!is_dir($_SERVER['DOCUMENT_ROOT'].'/uploads')){
+            mkdir($_SERVER['DOCUMENT_ROOT'].'/uploads',0777);
+        }
+        $firstLetterDir=$_SERVER['DOCUMENT_ROOT'].'/uploads/'.$this->token;
+        if (!file_exists($firstLetterDir)||!is_dir($firstLetterDir)){
+            mkdir($firstLetterDir,0777);
+        }
+        if (!file_exists($firstLetterDir.'/wxfiles')||!is_dir($firstLetterDir.'/wxfiles')){
+            mkdir($firstLetterDir.'/wxfiles',0777);
+        }
+        if (!file_exists($firstLetterDir.'/wxfiles/'.$wxno)||!is_dir($firstLetterDir.'/wxfiles/'.$wxno)){
+            mkdir($firstLetterDir.'/wxfiles/'.$wxno,0777);
+        }
+        //
+        
+        $upload->hashLevel=4;
+        if(!$upload->upload()) {// 上传错误提示错误信息
+            $msg=$upload->getErrorMsg();
+            echo $msg;
+            exit;
+
+        }else{// 上传成功 获取上传文件信息
+            $info =  $upload->getUploadFileInfo();
+            $this->siteUrl=$this->siteUrl?$this->siteUrl:C('site_url');
+            $msg=$this->siteUrl.substr($upload->savePath,1).$info[0]['savename'];
+            echo json_encode($info);
+            exit;
+
+        }
+        
+    }
+    public  function wxfileupload(){
+        $wxno=$_GET['wxno'];
+        $path='./uploads/'.$this->token.'/wxfiles/'.$wxno.'/';
+        $files=scandir($path);
+        $attrs=array();
+        foreach($files as $key=>$value){
+            if(!in_array($files[$key],array('.','..'))){
+                $files[$key]='http://www.nsayc.com/uploads/rlydsv1453614397/wxfiles/'.$wxno.'/'.$value;
+                $attr['key']=$wxno.'/'.$value;
+                $attr['showDelete']=true;
+                $attr['showZoom']=true;
+                $attr['width']='120px';
+                array_push($attrs,$attr);
+                
+            }
+            else
+                unset($files[$key]);
+        }
+        if($files){
+            $this->assign('files',json_encode(array_values($files)));
+        }else{
+            $this->assign('files','[]');
+        }
+        $this->assign('attrs',json_encode(array_values($attrs)));
+        $this->assign('wxno',$wxno);
+        $this->display();
+    }
+    #endregion
+    #region 配件产品附件
     public  function deleteproductfile (){
        
        $user=M('用户管理','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();
@@ -2088,7 +2242,22 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         }
         
     }
-   #region 上传文件
+    #endregion
+    #region 车辆资料附件
+    public  function deletefile(){
+        
+        $user=M('用户管理','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();
+        if($user['权限']=='超级用户'){
+            $key=$_POST['key'];
+            $file='./uploads/rlydsv1453614397/cars/'.$key;
+            if(unlink($file)){
+                echo 1;
+                exit;
+            } 
+            echo 0;
+            exit;
+        }
+    }
     public  function fileupload(){
         $carno=$_GET['carno'];
         $path='./uploads/'.$this->token.'/cars/'.$carno.'/';
@@ -2116,80 +2285,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         $this->assign('carno',$carno);
         $this->display();
     }
-    public  function wxfileupload(){
-        $wxno=$_GET['wxno'];
-        $path='./uploads/'.$this->token.'/wxfiles/'.$wxno.'/';
-        $files=scandir($path);
-        $attrs=array();
-        foreach($files as $key=>$value){
-            if(!in_array($files[$key],array('.','..'))){
-                $files[$key]='http://www.nsayc.com/uploads/rlydsv1453614397/wxfiles/'.$wxno.'/'.$value;
-                $attr['key']=$wxno.'/'.$value;
-                $attr['showDelete']=true;
-                $attr['showZoom']=true;
-                $attr['width']='120px';
-                array_push($attrs,$attr);
-                
-            }
-            else
-                unset($files[$key]);
-          }
-        if($files){
-         $this->assign('files',json_encode(array_values($files)));
-       }else{
-           $this->assign('files','[]');
-        }
-        $this->assign('attrs',json_encode(array_values($attrs)));
-        $this->assign('wxno',$wxno);
-        $this->display();
-    }
-    function uploadwxfile($filetypes=''){
-       import('ORG.Net.UploadFile');
-       $upload = new UploadFile();
-       $upload->maxSize  = intval(C('up_size'))*1024 ;
-       if (!$filetypes){
-           $upload->allowExts  = explode(',',C('up_exts'));
-       }else {
-           $upload->allowExts  = $filetypes;
-       }
-       $wxno=$_GET['wxno'];
-       $upload->autoSub=0;
-       $upload->saveRule=null;
-       $upload->thumbRemoveOrigin=true;
-       
-       $upload->savePath =  './uploads/'.$this->token.'/wxfiles/'.$wxno.'/';// 设置附件上传目录
-       //
-       if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/uploads')||!is_dir($_SERVER['DOCUMENT_ROOT'].'/uploads')){
-           mkdir($_SERVER['DOCUMENT_ROOT'].'/uploads',0777);
-       }
-       $firstLetterDir=$_SERVER['DOCUMENT_ROOT'].'/uploads/'.$this->token;
-       if (!file_exists($firstLetterDir)||!is_dir($firstLetterDir)){
-           mkdir($firstLetterDir,0777);
-       }
-       if (!file_exists($firstLetterDir.'/wxfiles')||!is_dir($firstLetterDir.'/wxfiles')){
-           mkdir($firstLetterDir.'/wxfiles',0777);
-       }
-       if (!file_exists($firstLetterDir.'/wxfiles/'.$wxno)||!is_dir($firstLetterDir.'/wxfiles/'.$wxno)){
-           mkdir($firstLetterDir.'/wxfiles/'.$wxno,0777);
-       }
-       //
-       
-       $upload->hashLevel=4;
-       if(!$upload->upload()) {// 上传错误提示错误信息
-           $msg=$upload->getErrorMsg();
-           echo $msg;
-           exit;
-
-       }else{// 上传成功 获取上传文件信息
-           $info =  $upload->getUploadFileInfo();
-           $this->siteUrl=$this->siteUrl?$this->siteUrl:C('site_url');
-           $msg=$this->siteUrl.substr($upload->savePath,1).$info[0]['savename'];
-           echo json_encode($info);
-           exit;
-
-       }
-      
-   }
     function upload($filetypes=''){
        import('ORG.Net.UploadFile');
        $upload = new UploadFile();
@@ -2627,7 +2722,64 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        }
 
    }
-   public function deletepick(){
+    public function unpickcheck(){
+     
+       if(IS_POST){
+           $crk=$_POST['crk'];
+           $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
+           if($crk['单据类别']=='出库'){
+               foreach($crkmx as $item){
+                   $num=$item['数量'];
+                   $code=$item['编号'];
+                   $ck=$item['仓库'];
+                   if($crk['引用类别']=='维修领料'){
+                       $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
+                       $data['待审核数量']=$num;
+                       $data['已领料数量']=$pj['已领料数量']-$num;
+                       M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
+                   }
+                   M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存+$num where 编号='$code'");
+                   M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存+$num where 编号='$code' and 仓库='$ck'");
+                   $crkitem['当前状态']='待审核';
+                   $crkitem['审核人']=cookie('username');
+                   $crkitem['审核日期']=date('Y-m-d',time());
+                   M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
+                   $this->writeLog($crk['ID'],$crk['单据编号'],'出库反审核',$crk['单据类别'].'出库反审核');
+               }
+               echo '反审核通过';
+               exit;
+           }
+           else{
+               foreach($crkmx as $item){
+                   $num=$item['数量'];
+                   $code=$item['编号'];
+                   $ck=$item['仓库'];
+                   $price=$item['单价'];
+                   if($crk['引用类别']=='维修退料'){
+                       $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
+                       $data['已退料数量']=$pj['已退料数量']-$num;
+                       $data['已领料数量']=$pj['已领料数量']+$num;
+                       M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
+                   }
+                   M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num,最新进价=$price where 编号='$code'");
+                   M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓库='$ck'");
+               }
+               $crkitem['当前状态']='待审核';
+               $crkitem['审核人']=cookie('username');
+               $crkitem['审核日期']=date('Y-m-d',time());
+               M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
+               $this->writeLog($crk['ID'],$crk['单据编号'],'入库反审核','采购入库反审核');
+               echo '反审核通过';
+               exit;
+           }
+
+       }
+       else{
+           $this->display();
+       }
+
+   }
+  public function deletepick(){
        if(IS_POST){
            $crk=$_POST['crk'];
            if($crk['单据类别']=='出库'){
@@ -2649,14 +2801,14 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                    }
                }
            }
-           M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->delete();
+           M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->delete(); 
            M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->delete();
            echo '删除成功';
            exit;
 
        }
        else{
-           $this->display();
+           $this->display(); 
        }
 
    }
@@ -4395,15 +4547,15 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
                    if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
                        $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
-                       $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已进厂洗车';
-                       $content.=',请服务顾问做好跟踪';
+                       $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已到'.$wxinfo['门店'].'洗车';
+                       $content.=',请做好跟踪服务';
                        $this->weixinmessage($content,$wxinfo['门店']);
                    }
                }
                if(date('Y-m-d',strtotime($carinfo['年检日期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['年检日期']))!='1970-01-01'){
                    if(strtotime($carinfo['年检日期'])-(time()+90*24*3600)<0){
                        $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
-                       $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂洗车';
+                       $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已到'.$wxinfo['门店'].'洗车';
                        $content.=',请做好跟踪服务';
                        $this->weixinmessage($content,$wxinfo['门店']);
                    }
@@ -4469,6 +4621,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                if($wxinfo['门店']=='塘坑店'){
                    $price=30;
                }
+               $xm['标准金额']=$price;
                $data['报价金额']=$price;
                $data['应收金额']=$price;
                $data['客付金额']=$price;
@@ -4955,15 +5108,15 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
                 if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
                     $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
-                    $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已进厂'.$wxlb;
-                    $content.=',请服务顾问做好跟踪';
+                    $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已到'.$yg['部门'].$wxlb;
+                    $content.=',请做好跟踪服务';
                     $this->weixinmessage($content,$yg['部门']);
                 }
             }
             if(date('Y-m-d',strtotime($carinfo['年检日期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['年检日期']))!='1970-01-01'){
                 if(strtotime($carinfo['年检日期'])-(time()+90*24*3600)<0){
                     $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
-                    $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$wxlb;
+                    $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$yg['部门'].$wxlb;
                     $content.=',请做好跟踪服务';
                     $this->weixinmessage($content,$yg['部门']);
                 }

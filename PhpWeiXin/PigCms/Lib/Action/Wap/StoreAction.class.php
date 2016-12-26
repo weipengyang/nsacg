@@ -587,15 +587,15 @@ private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',
             if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
                 if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
                     $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
-                    $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已进厂'.$wxlb;
-                    $content.=',请服务顾问做好跟踪';
+                    $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已到'.$shop.$wxlb;
+                    $content.=',请做好跟踪服务';
                     $this->weixinmessage($content,$shop);
                 }
             }
             if(date('Y-m-d',strtotime($carinfo['年检日期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['年检日期']))!='1970-01-01'){
                 if(strtotime($carinfo['年检日期'])-(time()+90*24*3600)<0){
                     $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
-                    $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$wxlb;
+                    $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已到'.$shop.$wxlb;
                     $content.=',请做好跟踪服务';
                     $this->weixinmessage($content,$shop);
                 }
@@ -2453,6 +2453,7 @@ public function check(){
             $data['服务态度'] = $commnet['fwtd'];
             $data['服务质量'] = $commnet['fwzl'];
             $data['前台接待'] = $commnet['qtjd'];
+
             $data['评价时间'] =date('Y-m-d H:i',time());
             $data['评论内容'] = htmlspecialchars($commnet['content']);
             $cardid=M('member_card_create')->where(array('wecha_id'=>$this->wecha_id))->getField('cardid');

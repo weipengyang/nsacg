@@ -38,8 +38,15 @@
                 buttons: [                    {
                         text: "更新", width: 60, click: function () {
                             var row = product.getSelectedRow();
-                            var price = $("input[ligeruiid='本次领料']").val() * row['单价'];
-                            product.updateRow(row, { 本次领料: $("input[ligeruiid='本次领料']").val(),金额:price });
+                            if ($("input[ligeruiid='本次领料']").val() <= row['数量']) {
+                                var price = $("input[ligeruiid='本次领料']").val() * row['单价'];
+                                product.updateRow(row, { 本次领料: $("input[ligeruiid='本次领料']").val(), 金额: price });
+                            }
+                            else {
+                                $.ligerDialog.alert('超领料数量');
+                                var price = row['数量'] * row['单价'];
+                                product.updateRow(row, { 本次领料: row['数量'], 金额: price })
+                            }
 
                         }
                     },                    {

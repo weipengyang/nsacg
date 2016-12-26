@@ -24,43 +24,57 @@
             var form = $("#form1").ligerForm({
                 inputWidth: 160, labelWidth: 85, space: 20,
                 validate: true,
-                fields: [
-                    {
-                        display: "年度", name: "年份", newline: true, type: "text", readonly: true
-                    },
-                    {
-                        display: "车主", name: "车主", newline: false, type: "text", readonly: true
-                    },
-                    { display: "车牌号码 ", name: "车牌号码", newline: false, type: "text", readonly: true },
-                    { display: "年审到期 ", name: "年审到期", newline: false, type: "date" },
-                    { display: "跟踪方式",  name: "跟踪类型", newline: false, type: "text", type: "combobox",
-                        options: {
-                            valueField: '方式',
-                            textField: '方式',
-                            autocomplete: true,
-                            url: '/index.php?g=Query&m=Consume&a=getgzlb',
-                        }
-                    },
-                    {
-                        display: "跟踪人", name: "跟踪人", newline: false, type: "combobox",
-                        options: {
-                            valueField: '姓名',
-                            textField: '姓名',
-                            autocomplete: true,
-                            url: '/index.php?g=Query&m=Consume&a=getywy',
-                        }
-                    },
-                    { display: '跟踪内容', name: '内容', type: "textarea", width: 690, height: 200 },
+                tab: {
+                    items: [
+                       {
+                           title: '跟踪信息',
+                           fields: [
+                                {
+                                    display: "年度", name: "年份", newline: true, type: "text", readonly: true
+                                },
+                                {
+                                    display: "车主", name: "车主", newline: false, type: "text", readonly: true
+                                },
+                                { display: "车牌号码 ", name: "车牌号码", newline: false, type: "text", readonly: true },
+                                { display: "年审到期 ", name: "年审到期", newline: false, type: "date" },
+                                {
+                                    display: "跟踪方式", name: "跟踪类型", newline: false, type: "text", type: "combobox",
+                                    options: {
+                                        valueField: '方式',
+                                        textField: '方式',
+                                        autocomplete: true,
+                                        url: '/index.php?g=Query&m=Consume&a=getgzlb',
+                                    }
+                                },
+                                {
+                                    display: "跟踪人", name: "跟踪人", newline: false, type: "combobox",
+                                    options: {
+                                        valueField: '姓名',
+                                        textField: '姓名',
+                                        autocomplete: true,
+                                        url: '/index.php?g=Query&m=Consume&a=getywy',
+                                    }
+                                },
+                                { display: '跟踪内容', name: '内容', type: "textarea", width: 690, height: 200 },
 
-                ],
-                buttons: [                    {
+                           ]
+
+                       },
+                       {
+                           title:'附件信息'
+                       }
+                    ]
+                },
+                buttons: [
+                    {
                         text: "取消", width: 60, click: function () {
                             window.parent.editdialog.hide();
                         }
-                    },                    {
+                    },
+                    {
                         text: "保存", width: 60, click: function () {
                             var data = form.getData();
-                            
+
                             var submitData = {
                                 type:'add',
                                 tracedata: data
@@ -73,20 +87,24 @@
 
                               });
                         }
-                    }            ]            });
+                    }
+            ]
+            });
             dialog = frameElement.dialog;
             var data = dialog.get('data');
             $("input[ligeruiid='车牌号码']").val(data['车牌号码']);
             $("input[ligeruiid='车主']").val(data['车主']);
-            var myDate = new Date();           
+            var myDate = new Date();
             $("input[ligeruiid='年份']").val(myDate.getFullYear());
-            $("input[ligeruiid='年审到期']").val(todate(data['年检日期'],false));
+            $("input[ligeruiid='年审到期']").val(todate(data['年检日期'], false));
+            $("div[data-index='1']").html(
+                      '<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=appendupload&carno=' + data['流水号'] + '"></iframe></div>'
+            );
         });
 
 
     </script>
 </head>
-
 <body style="padding:10px">
     <div id="form1">
     </div>

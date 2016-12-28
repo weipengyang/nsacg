@@ -198,8 +198,11 @@
                             }
                             else {
                                 parent.product.addRows(haveproduct.data.Rows);
-                                parent.reflash();
-                                parent.addproductdialog.hide();
+                                setTimeout(function () {
+                                    parent.reflash();
+                                    frameElement.dialog.hide();
+                                }, 500);
+                               
                             }
                         }
                     }                ],                fields: [

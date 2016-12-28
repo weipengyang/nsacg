@@ -42,7 +42,7 @@
         <div class="admin-content">
             <div class="admin-content-body">
                 <div class="am-g">
-                    <div class="am-u-sm-10 am-u-md-9">
+                    <div class="am-u-sm-8 am-u-md-8">
                         门店
                         <select id="shop">
                             <option value="all">所有门店</option>
@@ -58,10 +58,11 @@
                         <input type="text" id="searchkey">
                         <button id="search" type="button">模糊查询</button>
                     </div>
-                    <div class="am-u-sm-2 am-u-md-3" id="optdiv">
+                    <div class="am-u-sm-4 am-u-md-4" id="optdiv">
                         <div id="paigongdiv">
                             <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="add();"><i class="am-icon-hand-o-left"></i>开单</button>
                             <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="check();"><i class="am-icon-hand-o-left"></i>审核</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="uncheck();"><i class="am-icon-hand-o-left"></i>反审</button>
                             <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="printbill();"><i class="am-icon-hand-o-right"></i>打印</button>
                             <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="deleterecord();"><i class="am-icon-hand-o-right"></i>删除</button>
                         </div>
@@ -161,6 +162,26 @@
             }
             //saledialog.max();
            
+        }
+        function uncheck() {
+            var row = grid.getSelectedRow();
+            if (row) {
+                $.ligerDialog.confirm('你确定反审核此记录', function (flag) {
+                    if (flag) {
+                        var data = {
+                            xsd: row
+                        };
+                        $.post('/index.php?g=Query&m=Consume&a=unsalebillcheck', data,
+                          function (msg) {
+                              $.ligerDialog.alert(msg);
+                              grid.reload();
+                          });
+                    }
+                });
+            }
+            else {
+                $.ligerDialog.alert('选择审核记录');
+            }
         }
         function check() {
             var row = grid.getSelectedRow();
@@ -342,6 +363,8 @@
                                     $.post('/index.php?g=Query&m=Consume&a=deletesaleitem', data,
                                       function (msg) {
                                           $.ligerDialog.alert(msg);
+                                          product.reload();
+                                          grid.reload();
                                       });
                                 } else {
                                     $.ligerDialog.alert('请选择要删除商品');

@@ -224,6 +224,7 @@
                 width: '50%',
                 usePager: false,
                 enabledEdit: true,
+                fixedCellHeight: false,
                 parms: { code: row['车牌号码'], type: '保险' },
                 url: '/index.php?g=Query&m=Consume&a=gettraceinfo',
                 showTitle: false,
@@ -306,6 +307,7 @@
                 ],
                 isScroll: true,
                 pageSize: 20,
+                fixedCellHeight: false,
                 url: '/index.php?g=Query&m=Consume&a=getinsurances',
                 height: '100%',
                 onDblClickRow: function (data, rowindex, rowobj) {

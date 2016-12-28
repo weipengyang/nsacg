@@ -68,8 +68,9 @@
                         <div id="paigongdiv">
                             <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="add();"><i class="am-icon-hand-o-left"></i>开单</button>
                             <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="check();"><i class="am-icon-hand-o-left"></i>审核</button>
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="printbill();"><i class="am-icon-hand-o-right"></i>打印</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="uncheck();"><i class="am-icon-hand-o-left"></i>反审</button>
                             <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="deleterecord();"><i class="am-icon-hand-o-right"></i>删除</button>
+                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="printbill();"><i class="am-icon-hand-o-right"></i>打印</button>
                         </div>
                     </div>
                 </div>
@@ -222,6 +223,30 @@
 
         function editproduct() {
 
+        }
+        function uncheck() {
+            var row = grid.getSelectedRow();
+            if (row) {
+                if (row['当前状态'] == '待审核') {
+                    $.ligerDialog.alert('不需要反审核');
+                    return;
+                }
+                $.ligerDialog.confirm('你确定要反审此记录', function (flag) {
+                    if (flag) {
+                        var data = {
+                            cgd: row
+                        };
+                        $.post('/index.php?g=Query&m=Consume&a=unpurchasecheck', data,
+                          function (msg) {
+                              $.ligerDialog.alert(msg);
+                              grid.reload();
+                          });
+                    }
+                });
+            }
+            else {
+                alert('选择审核记录');
+            }
         }
         function check() {
             var row = grid.getSelectedRow();

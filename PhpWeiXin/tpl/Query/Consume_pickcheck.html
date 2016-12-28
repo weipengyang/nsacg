@@ -143,15 +143,19 @@
                     $.ligerDialog.alert('不需要反审核');
                     return;
                 }
-                var data = {
-                    crk: row,
-                    crkmx: product.rows,
-                };
-                $.post('/index.php?g=Query&m=Consume&a=unpickcheck', data,
-                  function (msg) {
-                      $.ligerDialog.alert(msg);
-                      grid.reload();
-                  });
+                $.ligerDialog.confirm('你确定反审此记录', function (flag) {
+                    if (flag) {
+                        var data = {
+                            crk: row,
+                            crkmx: product.rows,
+                        };
+                        $.post('/index.php?g=Query&m=Consume&a=unpickcheck', data,
+                          function (msg) {
+                              $.ligerDialog.alert(msg);
+                              grid.reload();
+                          });
+                    }
+                });
             }
             else {
                 $.ligerDialog.alert('选择反审核记录');

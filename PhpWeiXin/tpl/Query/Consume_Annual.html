@@ -171,6 +171,7 @@
                 showToggleColBtn: false,
                 width: '50%',
                 usePager: false,
+                fixedCellHeight: false,
                 enabledEdit: true,
                 parms: { code: row['车牌号码'], type: '年审' },
                 url: '/index.php?g=Query&m=Consume&a=gettraceinfo',
@@ -290,6 +291,7 @@
                 ],
                 isScroll: true,
                 pageSize: 20,
+                fixedCellHeight: false,
                 url: '/index.php?g=Query&m=Consume&a=getcarsAnnual',
                 height: '100%',
                 onDblClickRow: function (data, rowindex, rowobj) {

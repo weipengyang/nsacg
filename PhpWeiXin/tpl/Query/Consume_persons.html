@@ -84,6 +84,9 @@
                                 </span>
                             </div>
                         </div>
+                        <div class="am-u-sm-1 am-u-md-1">
+                            <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="exportdata();">导出数据</button>
+                        </div>
                     </div>
                     <div id="maingrid4" style="margin:0; padding:0;"></div>
                     <div id="tongji" style="width:100%;height:600px;margin:0;padding:0"></div>
@@ -151,10 +154,36 @@
                 });
             });
         }
-
+        function exportdata() {
+            var url ='';
+            var enddate = $('#enddate').val();
+            if (enddate != '')
+                url+='&enddate='+enddate;
+            var startdate = $('#startdate').val();
+            if (startdate != '')
+                url += '&startdate=' + startdate;
+            var lb = $('#lb').val();
+            if (lb != '')
+                url += '&lb=' + lb;
+            var bm = $('#bumen').val();
+            if (bm != '')
+                url += '&bm=' + bm;
+            var zhuxiu = $('#zhuxiu').val();
+            if (zhuxiu != '')
+                url += '&zhuxiu=' + zhuxiu;
+            var searchkey = $('#searchkey').val();
+            if (searchkey != '')
+                url += '&searchkey=' + searchkey;
+            location.href = 'index.php?g=Query&m=Consume&a=exportpersonwork' + url;
+        }
         $(document).ready(function () {
            // var jyChart = echarts.init(document.getElementById('tongji'));
-           // setdata(jyChart, '个人业绩');
+            // setdata(jyChart, '个人业绩');
+            function f_totalRender(data, currentPageData) {
+                return " 服务车辆:" + data.sumdata.服务车辆
+                    + "  工时:" + data.sumdata.工时
+                    + "  产值:" + data.sumdata.产值
+            }
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                     { display: '主修人', name: '主修人', align: 'left', width: 200 },
@@ -168,6 +197,7 @@
                     }
                 },
                 ],
+                totalRender: f_totalRender,
                 isScroll: true,
                 pageSize: 20,
                 detailHeight: 120,
@@ -175,8 +205,9 @@
                 url: '/index.php?g=Query&m=Consume&a=getpersonwork',
                 height: '100%',
                 onDblClickRow: function (data, rowindex, rowobj) {
-                    editinfo(data['编号']);
+                    //editinfo(data['编号']);
                 }
+
             });
             $('#bumen').change(function () {
                 var submitData = {

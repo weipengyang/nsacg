@@ -23,15 +23,31 @@
     <div class="am-cf admin-main" style="padding:0;margin:0">
         <!-- content start -->
         <div class="admin-content">
-        <div class="admin-content-body">
-            <div id="searchbar">
-                关键字：<input id="searchkey" type="text" />
-                <input id="search" type="button" value="模糊查询"  />
-            </div>
-
-            <div id="maingrid4" style="margin:0; padding:0"></div>
-            </div>
-            </div>
+            <div class="admin-content-body">
+                <div class="am-g">
+                    <div class="am-u-sm-2 am-u-md-2">
+                        <div class="am-input-group am-datepicker-date"  data-am-datepicker="{format: 'yyyy-mm-dd'}">
+                            <input type="text" class="am-form-field" id="startdate"  placeholder="开始日期" readonly>
+                            <span class="am-input-group-btn am-datepicker-add-on">
+                                <button class="am-btn am-btn-default" type="button"><span class="am-icon-calendar"></span> </button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="am-u-sm-3 am-u-md-3 a">
+                        <div class="am-input-group am-input-group-sm">
+                            <input type="text" id="searchkey" class="am-form-field" placeholder="关键字">
+                            <span class="am-input-group-btn">
+                                <button id="search" class="am-btn am-btn-default" type="button">模糊查询</button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="am-u-sm-1 am-u-md-1 m-u-end">
+                        <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="exportdata();">导出数据</button>
+                    </div>
+                </div>
+                    <div id="maingrid4" style="margin:0; padding:0"></div>
+                </div>
+        </div>
         <!-- content end -->
     </div>
     <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
@@ -51,6 +67,16 @@
                 title: '车俩信息编辑'
             });
         }
+        function exportdata() {
+            var parms ="";
+            var searchkey = $('#searchkey').val();
+            if (searchkey != '')
+                parms+='&searchkey='+searchkey;
+            var startdate = $('#startdate').val();
+            if (startdate != '')
+                parms+='startdate='+startdate;
+            location.href = '/index.php?g=Query&m=Consume&a=exporttirequery' + parms;
+        }
         var cargird;
         $(document).ready(function () {
             cargird = $("#maingrid4").ligerGrid({
@@ -68,7 +94,7 @@
                             // return '<a href="javascript:void(0);" onclick="carinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
                           }
                          },
-                       
+                        { display: '查询次数', name: 'num', width: 180 },
                         {
                             display: '客户类别', name: 'type', width: 120, render: function (rowdata, index, value) {
                                 var title = '';
@@ -99,6 +125,9 @@
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     parms.searchkey = searchkey;
+                var startdate = $('#startdate').val();
+                if (startdate != '')
+                    parms.startdate = startdate;
                 cargird.set('parms', parms);
                 cargird.reload();
 

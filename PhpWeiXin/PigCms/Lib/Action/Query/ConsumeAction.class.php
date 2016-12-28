@@ -225,6 +225,12 @@ class ConsumeAction extends Action{
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
             $searchkey='%'.trim($searchkey).'%';
         }
+        if (isset($_POST['startdate'])&&trim($_POST['startdate'])){
+           $startdate=strtotime($_POST['startdate']);
+           $where['optime']=array('gt',strtotime($_POST['startdate']));
+        }else{
+            $startdate=strtotime('2016-01-01');
+        }
         if($searchkey){       
             $searchwhere['nickname']=array('like',$searchkey);
             $searchwhere['code']=array('like',$searchkey);
@@ -242,12 +248,19 @@ class ConsumeAction extends Action{
         else{
             $order=$sortname.' '.$sortorder.',optime desc';
         }
-        $scoreinfo=M('tire_query')
-           // ->join('join tp_userinfo on tp_member_card_sign.wecha_id=tp_userinfo.wecha_id')
-            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
-        $count=M('tire_query')
-           // ->join('join tp_userinfo on tp_member_card_sign.wecha_id=tp_userinfo.wecha_id')
-            ->where($where)->count();
+        if(!$_GET[type]){
+            $scoreinfo=M('tire_query')
+                ->join("join ( select count(1) num,code  from tp_tire_query  where type!=3 and optime>$startdate  group by code) b on tp_tire_query.code=b.code")
+                ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+            $count=M('tire_query')
+                ->join("join ( select count(1) num,code  from tp_tire_query  where type!=3 and optime>$startdate group by code) b on tp_tire_query.code=b.code")
+                ->where($where)->count();
+        }
+        else{
+            $scoreinfo=M('tire_query')
+                   ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+            $count=M('tire_query')->where($where)->count();
+        }
         $data['Rows']=$scoreinfo;
         $data['Total']=$count;
         echo json_encode($data);
@@ -370,12 +383,17 @@ class ConsumeAction extends Action{
         }
         $count=M('个人业绩表','dbo.','difo')->join('员工目录 on 个人业绩表.主修人=员工目录.姓名')->where($where)->count();
         $yelist=M('个人业绩表','dbo.','difo')->join('员工目录 on 个人业绩表.主修人=员工目录.姓名')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $total=M('个人业绩表','dbo.','difo')->join('员工目录 on 个人业绩表.主修人=员工目录.姓名')
+            ->where($where)
+            ->field("sum(服务车辆数) 服务车辆,sum(工时费) 工时,sum(产值) 产值")
+            ->find();
         $data['Rows']=$yelist;
         $data['Total']=$count;
+        $data['sumdata']=$total;
         echo json_encode($data);
         
     }
-    public  function getpersonstat()
+   public  function getpersonstat()
     {   
         $where['1']=1;
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
@@ -914,9 +932,9 @@ class ConsumeAction extends Action{
         
     }
     public  function exportUseRecord(){
-		header("Content-Type: text/html; charset=utf-8");
+        header("Content-Type: text/html; charset=utf-8");
 		header("Content-type:application/vnd.ms-execl");
-		header("Content-Disposition:filename=用户分析.xls");
+		header("Content-Disposition:filename=用户分析数据_".date('Ymd',time()).".xls");
 		$arr = array(
 			array('en'=>'车牌号码','cn'=>'车牌号码'),
 			array('en'=>'车主','cn'=>'车主'),
@@ -999,10 +1017,198 @@ class ConsumeAction extends Action{
 		exit();
         
 	}
+    public  function exporttirequery(){
+        header("Content-Type: text/html; charset=utf-8");
+		header("Content-type:application/vnd.ms-execl");
+		header("Content-Disposition:filename=轮胎查询数据_".date('Ymd',time()).".xls");
+		$arr = array(
+			array('en'=>'optime','cn'=>'查询时间'),
+			array('en'=>'name','cn'=>'微信名'),
+			array('en'=>'nickname','cn'=>'备注名称'),
+			array('en'=>'code','cn'=>'轮胎型号'),
+			array('en'=>'num','cn'=>'查询次数'),
+			array('en'=>'type','cn'=>'客户类别')
+		);
+        $i = 0;
+		$fieldCount = count($arr);
+		$s = 0;
+		//thead
+		foreach ($arr as $f){
+			if ($s<$fieldCount-1){
+				echo iconv('utf-8','gbk',$f['cn'])."\t";
+			}else {
+				echo iconv('utf-8','gbk',$f['cn'])."\n";
+			}
+			$s++;
+		}
+        $where['type']=array('neq','3');
+        $searchkey=$_POST['searchkey'];
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
+            $searchkey='%'.trim($searchkey).'%';
+        }
+        if (isset($_POST['startdate'])&&trim($_POST['startdate'])){
+            $startdate=strtotime($_POST['startdate']);
+            $where['optime']=array('gt',strtotime($_POST['startdate']));
+        }else{
+            $startdate=strtotime('2016-01-01');
+        }
+        if($searchkey){       
+            $searchwhere['nickname']=array('like',$searchkey);
+            $searchwhere['code']=array('like',$searchkey);
+            $searchwhere['name']=array('like',$searchkey);
+            $searchwhere['type']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $order='optime desc';
+        }
+        else{
+            $order=$sortname.' '.$sortorder.',optime desc';
+        }
+        $scoreinfo=M('tire_query')
+                ->join("join ( select count(1) num,code  from tp_tire_query  where type!=3 and optime>$startdate  group by code) b on tp_tire_query.code=b.code")
+                ->where($where)->order($order)->select();
+        if($scoreinfo){
+			foreach ($scoreinfo as $person){
+				$j = 0;
+				foreach ($arr as $field){			
+					$fieldValue = $person[$field['en']];
+                    switch($field['en']){		
+                        case 'optime':
+                            $fieldValue =date('Y-m-d',$person[$field['en']]);
+                            break;
+                        case 'type':{
+                             if($person[$field['en']]=='1'){
+                                $fieldValue='外部修理厂';
+                             }else{
+                                $fieldValue='内部员工';
+                               
+                             }
+                          break;
+                        }
+                    }
+					
+					if ($j<$fieldCount-1){
+						echo iconv('utf-8','gbk',$fieldValue)."\t";
+					}else {
+						echo iconv('utf-8','gbk',$fieldValue)."\n";
+					}
+					$j++;
+				}
+				$i++;
+			}
+            
+		}
+		exit();    
+        
+    }
+
+    public  function exportpersonwork()
+    {   
+        header("Content-Type: text/html; charset=utf-8");
+		header("Content-type:application/vnd.ms-execl");
+		header("Content-Disposition:filename=个人业绩数据_".date('Ymd',time()).".xls");
+		$arr = array(
+			array('en'=>'主修人','cn'=>'主修人'),
+			array('en'=>'维修类别','cn'=>'维修类别'),
+			array('en'=>'时间','cn'=>'日期'),
+			array('en'=>'服务车辆数','cn'=>'服务车辆数'),
+			array('en'=>'工时费','cn'=>'工时费'),
+			array('en'=>'产值','cn'=>'产值')
+		);
+		$i = 0;
+		$fieldCount = count($arr);
+		$s = 0;
+		//thead
+		foreach ($arr as $f){
+			if ($s<$fieldCount-1){
+				echo iconv('utf-8','gbk',$f['cn'])."\t";
+			}else {
+				echo iconv('utf-8','gbk',$f['cn'])."\n";
+			}
+			$s++;
+		}
+        $where['1']=1;
+        if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
+            $searchkey='%'.trim($_GET['searchkey']).'%';
+        }
+        if($_GET['lb']&&trim($_GET['lb'])!='')
+        {
+            $where['维修类别']=trim($_GET['lb']);
+            
+        }
+        if($_GET['bm']&&trim($_GET['bm'])!='')
+        {
+            $where['部门']=array('like','%'.trim($_GET['bm'].'%'));
+            
+        }
+        if($_GET['startdate']&&trim($_GET['startdate'])!='')
+        {
+            $where['时间']=array('egt',trim($_GET['startdate']));
+            
+        }
+        if($_GET['endDate']&&trim($_GET['enddate'])!='')
+        {
+            $where['时间']=array('elt',trim($_GET['endDate']));
+            
+        }
+        if(trim($_GET['startdate'])!=''&&trim($_GET['enddate'])!='')
+        {
+            $where['时间']=array('BETWEEN',array(trim($_GET['startdate']),trim($_GET['enddate'])));
+            
+        }
+        if($_GET['zhuxiu']&&trim($_GET['zhuxiu'])!='')
+        {
+            $where['主修人']=trim($_GET['zhuxiu']);
+            
+        }
+        if(!isset($sortname)){
+            $sortname='时间';
+            $sortorder='desc';
+        }
+        if($searchkey){       
+            $searchwhere['维修类别']=array('like',$searchkey);
+            $searchwhere['主修人']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $personinfo=M('个人业绩表','dbo.','difo')->join('员工目录 on 个人业绩表.主修人=员工目录.姓名')
+            ->where($where)
+            ->order("$sortname  $sortorder")->select();
+        if($personinfo){
+			foreach ($personinfo as $person){
+				$j = 0;
+				foreach ($arr as $field){			
+					$fieldValue = $person[$field['en']];
+                    switch($field['en']){		
+                        case '时间':
+                            $fieldValue =date('Y-m-d',strtotime($person[$field['en']]));
+                            break;
+                    }
+					
+					if ($j<$fieldCount-1){
+						echo iconv('utf-8','gbk',$fieldValue)."\t";
+					}else {
+						echo iconv('utf-8','gbk',$fieldValue)."\n";
+					}
+					$j++;
+				}
+				$i++;
+			}
+            
+		}
+		exit();
+    }
+
     public  function exportcarsinfo(){
 		header("Content-Type: text/html; charset=utf-8");
 		header("Content-type:application/vnd.ms-execl");
-		header("Content-Disposition:filename=车辆数据.xls");
+		header("Content-Disposition:filename=车辆数据_".date('Ymd',time()).".xls");
 		$arr = array(
 			array('en'=>'车牌号码','cn'=>'车牌号码'),
 			array('en'=>'车主','cn'=>'车主'),
@@ -2528,7 +2734,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $this->display();
    }
    public function purchasecheck(){
-     
        if(IS_POST){
            $cgd=$_POST['cgd'];
            $cgmx=M('采购明细','dbo.','difo')->where(array('ID'=>$cgd['ID']))->select();
@@ -2637,7 +2842,31 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        }
 
    }
-   public function deletepurchase(){
+   public function unpurchasecheck(){
+       if(IS_POST){
+           $cgd=$_POST['cgd'];
+           if($cgd['单据类别']=='采购进货'){
+                $crk=M('出入库单','dbo.','difo')->where(array('引用单号'=>$cgd['单据编号']))->find();
+                if($crk&&$crk['当前状态']=='已审核'){
+                    echo '请先将单号为'.$crk['单据编号'].'出入库单反审核';
+                    exit;
+                }
+                $purchase['当前状态']='待审核';
+                M('采购单','dbo.','difo')->where(array('流水号'=>$cgd['流水号']))->save($purchase);
+                $ys=M('应收应付单','dbo.','difo')->where(array('引用ID'=>$cgd['ID']))->find();
+                $dj=M('引用单据','dbo.','difo')->where(array('挂账ID'=>$ys['ID']))->find();
+                M('应收应付单','dbo.','difo')->where(array('ID'=>$ys['ID']))->delete();
+                M('日常收支','dbo.','difo')->where(array('ID'=>$dj['收支ID']))->delete();
+                M('应收应付单','dbo.','difo')->where(array('引用ID'=>$cgd['ID']))->delete();
+                $this->writeLog($cgd['引用ID'],$cgd['引用单号'],'采购反审核','采购反审核');
+                echo '反审核通过';
+                exit;
+           }
+       }
+      
+
+   }
+  public function deletepurchase(){
        if(IS_POST){
            $cgd=$_POST['cgd'];
            if($cgd['引用ID']!=''){
@@ -2722,7 +2951,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        }
 
    }
-    public function unpickcheck(){
+   public function unpickcheck(){
      
        if(IS_POST){
            $crk=$_POST['crk'];
@@ -2779,7 +3008,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        }
 
    }
-  public function deletepick(){
+   public function deletepick(){
        if(IS_POST){
            $crk=$_POST['crk'];
            if($crk['单据类别']=='出库'){
@@ -3716,14 +3945,24 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
    }
    private function sumsaleprice($id){
        $products=M('销售明细','dbo.','difo')->where(array('ID'=>$id))->select();
-       foreach($products as $product){
-           $data['实际货款']+=$product['金额'];
-           $data['合计数量']+=$product['数量'];
-           $data['实际税额']+=$product['税额'];
-           $data['价税合计']=$product['价税合计'];
-           $data['总金额']+=$product['价税合计'];
-           $data['应结金额']+=$product['价税合计'];
-           $data['挂账金额']+=$product['价税合计'];
+       if($products){
+           foreach($products as $product){
+               $data['实际货款']+=$product['金额'];
+               $data['合计数量']+=$product['数量'];
+               $data['实际税额']+=$product['税额'];
+               $data['价税合计']+=$product['金额']+$product['税额'];
+               $data['总金额']+=$product['金额']+$product['税额'];
+               $data['应结金额']+=$product['价税合计'];
+               $data['挂账金额']=$data['总金额'];
+           }
+       }else{
+           $data['实际货款']=0;
+           $data['合计数量']=0;
+           $data['实际税额']=0;
+           $data['价税合计']=0;
+           $data['总金额']=0;
+           $data['应结金额']=0;
+           $data['挂账金额']=0;
        }
        M('销售单','dbo.','difo')->where(array('ID'=>$id))->save($data);
 
@@ -3985,6 +4224,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $paybill['单位名称']=$xsd['客户名称'];
                $paybill['单据类别']='销售出库';
                $paybill['单据编号']=$xsd['单据编号'];
+               $paybill['引用ID']=$xsd['ID'];
                $paybill['制单日期']=date('Y-m-d',time());
                $paybill['制单人']=cookie('username');
                $paybill['总金额']=$xsd['总金额'];
@@ -4074,15 +4314,36 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $this->display();
        }
    }
+   public function unsalebillcheck(){
+       if(IS_POST){
+           $xsd=$_POST['xsd'];
+           if($xsd['单据类别']=='销售出库'){
+               $crk=M('出入库单','dbo.','difo')->where(array('引用单号'=>$xsd['单据编号']))->find();
+               if($crk&&$crk['当前状态']=='已审核'){
+                   echo '请先将单号为'.$crk['单据编号'].'出入库单反审核';
+                   exit;
+               }
+               $data['当前状态']='待审核';
+               M('销售单','dbo.','difo')->where(array('流水号'=>$xsd['流水号']))->save($data);
+               $ys=M('应收应付单','dbo.','difo')->where(array('单据编号'=>$xsd['单据编号']))->find();
+               $dj=M('引用单据','dbo.','difo')->where(array('挂账ID'=>$ys['ID']))->find();
+               M('应收应付单','dbo.','difo')->where(array('ID'=>$ys['ID']))->delete();
+               M('日常收支','dbo.','difo')->where(array('ID'=>$dj['收支ID']))->delete();
+               M('应收应付单','dbo.','difo')->where(array('单据编号'=>$xsd['单据编号']))->delete();
+               $this->writeLog($xsd['引用ID'],$xsd['引用单号'],'销售反审核','销售反审核');
+               echo '反审核通过';
+               exit;
+           }
+        
+       }
+   }
    public function maintenance()
     {  
        if(IS_POST){
            $zhuxiu=$_POST['zhuxiu'];
            $itemid=$_POST['itemid'];
            $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>$zhuxiu))->find();
-
            $wx=M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->find();
-
            M('维修项目','dbo.','difo')->where(array('ID'=>$wx['ID']))->save(array('主修人'=>$zhuxiu,'班组'=>$yg['班组']));
 
            $this->genbill($wx['应收金额'],$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID']);

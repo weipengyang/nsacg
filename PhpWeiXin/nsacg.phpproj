@@ -14662,6 +14662,7 @@
     <Content Include="tpl\Query\Consume_oilchange.html" />
     <Content Include="tpl\Query\Consume_insurance.html" />
     <Content Include="tpl\Query\Consume_personstat.html" />
+    <Content Include="tpl\Query\Consume_modifysaling.html" />
     <Content Include="tpl\Query\Consume_wxtrace.html" />
     <Content Include="tpl\Query\Consume_insurancetrace.html" />
     <Content Include="tpl\Query\Consume_backpick.html" />

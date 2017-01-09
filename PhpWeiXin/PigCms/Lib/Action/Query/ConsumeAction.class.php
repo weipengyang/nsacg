@@ -4243,6 +4243,16 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $this->display();
      }
    }
+   public function modifysaling(){
+      if(IS_POST){
+       $form=$_POST['data'];
+       $id=$_POST['ID'];
+       M('销售单','dbo.','difo')->where(array('ID'=>$id))->save($form);
+       echo '保存成功';
+      }else{
+         $this->display();
+      }
+   }
    public function saling(){
      if(IS_POST){
          //$wxinfo=$_POST['wxinfo'];

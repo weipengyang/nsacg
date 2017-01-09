@@ -150,25 +150,25 @@
         }
         function modifyinfo(data) {
             if (saledialog) {
-                saledialog.setUrl('/index.php?g=Query&m=Consume&a=saling');
+                saledialog.setUrl('/index.php?g=Query&m=Consume&a=modifysaling');
                 saledialog.show();
             }
             else {
                 saledialog = $.ligerDialog.open({
-                    height: 650,
-                    url: '/index.php?g=Query&m=Consume&a=saling',
-                    width: 1000,
+                    height: 350,
+                    url: '/index.php?g=Query&m=Consume&a=modifysaling',
+                    width: 800,
                     showMax: true,
                     showToggle: true,
                     showMin: false,
                     isResize: true,
                     modal: false,
-                    data:data,
+                    data: data,
                     title: '编辑销售单'
                 });
             }
+            saledialog.data = data;
             //saledialog.max();
-
         }
         function uncheck() {
             var row = grid.getSelectedRow();
@@ -261,7 +261,9 @@
                 });
             }
         }
-        function editproduct() { }
+        function editproduct() {
+
+        }
         function format(rowdata, index, value) {
             return todate(value);
         }
@@ -311,7 +313,9 @@
                 url: '/index.php?g=Query&m=Consume&a=getsalebill',
                 height: '50%',
                 onDblClickRow: function (data, rowindex, rowobj) {
-                    modifyinfo(data);
+                    if (data['当前状态'] == '待审核') {
+                        modifyinfo(data);
+                    }
                 },
                 onSelectRow: function (data, rowindex,rowobj) {
                     record = data;

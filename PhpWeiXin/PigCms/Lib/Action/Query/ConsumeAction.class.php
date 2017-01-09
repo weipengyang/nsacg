@@ -871,6 +871,72 @@ class ConsumeAction extends Action{
         echo json_encode($data);
         
     }
+    public  function getoilchange()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='下次保养';
+            $sortorder='asc';
+        }
+        if (isset($_POST['khlb'])&&trim($_POST['khlb'])!=''){
+            $where['客户类别']=$_POST['khlb'];
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        $where['车牌号码']=array('neq','0000');
+        if($_POST['startDate']&&trim($_POST['startDate'])!='')
+        {
+            $where['下次保养']=array('egt',trim($_POST['startDate']));
+            
+        }
+        if($_POST['endDate']&&trim($_POST['endDate'])!='')
+        {
+            $where['下次保养']=array('elt',trim($_POST['endDate']));
+            
+        }
+        if(trim($_POST['startDate'])!=''&&trim($_POST['endDate'])!='')
+        {
+            $where['下次保养']=array('BETWEEN',array(trim($_POST['startDate']),trim($_POST['endDate'])));
+            
+        }
+        $where['_string']="下次保养 is not null and 下次保养<>'1900-01-01'";
+        if($searchkey){       
+            $searchwhere['品牌']=array('like',$searchkey);
+            $searchwhere['轮胎规格']=array('like',$searchkey);
+            $searchwhere['车型']=array('like',$searchkey);
+            $searchwhere['运输证号']=array('like',$searchkey);
+            $searchwhere['车架号']=array('like',$searchkey);
+            $searchwhere['机油格']=array('like',$searchkey);
+            $searchwhere['空气格']=array('like',$searchkey);
+            $searchwhere['冷气格']=array('like',$searchkey);
+            $searchwhere['汽油格']=array('like',$searchkey);
+            $searchwhere['车主']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['客户类别']=array('like',$searchkey);
+            $searchwhere['联系人']=array('like',$searchkey);
+            $searchwhere['服务顾问']=array('like',$searchkey);
+            $searchwhere['联系电话']=array('like',$searchkey);
+            $searchwhere['保险公司']=array('like',$searchkey);
+            $searchwhere['发动机号']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $count=M('车辆资料','dbo.','difo')
+            ->join('left join 维修统计 on 车辆资料.车牌号码=维修统计.车牌')
+            ->where($where)->count();
+        $yelist=M('车辆资料','dbo.','difo')
+            ->join('left join 维修统计 on 车辆资料.车牌号码=维修统计.车牌')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
     public  function getuserconsume()
     {   
         $page=$_POST['page'];
@@ -1221,6 +1287,8 @@ class ConsumeAction extends Action{
 			array('en'=>'交保到期','cn'=>'保险到期'),
 			array('en'=>'保险公司','cn'=>'保险公司'),
 			array('en'=>'年检日期','cn'=>'年检到期'),
+			array('en'=>'下次保养','cn'=>'下次保养'),
+			array('en'=>'最近保养','cn'=>'最近保养'),
             array('en'=>'年份','cn'=>'年份'),
             array('en'=>'品牌','cn'=>'品牌'),
 			array('en'=>'车型','cn'=>'车型'),
@@ -1249,6 +1317,8 @@ class ConsumeAction extends Action{
 
         if($_GET['type']=='1')
             $sortname='交保到期';
+        elseif($_GET['type']=='3')
+            $sortname='下次保养';
         else
             $sortname='年检日期';
         $sortorder='asc';
@@ -1307,10 +1377,11 @@ class ConsumeAction extends Action{
                     switch($field['en']){		
                         case '年检日期':
                         case '交保到期':
+                        case '下次保养':
+                        case '最近保养':
                             $fieldValue =date('Y-m-d',strtotime($car[$field['en']]));
                             break;
                     }
-					
 					if ($j<$fieldCount-1){
 						echo iconv('utf-8','gbk',$fieldValue)."\t";
 					}else {
@@ -1632,6 +1703,22 @@ class ConsumeAction extends Action{
             echo '保存成功';
         }
     }
+   public  function saveoilchangetrace()
+    {
+        if(IS_POST){
+            $type=$_POST['type'];
+            $tracedata=$_POST['tracedata'];
+            if($type&&$type=='add'){
+                unset($tracedata['下次保养']);
+                $tracedata['跟踪时间']=date('Y-m-d H:i',time());
+                $tracedata['类别']='保养';
+                M('客户跟踪','dbo.','difo')->add($tracedata);
+            }else{
+                M('客户跟踪','dbo.','difo')->where(array('流水号'=>$tracedata['流水号']))->save($tracedata);
+            }
+            echo '保存成功';
+        }
+    }
    public function gettraceinfo(){
        $traceinfo=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$_POST['code'],'类别'=>$_POST['type']))->order('跟踪时间 desc')->select();
        $data['Rows']=$traceinfo;
@@ -1675,6 +1762,8 @@ class ConsumeAction extends Action{
         $cangku='塘坑门店仓库';
         if($shop=='区府店')
             $cangku='区府门店仓库';
+        elseif($shop=='主仓库')
+            $cangku='主仓库';
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
             $searchkey='%'.trim($_POST['searchkey']).'%';
         }
@@ -3114,6 +3203,19 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         $this->assign('lblist',$lblist);
         $this->display();
     }
+   public function insurance()
+   {
+       $lblist=M('车辆档案','dbo.','difo')->Distinct(true)->field('客户类别')->order('客户类别')->select();
+       $this->assign('lblist',$lblist);
+       $this->display();
+   }
+   public function oilchange()
+   {
+       $lblist=M('车辆档案','dbo.','difo')->Distinct(true)->field('客户类别')->order('客户类别')->select();
+       $this->assign('lblist',$lblist);
+       $this->display();
+   }
+
    public function userAnalyze()
     {
         $lblist=M('车辆档案','dbo.','difo')->Distinct(true)->field('客户类别')->order('客户类别')->select();
@@ -3406,7 +3508,10 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         if(empty($carinfo))
         {   
             $user=M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->find();
-            if($user['carno1']==""){
+            if($user['carno']==""){
+                M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno'=>$carno));
+            }
+            elseif($user['carno1']==""){
                 M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno1'=>$carno));
             }elseif($user['carno2']==""){
                 M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno2'=>$carno));
@@ -3421,7 +3526,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $item['客户ID']=$czinfo['ID'];
             $item['手机号码']=$user['tel'];
             $item['联系人']=$user['truename'];
-            $item['联系电话']=$user['tel'];
+            $item['联系电话']=$user['tel']; 
             $item['客户类别']=$czinfo['类别'];
             M('车辆档案','dbo.','difo')->add($item);
             echo '添加成功';
@@ -4821,6 +4926,14 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                        $this->weixinmessage($content,$wxinfo['门店']);
                    }
                }
+               if(date('Y-m-d',strtotime($carinfo['下次保养']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['下次保养']))!='1970-01-01'){
+                   if(strtotime($carinfo['下次保养'])-(time()+30*24*3600)<0){
+                       $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
+                       $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已到'.$wxinfo['门店'].'洗车';
+                       $content.=',请做好跟踪服务';
+                       $this->weixinmessage($content,$wxinfo['门店']);
+                   }
+               }
            }
            else{
                $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
@@ -4861,12 +4974,13 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $data['报价金额']=0;
            $data['应收金额']=0; 
            if(strpos($data['车主'], 'AYC') === 0){
-               $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0001'))->find();
-           }elseif($carinfo['客户类别']=='VIP客户'){
-               $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0004'))->find();
+               $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>array('like','%会员券消费%')))->find();
+           }
+           elseif($carinfo['客户类别']=='VIP客户'){
+               $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>array('like','%赠送洗车%')))->find();
            }
            elseif(strpos($carinfo['客户类别'],'定点签约')===0){
-               $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0003'))->find();
+               $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>array('like','%定点洗车%')))->find();
                $xm['标准金额']=$money;
                $data['报价金额']=$money;
                $data['应收金额']=$money;
@@ -4874,10 +4988,10 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $data['挂账金额']=$money;
            }
            elseif($carinfo['客户类别']=='三方合作'){
-               $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0007'))->find();
+               $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>array('like','%第三方平台%')))->find();
            }
            else{
-               $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC0002'))->find();
+               $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>array('like','%蜡水洗车%')))->find();
                $price=35;
                if($wxinfo['门店']=='塘坑店'){
                    $price=30;
@@ -5083,6 +5197,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $sortname='年检日期';
            if($_GET['type']=='1')
                $sortname='交保到期';
+           elseif($_GET['type']=='3')
+               $sortname='下次保养';
            $r=M('车辆资料','dbo.','difo')->execute("update 车辆资料 set $sortname=REPLACE(CONVERT(nvarchar(10),$sortname,120),CONVERT(nvarchar(4),$sortname,120),year(getdate())+1) 
                      where $sortname is not null and $sortname<>'1900-01-01' and $sortname<GETDATE()");
            if($r)
@@ -5097,6 +5213,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
              $sortname='年检日期';
           if($_GET['type']=='1')
               $sortname='交保到期';
+          elseif($_GET['type']=='3')
+              $sortname='下次保养';
           $sortorder='asc';
           $where['车牌号码']=array('neq','0000');
           $where["$sortname"]=array('BETWEEN',array(date('Y-m-d',time()),date('Y-m-d',time()+3600*24*90)));
@@ -5109,6 +5227,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
               $lb='年审';
               if($_GET['type']=='1')
                   $lb='保险';
+              if($_GET['type']=='3')
+                  $lb='保养';
               $trace=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y'),'跟踪类型'=>'模板信息','类别'=>"$lb"))->find();
               if(!$trace){
                   $card=M('Member_card_create')->where(array('token'=>$this->token,'number'=>$carinfo['车主']))->find();
@@ -5116,7 +5236,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                   if($lb=='年审'){
                       $dataKey    = 'OPENTM206161737';
                       $dataArr    = array(
-                          'first'         => '尊敬的['.$user['carno'].']车主您好，您的车辆年检即将到期。',
+                          'first'         => '尊敬的['.$carinfo['车牌号码'].']车主您好，您的车辆年检即将到期。',
                           'keyword1'      =>$carinfo['车牌号码'],
                           'keyword2'      =>date('Y-m-d',strtotime($carinfo['年检日期'])),
                           'wecha_id'      => $card['wecha_id'],
@@ -5133,6 +5253,28 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                       $data['年份']=date('Y');
                       $data['内容']='系统发送年审到期模板信息';
                       M('客户跟踪','dbo.','difo')->add($data);
+                  }
+                  elseif($lb=='保养'){
+                   $dataKey    = 'TM151215';
+                   $dataArr    = array(
+                       'first'         => '尊敬的车主您好，您车牌为'.$carinfo['车牌号码'].'的汽车保养已到期。',
+                       'keynote1'      =>date('Y-m-d',strtotime($carinfo['下次保养'])),//保养到期时间
+                       'keynote2'      =>date('Y-m-d',strtotime($carinfo['最近保养'])),//上次保养时间
+                       'keynote3'      => $carinfo['保养里程'].'公里',//上次保养里程
+                       'wecha_id'      => $_GET['wecha_id'],
+                       'remark'        => '回复字母N可预约,或致电020-39099139进行电话预约。',
+                       'url'      => U('Wap/Store/cats',array('token'=>$this->token,'wecha_id'=>$user['wecha_id']),true,false,true),
+                   );
+                   $model->sendTempMsg($dataKey,$dataArr);
+                   $data['车主']=$carinfo['车主'];
+                   $data['车牌号码']=$carinfo['车牌号码'];
+                   $data['跟踪时间']=date('Y-m-d H:i',time());
+                   $data['跟踪人']='系统';
+                   $data['跟踪类型']='模板信息';
+                   $data['类别']='保养';
+                   $data['年份']=date('Y');
+                   $data['内容']='系统发送保养到期模板信息';
+                   M('客户跟踪','dbo.','difo')->add($data);
                   }
                   else{
                       $dataKey    = 'TM151126';
@@ -5175,7 +5317,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $user=M('userinfo')->where(array('token'=>$this->token,'wecha_id'=>$card['wecha_id']))->find();
            $carinfo =M('车辆资料','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
            switch($_GET['type']){
-               case '3'://维修服务完成
+               case '4'://维修服务完成
                    $dataKey    = 'TM151213';
                    $wxinfo=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno))->order('流水号 desc')->find();
                    $dataArr    = array(
@@ -5213,7 +5355,19 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                        'url'           => U('Wap/Store/daiban',array('token'=>$this->token,'carno'=>$carinfo['车牌号码'],'type'=>'年审','number'=>$carinfo['车主']),true,false,true)
                    );
                    break;
-               case '4':
+               case '3':
+                   $dataKey    = 'TM151215';
+                   $dataArr    = array(
+                       'first'         => '尊敬的车主您好，您车牌为'.$carno.'的汽车保养已到期。',
+                       'keynote1'      =>date('Y-m-d',strtotime($carinfo['下次保养'])),//保养到期时间
+                       'keynote2'      =>date('Y-m-d',strtotime($carinfo['最近保养'])),//上次保养时间
+                       'keynote3'      => $carinfo['保养里程'].'公里',//上次保养里程
+                       'wecha_id'      => $user['wecha_id'],
+                       'remark'        => '回复字母N可预约,或致电020-39099139进行电话预约。',
+                       'url'      => U('Wap/Store/cats',array('token'=>$this->token,'wecha_id'=>$user['wecha_id'],'cardid'=>$cardid),true,false,true),
+                   );
+                   break;
+               case '5':
                    $dataKey    = 'TM160112';
                    $dataArr    = array(
                        'first'         => '尊敬的['.$user['carno'].']白金卡会员您好，您参加的白金会员卡洗车活动有重大的变更，请注意我们的会员通知。',
@@ -5225,17 +5379,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                    );
                    break;
                default://保养通知
-                   $dataKey    = 'TM151215';
-                   $dataArr    = array(
-                       'first'         => '尊敬的车主您好，您车牌为'.$user['carno'].'的汽车保养已到期。',
-                       'keynote1'      =>date('Y-m-d',strtotime($carinfo['下次保养'])),//保养到期时间
-                       'keynote2'      =>date('Y-m-d',strtotime($carinfo['最近保养'])),//上次保养时间
-                       'keynote3'      => $carinfo['保养里程'].'公里',//上次保养里程
-                       'wecha_id'      => $_GET['wecha_id'],
-                       'remark'        => '如有需要，致电020-39099139联系我们,或发消息到微信平台上进行咨询。',
-                       'url'      => U('Wap/Store/cats',array('token'=>$this->token,'wecha_id'=>$_GET['wecha_id'],'cardid'=>$cardid),true,false,true),
-                   );
-                   break;
+                   break; 
 
            }
            $model->sendTempMsg($dataKey,$dataArr);
@@ -5250,6 +5394,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            if($_GET['type']=='1'){
                $data['类别']='保险';
                $data['内容']='系统发送保险到期模板信息';
+           }elseif($_GET['type']=='3'){
+               $data['类别']='保养';
+               $data['内容']='系统发送保养到期模板信息';
            }
            M('客户跟踪','dbo.','difo')->add($data);
            echo "发送成功";
@@ -5378,6 +5525,14 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 if(strtotime($carinfo['年检日期'])-(time()+90*24*3600)<0){
                     $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
                     $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$yg['部门'].$wxlb;
+                    $content.=',请做好跟踪服务';
+                    $this->weixinmessage($content,$yg['部门']);
+                }
+            }
+            if(date('Y-m-d',strtotime($carinfo['下次保养']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['下次保养']))!='1970-01-01'){
+                if(strtotime($carinfo['下次保养'])-(time()+30*24*3600)<0){
+                    $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
+                    $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已进厂'.$yg['部门'].$wxlb;
                     $content.=',请做好跟踪服务';
                     $this->weixinmessage($content,$yg['部门']);
                 }

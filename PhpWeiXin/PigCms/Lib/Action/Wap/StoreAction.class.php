@@ -496,10 +496,10 @@ private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',
             $row=array();
             //$row['ID']=$wxrecord['ID'];
             if($price==0){
-                    $row['项目编号']='AYC0001';
-                    $row['项目名称']='会员券消费';
-                    
-                }
+                $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>array('like','%会员券消费%')))->find();
+                $row['项目编号']=$xm['项目编号'];
+                $row['项目名称']=$xm['项目名称'];
+            }
             else{
                 $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>$type))->find();
                 $row['项目编号']=$xm['项目编号'];
@@ -562,8 +562,9 @@ private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',
             $row['ID']=$data['ID'];
             if($price==0)
             {
-                $row['项目编号']='AYC0001';
-                $row['项目名称']='会员券消费';
+                $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>array('like','%会员券消费%')))->find();
+                $row['项目编号']=$xm['项目编号'];
+                $row['项目名称']=$xm['项目名称'];
                 
             }else{
                 $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>$type))->find();
@@ -596,6 +597,14 @@ private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',
                 if(strtotime($carinfo['年检日期'])-(time()+90*24*3600)<0){
                     $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
                     $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已到'.$shop.$wxlb;
+                    $content.=',请做好跟踪服务';
+                    $this->weixinmessage($content,$shop);
+                }
+            }
+            if(date('Y-m-d',strtotime($carinfo['下次保养']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['下次保养']))!='1970-01-01'){
+                if(strtotime($carinfo['下次保养'])-(time()+30*24*3600)<0){
+                    $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
+                    $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已到'.$shop.$wxlb;
                     $content.=',请做好跟踪服务';
                     $this->weixinmessage($content,$shop);
                 }

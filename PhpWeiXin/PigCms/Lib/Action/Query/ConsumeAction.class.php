@@ -1650,6 +1650,11 @@ class ConsumeAction extends Action{
             if($type&&$type=='add'){
                $stockinfo['号码']=$this->genproductnum($stockinfo['类别']);
                M('配件目录','dbo.','difo')->add($stockinfo);
+               $cklist=M('仓库目录','dbo.','difo')->select();
+               foreach($cklist as $ck){
+                   M('配件仓位','dbo.','difo')->add(array('仓库'=>$ck['名称'],'编号'=>$stockinfo['编号']));
+               }
+
             }else{
                 M('配件目录','dbo.','difo')->where(array('编号'=>$stockinfo['编号']))->save($stockinfo);
             }

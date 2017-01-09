@@ -82,6 +82,9 @@
             dialog = frameElement.dialog;
             var data = dialog.get('data');
             $("input[ligeruiid='类别']").val(data['type']);
+            $("input[ligeruiid='适用车型']").val('专车专用');
+            $("input[ligeruiid='规格']").val('原厂配套');
+
             if (getQueryString('code')) {
                 $.post('index.php?g=Query&m=Consume&a=getstock&code=' + getQueryString('code'), null,
                 function (data) {

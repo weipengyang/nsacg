@@ -107,21 +107,6 @@
                 $.ligerDialog.alert('请选择要打印的单');
             }
         }
-
-        function wxinfo(xh) {
-           var wxdialog= $.ligerDialog.open({
-                height: 540,
-                url: '/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh,
-                width: 950,
-                showMax: true,
-                showToggle: true,
-                showMin: true,
-                isResize: true,
-                modal: false,
-                title: '车辆维修详细信息'
-           });
-           wxdialog.max();
-        }
         function viewcarinfo(carno) {
             if (cardialog) {
                 cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
@@ -162,6 +147,28 @@
             }
             //saledialog.max();
            
+        }
+        function modifyinfo(data) {
+            if (saledialog) {
+                saledialog.setUrl('/index.php?g=Query&m=Consume&a=saling');
+                saledialog.show();
+            }
+            else {
+                saledialog = $.ligerDialog.open({
+                    height: 650,
+                    url: '/index.php?g=Query&m=Consume&a=saling',
+                    width: 1000,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    data:data,
+                    title: '编辑销售单'
+                });
+            }
+            //saledialog.max();
+
         }
         function uncheck() {
             var row = grid.getSelectedRow();
@@ -304,7 +311,7 @@
                 url: '/index.php?g=Query&m=Consume&a=getsalebill',
                 height: '50%',
                 onDblClickRow: function (data, rowindex, rowobj) {
-                    wxinfo(data['流水号']);
+                    modifyinfo(data);
                 },
                 onSelectRow: function (data, rowindex,rowobj) {
                     record = data;

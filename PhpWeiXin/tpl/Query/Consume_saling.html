@@ -14,10 +14,6 @@
     <script type="text/javascript">
         var form, product;
         var editproductdialog, addproductdialog;
-        var data = [
-               { id: '塘坑店', name: '塘坑店' },
-               { id: '区府店', name: '区府店' },
-        ];
         function reflash() {
             var rows = product.rows;
             var num = price = fax = 0;
@@ -105,9 +101,9 @@
                 fields: [
                     {
                         display: "门店", name: "门店", newline: false, type: "combobox", comboboxName: 'mendian', options: {
-                            valueField: 'name',
-                            textField: 'name',
-                            data: data,
+                            valueField: '名称',
+                            textField: '名称',
+                            url: '/index.php?g=Query&m=Consume&a=getshoplist',
                         }
 
                     },

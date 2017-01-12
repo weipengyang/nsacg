@@ -149,65 +149,9 @@
                   $(this).datepicker('close');
               });
             $('#search').click(function () {
-                var yjml = $('#yjml').val();
-                var ejml = $('#ejml').val();
-                var sjml = $('#sjml').val();
-                var lb = '';
-                if (yjml != '')
-                {
-                    lb = yjml;
-                }
-                if (ejml != '') {
-                    lb += '>>' + ejml;
-                }
-                if (sjml != '') {
-                    lb += '>>' + sjml;
-                }
-                var url = '/index.php?g=Query&m=Consume&a=products&searchkey=' + $('#searchkey').val() + "&lb="+lb;
+                var url = '/index.php?g=Query&m=Consume&a=month&searchkey=' + $('#searchkey').val();
                 location.href = url;
             });
-            $("#yjml").change(function () {
-                var code=$('#yjml').val();
-                var submitData = {
-                    code: code
-                };
-                if (code != '') {
-                    $.post('index.php?g=Query&m=Consume&a=products', submitData,
-                     function (data) {
-                         if (data) {
-                             $('#ejml').empty();
-                             $('#ejml').append("<option value=''>请选择</option>");
-                             $('#sjml').empty();
-                             $('#sjml').append("<option value=''>请选择</option>");
-                             $(data).each(function () {
-                                 var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
-                                 $('#ejml').append(option);
-                             });
-
-                         }
-                     }, 'JSON');
-                }
-            });
-            $("#ejml").change(function () {
-                var code=$('#ejml').val();
-                var submitData = {
-                    code: code
-                };
-                if (code != '') {
-                    $.post('index.php?g=Query&m=Consume&a=products', submitData,
-                     function (data) {
-                         if (data) {
-                             $('#sjml').empty();
-                             $('#sjml').append("<option value=''>请选择</option>");
-                             $(data).each(function () {
-                                 var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
-                                 $('#sjml').append(option);
-                             });
-                         }
-                     }, 'JSON');
-                }
-            });
-        
 
         });
         //reflash();

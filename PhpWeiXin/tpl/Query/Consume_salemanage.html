@@ -81,7 +81,7 @@
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         var  grid, product = null;
-        var wxdialog, cardialog, caldialog, saledialog, printdialog;
+        var wxdialog, cardialog, caldialog, saledialog, printdialog,modifydialog;
         var record;
         function printbill() {
             var row = grid.getSelectedRow();
@@ -149,12 +149,12 @@
            
         }
         function modifyinfo(data) {
-            if (saledialog) {
-                saledialog.setUrl('/index.php?g=Query&m=Consume&a=modifysaling');
-                saledialog.show();
+            if (modifydialog) {
+                modifydialog.setUrl('/index.php?g=Query&m=Consume&a=modifysaling');
+                modifydialog.show();
             }
             else {
-                saledialog = $.ligerDialog.open({
+                modifydialog = $.ligerDialog.open({
                     height: 350,
                     url: '/index.php?g=Query&m=Consume&a=modifysaling',
                     width: 800,
@@ -167,7 +167,7 @@
                     title: '编辑销售单'
                 });
             }
-            saledialog.data = data;
+            modifydialog.data = data;
             //saledialog.max();
         }
         function uncheck() {
@@ -262,7 +262,27 @@
             }
         }
         function editproduct() {
-
+            var row = product.getSelectedRow();
+            if (row) {
+                if (row['当前状态'] == '已审核') {
+                    $.ligerDialog.alert('已审核不能再添加产品');
+                    return;
+                }
+                $.ligerDialog.open({
+                    height: 600,
+                    url: 'index.php?&g=Query&m=Consume&a=addsaleproduct&type=sale&itemID=' + row['流水号'] + '&ID=' + row['ID'] + "&shop=" + row['门店'],
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: true,
+                    title: '增加销售商品'
+                });
+            }
+            else {
+                alert('选择修改记录');
+            }
         }
         function format(rowdata, index, value) {
             return todate(value);

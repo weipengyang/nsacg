@@ -347,7 +347,7 @@ class ConsumeAction extends Action{
          }
          if($_POST['bm']&&trim($_POST['bm'])!='')
          {
-             $where['部门']=array('like','%'.trim($_POST['bm'].'%'));
+             $where['门店']=array('like','%'.trim($_POST['bm'].'%'));
              
          }
          if($_POST['startdate']&&trim($_POST['startdate'])!='')
@@ -903,7 +903,7 @@ class ConsumeAction extends Action{
             $where['下次保养']=array('BETWEEN',array(trim($_POST['startDate']),trim($_POST['endDate'])));
             
         }
-        $where['_string']="下次保养 is not null and 下次保养<>'1900-01-01'";
+        $where['_string']="下次保养 is not null and 下次保养<>'1900-01-01' and 下次保养>DATEADD(DAY,-60,getdate())";
         if($searchkey){       
             $searchwhere['品牌']=array('like',$searchkey);
             $searchwhere['轮胎规格']=array('like',$searchkey);
@@ -3591,7 +3591,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno'=>''));
         }
         M('member_card_car')->where(array('wecha_id'=>$wecha_id,'carno'=>$carno))->delete();
-        M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->delete();
+        //M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->delete();
         echo '删除成功';
         exit();
        

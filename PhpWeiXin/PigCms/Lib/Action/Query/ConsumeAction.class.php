@@ -330,6 +330,123 @@ class ConsumeAction extends Action{
         echo json_encode($data);
     
     }
+    public function getfwgwwork()
+    {
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        $where['1']=1;
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($_POST['lb']&&trim($_POST['lb'])!='')
+        {
+            $where['维修类别']=trim($_POST['lb']);
+            
+        }
+        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        {
+            $where['日期']=array('egt',trim($_POST['startdate']));
+            
+        }
+        if($_POST['enddate']&&trim($_POST['enddate'])!='')
+        {
+            $where['日期']=array('elt',trim($_POST['enddate']));
+            
+        }
+        if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
+        {
+            $where['日期']=array('BETWEEN',array(trim($_POST['startdate']),trim($_POST['enddate'])));
+            
+        }
+        if($_POST['fwgw']&&trim($_POST['fwgw'])!='')
+        {
+            $where['接车人']=trim($_POST['fwgw']);
+            
+        }
+        if($searchkey){       
+            $searchwhere['维修类别']=array('like',$searchkey);
+            $searchwhere['接车人']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        if(!isset($sortname)){
+            $sortname='日期';
+            $sortorder='desc';
+        }
+        $count=M('服务顾问业绩表','dbo.','difo')->join('员工目录 on 服务顾问业绩表.接车人=员工目录.姓名')->where($where)->count();
+        $yelist=M('服务顾问业绩表','dbo.','difo')->join('员工目录 on 服务顾问业绩表.接车人=员工目录.姓名')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $total=M('服务顾问业绩表','dbo.','difo')->join('员工目录 on 服务顾问业绩表.接车人=员工目录.姓名')
+            ->where($where)
+            ->field("sum(服务车辆数) 服务车辆数,sum(工时费) 工时,sum(产值) 产值,sum(毛利) 毛利")
+            ->find();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        $data['sumdata']=$total;
+        echo json_encode($data);
+    }
+    public function getpurchasework()
+    {
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        $where['1']=1;
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($_POST['lb']&&trim($_POST['lb'])!='')
+        {
+            $where['维修类别']=trim($_POST['lb']);
+            
+        }
+        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        {
+            $where['日期']=array('egt',trim($_POST['startdate']));
+            
+        }
+        if($_POST['enddate']&&trim($_POST['enddate'])!='')
+        {
+            $where['日期']=array('elt',trim($_POST['enddate']));
+            
+        }
+        if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
+        {
+            $where['日期']=array('BETWEEN',array(trim($_POST['startdate']),trim($_POST['enddate'])));
+            
+        }
+        if($_POST['fwgw']&&trim($_POST['fwgw'])!='')
+        {
+            $where['制单人']=trim($_POST['fwgw']);
+            
+        }
+        if($searchkey){       
+            $searchwhere['维修类别']=array('like',$searchkey);
+            $searchwhere['制单人']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        if(!isset($sortname)){
+            $sortname='日期';
+            $sortorder='desc';
+        }
+        $count=M('采购录单业绩表','dbo.','difo')->where($where)->count();
+        $yelist=M('采购录单业绩表','dbo.','difo')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $total=M('采购录单业绩表','dbo.','difo')
+            ->where($where)
+            ->field("sum(服务车辆数) 服务车辆数,sum(工时费) 工时,sum(产值) 产值,sum(毛利) 毛利")
+            ->find();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        $data['sumdata']=$total;
+        echo json_encode($data);
+    }
+
     public  function getpersonwork()
     {   
         $page=$_POST['page'];
@@ -1880,6 +1997,12 @@ class ConsumeAction extends Action{
         echo json_encode($zxlist);
     
    }
+    public  function getzdr(){
+        
+        $zxlist=M('用户管理','dbo.','difo')->where(array('姓名'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($zxlist);
+        
+    }
     public  function getywy(){
         
         $zxlist=M('员工目录','dbo.','difo')->where(array('业务员'=>'1','姓名'=>array('like','%'.$_POST['key'].'%')))->select();

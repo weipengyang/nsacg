@@ -4061,6 +4061,51 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $this->display();
        }
    }
+   public function selfpick(){
+     if(IS_POST){
+         $form=$_POST['data'];
+         $products=$_POST['products'];
+         $data['ID']=$this->getcode(20,1,1);
+         $data['引用类别']='自用出库';
+         $data['单据编号']=$this->getcodenum('CK');
+         $data['制单日期']=date('Y-m-d',time());
+         $data['制单人']=cookie('username');
+         $data['当前状态']='待审核';
+         $data['原因']=$form['原因'];
+         $data['领料员']=$form['业务员'];
+         $data['单据类别']='出库';
+         $data['单据备注']=$form['备注'];
+        if($form['备注']==''){ 
+            $data['单据备注']='自用';
+        }
+        if($form['原因']==''){ 
+            $data['原因']='自用出库';
+        }
+        M('出入库单','dbo.','difo')->add($data);
+        foreach($products as $product){
+            $crk['ID']=$data['ID'];
+            $crk['仓库']=$product['仓库'];
+            $crk['编号']=$product['编号'];
+            $crk['名称']=$product['名称'];
+            $crk['规格']=$product['规格'];
+            $crk['单位']=$product['单位'];
+            $crk['数量']=$product['本次领料'];
+            $crk['单价']=$product['单价'];
+            $crk['金额']=$product['金额'];
+            $crk['成本价']=$product['成本价'];
+            $crk['适用车型']=$product['适用车型'];
+            $crk['产地']=$product['产地'];
+            $crk['备注']=$product['备注'];
+            M('出入库明细','dbo.','difo')->add($crk);
+           
+        }
+        echo '自用出库成功';
+    }
+     else{ 
+
+         $this->display();
+     }
+   }
    public function picking(){
      if(IS_POST){
          $wxinfo=$_POST['wxinfo'];

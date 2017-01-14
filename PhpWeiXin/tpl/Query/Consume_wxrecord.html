@@ -165,11 +165,11 @@
                                     $.ligerDialog.alert('轮胎规格不能为空');
                                     return;
                                 }
-                                if (data['里程表'] == '') {
+                                if (data['里程表'] == '' || parseInt(data['里程表']) <= 0) {
                                     $.ligerDialog.alert('里程数不为空');
                                     return;
                                 }
-                                if (data['油位表'] == '') {
+                                if (data['油位表'] == '' || parseFloat(data['油位表'])<= 0) {
                                     $.ligerDialog.alert('油位表不能为空');
                                     return;
                                 }

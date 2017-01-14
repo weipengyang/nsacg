@@ -277,7 +277,7 @@ class StoreAction extends WapAction{
             if(!empty($car)){
                 if($car['客户类别']=='定点签约'){
                     echo '定点签约用户不能注册';
-                    return;
+                    exit;
                 }
                 $item['车主']=$card['number'];
                 $item['联系人']=$user['truename'];

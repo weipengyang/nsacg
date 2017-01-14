@@ -2285,7 +2285,72 @@ class ConsumeAction extends Action{
         echo json_encode($data);
         
     }
-    public  function getsaledetail()
+    public  function getsaledata()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        if(isset($_POST['shop'])&&$_POST['shop']!='all'){
+            $where['门店']=$_POST['shop'];
+
+        }
+        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        {
+            $where['制单日期']=array('egt',trim($_POST['startdate']));
+            
+        }
+        if($_POST['endDate']&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('elt',trim($_POST['endDate']));
+            
+        }
+        if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('BETWEEN',array(trim($_POST['startdate']),trim($_POST['enddate'])));
+            
+        }
+        if($_POST['zdr']&&trim($_POST['zdr'])!='')
+        {
+            $where['制单人']=trim($_POST['zdr']);
+            
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){       
+            $searchwhere['制单人']=array('like',$searchkey);
+            $searchwhere['业务员']=array('like',$searchkey);
+            $searchwhere['客户名称']=array('like',$searchkey);
+            $searchwhere['名称']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $where['_string']="名称 not like '%充值%' and 当前状态='已审核' and 单据类别='销售出库'";
+        $count=M('销售单','dbo.','difo')
+            ->join('left join 销售明细 on 销售单.ID=销售明细.ID')
+            ->where($where)->count();
+        $yelist=M('销售单','dbo.','difo')
+            ->join('left join 销售明细 on 销售单.ID=销售明细.ID')
+            ->field('销售明细.*,销售单.制单人,销售单.业务员,销售单.客户名称,销售单.制单日期,销售单.单据类别,销售单.当前状态,销售单.单据编号,销售单.收款日期,销售单.结算方式')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)
+            ->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        $TotalData=M('销售单','dbo.','difo')
+             ->join('left join 销售明细 on 销售单.ID=销售明细.ID')
+            ->where($where)
+            ->field('sum(数量*折扣*单价) 总金额')->find();
+        $data['TotalData']=$TotalData;
+        echo json_encode($data);
+        
+    }
+   public  function getsaledetail()
     {   
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
@@ -2400,7 +2465,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
     public  function deletetracefile(){
         
         $user=M('用户管理','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();
-        if($user['权限']=='超级用户'){
+        if($user['权限']=='超级用户'||$user['权限']=='录单采购'){
             $key=$_POST['key'];
             $file='./uploads/rlydsv1453614397/tracefiles/'.$key;
             if(unlink($file)){
@@ -5569,7 +5634,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $data['车主']=$carinfo['车主'];
            $data['车牌号码']=$carinfo['车牌号码'];
            $data['跟踪时间']=date('Y-m-d H:i',time());
-           $data['跟踪人']='系统';
+           $data['跟踪人']=cookie('username');
            $data['跟踪类型']='模板信息';
            $data['年份']=date('Y');
            $data['类别']='年审';
@@ -5580,8 +5645,12 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            }elseif($_GET['type']=='3'){
                $data['类别']='保养';
                $data['内容']='系统发送保养到期模板信息';
+               $trace=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y'),'跟踪类型'=>'模板信息','类别'=>"保养"))->find();
+               if($trace){
+                   M('客户跟踪','dbo.','difo')->add($data);                   
+               }
            }
-           M('客户跟踪','dbo.','difo')->add($data);
+
            echo "发送成功";
            
        }

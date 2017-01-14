@@ -1151,23 +1151,23 @@
                                 }
                             }, icon: 'ad icon iconfont icon-lingliao'
                         },
-                        {
-                            id: 'btntuiliao', text: '退料', click: null, icon: 'ad icon iconfont icon-jianqu', click: function () {
-                                var rows = product.getSelectedRows();
-                                if (rows.length > 0) {
-                                    for (var i = 0; i < rows.length; i++) {
-                                        var count = rows[i]['已领料数量']-rows[i]['已退料数量'];
-                                        if (count <= 0) {
-                                            $.ligerDialog.alert(rows[i]['名称'] + "无需退料");
-                                            return;
-                                        }
-                                    }
-                                    backpick();
-                                } else {
-                                    $.ligerDialog.alert('请选择要退料的配件');
-                                }
-                            }
-                        },
+                        //{
+                        //    id: 'btntuiliao', text: '退料', click: null, icon: 'ad icon iconfont icon-jianqu', click: function () {
+                        //        var rows = product.getSelectedRows();
+                        //        if (rows.length > 0) {
+                        //            for (var i = 0; i < rows.length; i++) {
+                        //                var count = rows[i]['已领料数量']-rows[i]['已退料数量'];
+                        //                if (count <= 0) {
+                        //                    $.ligerDialog.alert(rows[i]['名称'] + "无需退料");
+                        //                    return;
+                        //                }
+                        //            }
+                        //            backpick();
+                        //        } else {
+                        //            $.ligerDialog.alert('请选择要退料的配件');
+                        //        }
+                        //    }
+                        //},
                         {
                             id: 'btncaigou', text: '采购开单', click: function () {
                                 var rows = product.getSelectedRows();

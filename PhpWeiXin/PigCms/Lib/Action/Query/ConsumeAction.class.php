@@ -2421,7 +2421,7 @@ class ConsumeAction extends Action{
         $data['Total']=$count;
         $TotalData=M('车辆保险','dbo.','difo')
             ->where($where)
-            ->field('sum(总金额) 总金额,sum(手续费) 手续费')->find();
+            ->field('sum(总金额) 总金额,sum(手续费) 手续费,sum(商业保费) 商业保费,sum(交强保费) 交强保费')->find();
         $data['TotalData']=$TotalData;
         echo json_encode($data);
         
@@ -4277,7 +4277,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $data['制单人']=cookie('username');
          $data['当前状态']='待审核';
          $data['原因']=$form['原因'];
-         $data['领料员']=$form['业务员'];
+         $data['领料员']=$form['领料员'];
          $data['单据类别']='出库';
          $data['单据备注']=$form['备注'];
         if($form['备注']==''){ 
@@ -4294,7 +4294,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $crk['名称']=$product['名称'];
             $crk['规格']=$product['规格'];
             $crk['单位']=$product['单位'];
-            $crk['数量']=$product['本次领料'];
+            $crk['数量']=$product['数量'];
             $crk['单价']=$product['单价'];
             $crk['金额']=$product['金额'];
             $crk['成本价']=$product['成本价'];

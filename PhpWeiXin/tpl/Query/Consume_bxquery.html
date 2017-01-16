@@ -121,7 +121,9 @@
             return todate(value);
         }
         function f_totalRender(data, currentPageData) {
-            return " 总金额:" + data.TotalData.总金额;
+            return " 总金额:" + data.TotalData.总金额
+                  + "  商业保费:" + data.TotalData.商业保费
+                  + "  交强保费:" + data.TotalData.交强保费;
         }
         $(function () {
             $.post('index.php?g=Query&m=Consume&a=getywy', null,

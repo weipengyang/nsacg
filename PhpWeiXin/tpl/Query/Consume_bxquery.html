@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>销售查询</title>
+    <title>保险查询</title>
     <meta name="description" content="爱养车">
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
@@ -44,13 +44,13 @@
                 <div class="am-g">
                     <div class="am-u-sm-4 am-u-md-4">
                         <div class="am-form-group">
-                            门店
-                            <select id="shop">
-                                <option value="">所有门店</option>
-                            </select>
                             业务员
                             <select id="fwgw">
                                 <option value="">所有人</option>
+                            </select>
+                            保险公司
+                            <select id="bxgs">
+                                <option value="">所有</option>
                             </select>
                         </div>
                     </div>
@@ -94,8 +94,8 @@
     <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
-        var  grid, product = null;
-        var wxdialog, cardialog, caldialog, saledialog, printdialog;
+        var  grid;
+        var cardialog;
         var record;
         function viewcarinfo(carno) {
             if (cardialog) {
@@ -135,14 +135,14 @@
                    });
                }
            }, 'JSON');
-            $.post('index.php?g=Query&m=Consume&a=getshoplist', null,
-           function (data) { 
+            $.post('index.php?g=Query&m=Consume&a=baoxian', null,
+           function (data) {
                if (data) {
-                   $('#shop').empty();
-                   $('#shop').append("<option value='all'>所有门店</option>");
+                   $('#bxgs').empty();
+                   $('#bxgs').append("<option value=''>所有</option>");
                    $(data).each(function () {
                        var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
-                       $('#shop').append(option);
+                       $('#bxgs').append(option);
                    });
                }
            }, 'JSON');
@@ -155,48 +155,67 @@
                 },
                 { display: '制单人', name: '制单人', width: 100, align: 'left' },
                 { display: '业务员', name: '业务员', minWidth: 100 },
-                { display: '客户名称', name: '客户名称', minWidth: 120 },
-                { display: '仓库', name: '仓库', minWidth: 120 },
-                { display: '编号', name: '编号', minWidth: 100 },
-                { display: '名称', name: '名称', minWidth: 140 },
-                { display: '规格', name: '规格', minWidth: 100 },
-                { display: '单位', name: '单位', minWidth: 80 },
-                { display: '数量', name: '数量', minWidth: 60 },
-                { display: '单价', name: '单价', minWidth: 80 },
-                { display: '金额', name: '金额', minWidth: 80 },
-                { display: '折扣', name: '折扣', minWidth: 80 },
-                { display: '结算方式', name: '结算方式', minWidth: 100 },
+                { display: '保险公司', name: '保险公司', minWidth: 120 },
+                { display: '车牌号码', name: '车牌号码', minWidth: 100 },
+                { display: '车主', name: '车主', minWidth: 100 },
+                { display: '驾驶员', name: '驾驶员', minWidth: 140 },
+                { display: '驾驶证号', name: '驾驶证号', minWidth: 100 },
+                { display: '驾驶员电话', name: '驾驶员电话', minWidth: 80 },
+                { display: '被保险人', name: '被保险人', minWidth: 80 },
+                { display: '证件号码', name: '证件号码', minWidth: 80 },
                 {
-                    display: '收款日期', name: '收款日期', minWidth: 100, render: function (rowdata, index, value) {
+                    display: '交强起始', name: '交强起始', minWidth: 100, render: function (rowdata, index, value) {
                         return todate(value, false);
                     }
                 },
-                { display: '税率', name: '税率', minWidth: 80 },
-                { display: '税额', name: '税额', minWidth: 80 },
-                { display: '虚增类别', name: '虚增类别', minWidth: 80 },
-                { display: '虚增金额', name: '虚增金额', minWidth: 80 },
-                { display: '价税合计', name: '价税合计', minWidth: 80 },
+                {
+                    display: '交强截至', name: '交强截至', minWidth: 100, render: function (rowdata, index, value) {
+                        return todate(value, false);
+                    }
+                },
+                {
+                    display: '商业起始', name: '商业起始', minWidth: 100, render: function (rowdata, index, value) {
+                        return todate(value, false);
+                    }
+                },
+                {
+                    display: '商业截至', name: '商业截至', minWidth: 100, render: function (rowdata, index, value) {
+                        return todate(value, false);
+                    }
+                },
+                { display: '交强保费', name: '交强保费', minWidth: 80 },
+                { display: '商业保费', name: '商业保费', minWidth: 80 },
+                { display: '应缴保费', name: '应缴保费', minWidth: 80 },
+                { display: '优惠金额', name: '优惠金额', minWidth: 80 },
+                { display: '结算方式', name: '结算方式', minWidth: 80 },
+                { display: '车船税', name: '车船税', minWidth: 80 },
+                { display: '手续费', name: '手续费', minWidth: 80 },
+                { display: '总金额', name: '总金额', minWidth: 80 },
+               {
+                    display: '缴费日期', name: '缴费日期', minWidth: 100, render: function (rowdata, index, value) {
+                        return todate(value, false);
+                    }
+                },
+                { display: '审核人', name: '审核人', minWidth: 80 },
+                { display: '审核日期', name: '审核日期', minWidth: 80 },
+                { display: '备注', name: '备注', minWidth:100 },
                 ],
                 isScroll: true,
                 pageSize: 20,
                 totalRender: f_totalRender,
-                url: '/index.php?g=Query&m=Consume&a=getsaledata',
-                height: '100%',
+                url: '/index.php?g=Query&m=Consume&a=getbxdata',
+                height: '95%',
             });
-
-            $("#shop").change(function () {
-                $('#search').click();
-            });
+           
             $("#fwgw").change(function () {
                 $('#search').click();
             });
-
+            $("#bxgs").change(function () {
+                $('#search').click();
+            });
             $('#search').click(function () {
                 grid.changePage('first');
                 var parms = {};
-                var shop = $('#shop').val();
-                if (shop != '')
-                    parms.shop = shop;
                 var enddate = $('#enddate').val();
                 if (enddate != '')
                     parms['enddate'] = enddate;
@@ -205,7 +224,10 @@
                     parms['startdate'] = startdate;
                 var fwgw = $('#fwgw').val();
                 if (fwgw != '')
-                    parms['zdr'] = fwgw;
+                    parms['ywy'] = fwgw;
+                var bxgs = $('#bxgs').val();
+                if (bxgs != '')
+                    parms['bxgs'] = bxgs;
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     parms.searchkey = searchkey;

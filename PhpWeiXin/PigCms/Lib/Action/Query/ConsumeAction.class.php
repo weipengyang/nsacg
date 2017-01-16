@@ -1997,6 +1997,12 @@ class ConsumeAction extends Action{
         echo json_encode($zxlist);
     
    }
+    public  function getlly(){
+        
+        $zxlist=M('员工目录','dbo.','difo')->where(array('领料员'=>'1','姓名'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($zxlist);
+        
+    }
     public  function getzdr(){
         
         $zxlist=M('用户管理','dbo.','difo')->where(array('姓名'=>array('like','%'.$_POST['key'].'%')))->select();
@@ -2021,6 +2027,13 @@ class ConsumeAction extends Action{
         echo json_encode($pinpai);
     
    }
+    public  function daiban(){
+        
+        $pinpai=M('往来单位','dbo.','difo')->where(array('车管单位'=>'1','名称'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($pinpai);
+        
+    }
+
     public  function getwxlb(){
          
         $wxlb=M('维修类别','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
@@ -2316,7 +2329,7 @@ class ConsumeAction extends Action{
         }
         if($_POST['zdr']&&trim($_POST['zdr'])!='')
         {
-            $where['制单人']=trim($_POST['zdr']);
+            $where['业务员']=trim($_POST['zdr']);
             
         }
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
@@ -2346,6 +2359,133 @@ class ConsumeAction extends Action{
              ->join('left join 销售明细 on 销售单.ID=销售明细.ID')
             ->where($where)
             ->field('sum(数量*折扣*单价) 总金额')->find();
+        $data['TotalData']=$TotalData;
+        echo json_encode($data);
+        
+    }
+    public  function getbxdata()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        {
+            $where['制单日期']=array('egt',trim($_POST['startdate']));
+            
+        }
+        if($_POST['endDate']&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('elt',trim($_POST['endDate']));
+            
+        }
+        if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('BETWEEN',array(trim($_POST['startdate']),trim($_POST['enddate'])));
+            
+        }
+        if($_POST['ywy']&&trim($_POST['ywy'])!='')
+        {
+            $where['业务员']=trim($_POST['ywy']);
+            
+        }
+        if($_POST['bxgs']&&trim($_POST['bxgs'])!='')
+        {
+            $where['保险公司']=trim($_POST['bxgs']);
+            
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){       
+            $searchwhere['制单人']=array('like',$searchkey);
+            $searchwhere['业务员']=array('like',$searchkey);
+            $searchwhere['保险公司']=array('like',$searchkey);
+            $searchwhere['车主']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        //$where['_string']="名称 not like '%充值%' and 当前状态='已审核' and 单据类别='销售出库'";
+        $count=M('车辆保险','dbo.','difo')
+            ->where($where)->count();
+        $yelist=M('车辆保险','dbo.','difo')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)
+            ->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        $TotalData=M('车辆保险','dbo.','difo')
+            ->where($where)
+            ->field('sum(总金额) 总金额,sum(手续费) 手续费')->find();
+        $data['TotalData']=$TotalData;
+        echo json_encode($data);
+        
+    }
+    public  function getdbdata()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        {
+            $where['制单日期']=array('egt',trim($_POST['startdate']));
+            
+        }
+        if($_POST['endDate']&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('elt',trim($_POST['endDate']));
+            
+        }
+        if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('BETWEEN',array(trim($_POST['startdate']),trim($_POST['enddate'])));
+            
+        }
+        if($_POST['cgdw']&&trim($_POST['cgdw'])!='')
+        {
+            $where['车管单位']=trim($_POST['cgdw']);
+            
+        }
+        if($_POST['ywy']&&trim($_POST['ywy'])!='')
+        {
+            $where['业务员']=trim($_POST['ywy']);
+            
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){       
+            $searchwhere['制单人']=array('like',$searchkey);
+            $searchwhere['业务员']=array('like',$searchkey);
+            $searchwhere['代办类别']=array('like',$searchkey);
+            $searchwhere['车管单位']=array('like',$searchkey);
+            $searchwhere['车主']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        //$where['_string']="名称 not like '%充值%' and 当前状态='已审核' and 单据类别='销售出库'";
+        $count=M('车辆代办','dbo.','difo')
+            ->where($where)->count();
+        $yelist=M('车辆代办','dbo.','difo')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)
+            ->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        $TotalData=M('车辆代办','dbo.','difo')
+            ->where($where)
+            ->field('sum(总金额) 总金额,sum(手续费) 手续费,sum(代办费用) 代办费')->find();
         $data['TotalData']=$TotalData;
         echo json_encode($data);
         
@@ -4290,11 +4430,11 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $products=M('销售明细','dbo.','difo')->where(array('ID'=>$id))->select();
        if($products){
            foreach($products as $product){
-               $data['实际货款']+=$product['金额'];
+               $data['实际货款']+=$product['金额']*$product['折扣'];
                $data['合计数量']+=$product['数量'];
                $data['实际税额']+=$product['税额'];
-               $data['价税合计']+=$product['金额']+$product['税额'];
-               $data['总金额']+=$product['金额']+$product['税额'];
+               $data['价税合计']+=$product['金额']*$product['折扣']+$product['税额'];
+               $data['总金额']+=$product['金额']*$product['折扣']+$product['税额'];
                $data['应结金额']+=$product['价税合计'];
                $data['挂账金额']=$data['总金额'];
            }

@@ -59,7 +59,7 @@
             </td>
         </tr>
         <tr style="height: 30px;"><td style="font-size: 13px;color:#000000">
-                业务编号:{pigcms:$xsrecord['业务编号']}
+                业务编号:{pigcms:$xsrecord['单据编号']}
             </td>
             <td style="font-size: 13px;color:#000000">
                 制单日期:{pigcms:$xsrecord['制单日期']|strtotime|date="Y-m-d",###}
@@ -112,17 +112,20 @@
                 <td style="width: 15%; border: 1px #000000 solid;color:#000000">
                     名称
                 </td>
-                <td style="width: 10%; border: 1px #000000 solid;color:#000000">
+                <td style="width: 8%; border: 1px #000000 solid;color:#000000">
                     规格
                 </td>
-                <td style="width: 10%; border: 1px #000000 solid;color:#000000">
+                <td style="width: 8%; border: 1px #000000 solid;color:#000000">
                     单位
                 </td>
-                <td style="width: 10%; border: 1px #000000 solid;color:#000000;">
+                <td style="width: 8%; border: 1px #000000 solid;color:#000000;">
                     数量
                 </td>
-                <td style="width: 10%; border: 1px #000000 solid;color:#000000;">
+                <td style="width: 8%; border: 1px #000000 solid;color:#000000;">
                     单价
+                </td>
+                <td style="width: 8%; border: 1px #000000 solid;color:#000000;">
+                    折扣
                 </td>
                 <td style="width: 10%; border: 1px #000000 solid;color:#000000;">
                     税率
@@ -140,6 +143,7 @@
                     <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$item['单位']}</td>
                     <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$item['数量']}</td>
                     <td style="text-align:center;color: #000000; border:1px #000000 solid;">￥{pigcms:$item['单价']}</td>
+                    <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$item['折扣']}</td>
                     <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$item['税率']}</td>
                     <td style="text-align:center;color: #000000; border:1px #000000 solid;">￥{pigcms:$item['金额']}</td>
                 </tr>

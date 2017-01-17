@@ -122,6 +122,7 @@
                         row['金额'] = row['数量'] * row['单价'];
                         //row['金额'] = row['数量'] * row['单价'] * row['折扣'];
                         row['税率'] = 0;
+                        row['成本价'] = data['成本价'];
                         row['税额'] = row['金额'] * row['税率'];
                         row['备注'] = data['备注'];
                         form.setData(row);

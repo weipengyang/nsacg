@@ -4487,6 +4487,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $crk['单位']=$product['单位'];
            $crk['数量']=$product['数量'];
            $crk['单价']=$product['单价'];
+           $crk['成本价']=$product['成本价'];
            $crk['金额']=$product['金额'];
            $crk['折扣']=$product['折扣'];
            $crk['税率']=$product['税率'];
@@ -4505,6 +4506,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
    public function savepurchase(){
        $products=$_POST['products'];
        $ID=$_POST['ID'];
+       $cgd=M('采购单','dbo.','difo')->where(array('ID'=>$ID))->find();
        foreach($products as $product){
            $crk['ID']=$ID;
            $crk['仓库']=$product['仓库'];
@@ -4524,6 +4526,13 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $crk['产地']=$product['产地'];
            $crk['备注']=$product['备注'];
            M('采购明细','dbo.','difo')->add($crk);
+           if($cgd['引用单号']!='')
+           {
+               $code=$product['编号'];
+               $price=$product['单价'];
+               $wxID=$cgd['引用ID'];
+               M('维修配件','dbo.','difo')->execute("UPDATE 维修配件 SET 成本价=$price WHERE  编号='$code' and ID='$wxID'");
+           }
        }
        $this->sumpurchaseprice($ID);
        echo '操作成功';
@@ -4603,7 +4612,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 $crk['年份']=$wxinfo['年份'];
                 $code=$crk['编号'];
                 $wxID=$wxinfo['ID'];
-                M('维修配件','dbo.','difo')->execute("UPDATE 维修配件 SET 是否采购=1 WHERE  编号='$code' and ID='$wxID'");
+                $price=$product['金额'];
+                M('维修配件','dbo.','difo')->execute("UPDATE 维修配件 SET 是否采购=1,成本价=$price WHERE  编号='$code' and ID='$wxID'");
             }
             M('采购明细','dbo.','difo')->add($crk);
             //M('配件目录','dbo.','difo')->execute("UPDATE 配件目录 SET 维修领用=维修领用+$num WHERE 编号='$code'");
@@ -4678,6 +4688,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $crk['单位']=$product['单位'];
             $crk['数量']=$product['数量'];
             $crk['单价']=$product['单价'];
+            $crk['成本价']=$product['成本价'];
             $crk['金额']=$product['金额'];
             $crk['折扣']=$product['折扣'];
             $crk['税率']=$product['税率'];
@@ -6244,6 +6255,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        }
        $productprice=0;
        $totalproduct=0;
+       $sumcost=0;
        $products=M('维修配件','dbo.','difo')->where(array('ID'=>$id,'仅内部核算成本'=>'0'))->select();
        if($products){
            foreach($products as $product){
@@ -6254,6 +6266,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                else{
                    $productprice+=$product['金额']*$product['折扣']+$product['税额'];
                    $totalproduct+=$product['金额']+$product['税额'];
+                   $sumcost+=$product['成本价']*$product['数量'];
                }
                
            }
@@ -6263,6 +6276,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $data['报价金额']=$totalprice;
        $data['报价人']=cookie('username');
        $data['材料费']=$productprice;
+       $data['材料成本']=$sumcost;
        $data['工时费']=$projectprice;
        $data['附加费']=$appendprice;
        $data['款项总额']=$totalprice;

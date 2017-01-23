@@ -52,14 +52,42 @@
             return false;
         }
 
-        var cargird;
+        var cargird,cardialog;
+        function viewcarinfo(carno) {
+            if (cardialog) {
+                cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
+                cardialog.show();
+            }
+            else {
+                cardialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: true,
+                    title: '车辆信息编辑'
+                });
+                cardialog.max();
+            }
+        }
+
         $(document).ready(function () {
             cargird = $("#maingrid4").ligerGrid({
                 columns: [
                         { display: '单据编号', name: '单据编号', minWidth: 120},
                         { display: '仓库', name: '仓库', minWidth: 60, },
                         { display: '客户名称', name: '客户名称', minWidth: 60, },
-                        { display: '原因', name: '原因', minWidth: 60 },
+                        {
+                            display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
+
+                            return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                        }
+                        },
+                       { display: '原因', name: '原因', minWidth: 60 },
                         { display: '规格', name: '规格', minWidth: 60 },
                         { display: '单位', name: '单位', width: 50 },
                         { display: '数量', name: '数量', width: 50 },

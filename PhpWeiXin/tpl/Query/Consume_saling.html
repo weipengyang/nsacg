@@ -22,7 +22,6 @@
                 price += parseFloat(this['金额'] * this['折扣']);
                 fax += parseFloat(this['税额']);
             });
-
             var yf = parseFloat($("input[ligeruiid='运费']").val());
             $("input[ligeruiid='合计数量']").val(num);
             $("input[ligeruiid='实际货款']").val(price);

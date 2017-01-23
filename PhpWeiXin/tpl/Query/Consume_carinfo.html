@@ -67,7 +67,7 @@
                             title: '基本信息',
                             fields: [
                                 { display: "流水号", name: "流水号", newline: true, type: "hidden", group: '车辆信息'},
-                                { display: "车牌号码", name: "车牌号码", newline: true, type: "text", group: '车辆信息' },
+                                { display: "车牌号码", name: "车牌号码", newline: false, type: "text", group: '车辆信息' },
                                {
                                     display: "品牌", name: "品牌", newline: false, type: "combobox",
                                     options: {
@@ -87,7 +87,8 @@
                                     }, group: '车辆信息'
 
                                 },
-                                { display: "车辆类型", name: "车辆类别", newline: true, type: "combobox",
+                                {
+                                    display: "车辆类型", name: "车辆类别", newline: false, type: "combobox",
                                     options: {
                                         valueField: '类别',
                                         textField: '类别',
@@ -97,16 +98,16 @@
                                 },
                                 { display: "年份 ", name: "年份", newline: false, type: "text", group: '车辆信息' },
                                 { display: "排量", name: "排量", newline: false, type: "text", group: '车辆信息' },
-                                { display: "车架号", name: "车架号", newline: true, type: "text", group: '车辆信息' },
+                                { display: "车架号", name: "车架号", newline: false, type: "text", group: '车辆信息' },
                                 { display: "轮胎规格", name: "轮胎规格", newline: false, type: "text", group: '车辆信息' },
                                 { display: "品牌花纹", name: "品牌花纹", newline: false, type: "text", group: '车辆信息' },
-                                { display: "机油格", name: "机油格", newline: true, type: "text", group: '车辆信息' },
+                                { display: "机油格", name: "机油格", newline: false, type: "text", group: '车辆信息' },
                                 { display: "空气格", name: "空气格", newline: false, type: "text", group: '车辆信息' },
                                 { display: "冷气格", name: "冷气格", newline: false, type: "text", group: '车辆信息' },
                                 { display: "发动机号", name: "发动机号", newline: true, type: "text", group: '车辆信息' },
                                 { display: "前皮", name:"前皮", newline: false, type: "text", group: '车辆信息' },
                                 { display: "后皮", name:"后皮", newline: false, type: "text", group: '车辆信息' },
-                                { display: "发动机型号", name: "发动机型号", newline: true, type: "text", group: '车辆信息' },
+                                { display: "发动机型号", name: "发动机型号", newline: false, type: "text", group: '车辆信息' },
                                 { display: "电池", name: "电池", newline: false, type: "text", group: '车辆信息'},
                                 //{ display: "生产日期 ", name: "生产日期", newline: false, type: "date", group: '车辆信息' },
                                 //{ display: "购买日期 ", name: "购买日期", newline: false, type: "date", group: '车辆信息' },
@@ -119,7 +120,7 @@
                                     }, group: '车辆信息'
                                 },
                                {
-                                    display: "车主", name: "车主", newline: true, type: "popup", options: {
+                                   display: "车主", name: "车主", newline: false, type: "popup", options: {
                                         condition: {
                                             prefixID: 'condtion_',
                                             fields: [{ name: 'searchkey', type: 'text', width: 120, label: '客户信息', labelWidth: 90 }]
@@ -151,7 +152,7 @@
 
                                 },
                                 { display: "联系人", name: "联系人", newline: false, type: "text", group: '车主信息' },
-                                { display: "联系电话", name: "联系电话", newline: true, type: "text", group: '车主信息' },
+                                { display: "联系电话", name: "联系电话", newline: false, type: "text", group: '车主信息' },
                                 { display: "手机号", name: "手机号码", newline: false, type: "text", group: '车主信息' },
                                 {
                                     display: "保险客户", name: "保险客户", newline: false, type: "combobox", options: {
@@ -159,8 +160,8 @@
                                     textField: 'name',
                                     data:data
                                 }, group: '车主信息' },
-                                { display: "地址", name: "地址", newline: true,width:430, type: "text", group: '车主信息' },
-                                { display: "驾驶员", name: "驾驶员", newline: true, type: "text", group: '驾驶证信息' },
+                                { display: "地址", name: "地址", newline: false, width: 430, type: "text", group: '车主信息' },
+                                { display: "驾驶员", name: "驾驶员", newline: false, type: "text", group: '驾驶证信息' },
                                 {
                                     display: "出生日期", name: "出生日期", newline: false, type: "date", group: '驾驶证信息',
                                     options: {
@@ -168,13 +169,14 @@
                                     }
                                 },
                                 { display: "驾驶员电话", name: "驾驶员电话", newline: false, type: "text", group: '驾驶证信息' },
-                                { display: "驾驶证号", name: "驾驶证号", newline: true, type: "text", group: '驾驶证信息' },
+                                { display: "驾驶证号", name: "驾驶证号", newline: false, type: "text", group: '驾驶证信息' },
                                 { display: "准驾车型", name: "准驾车型", newline: false, type: "text", group: '驾驶证信息' },
                                 { display: "档案编号", name: "档案编号", newline: false, type: "text", group: '驾驶证信息' },
-                                { display: "注册日期 ", name: "上牌日期", newline: true, type: "date", group: '行驶证信息' },
+                                { display: "注册日期 ", name: "上牌日期", newline: false, type: "date", group: '行驶证信息' },
                                 { display: "领证日期 ", name: "领证日期", newline: false, type: "date", group: '行驶证信息' },
                                 { display: "年检日期 ", name: "年检日期", newline: false, type: "date", group: '行驶证信息' },
-                                { display: "保险公司 ", name: "保险公司", newline: true, type: "combobox",
+                                {
+                                    display: "保险公司 ", name: "保险公司", newline: false, type: "combobox",
                                     options: {
                                         valueField: '名称',
                                         textField: '名称',
@@ -183,13 +185,15 @@
                                     }, group: '保险信息' },
                                 { display: "交保到期 ", name: "交保到期", newline: false, type: "date", group: '保险信息' },
                                 { display: "商保到期 ", name: "商保到期", newline: false, type: "date", group: '保险信息' },
-                                { display: "最近维修 ", name: "最近维修", newline: true, type: "date", group: '维修保养' },
-                                { display: "最近保养 ", name: "最近保养", newline: false, type: "date", group: '维修保养',format:"yyyy-mm-dd" },
-                                { display: "保养里程 ", name: "保养里程", newline: false, type: "digits", group: '维修保养' },
-                                { display: "常规保养数 ", name: "常规保养数", newline: true, type: "text", group: '维修保养' },
+                                { display: "最新里程", name: "里程", newline: false, readonly: true, type: "text", group: '维修保养' },
+                                { display: "最近维修 ", name: "最近维修", newline: false, type: "date", readonly: true, group: '维修保养' },
+                                { display: "最近保养 ", name: "最近保养", newline: false, type: "date", readonly: true, group: '维修保养' },
+                                { display: "保养里程 ", name: "保养里程", newline: false, type: "text", group: '维修保养' },
+                                { display: "保养周期", name: "保养周期", newline: false, type: "text", group:'维修保养' },
+                                { display: "常规保养数 ", name: "常规保养数", newline: false, type: "text", group: '维修保养' },
                                 { display: "下次保养日期 ", name: "下次保养", newline: false, type: "date", group: '维修保养' },
                                 { display: "下次保养里程 ", name: "下次保养里程", newline: false, type: "text", group: '维修保养' },
-                                { display: "备注 ", name: "备注", newline: true, width: 470, type: "textarea", group: '维修保养' },
+                                { display: "备注 ", name: "备注", newline: false, width: 470, type: "textarea", group: '维修保养' },
 
                             ]
 

@@ -28,8 +28,8 @@
             var data = form.getData();
             var selected = haveproduct.getSelected();
             if (!selected) { $.ligerDialog.alert('请选择行'); return; }
-            data['金额'] = data['数量'] * data['单价'];
-            //data['金额'] = data['数量'] * data['单价'] * data['折扣'];
+            //data['金额'] = data['数量'] * data['单价'];
+            data['金额'] = data['数量'] * data['单价'] * data['折扣'];
             data['税额'] = data['金额'] * data['税率'];
             haveproduct.updateRow(selected, data);
         }

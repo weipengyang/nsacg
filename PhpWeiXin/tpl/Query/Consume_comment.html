@@ -127,6 +127,16 @@
                 });
             }
         }
+        function f_totalRender(data, currentPageData) {
+            return " 入场台次:" + data.wxCount
+                + "  会员入场台次:" + data.hyCount
+                + "  评价台次:" + data.Total
+                + "  会员入场比:" + (data.hyCount / data.wxCount * 100).toFixed(2) + "%"
+                + "  会员评价率:" + (data.Total / data.hyCount * 100).toFixed(2) + "%"
+                + "  服务态度平均分:" + (parseFloat(data.TotalData.服务态度)).toFixed(2)
+                + "  服务质量平均分:" + (parseFloat(data.TotalData.服务质量)).toFixed(2)
+                + "  前台接待平均分:" + (parseFloat(data.TotalData.前台接待)).toFixed(2);
+        }
         function f_onAfterEdit() { }
         function f_showdetail(row, detailPanel, callback) {
             var detailgrid = document.createElement('div');
@@ -216,9 +226,10 @@
                 ],
                 isScroll: true,
                 pageSize: 20,
+                totalRender: f_totalRender,
                 fixedCellHeight: false,
                 url: '/index.php?g=Query&m=Consume&a=getwxinfo&comment=1',
-                height: '100%',
+                height: '97%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     addtrace(data);
                 },

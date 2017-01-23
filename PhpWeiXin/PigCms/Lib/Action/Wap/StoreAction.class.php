@@ -136,6 +136,13 @@ class StoreAction extends WapAction{
             if(isset($user)&&trim($user['carno'])!=$carno){
                 echo '车牌号码与原来注册车牌不一致';exit;
             }
+            $car=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$user['carno']))->find();
+            if(!empty($car)){
+                if($car['客户类别']=='定点签约'){
+                    echo '定点签约用户不能注册';
+                    exit;
+                }
+            }
             $password = isset($_POST['password']) ? htmlspecialchars($_POST['password']) : '';
 			$password2 = isset($_POST['password2']) ? htmlspecialchars($_POST['password2']) : '';
 			$user['truename'] = isset($_POST['truename']) ? htmlspecialchars($_POST['truename']) : '';
@@ -267,7 +274,6 @@ class StoreAction extends WapAction{
                   M("Userinfo",'','ayc')->add($user);
              }
             //修改笛佛系统中的会员资料
-            $car=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$user['carno']))->find();
             $lb='2星客户';
             $czinfo['等级']='★★';
             if($card['cardid']==5){
@@ -275,10 +281,6 @@ class StoreAction extends WapAction{
                 $czinfo['等级']='★';
             }
             if(!empty($car)){
-                if($car['客户类别']=='定点签约'){
-                    echo '定点签约用户不能注册';
-                    exit;
-                }
                 $item['车主']=$card['number'];
                 $item['联系人']=$user['truename'];
                 $item['联系电话']=$user['tel'];

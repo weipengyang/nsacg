@@ -163,8 +163,11 @@
                 { display: '单位', name: '单位', minWidth: 80 },
                 { display: '数量', name: '数量', minWidth: 60 },
                 { display: '单价', name: '单价', minWidth: 80 },
-                { display: '金额', name: '金额', minWidth: 80 },
                 { display: '折扣', name: '折扣', minWidth: 80 },
+                { display: '金额', name: '金额', minWidth: 80, render: function (rowdata, index, value) {
+                    return rowdata['数量'] * rowdata['单价'] * rowdata['折扣'];
+                }
+                },
                 { display: '结算方式', name: '结算方式', minWidth: 100 },
                 {
                     display: '收款日期', name: '收款日期', minWidth: 100, render: function (rowdata, index, value) {

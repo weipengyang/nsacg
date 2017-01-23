@@ -9,6 +9,7 @@
     <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
     <script type="text/javascript">
+        var licheng = 0;
         $(function ()
         {
             var form = $("#form1").ligerForm({
@@ -26,6 +27,7 @@
                                $.post('index.php?g=Query&m=Consume&a=getgrade', submitData,
                                 function (data) {
                                     if (data) {
+                                        licheng = data['里程'];
                                         $("input[ligeruiid='车主']").val(data['车主']);
                                         $("input[ligeruiid='客户类别']").val(data['客户类别']);
                                         $("input[ligeruiid='联系人']").val(data['联系人']);
@@ -34,6 +36,7 @@
                                         $("input[ligeruiid='fwgw']").val(data['服务顾问']);
                                     }
                                     else {
+                                        licheng = 0;
                                         $("input[ligeruiid='车主']").val('0000');
                                         $("input[ligeruiid='客户类别']").val('临时客户');
                                         $("input[ligeruiid='联系人']").val('');
@@ -168,6 +171,11 @@
                                 if (data['里程表'] == '' || parseInt(data['里程表']) <= 0) {
                                     $.ligerDialog.alert('里程数不为空');
                                     return;
+                                }else{
+                                    if (parseInt(data['里程表'])<parseInt(licheng)) {
+                                        $.ligerDialog.alert('里程数小于上次维修的里程');
+                                        return;
+                                    }
                                 }
                                 if (data['油位表'] == '' || parseFloat(data['油位表'])<= 0) {
                                     $.ligerDialog.alert('油位表不能为空');

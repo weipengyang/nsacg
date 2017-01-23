@@ -39,7 +39,11 @@
                                 <option value="保险理赔">保险理赔</option>
                                 <option value="汽车维修">汽车维修</option>
                             </select>
-                            当前状态
+                            客户
+                            <select id="khlb">
+                                <option value="">所有分类</option>
+                            </select>
+                           当前状态
                             <select id="zt">
                                 <option value="">所有</option>
                                 <option value="报价">报价</option>
@@ -232,35 +236,6 @@
                 }
             });
         }
-        function todate(num,istime) {
-            if (num && num.length > 8) {
-                num = num + "";
-                var date = "";
-                var month = new Array();
-                month["Jan"] = '01'; month["Feb"] = '02'; month["Mar"] = '03'; month["Apr"] = '04'; month["May"] = '05'; month["Jun"] = '06';
-                month["Jul"] = '07'; month["Aug"] = '08'; month["Sep"] = '09'; month["Oct"] = '10'; month["Nov"] = '11'; month["Dec"] = '12';
-                var str = num.split(" ");
-                var times ='';
-                if (str.length > 4) {
-                    date = str[3] + "-";
-                    date = date + month[str[0]] + "-" + str[2];
-                    times = str[4].split(':');
-                } else {
-                    date = str[2] + "-";
-                    date = date + month[str[0]] + "-" + str[1];
-                    times = str[3].split(':');
-                }
-                if (istime) {
-                    time = times[0] + ':' + times[1];
-                    if (str[3].indexOf('PM') > 0) {
-                        time = (parseInt(times[0]) + 12) + ':' + times[1];
-                    }
-                    return date + ' ' + time;
-                }
-                return date;
-            }
-            return num;
-        }
         //+---------------------------------------------------
         //| 日期计算
         //+---------------------------------------------------
@@ -277,12 +252,30 @@
                 case 'y': return new Date((dtTmp.getFullYear() + Number), dtTmp.getMonth(), dtTmp.getDate(), dtTmp.getHours(), dtTmp.getMinutes(), dtTmp.getSeconds());
             }
         }
+        function f_totalRender(data, currentPageData) {
+            return " 入场台次:" + data.Total
+                + "  会员入场台次:" + data.hyCount
+                + "  评价台次:" + data.commentCount
+                + "  会员入场比:" + (data.hyCount / data.Total*100).toFixed(2)+"%"
+                + "  会员评价比:" + (data.commentCount / data.hyCount * 100).toFixed(2) + "%";
+        }
         $(document).ready(function () {
             $(document).keydown(function (event) {
                 if (event.keyCode == 13) 
                     $('#search').click();
                 }
             );
+            $.post('index.php?g=Query&m=Consume&a=getkhlb', null,
+            function (data) {
+                if (data) {
+                    $('#khlb').empty();
+                    $('#khlb').append("<option value=''>所有</option>");
+                    $(data).each(function () {
+                        var option = "<option value='" + this.类别 + "'>" + this.类别 + "</option>";
+                        $('#khlb').append(option);
+                    });
+                }
+            }, 'JSON');
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                 { display: '当前状态', name: '当前状态', align: 'left', width: 60 },
@@ -411,14 +404,18 @@
                 },
                 isScroll: true,
                 pageSize: 20,
+                totalRender: f_totalRender,
                 alternatingRow: false,
                 url: '/index.php?g=Query&m=Consume&a=getwxinfo',
-                height: '100%',
+                height: '97%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     wxinfo(data['流水号']);
                 }
             });
             $("#zt").change(function () {
+                $('#search').click();
+            });
+            $("#khlb").change(function () {
                 $('#search').click();
             });
             $("#lb").change(function () {
@@ -452,6 +449,9 @@
                 var lb = $('#lb').val();
                 if (lb != '')
                     parms.lb = lb;
+                var khlb = $('#khlb').val();
+                if (khlb != '')
+                    parms.khlb = khlb;
                 var zt = $('#zt').val();
                 if (zt != '')
                     parms.zt = zt;

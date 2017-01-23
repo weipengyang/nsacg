@@ -491,7 +491,7 @@
                                     $.ligerDialog.alert(rows[i]['项目名称'] + "没有派工");
                                     return;
                                 }
-                                if (rows[i]['开工时间'] == null || rows[i]['开工时间'] == '' || todate(rows[i]['开工时间'], true) == '1900-01-1 12:00')
+                                if (rows[i]['开工时间'] == null || rows[i]['开工时间'] == '' || todate(rows[i]['开工时间']) == '1900-01-1')
                                 {
                                     $.ligerDialog.alert(rows[i]['项目名称'] + "开工时间为空");
                                     return;
@@ -798,7 +798,8 @@
                                         condition: {
                                             prefixID: 'condtion_',
                                             fields: [{ name: 'searchkey', type: 'text', width: 120, label: '客户信息', labelWidth: 90 }]
-                                            
+                                            
+
                                         },
                                         onSelected: function (e) {
                                             var row = e.data[0];
@@ -1137,15 +1138,19 @@
 
                                 var rows = product.getSelectedRows();
                                 if (rows.length > 0) {
-                                    for (var i = 0; i < rows.length; i++) {
-                                        var count = rows[i]['数量'] - rows[i]['已领料数量'] - rows[i]['待审核数量'];
-                                        if (count <= 0)
-                                        {
-                                            $.ligerDialog.alert(rows[i]['名称'] + "已经领料");
-                                            return;
-                                        }
+                                    var data = {
+                                        products: rows
                                     }
-                                    pick();
+                                    $.post('/index.php?g=Query&m=Consume&a=havepick', data,
+                                            function (msg) {
+                                                if (msg == 'success') {
+                                                    pick();
+                                                } else {
+                                                    $.ligerDialog.alert(msg);
+                                                    return;
+                                                }
+                                    });
+                                  
                                 } else {
                                     $.ligerDialog.alert('请选择要领料的配件');
                                 }

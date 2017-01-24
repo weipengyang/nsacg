@@ -472,9 +472,9 @@ class ConsumeAction extends Action{
              $where['时间']=array('egt',trim($_POST['startdate']));
              
          }
-         if($_POST['endDate']&&trim($_POST['enddate'])!='')
+         if($_POST['enddate']&&trim($_POST['enddate'])!='')
          {
-             $where['时间']=array('elt',trim($_POST['endDate']));
+             $where['时间']=array('elt',trim($_POST['enddate']));
              
          }
          if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
@@ -538,6 +538,25 @@ class ConsumeAction extends Action{
         echo json_encode($data);
         
     }
+    public function crquery()
+    {
+        if(IS_POST)
+        {
+            $code=$_POST['code'];
+            $pjlist=null;
+            if($code!='')
+                $pjlist=M('配件分类','dbo.','difo')->where(array('父项'=>$code))->select();
+            echo json_encode($pjlist);
+            exit;
+        }
+        else{
+           
+            $pjlist=M('配件分类','dbo.','difo')->where(array('级别'=>'0'))->select();
+            $this->assign('pjlist',$pjlist);
+            $this->display();
+        }
+    }
+
     public  function getstacks()
     {   
 
@@ -570,10 +589,6 @@ class ConsumeAction extends Action{
             $searchwhere['_logic']='OR';
             $where['_complex']=$searchwhere;
 
-        }
-        if($_GET['key']=='39099139')
-        {
-            $where['类别']=array('like','%'.trim('轮胎%'));
         }
         if($_POST['flag'])
         {
@@ -612,6 +627,40 @@ class ConsumeAction extends Action{
             ->find();
         }
        
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        $data['StockTotal']=$StockTotal;
+        echo json_encode($data);
+        
+    }
+    public  function getproducts()
+    {   
+
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        $lb=trim($_POST['lb']);
+        $startdate=$_POST['startdate'];
+        $enddate=$_POST['enddate'];
+        $searchkey=trim($_POST['searchkey']);
+        if(!isset($sortname)){
+            $sortname='编号';
+            $sortorder='asc';
+        }
+        if($startdate==''){
+            $startdate=date('Y-m-01',time());
+        }
+        if($enddate==''){
+            $enddate=date('Y-m-d',time());
+        }
+        $cangku='主仓库';
+        if($_POST['shop']&&$_POST['shop']!='all'){
+            $cangku=$_POST['shop'];
+        }          
+        $yelist=M('出入库统计数量','dbo.','difo')->query("exec 统计出入库数 '$startdate','$enddate','$cangku','$lb',$page,$pagesize,'$searchkey'");
+        $StockTotal=M('出入库统计数量','dbo.','difo')->query("exec 配件出库库统计数 '$startdate','$enddate','$cangku','$lb','$searchkey'");
+        $count=$StockTotal[0]['数量'];        
         $data['Rows']=$yelist;
         $data['Total']=$count;
         $data['StockTotal']=$StockTotal;

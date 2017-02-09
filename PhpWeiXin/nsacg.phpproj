@@ -14658,9 +14658,16 @@
     <Content Include="tpl\Query\Consume_addproductlist.html" />
     <Content Include="tpl\Query\Consume_append.html" />
     <Content Include="tpl\Query\Consume_appendupload.html" />
+    <Content Include="tpl\Query\Consume_bxmanage.html" />
+    <Content Include="tpl\Query\Consume_rechargerecord.html" />
     <Content Include="tpl\Query\Consume_crquery.html" />
+    <Content Include="tpl\Query\Consume_bxcheck.html" />
+    <Content Include="tpl\Query\Consume_dbmanage.html" />
     <Content Include="tpl\Query\Consume_dbquery.html" />
     <Content Include="tpl\Query\Consume_bxquery.html" />
+    <Content Include="tpl\Query\Consume_bxrecord.html" />
+    <Content Include="tpl\Query\Consume_dbrecord.html" />
+    <Content Include="tpl\Query\Consume_dbcheck.html" />
     <Content Include="tpl\Query\Consume_modifysaledetail.html" />
     <Content Include="tpl\Query\Consume_salequery.html" />
     <Content Include="tpl\Query\Consume_servicemanage.html" />

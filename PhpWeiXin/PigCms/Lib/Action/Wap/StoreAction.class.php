@@ -476,15 +476,19 @@ private function weixinmessage($content,$depart){
     $this->weixin->send($content,'ohD3dvseioQevapZCmHQyCPtOBOY');
     $this->weixin->send($content,'ohD3dvqz0EpNooXm4MgE4Xth8UVM');
     $this->weixin->send($content,'ohD3dvtYWyjpTMAlWyLF2UPZKSv8');
+    $this->weixin->send($content,'ohD3dvkNqFLmM83oLxTK2hcKqoRM');
+    $this->weixin->send($content,'ohD3dvvygQTJUa8U2mTCRCr4YC3g');
     if($depart=='塘坑店'){
         $this->weixin->send($content,'ohD3dvmcameEiedmp6t5Q4Grj4Pk');
         $this->weixin->send($content,'ohD3dvk9a0B4eCoK8TKiigcPmbqU');
+        $this->weixin->send($content,'ohD3dvsSzRmFDNvE_DYloXDfGf0c');
     }else{
         $this->weixin->send($content,'ohD3dvhb9V5DXEoCZO5yMfg6clgc');
         $this->weixin->send($content,'ohD3dvlwa5PgS7n6z3s1tAK2NnTY');
         $this->weixin->send($content,'ohD3dvnoP57_LF0vXtTIbN1L4PZo');
         $this->weixin->send($content,'ohD3dvtYWyjpTMAlWyLF2UPZKSv8');
         $this->weixin->send($content,'ohD3dviFloHSvcl9ieoXFibqPFJM');
+        $this->weixin->send($content,'ohD3dvr1KhNCaof-63p2a5n6T__w');
 
     }
 }
@@ -690,7 +694,7 @@ public function check(){
          if($type==1)
          {
             $wx=M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->find();
-            $this->genbill($price,$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID'],'维修收款',$wx['车牌号码'],$wx['门店']);
+            $this->genbill($price,$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID'],'维修','维修收款',$wx['车牌号码'],$wx['门店']);
             M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save(array('当前状态'=>'结束'));
             $this->consumerecord($price,'汽车维修支付',$userinfo,$wx['车牌号码'],$wx['门店']);
             $data['出厂时间']=date('Y-m-d H:i',time());
@@ -801,7 +805,7 @@ public function check(){
        $paybill['提醒日期']=date('Y-m-d',time());
        $paybill['账款类别']='应付款';
        $paybill['当前状态']='待审核';
-       //$paybill['审核人']=cookie('username');
+       //$paybill['审核人']=cookie('username'); 
        //$paybill['审核日期']=date('Y-m-d',time());
        $paybill['摘要']=$zhaiyao;
        $paybill['虚增价税']=0;
@@ -862,7 +866,7 @@ public function check(){
        $paybill['摘要']=$zhaiyao;
        $paybill['虚增价税']=0;
        $paybill['挂账金额']=0;
-       //$paybill['车牌号码']=$xsd['车牌号码'];
+       $paybill['车牌号码']=$carno;
        M('应收应付单','dbo.','difo')->add($paybill);
 
        $dj['挂账ID']=$paybill['ID'];
@@ -3205,6 +3209,7 @@ public function check(){
         $data['get_count'] 	= $leftcount>0?$leftcount:0;//剩余多少张
         $remainSeconds=$data['enddate']-time();
     	$this->assign('remainSeconds',$remainSeconds);
+    	$this->assign('metaTitle',$data['distitle']);
     	$this->assign('coupon',$data);
     	$this->display();
     } 

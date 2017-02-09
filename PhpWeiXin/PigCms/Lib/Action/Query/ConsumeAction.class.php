@@ -1575,11 +1575,35 @@ class ConsumeAction extends Action{
         {
             $where['tp_member_card_create.number']=trim($_GET['khID']);
         }
+        if($_GET['type'])
+        {
+            $where['_string']="ordername like '%充值%' and paid=1";
+        }  
         if(!isset($sortname)){
             $order='tp_member_card_pay_record.id desc';
         }
         else{
             $order=$sortname.' '.$sortorder;
+        }
+        if($_POST['bm']&&trim($_POST['bm'])!='')
+        {
+            $where['shop']=trim($_POST['bm']);
+            
+        }
+        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        {
+            $where['createtime']=array('egt',strtotime(trim($_POST['startdate'])));
+            
+        }
+        if($_POST['enddate']&&trim($_POST['enddate'])!='')
+        {
+            $where['createtime']=array('elt',strtotime(trim($_POST['enddate'])));
+            
+        }
+        if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
+        {
+            $where['createtime']=array('BETWEEN',array(strtotime(trim($_POST['startdate'])),strtotime(trim($_POST['enddate']))+3600*24));
+            
         }
         $count= M('Member_card_pay_record')
             ->join('join tp_userinfo on tp_member_card_pay_record.wecha_id=tp_userinfo.wecha_id')
@@ -1588,9 +1612,28 @@ class ConsumeAction extends Action{
 		$rmb = M('Member_card_pay_record')
             ->join('join tp_userinfo on tp_member_card_pay_record.wecha_id=tp_userinfo.wecha_id')
             ->join('join tp_member_card_create on tp_member_card_pay_record.wecha_id=tp_member_card_create.wecha_id')
-            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();   
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();  
+	    $records = M('Member_card_pay_record')
+            ->join('join tp_userinfo on tp_member_card_pay_record.wecha_id=tp_userinfo.wecha_id')
+            ->join('join tp_member_card_create on tp_member_card_pay_record.wecha_id=tp_member_card_create.wecha_id')
+            ->where($where)->select(); 
+       $weixin=0;
+       $qiantai=0;
+       if($records){
+         foreach($records as $record){
+             if($record['paytype']=='weixin'){
+                 $weixin+=doubleval($record['price']);
+             }else{
+                 $qiantai+=doubleval($record['price']);
+
+             }
+         }
+       }
         $data['Rows']=$rmb;
         $data['Total']=$count;
+        $data['weixin']=$weixin;
+        $data['qiantai']=$qiantai;
+        $data['totalmoeny']=$qiantai+$weixin;
         echo json_encode($data);
 		
     }
@@ -1853,6 +1896,43 @@ class ConsumeAction extends Action{
             echo '保存成功';
         }
     }
+    public  function savedbinfo()
+    {
+        if(IS_POST){
+            $type=$_POST['type'];
+            $dbinfo=$_POST['dbinfo'];
+            if($type&&$type=='add'){
+                $dbinfo['ID']=$this->getcode(18,0,1);;
+                $dbinfo['业务编号']=$this->getcodenum('QT');
+                $dbinfo['制单人']=cookie('username');
+                $dbinfo['制单日期']=date('Y-m-d',time());
+                $dbinfo['当前状态']='审核';
+                M('车辆代办','dbo.','difo')->add($dbinfo);
+            }else{
+
+            }
+            echo '保存成功';
+        }
+    }
+    public  function savebxinfo()
+    {
+        if(IS_POST){
+            $type=$_POST['type'];
+            $bxinfo=$_POST['bxinfo'];
+            if($type&&$type=='add'){
+                $bxinfo['ID']=$this->getcode(18,0,1);;
+                $bxinfo['业务编号']=$this->getcodenum('BX');
+                $bxinfo['制单人']=cookie('username');
+                $bxinfo['费用折扣']=1;
+                $bxinfo['制单日期']=date('Y-m-d',time());
+                $bxinfo['当前状态']='审核';
+                M('车辆保险','dbo.','difo')->add($bxinfo);
+            }else{
+
+            }
+            echo '保存成功';
+        }
+    }
     public  function savetrace()
     {
         if(IS_POST){
@@ -1877,6 +1957,7 @@ class ConsumeAction extends Action{
             if($type&&$type=='add'){
                 $tracedata['跟踪时间']=date('Y-m-d H:i',time());
                 $tracedata['类别']='维修';
+                $tracedata['登记人']=cookie('username');
                 M('客户跟踪','dbo.','difo')->add($tracedata);
             }else{
                 M('客户跟踪','dbo.','difo')->where(array('流水号'=>$tracedata['流水号']))->save($tracedata);
@@ -1893,6 +1974,7 @@ class ConsumeAction extends Action{
                 unset($tracedata['保险到期']);
                 $tracedata['跟踪时间']=date('Y-m-d H:i',time());
                 $tracedata['类别']='保险';
+                $tracedata['登记人']=cookie('username');
                 M('客户跟踪','dbo.','difo')->add($tracedata);
             }else{
                 M('客户跟踪','dbo.','difo')->where(array('流水号'=>$tracedata['流水号']))->save($tracedata);
@@ -1908,6 +1990,7 @@ class ConsumeAction extends Action{
             if($type&&$type=='add'){
                 unset($tracedata['下次保养']);
                 $tracedata['跟踪时间']=date('Y-m-d H:i',time());
+                $tracedata['登记人']=cookie('username');
                 $tracedata['类别']='保养';
                 M('客户跟踪','dbo.','difo')->add($tracedata);
             }else{
@@ -2181,6 +2264,10 @@ class ConsumeAction extends Action{
    }
     public  function getcllb(){
         $pinpai=M('车辆类别','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($pinpai);
+    }
+    public  function getdblb(){
+        $pinpai=M('syscode','dbo.','difo')->where(array('parentid'=>9))->select();
         echo json_encode($pinpai);
     }
     public  function getdiscount(){
@@ -2488,7 +2575,7 @@ class ConsumeAction extends Action{
             $where['_complex']=$searchwhere;
             
         }
-        //$where['_string']="名称 not like '%充值%' and 当前状态='已审核' and 单据类别='销售出库'";
+        $where['_string']=" 当前状态!='取消'";
         $count=M('车辆保险','dbo.','difo')
             ->where($where)->count();
         $yelist=M('车辆保险','dbo.','difo')
@@ -2552,7 +2639,7 @@ class ConsumeAction extends Action{
             $where['_complex']=$searchwhere;
             
         }
-        //$where['_string']="名称 not like '%充值%' and 当前状态='已审核' and 单据类别='销售出库'";
+        $where['_string']="当前状态!='取消' ";
         $count=M('车辆代办','dbo.','difo')
             ->where($where)->count();
         $yelist=M('车辆代办','dbo.','difo')
@@ -3232,6 +3319,188 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $this->assign('projectinfo',json_encode($projectinfo));
        $this->display();
    }
+   private function gendbbill($price,$chezhu,$zhaiyao,$daiwen,$bianhao,$type,$yyid,$carno){
+       $paybill['ID']=$this->getcode(18,1,1);
+       $paybill['单位编号']=$daiwen;
+       $paybill['单位名称']=$chezhu;
+       $paybill['单据类别']=$type;
+       $paybill['引用ID']=$yyid;
+       $paybill['单据编号']=$bianhao;
+       $paybill['制单日期']=date('Y-m-d',time());
+       $paybill['制单人']=cookie('username');
+       $paybill['总金额']=$price;
+       $paybill['已结算金额']=0;
+       $paybill['未结算金额']=$price;
+       $paybill['本次结算']=0;
+       $paybill['提醒日期']=date('Y-m-d',time());
+       $paybill['账款类别']='应付款';
+       $paybill['当前状态']='待审核';
+       //$paybill['审核人']=cookie('username'); 
+       //$paybill['审核日期']=date('Y-m-d',time());
+       $paybill['摘要']=$zhaiyao;
+       $paybill['虚增价税']=0;
+       $paybill['挂账金额']=$price; 
+       $paybill['车牌号码']=$carno;
+       M('应收应付单','dbo.','difo')->add($paybill);
+   }
+
+   public function dbcheck(){
+       if(IS_POST){
+           $dbinfo=$_POST['dbinfo'];
+           $purchase['当前状态']='结束';
+           $purchase['审核人']=cookie('username');
+           $purchase['审核日期']=date('Y-m-d',time());
+           $purchase['应收金额']=$dbinfo['应收金额'];
+           $purchase['现收金额']=$dbinfo['现收金额'];
+           $purchase['挂账金额']=$dbinfo['挂账金额'];
+           $purchase['优惠金额']=$dbinfo['优惠金额'];
+           M('车辆代办','dbo.','difo')->where(array('流水号'=>$dbinfo['流水号']))->save($purchase);
+           if($dbinfo['代办费用']>0){
+               $wldw=M('往来单位','dbo.','difo')->where(array('名称'=>$dbinfo['车管单位']))->find();
+               $this->gendbbill($dbinfo['代办费用'],$dbinfo['车管单位'],'代办'.$dbinfo['代办类型'].'付款('.$dbinfo['业务编号'].')',$wldw['ID'],$dbinfo['业务编号'],'其它代办',$dbinfo['ID'],$dbinfo['车牌号码']);
+           }
+           $paybill['ID']=$this->getcode(18,1,1);
+           $paybill['单位编号']=$dbinfo['客户ID'];
+           $paybill['单位名称']=$dbinfo['车主'];
+           $paybill['单据类别']=$dbinfo['代办类别'];
+           $paybill['单据编号']=$dbinfo['业务编号'];
+           $paybill['引用ID']=$dbinfo['ID'];
+           $paybill['制单日期']=date('Y-m-d',time());
+           $paybill['制单人']=cookie('username');
+           $paybill['总金额']=$dbinfo['总金额'];
+           $paybill['已结算金额']=$dbinfo['现收金额'];
+           $paybill['未结算金额']=$dbinfo['挂账金额'];
+           $paybill['本次结算']=$dbinfo['现收金额'];
+           $paybill['提醒日期']=date('Y-m-d',time());
+           $paybill['账款类别']='应收款';
+           $paybill['当前状态']='待审核';
+           $paybill['车牌号码']=$dbinfo['车牌号码'];
+           $paybill['摘要']=$dbinfo['代办类别'].'欠款';
+
+           if($dbinfo['挂账金额']==0){
+               $paybill['当前状态']='已审核';
+               $paybill['摘要']=$dbinfo['代办类别'];
+               $paybill['审核人']=cookie('username');
+               $paybill['审核日期']=date('Y-m-d',time());
+           }
+           $paybill['虚增价税']=0;
+           $paybill['挂账金额']=$dbinfo['挂账金额'];
+           $paybill['车牌号码']=$dbinfo['车牌号码'];
+           M('应收应付单','dbo.','difo')->add($paybill);
+           if($dbinfo['挂账金额']==0){
+               $inout['单据编号']=$this->getcodenum('BI');
+               $inout['制单日期']=date('Y-m-d',time());
+               $inout['制单人']=cookie('username');
+               $inout['单位名称']=$dbinfo['车主'];
+               $inout['账款类别']='收款单';
+               $inout['实收金额']=$dbinfo['现收金额'];
+               $inout['折扣金额']=0;
+               $inout['结算方式']=$dbinfo['结算方式'];
+               $inout['摘要']='车辆代办收款('.$dbinfo['业务编号'].')';
+               $inout['收支项目']=$dbinfo['代办类别'];
+               $inout['当前状态']='待审核';
+                //$inout['发票类别']=$wx['门店'];
+               $inout['发票号']=$dbinfo['车牌号码'];
+               $inout['单位编号']=$dbinfo['客户ID'];
+               $inout['ID']=$this->getcode(18,1,1);
+               $inout['单位编号']=$dbinfo['供应商ID'];
+               $inout['本次冲账']=$dbinfo['现收金额'];
+               $inout['单据类别']='应收款';
+               $inout['取用预存']=0;
+               M('日常收支','dbo.','difo')->add($inout);
+               $dj['挂账ID']=$paybill['ID'];
+               $dj['收支ID']=$inout['ID'];
+               $dj['金额']=$dbinfo['现收金额'];
+               M('引用单据','dbo.','difo')->add($dj);
+           }
+           echo '审核通过';
+           exit;
+           
+
+       }
+       else{
+           $this->display();
+       }
+
+   }
+   public function bxcheck(){
+       if(IS_POST){
+           $bxinfo=$_POST['bxinfo'];
+           $purchase['当前状态']='结束';
+           $purchase['审核人']=cookie('username');
+           $purchase['审核日期']=date('Y-m-d',time());
+           $purchase['应收金额']=$bxinfo['应收金额'];
+           $purchase['现收金额']=$bxinfo['现收金额'];
+           $purchase['挂账金额']=$bxinfo['挂账金额'];
+           $purchase['优惠金额']=$bxinfo['优惠金额'];
+           M('车辆保险','dbo.','difo')->where(array('流水号'=>$bxinfo['流水号']))->save($purchase);
+           if($bxinfo['总金额']>0){
+               $wldw=M('往来单位','dbo.','difo')->where(array('名称'=>$bxinfo['保险公司']))->find();
+               $this->gendbbill($bxinfo['总金额'],$bxinfo['保险公司'],'代办保险付款('.$bxinfo['业务编号'].')',$wldw['ID'],$bxinfo['业务编号'],'保险代办',$bxinfo['ID'],$bxinfo['车牌号码']);
+           }
+           $paybill['ID']=$this->getcode(18,1,1);
+           $paybill['单位编号']=$bxinfo['客户ID'];
+           $paybill['单位名称']=$bxinfo['车主'];
+           $paybill['单据类别']='保险';
+           $paybill['单据编号']=$bxinfo['业务编号'];
+           $paybill['引用ID']=$bxinfo['ID'];
+           $paybill['制单日期']=date('Y-m-d',time());
+           $paybill['制单人']=cookie('username');
+           $paybill['总金额']=$bxinfo['总金额'];
+           $paybill['已结算金额']=$bxinfo['现收金额'];
+           $paybill['未结算金额']=$bxinfo['挂账金额'];
+           $paybill['本次结算']=$bxinfo['现收金额'];
+           $paybill['提醒日期']=date('Y-m-d',time());
+           $paybill['账款类别']='应收款';
+           $paybill['当前状态']='待审核';
+           $paybill['车牌号码']=$bxinfo['车牌号码'];
+           $paybill['摘要']='保险代办欠款';
+           if($bxinfo['挂账金额']==0){
+               $paybill['当前状态']='已审核';
+               $paybill['摘要']='保险代办';
+               $paybill['审核人']=cookie('username');
+               $paybill['审核日期']=date('Y-m-d',time());
+           }
+           $paybill['虚增价税']=0;
+           $paybill['挂账金额']=$bxinfo['挂账金额'];
+           $paybill['车牌号码']=$bxinfo['车牌号码'];
+           M('应收应付单','dbo.','difo')->add($paybill);
+           if($bxinfo['挂账金额']==0){
+               $inout['单据编号']=$this->getcodenum('BI');
+               $inout['制单日期']=date('Y-m-d',time());
+               $inout['制单人']=cookie('username');
+               $inout['单位名称']=$bxinfo['车主'];
+               $inout['账款类别']='收款单';
+               $inout['实收金额']=$bxinfo['现收金额'];
+               $inout['折扣金额']=0;
+               $inout['结算方式']=$bxinfo['结算方式'];
+               $inout['摘要']='车辆代办收款('.$bxinfo['业务编号'].')';
+               $inout['收支项目']='车辆保险';
+               $inout['当前状态']='待审核';
+                //$inout['发票类别']=$wx['门店'];
+               $inout['发票号']=$bxinfo['车牌号码'];
+               $inout['单位编号']=$bxinfo['客户ID'];
+               $inout['ID']=$this->getcode(18,1,1);
+               $inout['单位编号']=$bxinfo['供应商ID'];
+               $inout['本次冲账']=$bxinfo['现收金额'];
+               $inout['单据类别']='应收款';
+               $inout['取用预存']=0;
+               M('日常收支','dbo.','difo')->add($inout);
+               $dj['挂账ID']=$paybill['ID'];
+               $dj['收支ID']=$inout['ID'];
+               $dj['金额']=$bxinfo['现收金额'];
+               M('引用单据','dbo.','difo')->add($dj);
+           }
+           echo '审核通过';
+           exit;
+           
+
+       }
+       else{
+           $this->display();
+       }
+
+   }
    public function purchasecheck(){
        if(IS_POST){
            $cgd=$_POST['cgd'];
@@ -3263,9 +3532,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 $paybill['当前状态']='待审核';
                 if($cgd['挂账金额']==0){
                     $paybill['当前状态']='已审核';
+                    $paybill['审核人']=cookie('username');
+                    $paybill['审核日期']=date('Y-m-d',time());
                 }
-                $paybill['审核人']=cookie('username');
-                $paybill['审核日期']=date('Y-m-d',time());
                 $paybill['摘要']='采购进货';
                 $paybill['虚增价税']=0;
                 $paybill['挂账金额']=$cgd['挂账金额'];
@@ -3878,7 +4147,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $mycard = M('Member_card_create')->where(array('token'=>$this->token,'wecha_id'=>$wecha_id))->find();
 			if($db->where(array('token'=>$this->token,'wecha_id'=>$wecha_id))->setInc('balance',$_POST['price'])){
 				$orderid = date('YmdHis',time()).mt_rand(1000,9999);
-				M('Member_card_pay_record')->add(array('orderid' => $orderid , 'ordername' => '前台手动充值' ,'note'=>'操作人'.cookie('username'), 'createtime' => time() , 'token' => $this->token , 'wecha_id' => $uinfo['wecha_id'] , 'price' => $_POST['price'] , 'type' => 1 , 'paid' => 1 , 'module' => 'qiantai' , 'paytime' => time() , 'paytype' => 'recharge'));
+                $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();
+				M('Member_card_pay_record')->add(array('shop'=>$yg['部门'],'orderid' => $orderid , 'ordername' => '前台手动充值' ,'note'=>'操作人'.cookie('username'), 'createtime' => time() ,
+                    'token' => $this->token , 'wecha_id' => $uinfo['wecha_id'] , 'price' => $_POST['price'] , 'type' => 1 , 'paid' => 1 , 'module' => 'qiantai' , 'paytime' => time() , 'paytype' => 'recharge'));
                 if(intval($_POST['price'])>=100){
                     $cardnumber=$this->change($mycard['cardid'],$uinfo['wecha_id']);
                     if($cardnumber!='0'){
@@ -4117,9 +4388,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         $this->display();
 		
     }
+
    public function consume()
     {
-        $where=array('1'=>'1');
         if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
             $searchkey='%'.trim($_GET['searchkey']).'%';
         }
@@ -4128,7 +4399,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $where=array('shop'=>trim($_GET['shop']));
 
         }
-        
+        $where['_string']="ordername not like '%充值%' and paid=1";
         if($searchkey){       
             $searchwhere['tp_userinfo.carno']=array('like',$searchkey);
             $searchwhere['carno1']=array('like',$searchkey);
@@ -5486,9 +5757,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            else{
                $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>array('like','%蜡水洗车%')))->find();
                $price=35;
-               if($wxinfo['门店']=='塘坑店'){
-                   $price=30;
-               }
                $xm['标准金额']=$price;
                $data['报价金额']=$price;
                $data['应收金额']=$price;
@@ -5954,15 +6222,19 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $this->weixin->send($content,'ohD3dvseioQevapZCmHQyCPtOBOY');
        $this->weixin->send($content,'ohD3dvqz0EpNooXm4MgE4Xth8UVM');
        $this->weixin->send($content,'ohD3dvtYWyjpTMAlWyLF2UPZKSv8');
+       $this->weixin->send($content,'ohD3dvkNqFLmM83oLxTK2hcKqoRM');
+       $this->weixin->send($content,'ohD3dvvygQTJUa8U2mTCRCr4YC3g');
        if($depart=='塘坑店'){
            $this->weixin->send($content,'ohD3dvmcameEiedmp6t5Q4Grj4Pk');
            $this->weixin->send($content,'ohD3dvk9a0B4eCoK8TKiigcPmbqU');
+           $this->weixin->send($content,'ohD3dvsSzRmFDNvE_DYloXDfGf0c');
        }else{
            $this->weixin->send($content,'ohD3dvhb9V5DXEoCZO5yMfg6clgc');
            $this->weixin->send($content,'ohD3dvlwa5PgS7n6z3s1tAK2NnTY');
            $this->weixin->send($content,'ohD3dvnoP57_LF0vXtTIbN1L4PZo');
            $this->weixin->send($content,'ohD3dvtYWyjpTMAlWyLF2UPZKSv8');
            $this->weixin->send($content,'ohD3dviFloHSvcl9ieoXFibqPFJM');
+           $this->weixin->send($content,'ohD3dvr1KhNCaof-63p2a5n6T__w');
 
        }
    }
@@ -5972,10 +6244,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         $data['流水号']=null;
         unset($data['流水号']);
         unset($data['ROW_NUMBER']);
-
-        $code=M('编号单','dbo.','difo')->where(array('类别'=>'WX','日期'=>date('Y-m-d', time())))->max('队列');
-        $bianhao='WX-'.date('ymd', time()).'-'.str_pad(($code+1),3,'0',STR_PAD_LEFT);
-        M('编号单','dbo.','difo')->add(array('单据编号'=>$bianhao,'队列'=>($code+1),'类别'=>'WX','日期'=>date('Y-m-d', time())));
+        $bianhao=$this->getcodenum('WX');
         $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
         if($type!=''){
             $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>$type))->find();

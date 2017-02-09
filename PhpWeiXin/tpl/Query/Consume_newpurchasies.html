@@ -4,13 +4,12 @@
     <title>采购开单</title>
     <meta name="description" content="爱养车" />
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <link href="//at.alicdn.com/t/font_1474792210_8989851.css" rel="stylesheet" type="text/css" />
     <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
-    <link href="//at.alicdn.com/t/font_1474792210_8989851.css" rel="stylesheet" type="text/css" />
-
     <script type="text/javascript">
         var form, product;
         var editproductdialog, addproductdialog;
@@ -255,7 +254,7 @@
                         }
                     }            ]            });
              product = $("#productgrid").ligerGrid({
-                height:'105%',
+                height:'100%',
                 columns: [
                 { display: '仓库', name: '仓库', minWidth: 120 },
                 { display: '编号', name: '编号', minWidth: 100 },
@@ -320,10 +319,9 @@
     </script>
 </head>
 
-<body style="padding:10px">
-    <div id="form1" style="height:40%">
+<body style="padding:0;margin:0">
+    <div id="form1" style="margin:0; padding:0;height:45%">
     </div>
-    <div id="productgrid" style="margin:0; padding:0;height:60%"></div>
-
+    <div id="productgrid" style="margin:0; padding:0;height:55%"></div>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 class WeixinAction extends Action{
 	private $token;
 	private $fun;
@@ -82,6 +82,27 @@ class WeixinAction extends Action{
 			echo json_encode($this->reply($data));
 		}
 	}
+     private function distance($lat1, $lon1, $lat2,$lon2,$radius = 6378.137)
+     {
+         $rad = floatval(M_PI / 180.0);
+
+         $lat1 = floatval($lat1) * $rad;
+         $lon1 = floatval($lon1) * $rad;
+         $lat2 = floatval($lat2) * $rad;
+         $lon2 = floatval($lon2) * $rad;
+
+         $theta = $lon2 - $lon1;
+
+         $dist = acos(sin($lat1) * sin($lat2) +
+                     cos($lat1) * cos($lat2) * cos($theta)
+                 );
+
+         if ($dist < 0 ) {
+             $dist += M_PI;
+         }
+
+         return $dist = $dist * $radius;
+     }
 	private function reply($data){
 	// 印美丽初使化信息
         import("@.ORG.yinmeili");
@@ -247,12 +268,30 @@ class WeixinAction extends Action{
 			$node=D('Rippleos_node')->where(array('token'=>$this->token))->find();
 			$this->rippleos_unauth($node['node']);
 		}elseif($data['Event']=='LOCATION'){
+            if($this->data['Latitude']){
+
+                //$transUrl='http://api.map.baidu.com/ag/coord/convert?from=2&to=4&x='.$this->data['Longitude'].'&y='.$this ->data['Latitude'];
+                //$json=Http::fsockopenDownload($transUrl);
+                //if($json==false){
+                //    $json=file_get_contents($transUrl);
+                //}
+                //$arr=json_decode($json,true);
+                //$x=base64_decode($arr['x']);
+                //$y=base64_decode($arr['y']);
+                if($this->data['FromUserName']=='ohD3dviFloHSvcl9ieoXFibqPFJM'){
+                    $weixin = new Wechat($this->token,$this->wxuser);
+                    $distance=$this->distance('22.80268','113.529008',$this ->data['Latitude'],$this->data['Longitude']);
+                    $content='距离区府店:'.$distance.'公里\r\n';
+                    $content.='当前位置:'.$this ->data['Latitude'].','.$this->data['Longitude'];
+                    $weixin->send($content,$this->data['FromUserName']);
+                }
+            }
 			return $this->nokeywordApi();
 		}
                 //语音功能
 		if('voice' == $data['MsgType']){
 			$data['Content']= $data['Recognition'];
-			if ($data['Recognition']){
+			if ($data['Recognition']){  
 				$this->data['Content'] = $data['Recognition'];
 			}else {
 				return array('turn on transfer_customer_service','transfer_customer_service'); 
@@ -448,6 +487,7 @@ class WeixinAction extends Action{
             return array('成功退出微信墙对话模式', 'text');
         }
         $weixin = new Wechat($this->token,$this->wxuser);
+        
         $taglist=$weixin->gettaglist($this -> data['FromUserName']);
         if(strpos(strtoupper($data['Content']), '*#') === 0){
             $arr = explode("*#",$data['Content']);

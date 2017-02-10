@@ -1012,6 +1012,7 @@
     <Compile Include="PigCms\Lib\Action\Wap\AppleGameAction.class.php" />
     <Compile Include="PigCms\Lib\Action\Wap\AutumnAction.class.php" />
     <Compile Include="PigCms\Lib\Action\Wap\AutumnsAction.class.php" />
+    <Compile Include="PigCms\Lib\Action\Wap\BaomingAction.class.php" />
     <Compile Include="PigCms\Lib\Action\Wap\BargainAction.class.php" />
     <Compile Include="PigCms\Lib\Action\Wap\BusinessAction.class.php" />
     <Compile Include="PigCms\Lib\Action\Wap\CarAction.class.php" />

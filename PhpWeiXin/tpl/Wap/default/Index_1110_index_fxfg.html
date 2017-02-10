@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css" />
     <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm-extend.min.js' charset='utf-8'></script>
     <link href="//at.alicdn.com/t/font_1473757456_4178314.css" rel="stylesheet" type="text/css" />
+    <script type='text/javascript' src='http://res.wx.qq.com/open/js/jweixin-1.1.0.js' charset='utf-8'></script>
     <style>
         * {
             margin: 0;
@@ -409,7 +410,67 @@
                 direction: 'vertical',
                 loop: true
             });
+            wx.config({
+                //debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                appId: "{pigcms:$signPackage['appId']}", // 必填，公众号的唯一标识
+                timestamp: "{pigcms:$signPackage['timestamp']}",
+                nonceStr: "{pigcms:$signPackage['nonceStr']}",
+                signature: "{pigcms:$signPackage['signature']}",// 必填，签名，见附录1
+                jsApiList: [
+                    'checkJsApi',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareWeibo',
+                    'onMenuShareQZone',
+                    'hideMenuItems',
+                    'showMenuItems',
+                    'hideAllNonBaseMenuItem',
+                    'showAllNonBaseMenuItem',
+                    'translateVoice',
+                    'startRecord',
+                    'stopRecord',
+                    'onVoiceRecordEnd',
+                    'playVoice',
+                    'onVoicePlayEnd',
+                    'pauseVoice',
+                    'stopVoice',
+                    'uploadVoice',
+                    'downloadVoice',
+                    'chooseImage',
+                    'previewImage',
+                    'uploadImage',
+                    'downloadImage',
+                    'getNetworkType',
+                    'openLocation',
+                    'getLocation',
+                    'hideOptionMenu',
+                    'showOptionMenu',
+                    'closeWindow',
+                    'scanQRCode',
+                    'chooseWXPay',
+                    'openProductSpecificView',
+                    'addCard',
+                    'chooseCard',
+                    'openCard'
+                ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+            });
+            wx.ready(function () {
+                wx.getLocation({
+                    type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+                    success: function (res) {
+                        var submitData = {
+                          latitude:res.latitude,
+                          longitude:res.longitude
+                        };
+                        $.post('/index.php?g=Wap&m=Store&a=getlocation&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData,
+                        function (data) {
+                           
+                        });
+                    }
+                });
 
+            });
         });
     </script>
 

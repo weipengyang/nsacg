@@ -141,6 +141,15 @@
                             <input type="hidden" name="cardid" id='cardid' value="{pigcms:$cardid}" />
                             <div class="am-g am-margin-top">
                                 <div class="am-u-sm-6 am-u-md-6 am-text-right">
+                                    <span class="red">*</span>收款方式
+                                </div>
+                                <div class="am-u-sm-6 am-u-md-6">
+                                    <select id="paytype">
+                                        <option value="现金">现金</option>
+                                        <option value="刷卡">刷卡</option>
+                                    </select>
+                                </div>
+                                <div class="am-u-sm-6 am-u-md-6 am-text-right">
                                     <span class="red">*</span>充值金额(元)
                                 </div>
                                 <div class="am-u-sm-6 am-u-md-6">
@@ -291,7 +300,6 @@
                 });
             }
         }
-
         function bingCard(wecha_id,cardno) {
             $('#doc-modal-2').modal({
                 relatedTarget: this,
@@ -408,7 +416,8 @@
                     
                     var data = {
                         wecha_id: wecha_id,
-                        price:price
+                        price: price,
+                        paytype: $('#paytype').val()
                     };
                     $.post('/index.php?g=Query&m=Consume&a=recharge', data,
                       function (msg) {

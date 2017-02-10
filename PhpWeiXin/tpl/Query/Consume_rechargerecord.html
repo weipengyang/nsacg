@@ -157,6 +157,15 @@
             { display: '订单名称', name: 'ordername', minWidth: 140 },
             { display: '交易金额', name: 'price', minWidth: 100 },
             {
+                display: '付款方式', name: 'paytype', minWidth: 80, render: function (rowdata, index, value) {
+                    if (value == 'weixin') {
+                        return '微信';
+                    } else {
+                        return value;
+                    }
+                }
+            },
+            {
                 display: '状态', name: 'paid', minWidth: 80, render: function (rowdata, index, value) {
                     if (value == '1') {
                         return '交易成功';

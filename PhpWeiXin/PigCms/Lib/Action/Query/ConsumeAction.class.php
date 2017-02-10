@@ -4149,7 +4149,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
 				$orderid = date('YmdHis',time()).mt_rand(1000,9999);
                 $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();
 				M('Member_card_pay_record')->add(array('shop'=>$yg['部门'],'orderid' => $orderid , 'ordername' => '前台手动充值' ,'note'=>'操作人'.cookie('username'), 'createtime' => time() ,
-                    'token' => $this->token , 'wecha_id' => $uinfo['wecha_id'] , 'price' => $_POST['price'] , 'type' => 1 , 'paid' => 1 , 'module' => 'qiantai' , 'paytime' => time() , 'paytype' => 'recharge'));
+                    'token' => $this->token , 'wecha_id' => $uinfo['wecha_id'] , 'price' => $_POST['price'] , 'type' => 1 , 'paid' => 1 , 'module' => 'qiantai' , 'paytime' => time() , 'paytype' =>$_POST['paytype']));
                 if(intval($_POST['price'])>=100){
                     $cardnumber=$this->change($mycard['cardid'],$uinfo['wecha_id']);
                     if($cardnumber!='0'){
@@ -4464,7 +4464,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
 		$record = M('Member_card_use_record')
             ->join('join tp_userinfo on tp_member_card_use_record.wecha_id=tp_userinfo.wecha_id')
             ->join('join tp_member_card_create on tp_member_card_use_record.wecha_id=tp_member_card_create.wecha_id')
-            ->where($where)->order('tp_member_card_use_record.time desc')->limit($Page->firstRow.','.$Page->listRows)->select();
+            ->where($where)->field('truename,number,tp_member_card_use_record.carno,shop,time,notes')
+            ->order('tp_member_card_use_record.time desc')->limit($Page->firstRow.','.$Page->listRows)
+            ->select();
         $this->assign('page',$show);
         $this->assign('record',$record);
         $this->display();

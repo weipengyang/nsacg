@@ -1670,6 +1670,7 @@ class CardAction extends WapAction{
 		
 		$_POST['wecha_id'] = $wecha_id;
 		$_POST['token'] = $token;
+		$_POST['shop'] = $this->getshopname();
 		$_POST['createtime'] = time();
 		$_POST['orderid'] = date('YmdHis',time()).mt_rand(1000,9999);
 		$_POST['ordername'] = $_POST['number'].' 充值';
@@ -1683,6 +1684,38 @@ class CardAction extends WapAction{
 		}
 		
 	}
+    private function getshopname(){
+        $arr=array();
+        $shops=M('company')->where(array('token'=>$this->token))->select();
+        $user=M('userinfo')->where(array('wecha_id'=>$this->wecha_id,'token'=>$this->token))->find();
+        foreach($shops as $shop){
+            $key=$shop['shortname'];
+            $arr["$key"]=$this->distance($user['location_y'],$user['location_x'],$shop['latitude'],$shop['longitude']);
+        }
+        return  array_search(min($arr),$arr);
+    }
+    private function distance($lat1, $lon1, $lat2,$lon2,$radius = 6378.137)
+    {
+        $rad = floatval(M_PI / 180.0);
+
+        $lat1 = floatval($lat1) * $rad;
+        $lon1 = floatval($lon1) * $rad;
+        $lat2 = floatval($lat2) * $rad;
+        $lon2 = floatval($lon2) * $rad;
+
+        $theta = $lon2 - $lon1;
+
+        $dist = acos(sin($lat1) * sin($lat2) +
+                    cos($lat1) * cos($lat2) * cos($theta)
+                );
+
+        if ($dist < 0 ) {
+            $dist += M_PI;
+        }
+
+        return $dist = $dist * $radius;
+    }
+
     private function changecarinfo($user,$number)
     {
 

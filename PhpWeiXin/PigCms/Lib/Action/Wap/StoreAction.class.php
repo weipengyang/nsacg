@@ -495,6 +495,8 @@ private function weixinmessage($content,$depart){
 
 
 private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',$shop='',$comment){
+    if($shop=='')
+        $shop=$this->getshopname();
     //if($this->wecha_id=='ohD3dviFloHSvcl9ieoXFibqPFJM')
     {
         $wxrecord=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'_string'=>"当前状态 not in ('结束','取消')"))->find();
@@ -814,7 +816,8 @@ public function check(){
        M('应收应付单','dbo.','difo')->add($paybill);
    }
    private function genbill($price,$chezhu,$zhaiyao,$daiwen,$type='维修',$billtype='维修收款',$carno='',$shop=''){
-
+       if($shop=='')
+           $shop=$this->getshopname();
        $bianhao=$this->getcodenum("BI");
        $data['单据编号']=$bianhao;
        $data['ID']=$this->getcode(10,0,1);
@@ -883,7 +886,8 @@ public function check(){
        return $bianhao;
    }
    private function consumerecord($balance,$ordername,$userinfo,$carno='',$shop=''){
-   
+       if($shop=='')
+           $shop=$this->getshopname();
        $single_orderid = date('YmdHis',time()).mt_rand(1000,9999);
        $record['orderid'] = $single_orderid;
        $record['ordername'] = $ordername;
@@ -1286,7 +1290,8 @@ public function check(){
         $bxlist=M('车辆保险','dbo.','difo')->where(array('客户ID'=>$user['ID'],'当前状态'=>'审核'))->count();
         $dblist=M('车辆代办','dbo.','difo')->where(array('客户ID'=>$user['ID'],'当前状态'=>'审核'))->count();
         $count=$wxlist+$xslist+$bxlist+$dblist;
-
+        $jssdk = new JSSDK($this->wxuser['appid'],$this->wxuser['appsecret']);
+        $signPackage = $jssdk->GetSignPackage();
         $this->assign('count',$count);
         $this->assign('unreaded',$unreaded);
         $this->assign('couponCount',$couponCount);
@@ -1298,6 +1303,7 @@ public function check(){
         $this->assign('wxcount',$wxcount);
         $this->assign('cardinfo',$cardinfo);
         $this->assign('userinfo',$userinfo);
+        $this->assign('signPackage', $signPackage);
 		$this->display("Index:1110_index_fxfg");
 		
 	}
@@ -1416,7 +1422,7 @@ public function check(){
 			$this->assign('num', $count);
 			$this->assign('flashbg', $flashbg);
 			$this->assign('flashbgcount', count($flashbg));
-		
+
 			$this->display("Index:{$t}");
 		} else {
 			$this->assign('cats', $result);
@@ -1424,6 +1430,49 @@ public function check(){
 		}
 	}
 	#endregion
+
+    function getlocation(){
+        if(IS_POST){
+            $data['location_y'] = $_POST['latitude']; // 纬度，浮点数，范围为90 ~ -90
+            $data['location_x'] = $_POST['longitude']; // 经度，浮点数，范围为180 ~ -180。
+            $data['getlocationtime']=time();
+            M('userinfo')->where(array('wecha_id'=>$_GET['wecha_id'],'token'=>$_GET['token']))->save($data);
+            echo '获取成功'.json_encode($data);
+            exit;
+        }
+    }
+    private function getshopname(){
+        $arr=array();
+        $shops=M('company')->where(array('token'=>$this->token))->select();
+        $user=M('userinfo')->where(array('wecha_id'=>$this->wecha_id,'token'=>$this->token))->find();
+        foreach($shops as $shop){
+            $key=$shop['shortname'];
+            $arr["$key"]=$this->distance($user['location_y'],$user['location_x'],$shop['latitude'],$shop['longitude']);
+        }
+        return  array_search(min($arr),$arr);
+    }
+    private function distance($lat1, $lon1, $lat2,$lon2,$radius = 6378.137)
+    {
+        $rad = floatval(M_PI / 180.0);
+
+        $lat1 = floatval($lat1) * $rad;
+        $lon1 = floatval($lon1) * $rad;
+        $lat2 = floatval($lat2) * $rad;
+        $lon2 = floatval($lon2) * $rad;
+
+        $theta = $lon2 - $lon1;
+
+        $dist = acos(sin($lat1) * sin($lat2) +
+                    cos($lat1) * cos($lat2) * cos($theta)
+                );
+
+        if ($dist < 0 ) {
+            $dist += M_PI;
+        }
+
+        return $dist = $dist * $radius;
+    }
+
 	public function products() 
 	{
 		//if (isset($_G['cid']))
@@ -1822,7 +1871,7 @@ public function check(){
             exit;
         }
         $carno=$_GET['carno'];
-        $shop=$_GET['shop'];
+        $shop=$this->getshopname();
 		$row = array();
 		$wecha_id = $this->wecha_id ? $this->wecha_id : session('twid');
 		$row['token'] = $this->token;
@@ -1932,7 +1981,8 @@ public function check(){
        
 	}
     private function gotopay($orderid,$price,$from,$orderName,$carno,$shop='',$redirect=NULL){
-        
+        if($shop=='')
+            $shop=$this->getshopname();
         $userinfo = M('Userinfo');
         $payrecord = M('Member_card_pay_record');
         $create = M('Member_card_create');
@@ -1958,8 +2008,8 @@ public function check(){
             $record['createtime'] = time();
             $record['paid'] = 0;
             $record['price'] = $price;
-            $record['note'] =$_GET['shop'];
-            $record['shop'] =$_GET['shop'];
+            $record['note'] =$shop;
+            $record['shop'] =$shop;
             $record['usecar'] =$carno;
             $record['token'] = $this->token;
             $record['wecha_id'] = $this->wecha_id;
@@ -2002,7 +2052,7 @@ public function check(){
 	public function payReturn() {
         $orderid = $_GET['orderid'];
         $carno=$_GET['carno'];
-        $shop=$_GET['shop'];
+        $shop=$this->getshopname();
         if ($order = M('Product_cart')->where(array('orderid' => $orderid, 'token' => $this->token))->find()) {
             if (intval($order['paid'])==1) {
                 if($order['score']>0)
@@ -2156,6 +2206,7 @@ public function check(){
             echo '兑换成功';
             exit;
         }
+       
         $this->assign('signPackage', $signPackage);
         $this->display();
 
@@ -2623,10 +2674,10 @@ public function check(){
                 $arr['time']		= $now;
                 $arr['token']		= $this->token;
                 $arr['cat']			= 1;
-                $arr['shop']		= $this->_post('address');
+                $arr['shop']		= $this->getshopname();
                 $arr['carno']		= $this->_post('carno');
                 $arr['usecount']	= $useTime;
-                $arr['notes']		= $this->_post('notes','trim').'线下消费'.$r_record['coupon_name'].'一张';
+                $arr['notes']		= '线下消费'.$r_record['coupon_name'].'一张';
                 $arr['score'] 		=0;
                 M('Member_card_use_record')->add($arr);	//添加消费券使用记录					
                
@@ -2751,7 +2802,7 @@ public function check(){
                 $arr['time']		= $now;
                 $arr['token']		= $this->token;
                 $arr['cat']			= 1;
-                $arr['shop']		= $this->_post('address');
+                $arr['shop']		= $this->getshopname();
                 $arr['carno']		= $this->_post('carno');
                 $arr['usecount']	= 1;
                 $arr['notes']		= $this->_post('notes','trim').'线下消费'.$r_record['coupon_name'].'一张';

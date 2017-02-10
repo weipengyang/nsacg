@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 class WeixinAction extends Action{
 	private $token;
 	private $fun;
@@ -268,23 +268,11 @@ class WeixinAction extends Action{
 			$node=D('Rippleos_node')->where(array('token'=>$this->token))->find();
 			$this->rippleos_unauth($node['node']);
 		}elseif($data['Event']=='LOCATION'){
-            if($this->data['Latitude']){
-
-                //$transUrl='http://api.map.baidu.com/ag/coord/convert?from=2&to=4&x='.$this->data['Longitude'].'&y='.$this ->data['Latitude'];
-                //$json=Http::fsockopenDownload($transUrl);
-                //if($json==false){
-                //    $json=file_get_contents($transUrl);
-                //}
-                //$arr=json_decode($json,true);
-                //$x=base64_decode($arr['x']);
-                //$y=base64_decode($arr['y']);
-                if($this->data['FromUserName']=='ohD3dviFloHSvcl9ieoXFibqPFJM'){
-                    $weixin = new Wechat($this->token,$this->wxuser);
-                    $distance=$this->distance('22.80268','113.529008',$this ->data['Latitude'],$this->data['Longitude']);
-                    $content='距离区府店:'.$distance.'公里\r\n';
-                    $content.='当前位置:'.$this ->data['Latitude'].','.$this->data['Longitude'];
-                    $weixin->send($content,$this->data['FromUserName']);
-                }
+            if($this->data['Latitude']){                
+                $data['location_y'] = $this ->data['Latitude']; // 纬度，浮点数，范围为90 ~ -90
+                $data['location_x'] = $this->data['Longitude']; // 经度，浮点数，范围为180 ~ -180。
+                $data['getlocationtime']=time();
+                M('userinfo')->where(array('wecha_id'=>$this->data['FromUserName']))->save($data);
             }
 			return $this->nokeywordApi();
 		}
@@ -1119,9 +1107,7 @@ class WeixinAction extends Action{
                     );//BY h 读心术结束
                     break;  
 				    case '微生活': 
-			 $pro = M('weilivereply_info')->where(array(
-                        'token' => $this->token
-                    ))->find();
+			        $pro = M('weilivereply_info')->where(array( 'token' => $this->token))->find();
                     return array(
                         array(
                             array(
@@ -1136,26 +1122,15 @@ class WeixinAction extends Action{
                     break;
 					
 						//独立商城	
-	case '微商城':
-
+	            case '微商城':
                 $pro = M('reply_info')->where(array('infotype' => 'Shop', 'token' => $this->token))->find();
-
                 $url = ((((C('site_url') . '/sc/index.php?g=home&m=Index&a=index&token=') . $this->token) . '&wecha_id=') . $this->data['FromUserName']) . '&sgssz=mp.weixin.qq.com';
-
                 if ($pro['apiurl']) {
-
                     $url = str_replace('&amp;', '&', $pro['apiurl']);
-
                 }
-
                 return array(array(array($pro['title'], $this->handleIntro($pro['info']), $pro['picurl'], $url)), 'news');
-
-                break;
-
             case '微团购':
-
                 $pro = M('reply_info')->where(array('infotype' => 'Shop', 'token' => $this->token))->find();
-
                 $url = ((((C('site_url') . '/sc/index.php?g=groupon&m=Index&a=index&token=') . $this->token) . '&wecha_id=') . $this->data['FromUserName']) . '&sgssz=mp.weixin.qq.com';
 
                 if ($pro['apiurl']) {
@@ -1163,13 +1138,9 @@ class WeixinAction extends Action{
                     $url = str_replace('&amp;', '&', $pro['apiurl']);
 
                 }
-
                 return array(array(array($pro['title'], $this->handleIntro($pro['info']), $pro['picurl'], $url)), 'news');
 
-                break;
-
             case '微秒杀':
-
                 $pro = M('reply_info')->where(array('infotype' => 'Shop', 'token' => $this->token))->find();
 
                 $url = ((((C('site_url') . '/sc/index.php?g=miaosha&m=Index&a=index&token=') . $this->token) . '&wecha_id=') . $this->data['FromUserName']) . '&sgssz=mp.weixin.qq.com';
@@ -1181,8 +1152,6 @@ class WeixinAction extends Action{
                 }
 
                 return array(array(array($pro['title'], $this->handleIntro($pro['info']), $pro['picurl'], $url)), 'news');
-
-                break;	
 				case '微招聘': 
 				$pro=M('zhaopin_reply')->where(array('token'=>$this->token))->find();
 				if($pro){

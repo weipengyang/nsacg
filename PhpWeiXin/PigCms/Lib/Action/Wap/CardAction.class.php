@@ -1718,7 +1718,6 @@ class CardAction extends WapAction{
 
     private function changecarinfo($user,$number)
     {
-
         $car=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$user['carno']))->find();
         $lb='2星客户';
         if(!empty($car)){

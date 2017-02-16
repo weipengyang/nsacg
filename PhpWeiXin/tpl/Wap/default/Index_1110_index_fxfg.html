@@ -239,7 +239,12 @@
                         </div>
                         <div class="row" style="margin:0px;text-align:center">
                             <div class="col-40">服务顾问</div>
-                            <div class="col-60" style="color:#ffd800;text-align:left"><span style="margin-left:10px">{pigcms:$fwgwinfo['姓名']}</span></div>
+                            <div class="col-60" style="color:#ffd800;text-align:left">
+                                <if condition="empty($carinfo['服务顾问'])">
+                                    <span type="text" id='fwgw'>选择服务顾问</span>
+                                 <else/> <span style="margin-left:10px">{pigcms:$fwgwinfo['姓名']}</span>
+                                </if>
+                            </div>
                         </div>
                         <div class="row" style="margin:0px;text-align:center">
                             <div class="col-100" style="margin-left:1rem;text-align:center;color:#FF9900">{pigcms:$fwgwinfo['联系电话']}</div>
@@ -409,6 +414,34 @@
                 autoplay: 1000,
                 direction: 'vertical',
                 loop: true
+            });
+            $("#fwgw").picker({
+                toolbarTemplate: '<header class="bar bar-nav">\
+                  <button class="button button-link pull-right close-picker">\
+                  确定\
+                  </button>\
+                  <h1 class="title">选择服务顾问</h1>\
+                  </header>',
+                onClose:function(row){
+                    var submitData = {
+                        fwgw:row.value[0]
+                    };
+                    $.post('/index.php?g=Wap&m=Store&a=setfwgw&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData,
+                    function (data) {
+                        location.href=location.href;
+                    });
+                },
+                cols: [
+                  {
+                      textAlign: 'center',
+                      values: [
+                         <volist name="fwgwlist" id="fwgw">
+                            '{pigcms:$fwgw.姓名}',
+                         </volist>
+                      ],
+                      cssClass: 'picker-items-col-normal',
+                  }
+                ]
             });
             wx.config({
                 //debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。

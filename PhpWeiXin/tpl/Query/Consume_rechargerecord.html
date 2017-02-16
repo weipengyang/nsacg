@@ -142,7 +142,8 @@
             { display: '姓名', name: 'truename', width: 100, align: 'left' },
             {
                 display: '会员卡号', name: 'number', minWidth: 100, render: function (rowdata, index, value) {
-                    return value;
+
+                    return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\')">' + value + '</a>';
                 }
             },
             { display: '门店', name: 'shop', minWidth: 120 },

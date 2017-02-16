@@ -141,6 +141,14 @@
                               });
                         }
                     }            ]            });
+
+            $("input[ligeruiid='起始日期']").blur(function () {
+                var strdate = this.value;
+                var myDate = new Date();
+                var year = parseInt(myDate.getFullYear()) + 1;
+                strdate = year + strdate.substring(4);
+                $("input[ligeruiid='截至日期']").val(strdate);
+            });
         });
 
 

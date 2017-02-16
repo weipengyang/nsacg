@@ -136,7 +136,7 @@ class StoreAction extends WapAction{
             if(isset($user)&&trim($user['carno'])!=$carno){
                 echo '车牌号码与原来注册车牌不一致';exit;
             }
-            $car=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$user['carno']))->find();
+            $car=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
             if(!empty($car)){
                 if($car['客户类别']=='定点签约'){
                     echo '定点签约用户不能注册';
@@ -493,6 +493,47 @@ private function weixinmessage($content,$depart){
     }
 }
 
+private function MessageTip($carinfo,$mendian,$wxlb){
+    $data['车主']=$carinfo['车主'];
+    $data['车牌号码']=$carinfo['车牌号码'];
+    $data['跟踪时间']=date('Y-m-d H:i',time());
+    $data['跟踪人']='系统';
+    $data['跟踪类型']='到店消费';
+    $data['年份']=date('Y');
+    if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
+        if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
+            $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
+            $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已到'.$mendian.$wxlb;
+            $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
+            $this->weixinmessage($content,$mendian);
+            $data['类别']='保险';
+            $data['内容']=$content;
+            M('客户跟踪','dbo.','difo')->add($data);
+
+        }
+    }
+    if(date('Y-m-d',strtotime($carinfo['年检日期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['年检日期']))!='1970-01-01'){
+        if(strtotime($carinfo['年检日期'])-(time()+60*24*3600)<0){
+            $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
+            $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
+            $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
+            $this->weixinmessage($content,$mendian);
+            $data['类别']='年审';
+            $data['内容']=$content;
+            M('客户跟踪','dbo.','difo')->add($data);
+
+
+        }
+    }
+    if(date('Y-m-d',strtotime($carinfo['下次保养']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['下次保养']))!='1970-01-01'){
+        if(strtotime($carinfo['下次保养'])<=time()&&strtotime($carinfo['下次保养'])+60*24*3600>=time()){
+            $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
+            $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
+            $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
+            $this->weixinmessage($content,$mendian);
+        }
+    }
+}
 
 private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',$shop='',$comment){
     if($shop=='')
@@ -593,30 +634,7 @@ private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',
             $row['是否同意']=1;
             $row['已维修']='0小时'; 
             M('维修项目','dbo.','difo')->add($row);
-            if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
-                if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
-                    $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
-                    $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已到'.$shop.$wxlb;
-                    $content.=',请做好跟踪服务';
-                    $this->weixinmessage($content,$shop);
-                }
-            }
-            if(date('Y-m-d',strtotime($carinfo['年检日期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['年检日期']))!='1970-01-01'){
-                if(strtotime($carinfo['年检日期'])-(time()+90*24*3600)<0){
-                    $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
-                    $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已到'.$shop.$wxlb;
-                    $content.=',请做好跟踪服务';
-                    $this->weixinmessage($content,$shop);
-                }
-            }
-            if(date('Y-m-d',strtotime($carinfo['下次保养']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['下次保养']))!='1970-01-01'){
-                if(strtotime($carinfo['下次保养'])-(time()+30*24*3600)<0){
-                    $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
-                    $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已到'.$shop.$wxlb;
-                    $content.=',请做好跟踪服务';
-                    $this->weixinmessage($content,$shop);
-                }
-            }
+            $this->MessageTip($carinfo,$shop,$wxlb);
         }
     }
 } 
@@ -1280,7 +1298,7 @@ public function check(){
             $fwgwinfo=M('员工目录','dbo.','difo')->where(array('姓名'=>$carinfo['服务顾问']))->find();
         }
         else{
-            $fwgwinfo=M('员工目录','dbo.','difo')->where(array('姓名'=>'刘述庆'))->find();
+            $fwgwinfo=1;
         }
         $wxcount=M('维修','dbo.','difo')->where(array('车主'=>$card['number'],'维修类别'=>array('neq','蜡水洗车'),'当前状态'=>array('not in',array('结束','取消'))))->count();
         $couponCount=M("member_card_coupon_record")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'is_use'=>'0','over_time'=>array('egt',strtotime(date('Y-m-d',time())))))->count();
@@ -1292,6 +1310,8 @@ public function check(){
         $count=$wxlist+$xslist+$bxlist+$dblist;
         $jssdk = new JSSDK($this->wxuser['appid'],$this->wxuser['appsecret']);
         $signPackage = $jssdk->GetSignPackage();
+        $fwgwlist=M('员工目录','dbo.','difo')->where(array('职务'=>'服务顾问'))->select();
+        $this->assign('fwgwlist',$fwgwlist);
         $this->assign('count',$count);
         $this->assign('unreaded',$unreaded);
         $this->assign('couponCount',$couponCount);
@@ -1307,7 +1327,15 @@ public function check(){
 		$this->display("Index:1110_index_fxfg");
 		
 	}
-
+    public function setfwgw(){
+        if(IS_POST){
+        $wecha_id=$_GET['wecha_id'];
+        $fwgw=$_POST['fwgw'];
+        $cars=M('member_card_car')->where(array('wecha_id'=>$wecha_id))->select();
+        $carnames='\''.implode('\',\'',array_column($cars,'carno')).'\'';
+        M('维修','dbo.','difo')->execute("update 车辆档案 set 服务顾问='$fwgw' where 车牌号码 in($carnames)");
+        }
+    }
     #region 原来的首页
 	public function catsdel() 
 	{
@@ -2618,11 +2646,14 @@ public function check(){
         
             }
 		}
+        $userinfo=M('Userinfo')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
     	$this->assign('firstItemID',$data[0]['id']);
     	$this->assign('count1',count($list));
+    	$this->assign('userinfo',$userinfo);
         //$this->assign('count2',count($uselist));
    	   // $this->assign('count3',count($overlist));
    	    $this->assign('carinfo',$carinfo);
+ 
         $this->assign('list',$list);
     	$this->assign('overlist',$overlist);
     	$this->assign('uselist',$uselist);
@@ -2674,7 +2705,11 @@ public function check(){
                 $arr['time']		= $now;
                 $arr['token']		= $this->token;
                 $arr['cat']			= 1;
-                $arr['shop']		= $this->getshopname();
+                $arr['shop']		= $this->_post('shop');;
+
+                if($userinfo['location_x']){
+                    $arr['shop']		= $this->getshopname();
+                }
                 $arr['carno']		= $this->_post('carno');
                 $arr['usecount']	= $useTime;
                 $arr['notes']		= '线下消费'.$r_record['coupon_name'].'一张';

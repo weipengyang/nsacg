@@ -1108,19 +1108,17 @@ class ConsumeAction extends Action{
     {   
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
-        $sortname=$_POST['sortname'];
-        $sortorder=$_POST['sortorder'];
-        if(!isset($sortname)){
-            $sortname='流水号';
-            $sortorder='desc';
+        $fwgw=$_POST['fwgw'];
+        $khlb=$_POST['khlb'];
+        $startdate=$_POST['startdate'];
+        $enddate=$_POST['enddate'];
+        $searchkey=trim($_POST['searchkey']);
+        if($startdate==''){
+            $startdate=date('Y-01-01',time());
         }
-        if (isset($_POST['khlb'])&&trim($_POST['khlb'])!=''){
-            $where['客户类别']=$_POST['khlb'];
+        if($enddate==''){
+            $enddate=date('Y-m-d',time());
         }
-        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
-            $searchkey='%'.trim($_POST['searchkey']).'%';
-        }
-        $where['车牌号码']=array('neq','0000');
         if($_POST['where']!=''){
             $cond=json_decode($_POST['where']);
             $conditions=$cond->rules;
@@ -1153,14 +1151,12 @@ class ConsumeAction extends Action{
             $where['_complex']=$searchwhere;
             
         }
-        $count=M('车辆资料','dbo.','difo')
-            ->join('left join 会员消费分析 on 车辆资料.车牌号码=会员消费分析.车牌')
-            ->where($where)->count();
-        $yelist=M('车辆资料','dbo.','difo')
-            ->join('left join 会员消费分析 on 车辆资料.车牌号码=会员消费分析.车牌')
-            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $yelist=M('车辆消费分析','dbo.','difo')->query("exec 车辆消费分析 '$startdate','$enddate','$fwgw','$khlb',$page,$pagesize,'$searchkey'");
+        $StockTotal=M('出入库统计数量','dbo.','difo')->query("exec 车辆消费统计数据 '$startdate','$enddate','$fwgw','$khlb','$searchkey'");
+        $count=$StockTotal[0]['数量'];        
         $data['Rows']=$yelist;
         $data['Total']=$count;
+        $data['StockTotal']=$StockTotal;
         echo json_encode($data);
         
     }
@@ -1580,7 +1576,7 @@ class ConsumeAction extends Action{
             $where['_string']="ordername like '%充值%' and paid=1";
         }  
         if(!isset($sortname)){
-            $order='tp_member_card_pay_record.id desc';
+            $order='tp_member_card_pay_record.createtime desc';
         }
         else{
             $order=$sortname.' '.$sortorder;
@@ -1908,6 +1904,9 @@ class ConsumeAction extends Action{
                 $dbinfo['制单日期']=date('Y-m-d',time());
                 $dbinfo['当前状态']='审核';
                 M('车辆代办','dbo.','difo')->add($dbinfo);
+                $carinfo['年检日期']=$dbinfo['截至日期'];
+                M('车辆档案')->where(array('车牌号码'=>$dbinfo['车牌号码']))->save($carinfo);
+
             }else{
 
             }
@@ -1927,6 +1926,9 @@ class ConsumeAction extends Action{
                 $bxinfo['制单日期']=date('Y-m-d',time());
                 $bxinfo['当前状态']='审核';
                 M('车辆保险','dbo.','difo')->add($bxinfo);
+                $carinfo['交保到期']=$bxinfo['交强截至'];
+                $carinfo['商保到期']=$bxinfo['商业截至'];
+                M('车辆档案')->where(array('车牌号码'=>$bxinfo['车牌号码']))->save($carinfo);
             }else{
 
             }
@@ -2157,6 +2159,12 @@ class ConsumeAction extends Action{
         echo json_encode($zxlist);
     
    }
+    public  function getgw(){
+        
+        $zxlist=M('员工目录','dbo.','difo')->where(array('职务'=>'服务顾问','姓名'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($zxlist);
+        
+    }
     public  function getlly(){
         
         $zxlist=M('员工目录','dbo.','difo')->where(array('领料员'=>'1','姓名'=>array('like','%'.$_POST['key'].'%')))->select();
@@ -2791,7 +2799,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         }
         $wxno=$_GET['carno'];
         $upload->autoSub=0;
-        $upload->saveRule=null;
+        $upload->saveRule=$this->genfilename();
         $upload->thumbRemoveOrigin=true;
         
         $upload->savePath =  './uploads/'.$this->token.'/tracefiles/'.$wxno.'/';// 设置附件上传目录
@@ -2881,7 +2889,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         }
         $wxno=$_GET['wxno'];
         $upload->autoSub=0;
-        $upload->saveRule=null;
+        $upload->saveRule=$this->genfilename();
         $upload->thumbRemoveOrigin=true;
         
         $upload->savePath =  './uploads/'.$this->token.'/wxfiles/'.$wxno.'/';// 设置附件上传目录
@@ -2987,6 +2995,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         $this->assign('code',$code);
         $this->display();
     }
+    private function genfilename(){
+        return date('YmdHis',time()).mt_rand(1000,9999);
+    }
     function uploadproduct($filetypes=''){
         import('ORG.Net.UploadFile');
         $upload = new UploadFile();
@@ -2998,7 +3009,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         }
         $code=$_GET['code'];
         $upload->autoSub=0;
-        $upload->saveRule=null;
+        $upload->saveRule=$this->genfilename();
         $upload->thumbRemoveOrigin=true;
         
         $upload->savePath =  './uploads/'.$this->token.'/products/'.$code.'/';// 设置附件上传目录
@@ -3088,7 +3099,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        }
        $carno=$_GET['carno'];
        $upload->autoSub=0;
-       $upload->saveRule=null;
+       $upload->saveRule=$this->genfilename();
        $upload->thumbRemoveOrigin=true;
        
        $upload->savePath =  './uploads/'.$this->token.'/cars/'.$carno.'/';// 设置附件上传目录
@@ -4670,7 +4681,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 exit;
            }
           $kc=M('配件仓位','dbo.','difo')->where(array('编号'=>$pj['编号'],'仓库'=>$pj['仓库']))->find();
-          if($kc['库存']-$pj['数量']-$pj['待审核数量']<0){
+          if($kc['库存']+$pj['已领料数量']-$pj['数量']-$pj['待审核数量']<0){
               echo $pj['名称']."库存不够";
               exit;
           }
@@ -5676,30 +5687,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                foreach($data as $key=>$value){
                    $data[$key]=$carinfo[$key];
                }
-               if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
-                   if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
-                       $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
-                       $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已到'.$wxinfo['门店'].'洗车';
-                       $content.=',请做好跟踪服务';
-                       $this->weixinmessage($content,$wxinfo['门店']);
-                   }
-               }
-               if(date('Y-m-d',strtotime($carinfo['年检日期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['年检日期']))!='1970-01-01'){
-                   if(strtotime($carinfo['年检日期'])-(time()+90*24*3600)<0){
-                       $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
-                       $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已到'.$wxinfo['门店'].'洗车';
-                       $content.=',请做好跟踪服务';
-                       $this->weixinmessage($content,$wxinfo['门店']);
-                   }
-               }
-               if(date('Y-m-d',strtotime($carinfo['下次保养']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['下次保养']))!='1970-01-01'){
-                   if(strtotime($carinfo['下次保养'])-(time()+30*24*3600)<0){
-                       $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
-                       $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已到'.$wxinfo['门店'].'洗车';
-                       $content.=',请做好跟踪服务';
-                       $this->weixinmessage($content,$wxinfo['门店']);
-                   }
-               }
+               $this->MessageTip($carinfo,$wxinfo['门店'],'蜡水洗车');              
            }
            else{
                $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
@@ -6240,6 +6228,46 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
 
        }
    }
+   private function MessageTip($carinfo,$mendian,$wxlb){
+       $data['车主']=$carinfo['车主'];
+       $data['车牌号码']=$carinfo['车牌号码'];
+       $data['跟踪时间']=date('Y-m-d H:i',time());
+       $data['跟踪人']='系统';
+       $data['跟踪类型']='到店消费';
+       $data['年份']=date('Y');
+       if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
+           if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
+               $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
+               $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已到'.$mendian.$wxlb;
+               $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
+               $this->weixinmessage($content,$mendian);
+               $data['类别']='保险';
+               $data['内容']=$content;
+               M('客户跟踪','dbo.','difo')->add($data);
+
+           }
+       }
+       if(date('Y-m-d',strtotime($carinfo['年检日期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['年检日期']))!='1970-01-01'){
+           if(strtotime($carinfo['年检日期'])-(time()+60*24*3600)<0){
+               $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
+               $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
+               $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
+               $this->weixinmessage($content,$mendian);
+               $data['类别']='年审';
+               $data['内容']=$content;
+               M('客户跟踪','dbo.','difo')->add($data);
+
+           }
+       }
+       if(date('Y-m-d',strtotime($carinfo['下次保养']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['下次保养']))!='1970-01-01'){
+           if(strtotime($carinfo['下次保养'])<=time()&&strtotime($carinfo['下次保养'])+60*24*3600>=time()){
+               $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
+               $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
+               $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
+               $this->weixinmessage($content,$mendian);
+           }
+       }
+   }
    private function genwxrecord($carno,$type='AYC0002',$wxlb='蜡水洗车',$person,$fwgw,$licheng=null,$youwei=null,$lxr=null,$phone=null,$luntai=null,$fault=null){
       
         $data=M('维修','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
@@ -6256,7 +6284,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         if($carinfo)
         {
             $carinfo['最近维修']=date('Y-m-d',time());
-            $carinfo['服务顾问']=$fwgw;
+            //$carinfo['服务顾问']=$fwgw;
             $carinfo['维修次数']=intval($carinfo['维修次数'])+1;
             $carinfo['轮胎规格']=$luntai;
             if(isset($licheng)){
@@ -6265,7 +6293,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                     if(intval($licheng)-intval($carinfo['里程'])>intval($carinfo['常规保养数'])){
                         $content=$carinfo['联系人'].'的'.$carinfo['车牌号码']."车辆已超过$baoyang 公里未进行保养，";
                         $content.='现车辆已进厂'.$yg['部门'].$wxlb;
-                        $content.=',请做好跟踪服务';
+                        $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
                         $this->weixinmessage($content,$yg['部门']);
                     }
                 }
@@ -6287,30 +6315,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             foreach($data as $key=>$value){
                 $data[$key]=$carinfo[$key];
             }
-            if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
-                if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
-                    $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
-                    $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已到'.$yg['部门'].$wxlb;
-                    $content.=',请做好跟踪服务';
-                    $this->weixinmessage($content,$yg['部门']);
-                }
-            }
-            if(date('Y-m-d',strtotime($carinfo['年检日期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['年检日期']))!='1970-01-01'){
-                if(strtotime($carinfo['年检日期'])-(time()+60*24*3600)<0){
-                    $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
-                    $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$yg['部门'].$wxlb;
-                    $content.=',请做好跟踪服务'; 
-                    $this->weixinmessage($content,$yg['部门']);
-                }
-            }
-            if(date('Y-m-d',strtotime($carinfo['下次保养']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['下次保养']))!='1970-01-01'){
-                if(strtotime($carinfo['下次保养'])<=time()&&strtotime($carinfo['下次保养'])+60*24*3600>=time()){
-                    $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
-                    $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已进厂'.$yg['部门'].$wxlb;
-                    $content.=',请做好跟踪服务';
-                    $this->weixinmessage($content,$yg['部门']);
-                }
-            }
+            $this->MessageTip($carinfo,$yg['部门'],$wxlb);
         }
         else{ 
             if($wxlb!='普通快修'){

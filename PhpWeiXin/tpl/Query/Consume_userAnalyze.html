@@ -26,18 +26,52 @@
         <!-- content start -->
         <div class="admin-content">
         <div class="admin-content-body">
-            <div id="searchbar">
-                客户类别:
-                <select name="khlb" id="khlb">
-                    <option value="">所有分类</option>
-                   <volist name="lblist" id="item">
-                        <option value="{pigcms:$item.客户类别}">{pigcms:$item.客户类别}</option>
-                    </volist>
-                </select>
-                关键字：<input id="searchkey" type="text" />
-                <input id="search" type="button" value="模糊查询"  />
-                <input id="highgrade" type="button" value="高级搜索" />
-                <input id="export" type="button" value="导出资料" />
+            <div class="am-g">
+                <div class="am-u-sm-3 am-u-md-3">
+                    <div class="am-form-group">
+                        客户类别
+                        <select data-am-selected="{btnSize: 'sm',btnWidth:'100px'}" id="khlb">
+                            <option value="ALL">所有分类</option>
+                            <volist name="lblist" id="item">
+                                <option value="{pigcms:$item.客户类别}">{pigcms:$item.客户类别}</option>
+                            </volist>
+                        </select>
+                        服务顾问
+                        <select data-am-selected="{btnSize: 'sm',btnWidth:'100px'}" id="fwgw">
+                            <option value="ALL">所有分类</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="am-u-sm-1 am-u-md-1">
+                    <div class="am-input-group am-datepicker-date" style="width:100px" data-am-datepicker="{format: 'yyyy-mm-dd'}">
+                        <input type="text" class="am-form-field" id="startdate" style="width:100px" placeholder="开始日期" readonly=readonly />
+                        <span class="am-input-group-btn am-datepicker-add-on">
+                            <button class="am-btn am-btn-default" type="button"><span class="am-icon-calendar"></span> </button>
+                        </span>
+                    </div>
+                </div>
+                <div class="am-u-sm-1 am-u-md-1 ">
+                    <div class="am-input-group am-datepicker-date" style="width:100px" data-am-datepicker="{format: 'yyyy-mm-dd'}">
+                        <input type="text" class="am-form-field" id="enddate" style="width:100px" placeholder="结束日期" readonly=readonly />
+                        <span class="am-input-group-btn am-datepicker-add-on">
+                            <button class="am-btn am-btn-default" type="button"><span class="am-icon-calendar"></span> </button>
+                        </span>
+                    </div>
+                </div>
+                <div class="am-u-sm-2 am-u-md-2 am-u-md-offset-1 am-u-sm-offset-1">
+                    <div class="am-input-group am-input-group-sm" style="width:200px">
+                        <input type="text" id="searchkey" class="am-form-field" />
+                        <span class="am-input-group-btn">
+                            <input id="search" type="button" class="am-btn am-btn-default"  value="模糊查询" />
+                            
+                        </span>
+                    </div>
+                </div>
+                <div class="am-u-sm-3 am-u-md-3">
+                    <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="exportdata();">导出数据</button>
+                    <input id="highgrade" type="button" class="am-btn am-btn-default" value="高级搜索" />
+                    <input id="export" type="button" class="am-btn am-btn-default" value="导出资料" />
+                </div>
             </div>
 
             <div id="maingrid4" style="margin:0; padding:0"></div>
@@ -94,11 +128,33 @@
 
         });
         var cargird;
+        function f_totalRender(data, currentPageData) {
+            return " 洗车次数:" + data.StockTotal[0].洗车次数
+                + "  洗车金额:" + data.StockTotal[0].洗车金额
+                + "  美容次数:" + data.StockTotal[0].美容次数
+                + "  美容金额:" + data.StockTotal[0].美容金额
+                + "  维修数量:" + data.StockTotal[0].维修数量
+                + "  维修金额:" + data.StockTotal[0].维修金额
+                + "  保险次数:" + data.StockTotal[0].保险次数
+                + "  保险金额:" + data.StockTotal[0].保险金额
+                + "  代办次数:" + data.StockTotal[0].代办次数
+                + "  代办金额:" + data.StockTotal[0].代办金额;
+        }
         $(document).ready(function () {
            $.ligerDefaults.Filter.operators['string'] =
            $.ligerDefaults.Filter.operators['text'] =
            ["like", "equal", "notequal"];
-
+           $.post('index.php?g=Query&m=Consume&a=getgw', null,
+          function (data) {
+              if (data) {
+                  $('#fwgw').empty();
+                  $('#fwgw').append("<option value=''>所有人</option>");
+                  $(data).each(function () {
+                      var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
+                      $('#fwgw').append(option);
+                  });
+              }
+          }, 'JSON');
             $('#highgrade').click(function () {
                 cargird.showFilter();
             });
@@ -144,7 +200,7 @@
                 pageSize: 20,
                 url: '/index.php?g=Query&m=Consume&a=getuserconsume',
                 height: '100%',
-                onDblClickRow: function (data, rowindex, rowobj) {
+                totalRender: f_totalRender,                onDblClickRow: function (data, rowindex, rowobj) {
                     memberinfo(data['车主']);
                 }
             });
@@ -152,8 +208,17 @@
                 cargird.changePage('first');
                 var parms = {};
                 var khlb = $('#khlb').val();
-                if (khlb != '')
-                    parms.khlb =khlb;
+                khlb=(khlb == 'ALL' ? '' : khlb);
+                parms.khlb = khlb;
+                var enddate = $('#enddate').val();
+                if (enddate != '')
+                    parms['enddate'] = enddate;
+                var startdate = $('#startdate').val();
+                if (startdate != '')
+                    parms['startdate'] = startdate;
+                var fwgw = $('#fwgw').val();
+                fwgw = (fwgw == 'ALL' ? '' : fwgw);
+                parms['fwgw'] = fwgw;
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     parms.searchkey = searchkey;

@@ -179,23 +179,31 @@
                 <div class="weui_mask"></div>
                 <div class="weui_dialog">
                         <div class="weui_cells weui_cells_form">
-                            <if condition="count($carinfo) gt 1">
+                            <if condition="$userinfo['location_x'] eq null">
                                 <div class="weui_cell">
-                                    <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">车牌号码</label></div>
+                                    <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">服务门店</label></div>
                                     <div class="weui_cell_bd weui_cell_primary">
-                                        <input type="text" placeholder="本次使用车牌号码"  class="weui_input" id='carno' readonly />
+                                        <input type="text" class="weui_input" placeholder="选择门店" id='address' readonly />
                                     </div>
                                 </div>
-                                <else/>
-                                <input type="hidden" id='carno' readonly value="{pigcms:$carinfo[0].carno}" />
-                            </if>
-                            <div class="weui_cell">
-                                <div class="weui_cell_hd" style="width:90px"><label class="weui_label"  style="white-space:nowrap;">消费密码</label></div>
-                                <div class="weui_cell_bd weui_cell_primary">
-                                    <input name="password" class="weui_input"    id="password" value="" type="password" placeholder="请输入消费密码">
+                              </if>
+                                <if condition="count($carinfo) gt 1">
+                                    <div class="weui_cell">
+                                        <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">车牌号码</label></div>
+                                        <div class="weui_cell_bd weui_cell_primary">
+                                            <input type="text" placeholder="本次使用车牌号码" class="weui_input" id='carno' readonly />
+                                        </div>
+                                    </div>
+                                    <else />
+                                    <input type="hidden" id='carno' readonly value="{pigcms:$carinfo[0].carno}" />
+                                </if>
+                                <div class="weui_cell">
+                                    <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">消费密码</label></div>
+                                    <div class="weui_cell_bd weui_cell_primary">
+                                        <input name="password" class="weui_input" id="password" value="" type="password" placeholder="请输入消费密码">
+                                    </div>
                                 </div>
-                            </div>                               
-                            </div>
+                       </div>
                        <div class="weui_dialog_ft">
                         <a href="javascript:;" class="weui_btn_dialog default">取消</a>
                         <a href="javascript:;" class="weui_btn_dialog primary">确定</a>
@@ -262,6 +270,7 @@
         function use(i) {
           
             var password = $('#password').val();
+            var address = $('#address').val();
             var carno = $('#carno').val();
             if (!carno) {
                 $.alert('请选择车牌号码');
@@ -277,7 +286,9 @@
             var submitData = {
                 password: password,
                 record_id: itemid,
+                shop: address,
                 carno:carno,
+                coupon_type:1,
                 cat: 0,
             };
 

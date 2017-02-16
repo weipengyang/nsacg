@@ -87,7 +87,9 @@
                  { display: "证件号码", name: "证件号码", newline: false, type: "text" },
                  { display: "联系方式", name: "联系方式", newline: false, type: "text" },
                  { display: '交强保单', name: '交强保单', newline: false, type: "text", },
-                 { display: '起始日期', name: '交强起始', newline: false, type: "date", },
+                 {
+                     display: '起始日期', name: '交强起始', newline: false, type: "date"
+                 },
                  { display: '截至日期', name: '交强截至', newline: false, type: "date", },
                  { display: '商业保单', name: '商业保单', newline: false, type: "text", },
                  { display: '起始日期', name: '商业起始', newline: false, type: "date", },
@@ -175,6 +177,21 @@
                               });
                         }
                     }            ]            });
+
+            $("input[ligeruiid='交强起始']").blur(function () {
+                var strdate = this.value;
+                var myDate = new Date();
+                var year = parseInt(myDate.getFullYear()) + 1;
+                strdate = year + strdate.substring(4);
+                $("input[ligeruiid='交强截至']").val(strdate);
+            });
+            $("input[ligeruiid='商业起始']").blur(function () {
+                var strdate = this.value;
+                var myDate = new Date();
+                var year = parseInt(myDate.getFullYear()) + 1;
+                strdate = year + strdate.substring(4);
+                $("input[ligeruiid='商业截至']").val(strdate);
+            });
         });
 
 

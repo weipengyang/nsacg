@@ -1310,8 +1310,6 @@ public function check(){
         $count=$wxlist+$xslist+$bxlist+$dblist;
         $jssdk = new JSSDK($this->wxuser['appid'],$this->wxuser['appsecret']);
         $signPackage = $jssdk->GetSignPackage();
-        $fwgwlist=M('员工目录','dbo.','difo')->where(array('职务'=>'服务顾问'))->select();
-        $this->assign('fwgwlist',$fwgwlist);
         $this->assign('count',$count);
         $this->assign('unreaded',$unreaded);
         $this->assign('couponCount',$couponCount);
@@ -1327,6 +1325,12 @@ public function check(){
 		$this->display("Index:1110_index_fxfg");
 		
 	}
+    public function fwgw(){
+
+        $fwgwlist=M('员工目录','dbo.','difo')->where(array('职务'=>'服务顾问'))->select();
+        $this->assign('fwgwlist',$fwgwlist);
+        $this->display();
+    }
     public function setfwgw(){
         if(IS_POST){
         $wecha_id=$_GET['wecha_id'];

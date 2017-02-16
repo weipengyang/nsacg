@@ -1086,6 +1086,7 @@ class ConsumeAction extends Action{
         echo json_encode($data);
         
     }
+
     public  function getoilchange()
     {   
         $page=$_POST['page'];
@@ -1118,7 +1119,7 @@ class ConsumeAction extends Action{
             $where['下次保养']=array('BETWEEN',array(trim($_POST['startDate']),trim($_POST['endDate'])));
             
         }
-        $where['_string']="下次保养 is not null and 下次保养<>'1900-01-01' and 下次保养>=getdate()";
+        $where['_string']=" (下次保养 is not null and 下次保养<>'1900-01-01' and 下次保养>=getdate()) or ( isnull(保养里程,0)>0 and isnull(里程,0)>isnull(下次保养里程,0)) ";
         if($searchkey){       
             $searchwhere['品牌']=array('like',$searchkey);
             $searchwhere['轮胎规格']=array('like',$searchkey);

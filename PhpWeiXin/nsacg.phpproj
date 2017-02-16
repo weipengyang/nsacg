@@ -29330,6 +29330,7 @@
     <Content Include="tpl\Wap\default\Store_drop.html" />
     <Content Include="tpl\Wap\default\Store_helpscore.html" />
     <Content Include="tpl\Wap\default\Store_coupondetail.html" />
+    <Content Include="tpl\Wap\default\Store_fwgw.html" />
     <Content Include="tpl\Wap\default\Store_scoreprofit.html" />
     <Content Include="tpl\Wap\default\Store_wxcomment.html" />
     <Content Include="tpl\Wap\default\Store_weixiu.html" />

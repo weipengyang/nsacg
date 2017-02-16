@@ -906,6 +906,54 @@ class ConsumeAction extends Action{
         echo json_encode($data);
         
     }
+    public  function gettracemessage()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='跟踪时间';
+            $sortorder='desc';
+        }
+        $where['跟踪类型']='到店消费';
+        if (isset($_POST['sffk'])&&trim($_POST['sffk'])!=''){
+            $where['是否反馈']=$_POST['sffk'];
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($_POST['startDate']&&trim($_POST['startDate'])!='')
+        {
+            $where['跟踪时间']=array('egt',trim($_POST['startDate']));
+            
+        }
+        if($_POST['endDate']&&trim($_POST['endDate'])!='')
+        {
+            $where['跟踪时间']=array('elt',trim($_POST['endDate']));
+            
+        }
+        if(trim($_POST['startDate'])!=''&&trim($_POST['endDate'])!='')
+        {
+            $where['跟踪时间']=array('BETWEEN',array(trim($_POST['startDate']),trim($_POST['endDate'])));
+            
+        }
+        if($searchkey){       
+            $searchwhere['内容']=array('like',$searchkey);
+            $searchwhere['反馈内容']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $count=M('客户跟踪','dbo.','difo')
+            ->where($where)->count();
+        $yelist=M('客户跟踪','dbo.','difo')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
     public  function getcarsAnnual()
     {   
         $page=$_POST['page'];
@@ -1935,6 +1983,21 @@ class ConsumeAction extends Action{
             echo '保存成功';
         }
     }
+    public  function savetipreply()
+    {
+        if(IS_POST){
+            $tracedata=$_POST['tracedata'];
+            $tipdata=$_POST['tipdata'];
+            $tracedata['跟踪时间']=date('Y-m-d H:i',time());
+            $tracedata['类别']=$tipdata['类别'];
+            $tracedata['年份']=$tipdata['年份'];
+            $tracedata['跟踪类型']='现场交流';
+            $tracedata['登记人']=cookie('username');
+            M('客户跟踪','dbo.','difo')->add($tracedata);
+            M('客户跟踪','dbo.','difo')->where(array('流水号'=>$tipdata['流水号']))->save(array('是否反馈'=>'是','反馈内容'=>$tracedata['内容']));
+            echo '保存成功';
+        }
+    }
     public  function savetrace()
     {
         if(IS_POST){
@@ -1944,6 +2007,7 @@ class ConsumeAction extends Action{
                 unset($tracedata['年审到期']);
                 $tracedata['跟踪时间']=date('Y-m-d H:i',time());
                 $tracedata['类别']='年审';
+                $tracedata['登记人']=cookie('username');
                 M('客户跟踪','dbo.','difo')->add($tracedata);
             }else{
                 M('客户跟踪','dbo.','difo')->where(array('流水号'=>$tracedata['流水号']))->save($tracedata);
@@ -6265,6 +6329,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
                $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
                $this->weixinmessage($content,$mendian);
+               $data['类别']='保养';
+               $data['内容']=$content;
+               M('客户跟踪','dbo.','difo')->add($data);
            }
        }
    }
@@ -6295,6 +6362,15 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                         $content.='现车辆已进厂'.$yg['部门'].$wxlb;
                         $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
                         $this->weixinmessage($content,$yg['部门']);
+                        $tracedata['车主']=$carinfo['车主'];
+                        $tracedata['车牌号码']=$carinfo['车牌号码'];
+                        $tracedata['跟踪时间']=date('Y-m-d H:i',time());
+                        $tracedata['跟踪人']='系统';
+                        $tracedata['跟踪类型']='到店消费';
+                        $tracedata['年份']=date('Y');
+                        $tracedata['类别']='保养';
+                        $tracedata['内容']=$content;
+                        M('客户跟踪','dbo.','difo')->add($tracedata);
                     }
                 }
                 $carinfo['里程']=$licheng;

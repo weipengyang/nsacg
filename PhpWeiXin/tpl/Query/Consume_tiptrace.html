@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>年审跟踪</title>
+    <title>到店跟踪反馈</title>
     <meta name="description" content="爱养车">
     <meta name="keywords" content="index">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -47,12 +47,11 @@
             <div class="am-g">
                 <div class="am-u-sm-2 am-u-md-2">
                     <div class="am-form-group">
-                        类别:
+                        是否反馈:
                         <select name="khlb" id="khlb">
-                            <option value="">所有分类</option>
-                            <volist name="lblist" id="item">
-                                <option value="{pigcms:$item.客户类别}">{pigcms:$item.客户类别}</option>
-                            </volist>
+                            <option value="">所有</option>
+                            <option value="是">是</option>
+                            <option value="否">否</option>                          
                         </select>
                     </div>
                 </div>
@@ -70,9 +69,6 @@
                     <div class="am-form-group">
                         关键字：<input id="searchkey" type="text" />
                         <input id="search" type="button" value="模糊查询" />
-                        <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="batchmessage();">一键发送模板消息</button>
-                        <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="exportdata();">导出数据</button>
-                        <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="updatedate();">更新日期</button>
                     </div>
                 </div>
                
@@ -109,21 +105,20 @@
         function addtrace(data) {
             if (adddialog) {
                 adddialog.set('data', data);
-                adddialog.set('type', 'add');
-                adddialog.setUrl('/index.php?g=Query&m=Consume&a=annualtrace');
+                adddialog.setUrl('/index.php?g=Query&m=Consume&a=tipreply');
                 adddialog.show(); 
             }
             else {
                 adddialog = $.ligerDialog.open({
-                    height: 500,
-                    url: '/index.php?g=Query&m=Consume&a=annualtrace' ,
-                    width: 850,
+                    height: 320,
+                    url: '/index.php?g=Query&m=Consume&a=tipreply',
+                    width: 580,
                     showToggle: false,
                     showMin: false,
                     isResize: true,
                     modal: false,
                     data: data,
-                    title: '年审跟踪'
+                    title: '到店跟踪反馈'
                 });
             }
         }
@@ -152,37 +147,6 @@
 
         });
         var cargird;
-        function f_onAfterEdit() { }
-        function f_showdetail(row, detailPanel, callback) {
-            var detailgrid = document.createElement('div');
-            $(detailPanel).append(detailgrid);
-            $(detailgrid).ligerGrid({
-                columns:[
-                {
-                    display: '时间', name: '跟踪时间', width: 130, render: function (rowdata, index, value) {
-                            return todate(value,true);
-                    }
-                },
-                { display: '跟踪方式', name: '跟踪类型' },
-                { display: '跟踪人', name: '跟踪人' },
-                { display: '跟踪内容', name: '内容',minWidth:500 },
-                { display: '登记人', name: '登记人' },
-                ],
-                isScroll: false,
-                showToggleColBtn: false,
-                width: '50%',
-                usePager: false,
-                fixedCellHeight: false,
-                enabledEdit: true,
-                parms: { code: row['车牌号码'], type: '年审' },
-                url: '/index.php?g=Query&m=Consume&a=gettraceinfo',
-                showTitle: false,
-                columnWidth: 100,
-                onAfterEdit:f_onAfterEdit,
-                onAfterShowData: callback,
-                frozen: false
-            });
-        }
         function exportdata() {
             var url = '/index.php?g=Query&m=Consume&a=exportcarsinfo&type=2';
             var khlb = $('#khlb').val();
@@ -207,18 +171,6 @@
                          $.ligerDialog.alert(result);
                      }, 'text');
         }
-        function sendmessage(carno, number) {
-            $.ligerDialog.waitting('正在更新,请稍候...');
-            var submitdata = {
-                carno: carno,
-                number: number
-            };
-            $.post('index.php?g=Query&m=Consume&a=sendmessage&type=2', submitdata,
-                     function (data) {
-                         $.ligerDialog.closeWaitting();
-                         $.ligerDialog.alert(data);
-                     }, 'text');
-        }
         function batchmessage() {
             $.ligerDialog.waitting('正在发送,请稍候...');
             $.post('index.php?g=Query&m=Consume&a=sendbatchmessage&type=2', null,
@@ -234,71 +186,32 @@
             cargird = $("#maingrid4").ligerGrid({
                 columns: [
                         {
-                            display: '年审到期', name: '年检日期', minWidth: 100, render: function (rowdata, index, value) {
-                                return todate(value, false);
+                            display: '提醒时间', name: '跟踪时间', width: 140, render: function (rowdata, index, value) {
+                                return todate(value, true);
                             }
                         },
-                        { display: '车牌号码', name: '车牌号码', width: 80, align: 'left',render: function (rowdata, index, value) {
+                        { display: '车牌号码', name: '车牌号码', width: 100, align: 'left',render: function (rowdata, index, value) {
                             return '<a href="javascript:void(0);" onclick="carinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
                         } },
-                        { display: '车主', name: '车主', minWidth: 140,render: function (rowdata, index, value) {
+                        { display: '车主', name: '车主', width: 140,render: function (rowdata, index, value) {
                             return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
                         }  },
-                        { display: '联系人', name: '联系人', minWidth: 60 },
-                        { display: '联系电话', name: '联系电话', width: 110 },
-                        { display: '客户类别', name: '客户类别', minWidth: 60 },
-                        { display: '会员等级', name: '会员等级', minWidth: 80, hide: true },
-                        {
-                            display: '保险客户', name: '保险客户', align: 'center', width: 60, render: function (rowdata, index, value) {
-                                if (value == null || $.trim(value) == '' || $.trim(value) == '否')
-                                    value = '<span style="color:red">否</span>';
-                                else
-                                    value = '<span style="color:blue">是</span>';
-                                return value;
-                            }
-                        },
-                        {
-                            display: '品牌型号', name: '品牌', width: 90, render: function (rowdata, index, value) {
+                        { display: '类别', name: '类别', width: 60 },
+                        { display: '跟踪内容', name: '内容', minWidth: 300 },
+                        { display: '是否反馈', name: '是否反馈',width:80 },
+                        { display: '反馈内容', name: '反馈内容', minWidth: 300 },
+                        { display: '跟踪方式', name: '跟踪类型', width: 100 },
+                        { display: '跟踪人', name: '跟踪人', width: 100 },
 
-                                return rowdata['品牌'] + '/' + rowdata['车型'];
-                            }
-                        },
-                        { display: '年份排量', name: '排量', minWidth: 120,hide:true},
-                        { display: '车架号', name: '车架号', width: 150, hide: true },
-                        { display: '发动机型号', name: '发动机型号', minWidth: 60, hide: true },
-                        { display: '轮胎规格', name: '轮胎规格', width: 85 },
-                        { display: '品牌花纹', name: '品牌花纹', minWidth: 60, hide: true },
-                        { display: '服务顾问', name: '服务顾问', minWidth: 80 },
-                        { display: '机油格', name: '机油格', width: 50, hide: true },
-                        { display: '空气格', name: '空气格', width: 50, hide: true },
-                        { display: '冷气格', name: '冷气格', width: 50, hide: true },
-                        { display: '电池', name: '电池 ', width: 50, hide: true },
-                        { display: '进厂次数', name: '进厂次数', minWidth: 60,hide:true },
-                        { display: '消费金额', name: '消费金额', minWidth: 60 },
-                        { display: '保险公司', name: '保险公司', minWidth: 80 },
-                        {
-                            display: '保险到期', name: '交保到期', minWidth: 100, render: function (rowdata, index, value) {
-                                return todate(value, false);
-                            }
-                        },
-                        {
-                            display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
-                                if (rowdata.车主.indexOf('AYC') == 0) {
-                                    return '<a href="javascript:void(0);" onclick="sendmessage(\'' + rowdata.车牌号码 + '\',\'' + rowdata.车主 + '\');"><strong>发送模板消息</strong></a>';
-                                }
-                            }
-                        }
-                        
                 ],
                 isScroll: true,
                 pageSize: 20,
                 fixedCellHeight: false,
-                url: '/index.php?g=Query&m=Consume&a=getcarsAnnual',
-                height: '100%',
+                url: '/index.php?g=Query&m=Consume&a=gettracemessage',
+                height: '98%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     addtrace(data);
-                },
-                detail: { onShowDetail: f_showdetail}
+                }
             });
             $('#search').click(function () {
                 cargird.changePage('first');

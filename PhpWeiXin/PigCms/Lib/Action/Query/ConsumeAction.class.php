@@ -896,10 +896,10 @@ class ConsumeAction extends Action{
             
         }
         $count=M('车辆资料','dbo.','difo')
-            ->join('left join 维修统计 on 车辆资料.车牌号码=维修统计.车牌')
+            ->join('left join 会员消费分析 on 车辆资料.车牌号码=会员消费分析.车牌')
             ->where($where)->count();
         $yelist=M('车辆资料','dbo.','difo')
-            ->join('left join 维修统计 on 车辆资料.车牌号码=维修统计.车牌')
+            ->join('left join 会员消费分析 on 车辆资料.车牌号码=会员消费分析.车牌')
             ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
         $data['Rows']=$yelist;
         $data['Total']=$count;
@@ -1161,6 +1161,7 @@ class ConsumeAction extends Action{
         $khlb=$_POST['khlb'];
         $startdate=$_POST['startdate'];
         $enddate=$_POST['enddate'];
+        $unconsume=$_POST['unconsume'];
         $searchkey=trim($_POST['searchkey']);
         if($startdate==''){
             $startdate=date('Y-01-01',time());
@@ -1168,25 +1169,11 @@ class ConsumeAction extends Action{
         if($enddate==''){
             $enddate=date('Y-m-d',time());
         }
-        if($_POST['where']!=''){
-            $cond=json_decode($_POST['where']);
-            $conditions=$cond->rules;
-            $opt=$cond->op;
-            $maps['equal']='eq';
-            $maps['notequal']='neq';
-            $maps['like']='like';
-            if($opt=='and'){
-                foreach($conditions as $condition){
-                    if($condition->op=='equal'||$condition->op=='notequal')
-                        $value=array($maps[$condition->op],$condition->value);
-                    else
-                        $value=array('like','%'.$condition->value.'%');
-                    $where[$condition->field]=$value;
-                }
-            }
-            else{
-                
-            }
+        if($unconsume!='')
+        {
+            $startdate=date('Y-m-d',strtotime("-$unconsume month"));
+            $enddate=date('Y-m-d',time());
+
         }
         if($searchkey){       
             $searchwhere['车主']=array('like',$searchkey);
@@ -6410,7 +6397,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 $carinfo['客户ID']=$czinfo['ID'];
                 $carinfo['客户类别']='1星客户';
                 $carinfo['最近维修']=date('Y-m-d',time());
-                $carinfo['服务顾问']=$fwgw;
+                //$carinfo['服务顾问']=$fwgw;
                 $carinfo['维修次数']=1;
                 $carinfo['手机号码']=$phone;
                 $carinfo['联系电话']=$phone;

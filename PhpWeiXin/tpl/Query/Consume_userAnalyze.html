@@ -50,13 +50,23 @@
                         </span>
                     </div>
                 </div>
-                <div class="am-u-sm-1 am-u-md-1 ">
+                <div class="am-u-sm-1 am-u-md-1" style="margin-left:50px">
                     <div class="am-input-group am-datepicker-date" style="width:100px" data-am-datepicker="{format: 'yyyy-mm-dd'}">
                         <input type="text" class="am-form-field" id="enddate" style="width:100px" placeholder="结束日期" readonly=readonly />
                         <span class="am-input-group-btn am-datepicker-add-on">
                             <button class="am-btn am-btn-default" type="button"><span class="am-icon-calendar"></span> </button>
                         </span>
                     </div>
+                </div>
+                <div class="am-u-sm-1 am-u-md-1" style="margin-left:50px">
+                    <select data-am-selected="{btnSize: 'sm',btnWidth:'100px'}" id="unconsume">
+                        <option value="ALL">选择</option>
+                        <option value="3">3个月未消费</option>
+                        <option value="6">6个月未消费</option>
+                        <option value="12">12个月未消费</option>
+                        <option value="18">18个月未消费</option>
+
+                    </select>
                 </div>
                 <div class="am-u-sm-2 am-u-md-2 am-u-md-offset-1 am-u-sm-offset-1">
                     <div class="am-input-group am-input-group-sm" style="width:200px">
@@ -67,10 +77,8 @@
                         </span>
                     </div>
                 </div>
-                <div class="am-u-sm-3 am-u-md-3">
+                <div class="am-u-sm-1 am-u-md-1">
                     <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="exportdata();">导出数据</button>
-                    <input id="highgrade" type="button" class="am-btn am-btn-default" value="高级搜索" />
-                    <input id="export" type="button" class="am-btn am-btn-default" value="导出资料" />
                 </div>
             </div>
 
@@ -141,9 +149,6 @@
                 + "  代办金额:" + data.StockTotal[0].代办金额;
         }
         $(document).ready(function () {
-           $.ligerDefaults.Filter.operators['string'] =
-           $.ligerDefaults.Filter.operators['text'] =
-           ["like", "equal", "notequal"];
            $.post('index.php?g=Query&m=Consume&a=getgw', null,
           function (data) {
               if (data) {
@@ -155,9 +160,6 @@
                   });
               }
           }, 'JSON');
-            $('#highgrade').click(function () {
-                cargird.showFilter();
-            });
             $('#export').click(function () {
                 var url='/index.php?g=Query&m=Consume&a=exportUseRecord';
                 var khlb = $('#khlb').val();
@@ -181,7 +183,6 @@
                         { display: '联系人', name: '联系人', minWidth: 60 },
                         { display: '联系电话', name: '联系电话', minWidth: 100 },
                         { display: '客户类别', name: '客户类别', minWidth: 60 },
-                        { display: '会员等级', name: '会员等级', minWidth: 80 },
                         { display: '保险客户', name: '保险客户', minWidth: 80 },
                         { display: '服务顾问', name: '服务顾问', minWidth: 80 },
                         { display: '洗车次数', name: '洗车次数', minWidth: 60 },
@@ -199,7 +200,7 @@
                 isScroll: true,
                 pageSize: 20,
                 url: '/index.php?g=Query&m=Consume&a=getuserconsume',
-                height: '100%',
+                height: '98%',
                 totalRender: f_totalRender,                onDblClickRow: function (data, rowindex, rowobj) {
                     memberinfo(data['车主']);
                 }
@@ -210,6 +211,9 @@
                 var khlb = $('#khlb').val();
                 khlb=(khlb == 'ALL' ? '' : khlb);
                 parms.khlb = khlb;
+                var unconsume = $('#unconsume').val();
+                unconsume = (unconsume == 'ALL' ? '' : unconsume);
+                parms.unconsume = unconsume;
                 var enddate = $('#enddate').val();
                 if (enddate != '')
                     parms['enddate'] = enddate;

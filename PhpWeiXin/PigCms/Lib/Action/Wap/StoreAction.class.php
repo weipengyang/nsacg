@@ -638,7 +638,7 @@ private function genwxrecord($price,$carno,$type='AYC0002',$wxlb='蜡水洗车',
         }
     }
 } 
-public function check(){
+  public function check(){
         $card=M('member_card_create')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
         $user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
         $wxlist=M('维修','dbo.','difo')->where(array('制单人'=>array('neq','系统录单'),'客户ID'=>$user['ID'],'当前状态'=>'结算','维修类别'=>array('neq','蜡水洗车')))->order('流水号 desc')->select();
@@ -696,6 +696,146 @@ public function check(){
     }
 
    public function pay(){
+     if(IS_POST){
+         $itemid=$_POST['id'];
+         $price=doubleval($_POST['price']);
+         $type=intval($_POST['type']);
+         $userinfo=M('Userinfo')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
+         if (md5($this->_post('password'))!=$userinfo['paypass'])
+         {
+             echo  '支付密码不正确';
+             exit;
+         }
+         if ($price>$userinfo['balance'])
+         {
+             echo  '会员卡余额不足，请先充值';
+             exit;
+         }
+         if($type==1)
+         {
+            $wx=M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->find();
+            $this->genbill($price,$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID'],'维修','维修收款',$wx['车牌号码'],$wx['门店']);
+            M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save(array('当前状态'=>'出厂'));
+            $this->consumerecord($price,'汽车维修支付',$userinfo,$wx['车牌号码'],$wx['门店']);
+            $data['出厂时间']=date('Y-m-d H:i',time());
+            $data['实际完工']=date('Y-m-d H:i',time());
+            $data['结算日期']=date('Y-m-d',time());
+            $data['结束日期']=date('Y-m-d',time());
+            $data['挂账金额']=0;
+            $data['现收金额']=$price;
+            $data['标志']='已结算';
+            M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save($data);
+            echo '结算成功';
+            exit;
+
+         }elseif($type==2){
+             $this->consumerecord($price,'汽车商品支付',$userinfo);
+             $xsd=M('销售单','dbo.','difo')->where(array('流水号'=>$itemid))->find();
+             $xsmx=M('销售明细','dbo.','difo')->where(array('ID'=>$xsd['ID']))->select();
+             $this->genbill($price,$xsd['客户名称'],'销售出库收款('.$xsd['单据编号'].')',$xsd['客户ID'],'销售','销售出库',$xsd['车牌号码'],$xsd['门店']);
+             M('销售单','dbo.','difo')->where(array('流水号'=>$itemid))->save(array('当前状态'=>'已审核'));
+            $crkitem['ID']=$this->getcode(20,1,1);
+            $crkitem['引用单号']=$xsd['单据编号'];
+            $crkitem['引用ID']=$xsd['ID'];
+            $crkitem['引用类别']='销售出库';
+            $crkitem['单据编号']=$this->getcodenum('CK');
+            $crkitem['制单日期']=date('Y-m-d',time());;
+            $crkitem['制单人']='系统自动';
+            $crkitem['车牌号码']=$xsd['车牌号码'];
+            $crkitem['当前状态']='待审核';
+            $crkitem['原因']='销售出库';
+            $crkitem['领料员']='微信系统';
+            $crkitem['单据类别']='出库';
+            $crkitem['单据备注']='销售出库';
+            M('出入库单','dbo.','difo')->add($crkitem);
+            foreach($xsmx as $product){
+                $crk['ID']=$crkitem['ID'];
+                $crk['仓库']=$product['仓库'];
+                $crk['编号']=$product['编号'];
+                $crk['名称']=$product['名称'];
+                $crk['规格']=$product['规格'];
+                $crk['单位']=$product['单位'];
+                $crk['数量']=$product['数量'];
+                $crk['单价']=$product['单价'];
+                $crk['金额']=$product['金额'];
+                $crk['成本价']=$product['成本价'];
+                $crk['适用车型']=$product['适用车型'];
+                $crk['产地']=$product['产地'];
+                $crk['备注']=$product['备注'];
+                M('出入库明细','dbo.','difo')->add($crk);
+            }
+             echo '结算成功';
+             exit;
+         }
+         elseif($type==3){
+             $bx=M('车辆保险','dbo.','difo')->where(array('流水号'=>$itemid))->find();
+             $this->genbill($price,$bx['车主'],'保险收款('.$bx['业务编号'].')',$bx['客户ID'],'保险','保险收款');
+             if($bx['总金额']>0){
+                 $wldw=M('往来单位','dbo.','difo')->where(array('名称'=>$bx['保险公司']))->find();
+                 $this->gendbbill($bx['总金额'],$bx['保险公司'],'代办保险付款('.$bx['业务编号'].')',$wldw['ID'],$bx['业务编号'],'保险代办',$bx['ID'],$bx['车牌号码']);
+             } 
+             $data['挂账金额']=0;
+             $data['现收金额']=$price;
+             $data['结束日期']=date('Y-m-d',time());
+             $data['审核日期']=date('Y-m-d',time());
+             $data['缴费日期']=date('Y-m-d',time());
+             $data['审核人']='系统自动';
+             $data['当前状态']='结束';
+             M('车辆保险','dbo.','difo')->where(array('流水号'=>$itemid))->save($data);
+             $this->consumerecord($price,'汽车保险支付',$userinfo,$bx['车牌号码']);
+             echo '结算成功';
+             exit;
+         }
+         else{
+             $db=M('车辆代办','dbo.','difo')->where(array('流水号'=>$itemid))->find();
+             $this->genbill($price,$db['车主'],'代办收款('.$db['业务编号'].')',$db['客户ID'],'代办服务','代办服务收款',$db['车牌号码']);
+             if($db['代办费用']>0){
+                 $wldw=M('往来单位','dbo.','difo')->where(array('名称'=>$db['车管单位']))->find();
+                 $this->gendbbill($db['代办费用'],$db['车管单位'],'代办'.$db['代办类型'].'付款('.$db['业务编号'].')',$wldw['ID'],$db['业务编号'],'其它代办',$db['ID'],$db['车牌号码']);
+             }
+             $data['挂账金额']=0;
+             $data['现收金额']=$price;
+             $data['结束日期']=date('Y-m-d',time());
+             $data['审核日期']=date('Y-m-d',time());
+             $data['审核人']='系统自动';
+             $data['当前状态']='结束';
+
+             M('车辆代办','dbo.','difo')->where(array('流水号'=>$itemid))->save($data);
+             $this->consumerecord($price,"代办".$db['代办类别']."支付",$userinfo,$db['车牌号码']);
+             echo '结算成功';
+             exit;
+         }
+
+     }
+     $this->display();
+   }
+   public function newcheck(){
+        $card=M('member_card_create')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
+        $user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
+        $wxlist=M('维修','dbo.','difo')->where(array('制单人'=>array('neq','系统录单'),'客户ID'=>$user['ID'],'当前状态'=>'结算'))->order('流水号 desc')->select();
+        foreach($wxlist as $key=>$value)
+        {
+            $items=M('维修项目','dbo.','difo')->where(array('ID'=>$value['ID']))->select();
+            $peijian=M('维修配件','dbo.','difo')->where(array('ID'=>$value['ID'],'仅内部核算成本'=>0))->select();
+            $wxlist[$key]['items']=$items;
+            $wxlist[$key]['peijian']=$peijian;
+        }
+        $xslist=M('销售单','dbo.','difo')->where(array('制单人'=>array('neq','系统录单'),'客户ID'=>$user['ID'],'当前状态'=>'待审核'))->order('流水号 desc')->select();
+        foreach($xslist as $key=>$value)
+        {
+            $xsmx=M('销售明细','dbo.','difo')->where(array('ID'=>$value['ID']))->select();
+            $xslist[$key]['xsmx']=$xsmx;
+        }
+        $bxlist=M('车辆保险','dbo.','difo')->where(array('客户ID'=>$user['ID'],'当前状态'=>'审核'))->order('流水号 desc')->select();
+        $dblist=M('车辆代办','dbo.','difo')->where(array('客户ID'=>$user['ID'],'当前状态'=>'审核'))->order('流水号 desc')->select();
+
+        $this->assign('wxlist',$wxlist);
+        $this->assign('xslist',$xslist);
+        $this->assign('bxlist',$bxlist);
+        $this->assign('dblist',$dblist);
+        $this->display();
+    }
+   public function newpay(){
      if(IS_POST){
          $itemid=$_POST['id'];
          $price=doubleval($_POST['price']);

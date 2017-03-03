@@ -82,7 +82,9 @@
                 { display: '提成金额', name: '提成金额', minWidth: 120 },
                 { display: '考核工时', name: '考核工时', minWidth: 120 },
                 { display: '考核金额', name: '考核金额', minWidth: 120 },
-                { display: '备注', name: '备注', minWidth: 240 }
+                { display: '备注', name: '备注', minWidth: 240 },
+                { display: '对应券编号', name: '券编码', minWidth: 40 },
+
                 ],
                 url: '/index.php?g=Query&m=Consume&a=getprojectbyname',
                 pageSize: 4,
@@ -104,6 +106,7 @@
                         row['ID'] =$("#ID").val();
                         row['项目编号'] = data['项目编号'];
                         row['项目名称'] = data['项目名称'];
+                        row['券编码'] = data['券编码'];
                         row['结算方式'] = '客付';
                         row['工时'] = data['标准工时'];
                         row['单价'] = data['标准金额'];
@@ -138,7 +141,9 @@
                 { display: '税额', name: '税额', minWidth: 120 },
                 { display: '虚增类别', name: '虚增类别', minWidth: 120 },
                 { display: '虚增金额', name: '虚增金额', minWidth: 120 },
-                { display: '备注', name: '备注', minWidth: 240 }
+                { display: '备注', name: '备注', minWidth: 240 },
+                { display: '对应券编号', name: '券编码', minWidth: 40 },
+
                 ],
                 url: '/index.php?g=Query&m=Consume&a=getproject&ID='+$("#ID").val(),
                 //pageSize: 4,
@@ -153,10 +158,11 @@
                     form.setData(rowdata);
                 }
             });             form = $("#form1").ligerForm({
-                inputWidth: 100, labelWidth: 65, space:3,
+                inputWidth: 100, labelWidth: 75, space:0,
                 validate: true,
+                width:'100%',
                 buttons: [                    {
-                        text: "更新", width: 80, click: function () {
+                         text: "更新", width: 80, click: function () {
                             var data = form.getData();
                             var selected = haveproject.getSelected();
                             if (!selected) { alert('请选择行'); return; }
@@ -185,9 +191,9 @@
                             //alert(JSON.stringify(data));
                         }
                     }                ],                fields: [
-                    { display: "流水号", name: "流水号", newline: true, type: "hidden" },
+                    { display: "流水号", name: "流水号", newline: false, type: "hidden" },
                      {
-                         display: "结算类别", name: "结算方式", newline: true, type: "combobox", options: {
+                         display: "结算类别", name: "结算方式", newline: false, type: "combobox", options: {
                              valueField: 'name',
                              textField: 'name',
                              data: data,
@@ -204,12 +210,12 @@
                         }
                     },
                     {
-                        display: "折扣", name: "折扣", newline: false, type: "text", options: {
+                        display: "折扣 ", name: "折扣", newline: false, type: "text", options: {
                             onBlur: updateRow
                         }
                     },
                     {
-                        display: "税率", name: "税率", newline: true, type: "text", options: {
+                        display: "税率", name: "税率", newline: false, type: "text", options: {
                             onBlur: updateRow
                         }
                     },
@@ -238,17 +244,6 @@
              $("input[ligeruiid='结算方式']").live('blur', updateRow);
              $("input[ligeruiid='虚增类别']").live('blur', updateRow);
         });
-
-        function getQueryString(name) {
-            var now_url = document.location.search.slice(1), q_array = now_url.split('&');
-            for (var i = 0; i < q_array.length; i++) {
-                var v_array = q_array[i].split('=');
-                if (v_array[0] == name) {
-                    return decodeURI(v_array[1]);
-                }
-            }
-            return false;
-        }
     </script>
 </head>
 
@@ -264,7 +259,7 @@
                 模糊查询(支持拼音首字母)：<input id="txtKey" type="text" />
             </div>
          <div id="projectgrid" style="margin:0; padding:0"></div>
-         <div id="form1" style="margin:0; padding:0;height:24%"></div>
+         <div id="form1" style="margin:0;padding:0;height:24%;width:100%"></div>
          <div id="haveproject" style="margin:0;margin-bottom:2px; padding:0"></div>
         </div>
     </div>

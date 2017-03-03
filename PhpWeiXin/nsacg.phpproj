@@ -14657,6 +14657,8 @@
     <Content Include="tpl\Other\default\style\js\registerSSO.js" />
     <Content Include="tpl\Other\index.html" />
     <Content Include="tpl\Query\Consume_addproductlist.html" />
+    <Content Include="tpl\Query\Consume_projectedit.html" />
+    <Content Include="tpl\Query\Consume_projectmanage.html" />
     <Content Include="tpl\Query\Consume_tipreply.html" />
     <Content Include="tpl\Query\Consume_tiptrace.html" />
     <Content Include="tpl\Query\Consume_append.html" />
@@ -29150,6 +29152,7 @@
     <Content Include="tpl\Wap\default\Hotels_order.html" />
     <Content Include="tpl\Wap\default\Hotels_selectdate.html" />
     <Content Include="tpl\Wap\default\index.html" />
+    <Content Include="tpl\Wap\default\Store_newcheck.html" />
     <Content Include="tpl\Wap\default\Store_notices.html" />
     <Content Include="tpl\Wap\default\Store_notice.html" />
     <Content Include="tpl\Wap\default\Store_index.html" />
@@ -29331,6 +29334,7 @@
     <Content Include="tpl\Wap\default\Store_helpscore.html" />
     <Content Include="tpl\Wap\default\Store_coupondetail.html" />
     <Content Include="tpl\Wap\default\Store_fwgw.html" />
+    <Content Include="tpl\Wap\default\Store_newpay.html" />
     <Content Include="tpl\Wap\default\Store_scoreprofit.html" />
     <Content Include="tpl\Wap\default\Store_wxcomment.html" />
     <Content Include="tpl\Wap\default\Store_weixiu.html" />

@@ -19,10 +19,19 @@
                     {
                         display: "编号", name: "编号", newline: true, type: "text", readonly: true
                     },
-                     { display: "原厂编号 ", name: "原厂编号", newline: false, type: "text" },
+                    { display: "原厂编号 ", name: "原厂编号", newline: false, type: "text" },
                     { display: "类别", name: "类别", newline: false, type: "text", readonly: true },
                    {
                         display: "名称", name: "名称", newline: false, type: "text"
+                   },
+                    {
+                        display: "服务券编码", name: "券编码", newline: false, type: "combobox",
+                        options: {
+                            valueField: 'id',
+                            textField: 'title',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getcouponlist',
+                        }
                     },
                     { display: "品牌 ", name: "品牌", newline: false, type: "text" },
                     { display: "规格 ", name: "规格", newline: false, type: "text" },
@@ -56,7 +65,7 @@
                 ],
                 buttons: [                    {
                         text: "取消", width: 60, click: function () {
-                            window.parent.editdialog.hide();
+                            dialog.hide();
                         }
                     },                    {
                         text: "保存", width: 60, click: function () {
@@ -74,7 +83,7 @@
                               function (data) {
                                   $.ligerDialog.alert(data);
                                   window.parent.liger.get('maingrid4').reload();
-                                  window.parent.adddialog.hide();
+                                  dialog.hide();
 
                               });
                         }

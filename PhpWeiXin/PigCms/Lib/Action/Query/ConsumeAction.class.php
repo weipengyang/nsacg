@@ -1909,6 +1909,20 @@ class ConsumeAction extends Action{
         echo json_encode($data);
         
     }
+    public  function editprojectlist()
+    {
+        if(IS_POST){
+            $type=$_POST['type'];
+            $projectlist=$_POST['project'];
+            if($type&&$type=='add'){
+                M('项目目录','dbo.','difo')->add($projectlist);
+            }else{
+                unset($projectlist['流水号']);
+                M('项目目录','dbo.','difo')->where(array('项目编号'=>$projectlist['项目编号']))->save($projectlist);
+            }
+            echo '保存成功';
+        }
+    }
     public  function savestock()
     {
         if(IS_POST){
@@ -2316,12 +2330,18 @@ class ConsumeAction extends Action{
         echo json_encode($wxlb);
     
 } 
-    public  function getkhlb(){
+    public  function getcouponlist(){
          
-        $pinpai=M('客商分类','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
+        $pinpai=M('member_card_coupon')->where(array('title'=>array('like','%'.$_POST['key'].'%')))->select();
         echo json_encode($pinpai);
     
    }
+    public  function getkhlb(){
+        
+        $pinpai=M('客商分类','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($pinpai);
+        
+    }
     public  function getcllb(){
         $pinpai=M('车辆类别','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
         echo json_encode($pinpai);

@@ -86,6 +86,7 @@
                 { display: '会员价', name: '会员价', minWidth: 120 },
                 { display: '批发价', name: '批发价1', minWidth: 120 },
                 { display: '参考进价', name: '参考进价', minWidth: 120 },
+                { display: '对应券编号', name: '券编码', minWidth: 40 },
                 { display: '备注', name: '备注', minWidth: 240 }
                 ],
                 url: '/index.php?g=Query&m=Consume&a=getproductbyname&shop='+getQueryString('shop'),
@@ -110,6 +111,7 @@
                         if (data['仓库']==null||data['仓库'] == '')
                             row['仓库'] = data['默认仓库'];
                         row['名称'] = data['名称'];
+                        row['券编码'] = data['券编码'];
                         row['规格'] = data['规格'];
                         row['结算方式'] = '客付';
                         row['单位'] = data['库存单位'];
@@ -152,8 +154,9 @@
                 { display: '适用车型', name: '适用车型', minWidth: 100 },
                 { display: '内部核算', name: '仅内部核算成本', minWidth: 80 },
                 { display: '产地', name: '产地', minWidth: 100 },
-                { display: '备注', name: '备注', minWidth: 200 }
-                ],
+                { display: '备注', name: '备注', minWidth: 200 },
+                { display: '对应券编号', name: '券编码', minWidth: 40 },
+        ],
                 url: '/index.php?g=Query&m=Consume&a=getproduct&id='+$("#ID").val(),
                 //pageSize: 4,
                 //pageSizeOptions: [ 4, 5, 6, 8,10],
@@ -170,7 +173,7 @@
                     $("input[ligeruiid='仅内部核算成本']").val(rowdata['仅内部核算成本']);
                 }
             });            form = $("#form1").ligerForm({
-                inputWidth: 100, labelWidth: 65, space:3,
+                inputWidth: 100, labelWidth: 75, space:3,
                 validate: true,
                 buttons: [                    {
                         text: "更新", width: 100, click: updateRow
@@ -190,9 +193,9 @@
                             //alert(JSON.stringify(data));
                         }
                     }                ],                fields: [
-                    { display: "流水号", name: "流水号", newline: true, type: "hidden" },
+                    { display: "流水号", name: "流水号", newline: false, type: "hidden" },
                     {
-                        display: "结算类别", name: "结算方式", newline: true, type: "combobox", options: {
+                        display: "结算类别", name: "结算方式", newline: false, type: "combobox", options: {
                             valueField: 'name',
                             textField: 'name',
                             data: data,
@@ -214,7 +217,7 @@
                         }
                     },
                     {
-                        display: "税率", name: "税率", newline: true, type: "text", options: {
+                        display: "税率", name: "税率", newline: false, type: "text", options: {
                             onBlur: updateRow
                         }
                     },
@@ -244,17 +247,6 @@
             $("input[ligeruiid='结算方式']").live('blur', updateRow);
             $("input[ligeruiid='虚增类别']").live('blur', updateRow);
         });
-
-        function getQueryString(name) {
-            var now_url = document.location.search.slice(1), q_array = now_url.split('&');
-            for (var i = 0; i < q_array.length; i++) {
-                var v_array = q_array[i].split('=');
-                if (v_array[0] == name) {
-                    return v_array[1];
-                }
-            }
-            return false;
-        }
     </script>
 </head>
 

@@ -285,7 +285,7 @@ function getQueryString(name) {
     for (var i = 0; i < q_array.length; i++) {
         var v_array = q_array[i].split('=');
         if (v_array[0] == name) {
-            return v_array[1];
+            return decodeURI(v_array[1]);
         }
     }
     return false;

@@ -1,7 +1,7 @@
 ﻿<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>支付密码</title>
+    <title>支付</title>
     <meta name="viewport" content="width=device-width,height=device-height,maximum-scale=1.0,user-scalable=no" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
@@ -14,24 +14,36 @@
         <div class="content">
             <form action="#" method="post" name="payform">
                 <div class="card" style="margin:0px;padding:0px">
-                    <div class="card-header">请输入会员卡支付密码</div>
-                    <div class="card-header"><h2>￥<b style="color:orangered">{pigcms:$_REQUEST['price']}</b>元</h2></div>
+                    <div class="card-header"><h2>￥<b style="color:orangered">{pigcms:$total}</b>元</h2></div>
                     <div class="card-content">
                         <div class="card-content-inner">
                             <div class="list-block">
                                 <ul>
-                                    <li>
-                                        <div class="item-content">
-                                            <div class="item-media"><i class="icon icon-form-name"></i></div>
-                                            <div class="item-inner">
-                                                <div class="item-title label">支付密码:</div>
-                                                <div class="item-input">
-                                                    <input type="password" name="pass" id="pass" placeholder="请输入密码" />
+                                    <volist name="couponlist" id="coupon">
+                                        <li>
+                                            <div class="item-content">
+                                                <div class="item-inner">
+                                                    <div class="item-title" style="color:#0055CC;font-size:12px;">
+                                                    <span>{pigcms:$coupon.coupon_name}({pigcms:$coupon.coupon_num})</span>
+                                                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </li>
-                                </ul>
+                                            
+                                        </li>
+                                     </volist>
+
+                                        <li>
+                                            <div class="item-content">
+                                                <div class="item-inner">
+                                                    <div class="item-title label">支付密码:</div>
+                                                    <div class="item-input">
+                                                        <input type="password" name="pass" id="pass" placeholder="请输入密码" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+</ul>
                             </div>
                         </div>
                     </div>
@@ -62,14 +74,17 @@
                 var submitData = {
                     id: {pigcms:$_REQUEST['id']},
                     type:{pigcms:$_REQUEST['type']},
-                    price: {pigcms:$_REQUEST['price']},
+                    price:{pigcms:$total},
+                    couponids:'{pigcms:$couponids}',
                     password: password,
                 };
                 $("#topay").removeAttr('onclick');
-                $.post('index.php?g=Wap&m=Store&a=pay', submitData,
+                $.post('index.php?g=Wap&m=Store&a=newpay', submitData,
                function (data) {
                    $.alert(data);
-                   location.href = 'index.php?g=Wap&m=Store&a=wxcomment&orid=' + submitData['id'];
+                   if (data.replace(/(^\s*)|(\s*$)/g,'') == '结算成功') {
+                       location.href = 'index.php?g=Wap&m=Store&a=wxcomment&orid=' + submitData['id'];
+                   }
                });
             });
         });

@@ -6281,22 +6281,20 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $this->display();
    }
    private function weixinmessage($content,$depart){
-       $this->weixin->send($content,'ohD3dvseioQevapZCmHQyCPtOBOY');
-       $this->weixin->send($content,'ohD3dvqz0EpNooXm4MgE4Xth8UVM');
-       $this->weixin->send($content,'ohD3dvtYWyjpTMAlWyLF2UPZKSv8');
-       $this->weixin->send($content,'ohD3dvkNqFLmM83oLxTK2hcKqoRM');
-       $this->weixin->send($content,'ohD3dvvygQTJUa8U2mTCRCr4YC3g');
+       $this->weixin->send($content,'ohD3dvqz0EpNooXm4MgE4Xth8UVM');//刘伟
+       $this->weixin->send($content,'ohD3dvtYWyjpTMAlWyLF2UPZKSv8');//刘飞
+       $this->weixin->send($content,'ohD3dvkNqFLmM83oLxTK2hcKqoRM');//周四红
+       $this->weixin->send($content,'ohD3dvvygQTJUa8U2mTCRCr4YC3g');//公司手机号
+       $this->weixin->send($content,'ohD3dviFloHSvcl9ieoXFibqPFJM');//欧阳伟鹏
+       $this->weixin->send($content,'ohD3dvux1Tdb71ZJZIH5bpKLuXNo');//张超群
        if($depart=='塘坑店'){
-           $this->weixin->send($content,'ohD3dvmcameEiedmp6t5Q4Grj4Pk');
-           $this->weixin->send($content,'ohD3dvk9a0B4eCoK8TKiigcPmbqU');
-           $this->weixin->send($content,'ohD3dvsSzRmFDNvE_DYloXDfGf0c');
+           $this->weixin->send($content,'ohD3dvmBt8Y82WjV5VceLc96-jO8');//王前进
        }else{
-           $this->weixin->send($content,'ohD3dvhb9V5DXEoCZO5yMfg6clgc');
-           $this->weixin->send($content,'ohD3dvlwa5PgS7n6z3s1tAK2NnTY');
-           $this->weixin->send($content,'ohD3dvnoP57_LF0vXtTIbN1L4PZo');
-           $this->weixin->send($content,'ohD3dvtYWyjpTMAlWyLF2UPZKSv8');
-           $this->weixin->send($content,'ohD3dviFloHSvcl9ieoXFibqPFJM');
-           $this->weixin->send($content,'ohD3dvr1KhNCaof-63p2a5n6T__w');
+           $this->weixin->send($content,'ohD3dviLfAhv63_C5tCbNrO2mfqU');//姜*英
+           $this->weixin->send($content,'ohD3dvhb9V5DXEoCZO5yMfg6clgc');//刘叔
+           $this->weixin->send($content,'ohD3dvlwa5PgS7n6z3s1tAK2NnTY');//刘亮
+           $this->weixin->send($content,'ohD3dvnoP57_LF0vXtTIbN1L4PZo');//刘亮
+           $this->weixin->send($content,'ohD3dvpJALNBXqpu5Kz70kz0caGo');//欧建银
 
        }
    }
@@ -6734,7 +6732,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        }
        $appendprice=M('附加费用','dbo.','difo')->where(array('ID'=>$id))->sum('金额');
        $totalprice=$projectprice+$productprice+$appendprice;
-       $data['报价金额']=$totalprice;
+       $data['报价金额']=$totalproject+$totalproduct+$appendprice;
        $data['报价人']=cookie('username');
        $data['材料费']=$productprice;
        $data['材料成本']=$sumcost;

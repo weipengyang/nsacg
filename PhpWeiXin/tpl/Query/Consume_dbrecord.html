@@ -63,7 +63,7 @@
                                  $("input[ligeruiid='驾驶证号']").val(data['驾驶证号']);
                                  $("input[ligeruiid='驾驶员电话']").val(data['驾驶员电话']);
                                  $("input[ligeruiid='车型']").val(data['车型']);
-                                 $("#客户ID'").val(data['客户ID']);
+                                 $("#客户ID").val(data['客户ID']);
                                  $("input[ligeruiid='品牌']").val(data['品牌']);
                                  $("input[ligeruiid='车架号']").val(data['车架号']);
                                  $("input[ligeruiid='发动机号']").val(data['发动机号']);
@@ -130,7 +130,7 @@
                             }
                             var submitData = {
                                 type:'add',
-                                bxinfo: data
+                                dbinfo: data
                             };
                             $.post('index.php?g=Query&m=Consume&a=savedbinfo', submitData,
                               function (data) {

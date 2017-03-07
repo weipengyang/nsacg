@@ -66,6 +66,28 @@ editor = K.create('#useinfo', {
 					<td><input type="input" class="px" id="title" value="{pigcms:$vip.integral}" name="integral" style="width:50px;"> 积分				　
 				</td>
 				</tr>
+                  <tr id="coupon" >
+                      <td colspan="2">
+                          <table class="userinfoArea" id="couponlist" border="0" cellspacing="0" cellpadding="0" width="70%">
+                              <thead>
+                                  <tr>
+                                      <th>券名称</th>
+                                      <th>数量(张)</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <volist id="list" name="list">
+                                      <tr>
+                                          <td>{pigcms:$list.title}</td>
+                                          <td>
+                                              <input type="text" name="{pigcms:$list.cid}" value="{pigcms:$list.num}" pid="{pigcms:$list.id}" class="px" style="width:150px;" />
+                                          </td>
+                                      </tr>
+                                  </volist>
+                              </tbody>
+                          </table>
+                      </td>
+                  </tr>
                 <tr>
                     <th>包含券数量：</th>
                     <td>

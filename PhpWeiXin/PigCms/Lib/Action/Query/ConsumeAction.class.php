@@ -6295,6 +6295,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $this->weixin->send($content,'ohD3dvlwa5PgS7n6z3s1tAK2NnTY');//刘亮
            $this->weixin->send($content,'ohD3dvnoP57_LF0vXtTIbN1L4PZo');//刘亮
            $this->weixin->send($content,'ohD3dvpJALNBXqpu5Kz70kz0caGo');//欧建银
+           $this->weixin->send($content,'ohD3dvh3B7LCBTlCT63ijG-blt6U');//侯碧婷
 
        }
    }

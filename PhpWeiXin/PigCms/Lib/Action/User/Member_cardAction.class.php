@@ -632,6 +632,9 @@ class Member_cardAction extends UserAction{
 				$data['statdate']=$now;
 				$data['enddate']=$now+10*24*3600;;
 			}
+            $list= M('Member_card_coupon')->where(array('token'=>$this->token,'attr'=>'2'))->field("id cid,title,type,0 num")->select();
+
+			$this->assign('list',$list);
 			$this->assign('vip',$data);
 			$this->display();
 			

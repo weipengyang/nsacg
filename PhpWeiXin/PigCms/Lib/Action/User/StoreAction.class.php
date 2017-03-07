@@ -712,7 +712,7 @@ class StoreAction extends UserAction{
        
         $model=M("product_coupon");
 	    $model->where(array('pid' => $pid))->delete();
-		if(!empty($couponlist))
+		if($iscoupon==1&&!empty($couponlist))
         {
             $couponlist=json_decode($couponlist, true);
             foreach($couponlist as $coupon)

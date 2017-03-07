@@ -29152,6 +29152,7 @@
     <Content Include="tpl\Wap\default\Hotels_order.html" />
     <Content Include="tpl\Wap\default\Hotels_selectdate.html" />
     <Content Include="tpl\Wap\default\index.html" />
+    <Content Include="tpl\Wap\default\Store_baoyang.html" />
     <Content Include="tpl\Wap\default\Store_washcar.html" />
     <Content Include="tpl\Wap\default\Store_newcheck.html" />
     <Content Include="tpl\Wap\default\Store_notices.html" />

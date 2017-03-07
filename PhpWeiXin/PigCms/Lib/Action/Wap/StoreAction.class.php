@@ -487,6 +487,7 @@ private function weixinmessage($content,$depart){
         $this->weixin->send($content,'ohD3dvlwa5PgS7n6z3s1tAK2NnTY');//刘亮
         $this->weixin->send($content,'ohD3dvnoP57_LF0vXtTIbN1L4PZo');//刘亮
         $this->weixin->send($content,'ohD3dvpJALNBXqpu5Kz70kz0caGo');//欧建银
+        $this->weixin->send($content,'ohD3dvh3B7LCBTlCT63ijG-blt6U');//侯碧婷
 
     }
 }
@@ -638,6 +639,116 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
         }
     }
 } 
+private function genbyrecord($carno,$shop='',$comment){
+    if($shop=='')
+        $shop=$this->getshopname();
+    $data=M('维修','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
+    $data['流水号']=null;
+    unset( $data['流水号']);
+    unset($data['ROW_NUMBER']);
+    $code=M('编号单','dbo.','difo')->where(array('类别'=>'WX','日期'=>date('Y-m-d', time())))->max('队列');
+    $bianhao='WX-'.date('ymd', time()).'-'.str_pad(($code+1),3,'0',STR_PAD_LEFT);
+    M('编号单','dbo.','difo')->add(array('单据编号'=>$bianhao,'队列'=>($code+1),'类别'=>'WX','日期'=>date('Y-m-d', time())));
+    $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
+    $data['车牌号码']=$carno;
+    $data['送修人']=$carinfo['手机号码'];
+    foreach($data as $key=>$value){
+        $data[$key]=$carinfo[$key];
+    } 
+    $data['接车人']='系统自动';
+    if(isset($carinfo['服务顾问'])&&$carinfo['服务顾问']!=''){
+        $data['接车人']=$carinfo['服务顾问'];
+    }
+    $data['ID']=$this->getcode(18,0,1);
+    $data['制单日期']=date('Y-m-d',time());
+    $data['制单人']='自助录单';
+    $data['保修类别']='保外';
+    $data['单据类别']='普通单';
+    $data['当前主修人']='';
+    $data['门店']=$shop;
+    $data['结算客户']=$carinfo['车主'];;
+    $data['结算客户ID']=$carinfo['客户ID'];
+    $data['当前状态']='结算';
+    $data['维修状态']='结算';
+    $data['进厂时间']=date('Y-m-d',time());
+    //$data['结算日期']=date('Y-m-d',time());
+    $data['下次保养']=null;
+    $data['维修类别']='常规保养';
+    $data['业务编号']=$bianhao;
+    M('维修','dbo.','difo')->add($data);
+    $row=array();
+    $row['ID']=$data['ID'];
+    $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>'工时费'))->find();
+    $row['项目编号']=$xm['项目编号'];
+    $row['项目名称']=$xm['项目名称'];
+    $row['券编码']=$xm['券编码'];
+    $row['维修工艺']='';
+    $row['备注']=$comment;
+    $row['结算方式']='客付';
+    $row['工时']=1;
+    $row['单价']=$xm['标准金额'];
+    $row['金额']=$xm['标准金额'];
+    $row['折扣']=1;
+    $row['提成工时']=1;
+    $row['提成金额']=0;
+    $row['开工时间']=date('Y-m-d H:i',time());
+    //$row['完工时间']=date('Y-m-d H:i',time());
+    $row['是否同意']=1;
+    $row['已维修']='0小时'; 
+    M('维修项目','dbo.','difo')->add($row);
+
+    if(isset($carinfo['机油格'])&&$carinfo['机油格']!='')
+    {
+        $project=M('配件目录','dbo.','difo')->where(array('类别'=>array('like','%机油格'),'编码'=>$carinfo['机油格']))->find();
+        if($project){
+            $this->addproduct($project,$data['ID'],$shop);
+        }
+    }
+    if(isset($carinfo['空气格'])&&$carinfo['空气格']!='')
+    {
+        $project=M('配件目录','dbo.','difo')->where(array('类别'=>array('like','%空气格'),'编码'=>$carinfo['空气格']))->find();
+        if($project){
+            $this->addproduct($project,$data['ID'],$shop);
+        }
+    }
+    if(isset($carinfo['冷气格'])&&$carinfo['冷气格']!='')
+    {
+        $project=M('配件目录','dbo.','difo')->where(array('类别'=>array('like','%冷气格'),'编码'=>$carinfo['冷气格']))->find();
+        if($project){
+            $this->addproduct($project,$data['ID'],$shop);
+        }
+    }
+    $project=M('配件目录','dbo.','difo')->where(array('名称'=>array('like','%嘉实多磁护/4L')))->find();
+        if($project){
+            $this->addproduct($project,$data['ID'],$shop);
+     }
+    $this->MessageTip($carinfo,$shop,'常规保养');
+    
+    
+} 
+  private function addproduct($project,$wxid,$shop){
+    $row['ID'] = $wxid;
+    $row['编号'] = $project['编号'];
+    $row['仓库'] = '区府门店仓库';
+    if ($shop=='塘坑店')
+        $row['仓库'] = '塘坑门店仓库';;
+    $row['名称'] = $project['名称'];
+    $row['券编码'] = $project['券编码'];
+    $row['规格'] = $project['规格'];
+    $row['结算方式'] = '客付';
+    $row['单位'] = $project['库存单位'];
+    $row['虚增类别'] ='';
+    $row['单价'] = $project['参考售价'];
+    $row['折扣'] = 1;
+    $row['数量'] = 1;
+    $row['金额'] = $row['数量'] * $row['单价'];
+    //row['金额'] = row['数量'] * row['单价'] * row['折扣'];
+    $row['税率'] = 0;
+    $row['成本价'] = $project['成本价'];
+    $row['税额'] = $row['金额'] * $row['税率'];
+    $row['备注'] = $project['备注'];
+    M('维修配件','dbo.','difo')->add($row);
+  }
   public function check(){
         $card=M('member_card_create')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
         $user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
@@ -2909,11 +3020,46 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
     	$this->assign('type',$type);
     	$this->display();
     }
+    //我要洗车
     public function washcar(){
         if(IS_POST){
             $shop=$_POST['shop'];
             $carno=$_POST['carno'];
             $this->genwxrecord('40',$carno,'AYC10009','蜡水洗车',$shop);
+            echo '预约成功';
+
+        }
+        else{
+            $userinfo = M("Userinfo")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
+            $carinfo=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->select(); 
+            $shopname=null;
+            if(doubleval($userinfo['location_x'])>0&&$userinfo['getlocationtime']>time()-600){
+                $arr=array();
+                $shops=M('company')->where(array('token'=>$this->token))->select();
+                foreach($shops as $shop){
+                    $key=$shop['shortname'];
+                    $arr["$key"]=$this->distance($userinfo['location_y'],$userinfo['location_x'],$shop['latitude'],$shop['longitude']);
+                }
+                if(min($arr)<1){
+                    $shopname=array_search(min($arr),$arr);
+                }
+            }else{
+                //$this->genwxrecord('40',$carinfo[0]['carno'],'AYC10009','蜡水洗车','');
+                //$this->redirect(U('Store/cats', array('token' => $this->token,'wecha_id'=>$this->wecha_id)));
+
+            }
+            $this->assign('userinfo',$userinfo);
+            $this->assign('carinfo',$carinfo);
+            $this->assign('shop',$shopname);
+            $this->display();
+        }
+    }
+    //我要保养
+    public function baoyang(){
+        if(IS_POST){
+            $shop=$_POST['shop'];
+            $carno=$_POST['carno'];
+            $this->genbyrecord($carno,$shop,'保养预约');
             echo '预约成功';
 
         }

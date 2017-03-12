@@ -120,14 +120,14 @@
                 ]
             });
             $('#submit').click(function () {
-                var address = $('#address').val();
+                var shop = $('#shop').val();
                 var carno = $('#carno').val();
                 if (!carno) {
                     $.alert('请选择车牌号码');
                     return false;
                 }
                 var submitData = {
-                    shop: address,
+                    shop: shop,
                     carno:carno
                 };
 

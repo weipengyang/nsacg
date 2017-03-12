@@ -618,12 +618,32 @@ class Member_cardAction extends UserAction{
 	public function integral_edit(){
 		$member_card_inergral_db=M('Member_card_integral');
 		if(IS_POST){
+            $model=M("member_card_coupon_integral");
+            $model->where(array('iid' => $_GET['itemid']))->delete();
+            $list= M('Member_card_coupon')->where(array('token'=>$this->token))->field("id cid,title,type,0 num")->select();
+            if($list)
+            {
+                foreach($list as $coupon)
+                {
+                    $cid=$coupon['cid'];
+                    if($_POST["$cid"]&&intval($_POST["$cid"])>0){
+                        $data['token']=$this->token;
+                        $data['iid']=$_GET['itemid'];
+                        $data['cid']=$cid;
+                        $data['days']=$_REQUEST['days'];
+                        $data['num']=intval($_POST["$cid"]);
+                        $model->add($data);
+                    }
+                    
+                }
+            }
 			$_POST['cardid']=$this->thisCard['id'];
 			if (isset($_GET['itemid'])){
 				$this->all_save('Member_card_integral','/integral?id='.$this->thisCard['id']);
 			}else {
 				$this->all_insert('Member_card_integral','/integral?id='.$this->thisCard['id']);
 			}
+           
 		}else{
 			$now=time();
 			if (isset($_GET['itemid'])){
@@ -632,8 +652,19 @@ class Member_cardAction extends UserAction{
 				$data['statdate']=$now;
 				$data['enddate']=$now+10*24*3600;;
 			}
-            $list= M('Member_card_coupon')->where(array('token'=>$this->token,'attr'=>'2'))->field("id cid,title,type,0 num")->select();
-
+            $list= M('Member_card_coupon')->where(array('token'=>$this->token))->field("id cid,title,type,0 num")->select();
+            $couponlist=M('member_card_coupon_integral')->where(array('iid' => $_GET['itemid']))->select();
+            if(count($couponlist)>0)
+            {
+                for($i=0;$i<count($list);$i++){
+                    foreach($couponlist as $item){
+                        if($list[$i]['cid']==$item['cid']){
+                            $list[$i]['num']=$item['num'];
+                            $list[$i]['id']=$item['id'];
+                        }
+                    }
+                }
+            }
 			$this->assign('list',$list);
 			$this->assign('vip',$data);
 			$this->display();

@@ -4015,7 +4015,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         $db = M('member_card_coupon');
 		//$uid = (int)$_GET['uid'];
 		$cardid = $this->_get('cardid','intval');
-		$list= $db->where(array('token'=>$this->token,'attr'=>'1','ispublic'=>'1'))->field('id,title,type,days')->select();
+		$list= $db->where(array('token'=>$this->token,'ispublic'=>'1'))->field('id,title,type,days')->select();
         if(IS_POST){
             if ($list){
                 foreach ($list as $item){
@@ -5799,10 +5799,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $data['结算日期']=date('Y-m-d',time());
            $data['报价金额']=0;
            $data['应收金额']=0; 
-           if(strpos($data['车主'], 'AYC') === 0){
-               $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>array('like','%会员券消费%')))->find();
-           }
-           elseif($carinfo['客户类别']=='VIP客户'){
+           if($carinfo['客户类别']=='VIP客户'){
                $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>array('like','%赠送洗车%')))->find();
            }
            elseif(strpos($carinfo['客户类别'],'定点签约')===0){
@@ -5835,6 +5832,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $row['项目名称']=$xm['项目名称'];
            $row['维修工艺']=$xm['维修工艺'];
            $row['结算方式']='客付';
+           $row['券编码']=$xm['券编码'];
            $row['工时']=$xm['标准工时'];
            $row['单价']=$xm['标准金额'];
            $row['金额']=$xm['标准金额'];
@@ -6514,6 +6512,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $row['项目名称']=$xm['项目名称'];
             $row['维修工艺']=$xm['维修工艺'];
             $row['结算方式']='客付';
+            $row['券编码']=$xm['券编码'];
             $row['工时']=$xm['标准工时'];
             $row['单价']=$xm['标准金额'];
             $row['金额']=$xm['标准金额'];

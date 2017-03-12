@@ -521,13 +521,13 @@ class StoreAction extends UserAction{
         $attributeData = array();
         $db = M('member_card_coupon');
 		//$uid = (int)$_GET['uid'];
-		$list= $db->where(array('token'=>$this->token,'attr'=>'2'))->field("id cid,title,type,0 num")->select();
+		$list= $db->where(array('token'=>$this->token))->field("id cid,title,type,0 num")->select();
         if ($id && ($product = M('Product')->where(array('catid' => $catid, 'token' => session('token'), 'id' => $id))->find())) {
         	$attributeData = M("Product_attribute")->where(array('pid' => $id))->select();
         	$productDetailData = M("Product_detail")->where(array('pid' => $id))->select();
         	$productimage = M("Product_image")->where(array('pid' => $id))->select();
         	$colorList = $formatList = $pData = array();
-            $couponlist=M('product_coupon')->where(array('pid' => $id))->select();
+            $couponlist=M('product_coupon')->where(array('id' => $id))->select();
             if(count($couponlist)>0)
             {
                     for($i=0;$i<count($list);$i++){
@@ -716,13 +716,14 @@ class StoreAction extends UserAction{
         {
             $couponlist=json_decode($couponlist, true);
             foreach($couponlist as $coupon)
-            {   
-                $data=$coupon;
-                unset($data['id']);
-                $data['token']=$token;
-                $data['pid']=$pid;
-			    $model->add($data);
-				
+            {
+                if($data['num']>0){
+                    $data=$coupon;
+                    unset($data['id']);
+                    $data['token']=$token;
+                    $data['pid']=$pid;
+                    $model->add($data);
+                }
             }
         }
 		if (!empty($norms)) {

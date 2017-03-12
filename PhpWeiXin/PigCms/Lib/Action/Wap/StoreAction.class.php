@@ -472,23 +472,25 @@ private function sellbill($price,$name){
 
 }
 
-private function weixinmessage($content,$depart){
+private function weixinmessage($content,$depart,$type=null){
     $this->weixin->send($content,'ohD3dvqz0EpNooXm4MgE4Xth8UVM');//刘伟
     $this->weixin->send($content,'ohD3dvtYWyjpTMAlWyLF2UPZKSv8');//刘飞
     $this->weixin->send($content,'ohD3dvkNqFLmM83oLxTK2hcKqoRM');//周四红
     $this->weixin->send($content,'ohD3dvvygQTJUa8U2mTCRCr4YC3g');//公司手机号
     $this->weixin->send($content,'ohD3dviFloHSvcl9ieoXFibqPFJM');//欧阳伟鹏
     $this->weixin->send($content,'ohD3dvux1Tdb71ZJZIH5bpKLuXNo');//张超群
-    if($depart=='塘坑店'){
-        $this->weixin->send($content,'ohD3dvmBt8Y82WjV5VceLc96-jO8');//王前进
-    }else{
-        $this->weixin->send($content,'ohD3dviLfAhv63_C5tCbNrO2mfqU');//姜*英
-        $this->weixin->send($content,'ohD3dvhb9V5DXEoCZO5yMfg6clgc');//刘叔
-        $this->weixin->send($content,'ohD3dvlwa5PgS7n6z3s1tAK2NnTY');//刘亮
-        $this->weixin->send($content,'ohD3dvnoP57_LF0vXtTIbN1L4PZo');//刘亮
-        $this->weixin->send($content,'ohD3dvpJALNBXqpu5Kz70kz0caGo');//欧建银
-        $this->weixin->send($content,'ohD3dvh3B7LCBTlCT63ijG-blt6U');//侯碧婷
+    if(!$type){
+        if($depart=='塘坑店'){
+            $this->weixin->send($content,'ohD3dvmBt8Y82WjV5VceLc96-jO8');//王前进
+        }else{
+            $this->weixin->send($content,'ohD3dviLfAhv63_C5tCbNrO2mfqU');//姜*英
+            $this->weixin->send($content,'ohD3dvhb9V5DXEoCZO5yMfg6clgc');//刘叔
+            $this->weixin->send($content,'ohD3dvlwa5PgS7n6z3s1tAK2NnTY');//刘亮
+            $this->weixin->send($content,'ohD3dvnoP57_LF0vXtTIbN1L4PZo');//刘亮
+            $this->weixin->send($content,'ohD3dvpJALNBXqpu5Kz70kz0caGo');//欧建银
+            $this->weixin->send($content,'ohD3dvh3B7LCBTlCT63ijG-blt6U');//侯碧婷
 
+        }
     }
 }
 
@@ -590,7 +592,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
             }
             $data['ID']=$this->getcode(10,0,1);
             $data['制单日期']=date('Y-m-d',time());
-            $data['制单人']='系统录单';
+            $data['制单人']='自助录单';
             $data['保修类别']='保外';
             $data['单据类别']='快修单';
             $data['当前主修人']='';
@@ -639,6 +641,57 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
         }
     }
 } 
+private function calprice($id){
+    $projectprice=0;
+    $totalproject=0;
+    $projects=M('维修项目','dbo.','difo')->where(array('ID'=>$id))->select();
+    if($projects){
+        foreach($projects as $project){
+            if(doubleval($project['虚增金额'])>0){
+                $projectprice+=$project['虚增金额']*$project['折扣']+$project['税额'];
+                $totalproject+=$project['虚增金额']+$project['税额'];
+            }else{
+                $projectprice+=$project['金额']*$project['折扣']+$project['税额'];
+                $totalproject+=$project['金额']+$project['税额'];
+            }
+            
+        }
+    }
+    $productprice=0;
+    $totalproduct=0;
+    $sumcost=0;
+    $products=M('维修配件','dbo.','difo')->where(array('ID'=>$id,'仅内部核算成本'=>'0'))->select();
+    if($products){
+        foreach($products as $product){
+            if(doubleval($product['虚增金额'])>0){
+                $productprice+=$product['虚增金额']*$product['折扣']+$product['税额'];
+                $totalproduct+=$product['虚增金额']+$product['税额'];
+            }
+            else{
+                $productprice+=$product['金额']*$product['折扣']+$product['税额'];
+                $totalproduct+=$product['金额']+$product['税额'];
+                $sumcost+=$product['成本价']*$product['数量'];
+            }
+            
+        }
+    }
+    $appendprice=M('附加费用','dbo.','difo')->where(array('ID'=>$id))->sum('金额');
+    $totalprice=$projectprice+$productprice+$appendprice;
+    $data['报价金额']=$totalproject+$totalproduct+$appendprice;
+    $data['报价人']=cookie('username');
+    $data['材料费']=$productprice;
+    $data['材料成本']=$sumcost;
+    $data['工时费']=$projectprice;
+    $data['附加费']=$appendprice;
+    $data['款项总额']=$totalprice;
+    $data['客付金额']=$totalprice;
+    $data['应收金额']=$totalprice;
+    //$data['材料成本']=;
+    $data['人工成本']=0;
+
+    M('维修','dbo.','difo')->where(array('ID'=>$id))->save($data);
+}
+
 private function genbyrecord($carno,$shop='',$comment){
     if($shop=='')
         $shop=$this->getshopname();
@@ -668,8 +721,8 @@ private function genbyrecord($carno,$shop='',$comment){
     $data['门店']=$shop;
     $data['结算客户']=$carinfo['车主'];;
     $data['结算客户ID']=$carinfo['客户ID'];
-    $data['当前状态']='结算';
-    $data['维修状态']='结算';
+    $data['当前状态']='派工';
+    $data['维修状态']='派工';
     $data['进厂时间']=date('Y-m-d',time());
     //$data['结算日期']=date('Y-m-d',time());
     $data['下次保养']=null;
@@ -723,7 +776,7 @@ private function genbyrecord($carno,$shop='',$comment){
             $this->addproduct($project,$data['ID'],$shop);
      }
     $this->MessageTip($carinfo,$shop,'常规保养');
-    
+    $this->calprice($data['ID']);
     
 } 
   private function addproduct($project,$wxid,$shop){
@@ -1656,10 +1709,10 @@ private function genbyrecord($carno,$shop='',$comment){
         else{
             $fwgwinfo=1;
         }
-        $wxcount=M('维修','dbo.','difo')->where(array('车主'=>$card['number'],'维修类别'=>array('neq','蜡水洗车'),'当前状态'=>array('not in',array('结束','取消'))))->count();
+        $wxcount=M('维修','dbo.','difo')->where(array('车主'=>$card['number'],'当前状态'=>array('not in',array('结束','取消'))))->count();
         $couponCount=M("member_card_coupon_record")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'is_use'=>'0','over_time'=>array('egt',strtotime(date('Y-m-d',time())))))->count();
         
-        $wxlist=M('维修','dbo.','difo')->where(array('制单人'=>array('neq','系统录单'),'客户ID'=>$user['ID'],'当前状态'=>'结算','维修类别'=>array('neq','蜡水洗车')))->count();
+        $wxlist=M('维修','dbo.','difo')->where(array('客户ID'=>$user['ID'],'当前状态'=>'结算'))->count();
         $xslist=M('销售单','dbo.','difo')->where(array('制单人'=>array('neq','系统录单'),'客户ID'=>$user['ID'],'当前状态'=>'待审核'))->count();
         $bxlist=M('车辆保险','dbo.','difo')->where(array('客户ID'=>$user['ID'],'当前状态'=>'审核'))->count();
         $dblist=M('车辆代办','dbo.','difo')->where(array('客户ID'=>$user['ID'],'当前状态'=>'审核'))->count();
@@ -2910,7 +2963,7 @@ private function genbyrecord($carno,$shop='',$comment){
             if($data['服务态度']<4||$data['服务质量']<4||$data['前台接待']<4){
                 $content=$wx['联系人'].'车牌号为'.$wx['车牌号码'].'的车辆'.date('Y-m-d',strtotime($wx['制单日期'])).'日在'.$wx['门店'].$wx['维修类别'];
                 $content.='，客户对服务的评价低于3分，服务顾问:'.$wx['接车人'].'，服务技师:'.$wx['主修人'].',联系电话:'.$wx['联系电话'].'，请及时跟踪回访。';
-                $this->weixinmessage($content,$wx['门店']);
+                $this->weixinmessage($content,$wx['门店'],'评价');
             }
             $data['评价时间'] =date('Y-m-d H:i',time());
             $data['评论内容'] = htmlspecialchars($commnet['content']);
@@ -2986,9 +3039,9 @@ private function genbyrecord($carno,$shop='',$comment){
 		foreach($data as $key=>$value){
 			$cwhere = array('token'=>$this->token,'id'=>$value['coupon_id']);
 			$cinfo	= M('Member_card_coupon')->where($cwhere)->field('useinfo,info,pic,statdate,enddate,title,price')->find();
-            if($value['coupon_type']==3){
-                $cinfo= M('Member_card_integral')->where($cwhere)->field('info,pic,statdate,enddate,title,integral price,useinfo')->find();
-            }
+            //if($value['coupon_type']==3){
+            //    $cinfo= M('Member_card_integral')->where($cwhere)->field('info,pic,statdate,enddate,title,integral price,useinfo')->find();
+            //}
 			$cinfo['info'] 	= html_entity_decode($cinfo['info']);
             if($value['is_use']==0){
                 if(strtotime(date("y-m-d 23:59:59",$value['over_time']))-$now>=0){
@@ -3026,6 +3079,8 @@ private function genbyrecord($carno,$shop='',$comment){
             $shop=$_POST['shop'];
             $carno=$_POST['carno'];
             $this->genwxrecord('40',$carno,'AYC10009','蜡水洗车',$shop);
+            $wxcount=M('维修','dbo.','difo')->where(array('维修类别'=>'蜡水洗车','门店'=>$shop,'_string'=>"当前状态 not in ('结束','取消')"))->count();
+            $this->weixin->send('您的前面还有'.$wxcount.'辆车没有完成蜡水洗车',$this->wecha_id);
             echo '预约成功';
 
         }
@@ -3059,7 +3114,13 @@ private function genbyrecord($carno,$shop='',$comment){
         if(IS_POST){
             $shop=$_POST['shop'];
             $carno=$_POST['carno'];
+            $wxrecord=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>'常规保养','_string'=>"当前状态 not in ('结束','取消')"))->find();
+            if($wxrecord){
+                echo '您当前还存在未结束的保养项目';
+                exit;
+            }
             $this->genbyrecord($carno,$shop,'保养预约');
+
             echo '预约成功';
 
         }
@@ -3632,6 +3693,70 @@ private function genbyrecord($carno,$shop='',$comment){
     public function action_myCoupon(){
     	$data['use_time'] 		= '';
     	$data['add_time'] 		= time(); 
+    	$data['token'] 			= $this->token;
+    	$data['wecha_id'] 		= $this->wecha_id;
+    	$data['coupon_type'] 	= 3;
+    	$now 	= time();
+        $user=M('userinfo')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
+    	$integral 	= M('Member_card_integral')->where(array('token'=>$this->token,'id'=>$this->_post('id','intval'),'ispublic'=>'1'))->find();
+        $count1=M('Member_card_coupon_record')->where(array('token'=>$this->token,'itemid'=>$integral['id'],'coupon_type'=>$data['coupon_type']))->count();
+        if($user['total_score']<$integral['integral']){
+    		echo  '你的积分不足'.$integral['integral'];
+    		exit;
+    	}
+        if($count1>=($integral['people']-intval($integral['basenum'])))
+        {
+    		echo  '礼品券已经兑换完了';
+    		exit;
+        }
+        //$count=M('Member_card_coupon_record')->where(array('token'=>$this->token,'coupon_id'=>$integral['id'],'wecha_id'=>$data['wecha_id'],'coupon_type'=>$data['coupon_type']))->count();
+        //$total=$integral['total'];
+        //if($count>=$total)
+        //{
+        //    echo  '该礼品券每人最多能兑换'.$total.'张，你已超出兑换数量限制';
+        //    exit;
+        //}
+        $days=$integral['days'];
+        //$num=$integral['num'];
+        $coupons=M("member_card_coupon_integral")->where(array('iid'=>$integral['id'],'token'=>$this->token))->select();
+        foreach($coupons as $coupon){
+            $c=M('Member_card_coupon')->where(array('id'=>$coupon['cid']))->find();
+            for($i=0;$i<$coupon['num'];$i++){
+                $data['coupon_name'] 	=$c['title'];
+                $data['over_time']=strtotime(date('Y-m-d',time)."+$days day");
+                $data['coupon_id'] 		= $coupon['cid'];
+                $data['itemid'] 		= $this->_post('id','intval');
+                $data['coupon_num']=date('YmdHis',time()).mt_rand(1000,9999);
+                M('Member_card_coupon_record')->add($data);//会员优惠券表中增加一条记录
+            }
+        }
+       
+        $arr= array();
+        $arr['itemid']	= 0; //暂取记录id
+        $arr['wecha_id']= $this->wecha_id;
+        $arr['expense']	= 0;
+        $arr['time']	= $now;
+        $arr['token']	= $this->token;
+        $arr['cat']		= 2;
+        $arr['score']	= 0-intval($integral['integral']);
+        $sign=array();
+        $sign['token'] = $this->token;
+        $sign['wecha_id'] = $this->wecha_id;
+        $sign['sign_time'] = time();
+        $sign['is_sign'] = 0;
+        $sign['score_type'] = 6;
+        $sign['expense'] =intval($integral['integral']);
+        M('Member_card_sign')->add($sign);
+        M('Member_card_use_record')->add($arr);//积分记录中增加一条记录
+        M('Member_card_integral')->where(array('token'=>$this->token,'id'=>$this->_post('id','intval'),'ispublic'=>'1'))->setInc('getnum');//已兑换数量
+        M('Userinfo')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->setDec('total_score',$integral['integral']);// 修改用户信息表中积分数据
+        echo  '兑换成功';
+        exit;
+    	
+    }
+    public function oldaction_myCoupon(){
+    	$data['use_time'] 		= '';
+    	$data['add_time'] 		= time(); 
     	$data['coupon_id'] 		= $this->_post('id','intval');
     	$data['token'] 			= $this->token;
     	$data['wecha_id'] 		= $this->wecha_id;
@@ -3659,11 +3784,15 @@ private function genbyrecord($carno,$shop='',$comment){
         }
         $days=$integral['days'];
         $num=$integral['num'];
-        for($i=0;$i<$num;$i++){
-            $data['over_time']=strtotime(date('Y-m-d',time)."+$days day");
-            $data['coupon_num']=date('YmdHis',time()).mt_rand(1000,9999);
-            M('Member_card_coupon_record')->add($data);//会员优惠券表中增加一条记录
+        $coupons=M("member_card_coupon_integral")->where(array('iid'=>$integral['id'],'token'=>$this->token))->select();
+        foreach($coupons as $coupon){
+            for($i=0;$i<$num;$i++){
+                $data['over_time']=strtotime(date('Y-m-d',time)."+$days day");
+                $data['coupon_num']=date('YmdHis',time()).mt_rand(1000,9999);
+                M('Member_card_coupon_record')->add($data);//会员优惠券表中增加一条记录
+            }
         }
+       
         $arr= array();
         $arr['itemid']	= 0; //暂取记录id
         $arr['wecha_id']= $this->wecha_id;

@@ -8,11 +8,7 @@
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
-    <style type="text/css">
-        .l-form .l-form-buttons{
-         margin:0px
-        }
-    </style>
+   
     <script type="text/javascript">
         var tree, form, product, haveproduct;
         var data = [
@@ -31,6 +27,8 @@
             //data['金额'] = data['数量'] * data['单价'];
             data['金额'] = data['数量'] * data['单价'] * data['折扣'];
             data['税额'] = data['金额'] * data['税率'];
+            data['价税合计'] = data['金额'] + data['税额'];
+
             haveproduct.updateRow(selected, data);
         }
         $(function () {
@@ -110,7 +108,7 @@
                         row['单位'] = data['库存单位'];
                         row['虚增类别'] = '';
                         row['单价'] = data['参考售价'];
-                        if (getQueryString('type') == '1') {
+                        if (getQueryString('type') == 'purchase' || getQueryString('type') == '1') {
                             row['单价'] = data['参考进价'];
                         }
                         row['折扣'] = 1;
@@ -165,7 +163,7 @@
                     $("input[ligeruiid='虚增类别']").val(rowdata['虚增类别']);
                 }
             });            form = $("#form1").ligerForm({
-                inputWidth: 100, labelWidth: 65, space:3,
+                inputWidth: 100, labelWidth: 75, space:10,
                 validate: true,
                 buttons: [                    {
                         text: "更新", width: 100, click: updateRow
@@ -207,9 +205,9 @@
                             }
                         }
                     }                ],                fields: [
-                    { display: "流水号", name: "流水号", newline: true, type: "hidden" },
+                    { display: "流水号", name: "流水号", newline: false, type: "hidden" },
                     { 
-                        display: "结算类别", name: "结算方式", newline: true, type: "combobox", options: {
+                        display: "结算类别", name: "结算方式", newline: false, type: "combobox", options: {
                             valueField: 'name',
                             textField: 'name',
                             data: data,
@@ -231,7 +229,7 @@
                         }
                     },
                     {
-                        display: "税率", name: "税率", newline: true, type: "text", options: {
+                        display: "税率", name: "税率", newline: false, type: "text", options: {
                             onBlur: updateRow
                         }
                     },

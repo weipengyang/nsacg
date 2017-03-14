@@ -95,7 +95,7 @@
                 };
                 return options;
             }             form = $("#form1").ligerForm({
-                inputWidth: 140, labelWidth: 65, space: 20,
+                inputWidth: 140, labelWidth: 75, space: 20,
                 validate: true,
                 fields: [
                     {
@@ -103,6 +103,14 @@
                             valueField: '名称',
                             textField: '名称',
                             url: '/index.php?g=Query&m=Consume&a=getshoplist',
+                        }
+
+                    },
+                    {
+                        display: "销售类别", name: "销售类别", newline: false, type: "combobox", comboboxName: 'saletype', options: {
+                            valueField: 'params_name',
+                            textField: 'params_name',
+                            url: '/index.php?g=Query&m=Consume&a=getsaletype',
                         }
 
                     },
@@ -145,7 +153,7 @@
                          display: "发票号码 ", name: "发票号码", newline: false, type: "text",
                      },
                       {
-                          display: "结算方式 ", name: "结算方式", newline: true, type: "combobox",
+                          display: "结算方式 ", name: "结算方式", newline: false, type: "combobox",
                           options: {
                               valueField: '名称',
                               textField: '名称',
@@ -173,7 +181,7 @@
                           display: "收款日期 ", name: "收款日期", newline: false, type: "date",
                       },
                       {
-                          display: "送货地址", name: "送货地址", newline: true, type: "text",
+                          display: "送货地址", name: "送货地址", newline: false, type: "text",
                       },
                       {
                           display: "合计数量", name: "合计数量", newline: false, type: "text",
@@ -185,7 +193,7 @@
                         display: "合计税额", name: "实际税额", newline: false, type: "text",
                     },
                      {
-                         display: "价税合计", name: "价税合计", newline: true, type: "text",
+                         display: "价税合计", name: "价税合计", newline: false, type: "text",
                      },
                        {
                            display: "总金额", name: "总金额", newline: false, type: "text"
@@ -210,6 +218,11 @@
                             data['客户ID'] = data['客户名称'];
                             data['客户名称'] = $("input[ligeruiid='客户名称']").val();
                             data['收款日期'] = $("input[ligeruiid='收款日期']").val();
+                            var type = liger.get('saletype').getValue();
+                            if (type == '') {
+                                $.ligerDialog.alert('请选择销售类别');
+                                return;
+                            }
                             if (data['业务员'] == '') {
                                 $.ligerDialog.alert('请选择业务员');
                                 return;

@@ -42,7 +42,7 @@
         $(function () {
             //布局
             toolbar();
-            $("#layout1").ligerLayout({ leftWidth: 210, height: '100%', heightDiff: -20, space: 2, onHeightChanged: f_heightChanged });
+            $("#layout1").ligerLayout({ leftWidth: 135, height: '100%', heightDiff: -20, space: 2, onHeightChanged: f_heightChanged });
             var height = $(".l-layout-center").height();
             //Tab
             tab=$("#framecenter").ligerTab({
@@ -229,14 +229,12 @@
     </script>
     <style type="text/css">
         body, html {
-            height: 100%;
-        }
-
-        body {
+            height: 100%; 
             padding: 0px;
-            margin: 0;
+            margin: 0px;
             overflow: hidden;
         }
+
 
         .l-link {
             display: block;

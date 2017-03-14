@@ -14657,6 +14657,7 @@
     <Content Include="tpl\Other\default\style\js\registerSSO.js" />
     <Content Include="tpl\Other\index.html" />
     <Content Include="tpl\Query\Consume_addproductlist.html" />
+    <Content Include="tpl\Query\Consume_washcarmanage.html" />
     <Content Include="tpl\Query\Consume_projectedit.html" />
     <Content Include="tpl\Query\Consume_projectmanage.html" />
     <Content Include="tpl\Query\Consume_tipreply.html" />

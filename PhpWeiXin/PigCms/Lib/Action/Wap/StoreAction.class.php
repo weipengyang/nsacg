@@ -549,6 +549,8 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
                 $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>array('like','%会员券消费%')))->find();
                 $row['项目编号']=$xm['项目编号'];
                 $row['项目名称']=$xm['项目名称'];
+                $row['券编码']=$xm['券编码'];
+
             }
             else{
                 $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>$type))->find();
@@ -565,7 +567,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
             $row['提成工时']=1;
             $row['提成金额']=0;
             $row['备注']=$comment;
-            $row['开工时间']=date('Y-m-d H:i',time());
+            //$row['开工时间']=date('Y-m-d H:i',time());
             //$row['完工时间']=date('Y-m-d H:i',time());
             $row['是否同意']=1;
             $row['已维修']='0小时'; 
@@ -595,20 +597,19 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
             $data['制单人']='自助录单';
             $data['保修类别']='保外';
             $data['单据类别']='快修单';
-            $data['当前主修人']='';
+            $data['当前主修人']='';                                 
             $data['门店']=$shop;
             $data['结算客户']=$carinfo['车主'];;
             $data['结算客户ID']=$carinfo['客户ID'];
-            $data['当前状态']='结算';
-            $data['维修状态']='结算';
-            $data['进厂时间']=date('Y-m-d',time());
-            $data['结算日期']=date('Y-m-d',time());
+            $data['当前状态']='派工';
+            $data['维修状态']='派工';
+            $data['进厂时间']=date('Y-m-d H:i',time());
+            //$data['结算日期']=date('Y-m-d',time());
             $data['下次保养']=null;
             $data['维修类别']=$wxlb;
             $data['报价金额']=$price;
             $data['应收金额']=$price;
             $data['业务编号']=$bianhao;
-            M('维修','dbo.','difo')->add($data);
             $row=array();
             $row['ID']=$data['ID'];
             if($price==0)
@@ -623,6 +624,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
                 $row['项目名称']=$xm['项目名称'];
                 $row['券编码']=$xm['券编码'];
             }
+            M('维修','dbo.','difo')->add($data);
             $row['维修工艺']='';
             $row['备注']=$comment;
             $row['结算方式']='客付';
@@ -3079,7 +3081,7 @@ private function genbyrecord($carno,$shop='',$comment){
             $shop=$_POST['shop'];
             $carno=$_POST['carno'];
             $this->genwxrecord('40',$carno,'AYC10009','蜡水洗车',$shop);
-            $wxcount=M('维修','dbo.','difo')->where(array('维修类别'=>'蜡水洗车','门店'=>$shop,'_string'=>"当前状态 not in ('结束','取消')"))->count();
+            $wxcount=M('维修','dbo.','difo')->where(array('维修类别'=>'蜡水洗车','门店'=>$shop,'_string'=>"当前状态='派工'"))->count();
             $this->weixin->send('您的前面还有'.$wxcount.'辆车没有完成蜡水洗车',$this->wecha_id);
             echo '预约成功';
 

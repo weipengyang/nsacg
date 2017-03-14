@@ -34,7 +34,7 @@
                 };
                 return options;
             }             form = $("#form1").ligerForm({
-                inputWidth: 140, labelWidth: 65, space: 20,
+                inputWidth: 140, labelWidth: 75, space: 20,
                 validate: true,
                 fields: [
                     {
@@ -45,6 +45,14 @@
                         }
 
                     },
+                     {
+                         display: "销售类别", name: "销售类别", newline: false, type: "combobox", comboboxName: 'saletype', options: {
+                             valueField: 'params_name',
+                             textField: 'params_name',
+                             url: '/index.php?g=Query&m=Consume&a=getsaletype',
+                         }
+
+                     },
                    {
                        display: "客户名称", name: "客户名称", newline: false, type: "popup", options: {
                              condition: {

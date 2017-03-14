@@ -314,6 +314,9 @@ function todate(num, istime) {
             if (times[0] !='12' &&times[3].indexOf('PM') > 0) {
                 time = (parseInt(times[0]) + 12) + ':' + times[1];
             }
+            if (times[0] == '12' && times[3].indexOf('AM') > 0) {
+                time = (parseInt(times[0]) - 12) + ':' + times[1];
+            }
             return date + ' ' + time;
         }
         return date;

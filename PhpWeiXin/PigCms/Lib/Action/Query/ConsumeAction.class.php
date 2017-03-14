@@ -1794,6 +1794,9 @@ class ConsumeAction extends Action{
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
             $searchkey='%'.trim($_POST['searchkey']).'%';
         }
+        if($_GET['lb']&&$_GET['lb']!=''){
+            $where['维修类别']=trim($_GET['lb']);
+        }
         if($_POST['lb']&&trim($_POST['lb'])!='')
         {
             $where['维修类别']=trim($_POST['lb']);
@@ -2344,6 +2347,10 @@ class ConsumeAction extends Action{
     }
     public  function getcllb(){
         $pinpai=M('车辆类别','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($pinpai);
+    }
+    public  function getsaletype(){
+        $pinpai=M('syscode','dbo.','difo')->where(array('parentid'=>10))->select();
         echo json_encode($pinpai);
     }
     public  function getdblb(){
@@ -4869,10 +4876,10 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $data['合计货款']+=$product['金额'];
            $data['合计数量']+=$product['数量'];
            $data['合计税额']+=$product['税额'];
-           $data['价税合计']=$product['价税合计'];
-           $data['总金额']+=$product['价税合计'];
-           $data['应结金额']+=$product['价税合计'];
-           $data['挂账金额']+=$product['价税合计'];
+           $data['价税合计']=$product['金额']+=$product['税额'];
+           $data['总金额']+=$data['价税合计'];
+           $data['应结金额']+=$data['价税合计'];
+           $data['挂账金额']+=$data['价税合计'];
        }
        M('采购单','dbo.','difo')->where(array('ID'=>$id))->save($data);
    }
@@ -5096,6 +5103,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $data['制单日期']=date('Y-m-d',time());
          $data['制单人']=cookie('username');
          $data['客户名称']=$form['客户名称'];
+         $data['销售类别']=$form['销售类别'];
          $data['客户ID']=$form['客户ID'];
          $data['发票类别']=$form['发票类别'];
          $data['发票号码']=$form['发票号码'];
@@ -5367,6 +5375,51 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $this->assign('fwlist',$fwlist);
          $this->assign('wxlist',$wxlist);
          $this->display();
+    }
+
+   public function washcarmanage()
+    {  
+       if(IS_POST){
+           $zhuxiu=$_POST['zhuxiu'];
+           $itemid=$_POST['itemid'];
+           $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>$zhuxiu))->find();
+           $wx=M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->find();
+           M('维修项目','dbo.','difo')->where(array('ID'=>$wx['ID']))->save(array('主修人'=>$zhuxiu,'班组'=>$yg['班组'],'开工时间'=>date('Y-m-d H:i',time())));
+           $data['当前主修人']=$zhuxiu;
+           $data['主修人']=$zhuxiu;
+           $data['开工时间']=date('Y-m-d H:i',time());
+           $data['门店']=$yg['部门'];
+           M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save($data);
+           echo '派工完成';
+           exit;
+       }
+         $list=M('员工目录','dbo.','difo')->where(array('职务'=>array('like','%美容%')))->select();
+         $this->assign('list',$list);
+         $this->display();
+    }
+   public function completework()
+    {  
+       if(IS_POST){
+           $itemid=$_POST['itemid'];
+           $wx=M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->find();
+           M('维修项目','dbo.','difo')->where(array('ID'=>$wx['ID']))->save(array('完工时间'=>date('Y-m-d H:i',time())));
+           $data['当前状态']='完工'; 
+           $data['实际完工']=date('Y-m-d H:i',time());
+           M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save($data);
+           echo '更新完成';
+           exit;
+       }
+    }
+   public function submitcarkey()
+    {  
+       if(IS_POST){
+           $itemid=$_POST['itemid'];
+           $data['当前状态']='派工'; 
+           $data['上交钥匙']=date('Y-m-d H:i',time());
+           M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save($data);
+           echo '更新完成';
+           exit;
+       }
     }
    public function maintenancerecord()
     {  
@@ -5787,8 +5840,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $data['结算客户']=$carinfo['车主'];;
            $data['结算客户ID']=$carinfo['客户ID'];
            //$data['送修人电话']=$carinfo['手机号码'];
-           $data['当前状态']='结算';
-           $data['维修状态']='结算';
+           $data['当前状态']='派工';
+           $data['维修状态']='派工';
            $data['预计完工']=date('Y-m-d',time());
            $data['进厂时间']=date('Y-m-d H:i',time());
            unset($data['出厂时间']);

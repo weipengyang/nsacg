@@ -527,7 +527,7 @@ class StoreAction extends UserAction{
         	$productDetailData = M("Product_detail")->where(array('pid' => $id))->select();
         	$productimage = M("Product_image")->where(array('pid' => $id))->select();
         	$colorList = $formatList = $pData = array();
-            $couponlist=M('product_coupon')->where(array('id' => $id))->select();
+            $couponlist=M('product_coupon')->where(array('pid' => $id))->select();
             if(count($couponlist)>0)
             {
                     for($i=0;$i<count($list);$i++){
@@ -717,8 +717,8 @@ class StoreAction extends UserAction{
             $couponlist=json_decode($couponlist, true);
             foreach($couponlist as $coupon)
             {
+                $data=$coupon;
                 if($data['num']>0){
-                    $data=$coupon;
                     unset($data['id']);
                     $data['token']=$token;
                     $data['pid']=$pid;

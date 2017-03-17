@@ -53,8 +53,8 @@
                     {
                         display: "客户类别", name: "客户类别", newline: false, type: "text", readonly: true
                     },
-                    { display: "联系人 ", name: "联系人", newline: true, type: "text", validate: { required: true } },
-                    { display: "联系电话 ", name: "联系电话", newline: false, type: "text", validate: { required: true } },
+                    { display: "联系人 ", name: "联系人", newline: true, type: "text" },
+                    { display: "联系电话 ", name: "联系电话", newline: false, type: "text" },
                      {
                          display: "门店", name: "门店", newline: true, type: "combobox", comboboxName: 'mendian', options: {
                              valueField: '名称',
@@ -82,15 +82,15 @@
                             url: '/index.php?g=Query&m=Consume&a=getfwgw',
                         }
                     },
-                    {
-                        display: "美容技师", name: "主修人", newline: true, type: "combobox", comboboxName: 'zhuxiu',
-                        options: {
-                            valueField: '姓名',
-                            textField: '姓名',
-                            autocomplete: true,
-                            url: '/index.php?g=Query&m=Consume&a=getzhuxiu',
-                        }
-                    },
+                    //{
+                    //    display: "美容技师", name: "主修人", newline: true, type: "combobox", comboboxName: 'zhuxiu',
+                    //    options: {
+                    //        valueField: '姓名',
+                    //        textField: '姓名',
+                    //        autocomplete: true,
+                    //        url: '/index.php?g=Query&m=Consume&a=getzhuxiu',
+                    //    }
+                    //},
                    { display: "定点金额", name: "money", newline: false, type: "text" },
 
                 ],
@@ -111,10 +111,10 @@
                                 $.ligerDialog.alert('请选择接车人');
                                 return;
                             }
-                            if (data['主修人'] == '') {
-                                $.ligerDialog.alert('请选择美容技师');
-                                return;
-                            }
+                            //if (data['主修人'] == '') {
+                            //    $.ligerDialog.alert('请选择美容技师');
+                            //    return;
+                            //}
                             var submitData = {
                               wxinfo:data
                             };

@@ -120,12 +120,15 @@
                             url: '/index.php?g=Query&m=Consume&a=getzhuxiu',
                         },
                     },
+                    { display: "预计完工", name: "预计完工", newline: false, type: "date", options: { showTime: true } },
                     { display: "故障描述", name: "故障描述", newline: true, type: "textarea", width: 430, height: 100 }
                 ],
                 buttons: [                    { text: "取消", width: 60, click: null },                    {
                         text: "保存", width: 60, click: function () {
                             var data = form.getData();
                             data['接车人'] = $("input[ligeruiid='fwgw']").val();
+                            data['预计完工'] = $("input[ligeruiid='预计完工']").val();
+                            
                             if (data['车牌号码'] == '') {
                                 $.ligerDialog.alert('请输入车牌号码');
                                 return;
@@ -179,6 +182,10 @@
                                 }
                                 if (data['油位表'] == '' || parseFloat(data['油位表'])<= 0) {
                                     $.ligerDialog.alert('油位表不能为空');
+                                    return;
+                                }
+                                if (data['预计完工'] == '') {
+                                    $.ligerDialog.alert('请录入预计完工时间');
                                     return;
                                 }
                             }

@@ -24,6 +24,7 @@
         }
     </style>
     <script type="text/javascript">
+        var record = {pigcms:$carinfo};
         $(function ()
         {
             var form = $("#form1").ligerForm({
@@ -34,25 +35,26 @@
                         {
                             title: '基本信息',
                             fields: [
-                                { display: "流水号", name: "流水号", newline: true, type: "hidden" },
-                                { display: "客户ID", name: "客户ID", newline: true, type: "hidden" },
-                                { display: "业务编号 ", name: "业务编号", newline: true, type: "text",readonly:true},
+                                { display: "流水号", name: "流水号", newline: false, type: "hidden" },
+                                { display: "客户ID", name: "客户ID", newline: false, type: "hidden" },
+                                { display: "业务编号 ", name: "业务编号", newline: false, type: "text", readonly: true },
                                 { display: "制单日期 ", name: "制单日期", newline: false, type: "text", readonly: true },
                                 { display: "制单人 ", name: "制单人", newline: false, type: "text",readonly: true },
-                                { display: "服务顾问", name: "接车人", newline: true, type: "text" },
+                                { display: "服务顾问", name: "接车人", newline: false, type: "text" },
                                 { display: "维修类别 ", name: "维修类别", newline: false, type: "text" },
                                 { display: "保修类别 ", name: "保修类别", newline: false, type: "text" },
-                                { display: "车牌号码", name: "车牌号码", newline: true, type: "text" },
+                                { display: "车牌号码", name: "车牌号码", newline: false, type: "text" },
                                 { display: "品牌", name: "品牌", newline: false, type: "text", readonly: true },
                                 { display: "车系", name: "车型", newline: false, type: "text", readonly: true },
-                                { display: "进厂里程", name: "进厂里程", newline: true, type: "text" },
+                                { display: "进厂里程", name: "进厂里程", newline: false, type: "text" },
                                 {
                                     display: "进厂时间", name: "进厂时间", newline: false, type: "date", options: {
                                         showTime:true
                                     }
                                 },
                                 { display: "油表数", name: "油表数", newline: false, type: "text" },
-                                { display: "预计完工", name: "预计完工", newline: true, type: "date", options: {
+                                {
+                                    display: "预计完工", name: "预计完工", newline: false, type: "date", options: {
                                     showTime:true
                                  }
                                 },
@@ -61,36 +63,37 @@
                                 { display: "年份 ", name: "年份", newline: true, type: "text" },
                                 { display: "排量", name: "排量", newline: false, type: "text" },
                                 { display: "车架号", name: "车架号", newline: false, type: "text" },
-                                { display: "轮胎规格", name: "轮胎规格",newline: true, type: "text" },
+                                { display: "轮胎规格", name: "轮胎规格", newline: false, type: "text" },
                                 { display: "机油格", name: "机油格", newline: false, type: "text" },
                                 { display: "空气格", name: "空气格", newline: false, type: "text" },
-                                { display: "冷气格", name: "冷气格", newline: true, type: "text" },
+                                { display: "冷气格", name: "冷气格", newline: false, type: "text" },
                                 { display: "汽油格", name: "汽油格", newline: false, type: "text" },
                                 { display: "刹车皮", name: "刹车皮", newline: false, type: "text" },
-                                { display: "发动机号", name: "发动机号", newline: true, type: "text" },
+                                { display: "发动机号", name: "发动机号", newline: false, type: "text" },
                                 { display: "发动机型号", name: "发动机型号", newline: false, type: "text" },
                                 { display: "电池", name: "电池", newline: false, type: "text" },
                                 { display: "车主", name: "车主", newline: true, type: "text", readonly: true },
                                 { display: "客户类别", name: "客户类别", newline: false, type: "text",readonly: true },
                                 { display: "联系人", name: "联系人", newline: false, type: "text" },
-                                { display: "联系电话", name: "联系电话", newline: true, type: "text" },
+                                { display: "联系电话", name: "联系电话", newline: false, type: "text" },
                                 { display: "手机号", name: "手机号码", newline: false, type: "text" },
                                 { display: "地址", name: "地址", newline: false, type: "text" },
-                                { display: "身份证号", name: "身份证号", newline: true, type: "text" },
+                                { display: "身份证号", name: "身份证号", newline: false, type: "text" },
                                 { display: "送修人", name: "送修人", newline: false, type: "text" },
                                 { display: "送修人电话", name: "送修人电话", newline: false, type: "text" },
-                                { display: "报价金额", name: "报价金额", newline: true, type: "text" },
+                                { display: "报价金额", name: "报价金额", newline: false, type: "text" },
                                 { display: "报价人", name: "报价人", newline: false, type: "text" },
                                 { display: "审核人", name: "审核人", newline: false, type: "text" },
-                                { display: "出厂里程", name: "出厂里程", newline: true, type: "text" },
-                                { display: "出厂时间", name: "出厂时间", newline: false, type: "text" },
+                                { display: "出厂里程", name: "出厂里程", newline: false, type: "text" },
+                                { display: "出厂时间", name: "出厂时间", newline: false, type: "text", readonly: true },
                                 {
                                     display: "实际完工", name: "实际完工", newline: false, type: "date", options: {
                                         showTime: true
                                     }
                                 },
-                                { display: "取消原因", name: "取消原因", newline: true, type: "text" },
+                                { display: "取消原因", name: "取消原因", newline: false, type: "text" },
                                 { display: "维修状态", name: "维修状态", newline: false, type: "text" },
+                                { display: "当前状态", name: "当前状态", newline: false, type: "text" },
                                 //{
                                 //    display: "保险公司 ", name: "保险公司", newline: false, type: "combobox",
                                 //    options: {
@@ -100,7 +103,7 @@
                                 //        url: '/index.php?g=Query&m=Consume&a=baoxian',
                                 //    } },
                                 
-                                { display: "报称故障 ", name: "报称故障", newline: true,width: 300,type: "textarea" },
+                                { display: "报称故障 ", name: "报称故障", newline: false, width: 300, type: "textarea" },
                                 { display: "重要提示 ", name: "重要提示", newline: false, width: 300, type: "textarea" },
                                 { display: "备注 ", name: "单据备注", newline: true, width: 300, type: "textarea" },
                             ]
@@ -144,7 +147,7 @@
                                 { display: '现收金额', name: '现收金额', newline: false, type: 'text' },
                                 { display: '发票类型', name: '发票类别', newline: true, type: 'text' },
                                 { display: '发票号码', name: '发票号码', newline: false, type: 'text' },
-                                {display:'结算日期',name:'结算日期',newline:false,type:'text'},
+                                {display:'结算日期',name:'结算日期',newline:false,type:'text',readonly:true},
                                 { display: '结算方式', name: '结算方式', newline: true, type: 'text' },
                                 { display: '结算人', name: '收款人', newline: false, type: 'text' },
                                 { display: '毛利', name: '毛利', newline: false, type: 'text' },
@@ -163,7 +166,6 @@
 
             });
             var project;
-            var carinfo={pigcms:$carinfo};
             setdata();
             function submitForm() {
 
@@ -197,54 +199,25 @@
                     checkbox: checkbox                   
                 };
                 return options;
-            }            function todate(num, istime) {
-                if (num && num.length > 8) {
-                    num = num + "";
-                    var date = "";
-                    var month = new Array();
-                    month["Jan"] = '01'; month["Feb"] = '02'; month["Mar"] = '03'; month["Apr"] = '04'; month["May"] = '05'; month["Jun"] = '06';
-                    month["Jul"] = '07'; month["Aug"] = '08'; month["Sep"] = '09'; month["Oct"] = '10'; month["Nov"] = '11'; month["Dec"] = '12';
-                    var str = num.split(" ");
-                    var times = '';
-                    if (str.length > 4) {
-                        date = str[3] + "-";
-                        date = date + month[str[0]] + "-" + str[2];
-                        times = str[4].split(':');
-                    } else {
-                        date = str[2] + "-";
-                        date = date + month[str[0]] + "-" + str[1];
-                        times = str[3].split(':');
-                    }
-                    if (istime) {
-                        time = times[0] + ':' + times[1];
-                        if (str[3].indexOf('PM') > 0) {
-                            time = (parseInt(times[0]) + 12) + ':' + times[1];
-                        }
-                        return date + ' ' + time;
-                    }
-                    return date;
-                }
-                return num;
-            }
-            function setdata()
+            }            function setdata()
             {
-                if (carinfo && carinfo != '') {
-                    carinfo = JSON2.stringify(carinfo);
-                    carinfo = JSON2.parse(carinfo);
-                    form.setData(carinfo);
-                    $("input[ligeruiid='车主']").val(carinfo['车主']);
-                    $("input[ligeruiid='车型']").val(carinfo['车型']);
-                    $("input[ligeruiid='客户类别']").val(carinfo['客户类别']);
-                    $("input[ligeruiid='品牌']").val(carinfo['品牌']);
-                    $("input[ligeruiid='车辆类别']").val(carinfo['车辆类别']);
-                    $("input[ligeruiid='保险公司']").val(carinfo['保险公司']);
-                    $("input[ligeruiid='服务顾问']").val(carinfo['服务顾问']);
+                if (record && record != '') {
+                    record = JSON2.stringify(record);
+                    record = JSON2.parse(record);
+                    form.setData(record);
+                    $("input[ligeruiid='车主']").val(record['车主']);
+                    $("input[ligeruiid='车型']").val(record['车型']);
+                    $("input[ligeruiid='客户类别']").val(record['客户类别']);
+                    $("input[ligeruiid='品牌']").val(record['品牌']);
+                    $("input[ligeruiid='车辆类别']").val(record['车辆类别']);
+                    $("input[ligeruiid='保险公司']").val(record['保险公司']);
+                    $("input[ligeruiid='服务顾问']").val(record['服务顾问']);
 
                     $("div[data-index='1']").html("<div id='projectgrid' style='margin:0;padding 0'><div>");
                     $("div[data-index='2']").html("<div id='productgrid'style='margin:0;padding 0'><div>");
                     $("div[data-index='3']").html("<div id='appendgrid'style='margin:0;padding 0'><div>");
                     $("div[data-index='6']").html("<div id='opgrid'style='margin:0;padding 0'><div>");
-                    $("div[data-index='5']").html('<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=fileupload&carno=' + carinfo['流水号'] + '"></iframe></div>');
+                    $("div[data-index='5']").html('<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=fileupload&carno=' + record['流水号'] + '"></iframe></div>');
 
                        project=$("#projectgrid").ligerGrid({
                         height: '100%',
@@ -292,7 +265,7 @@
                         pageSize: 10,
                         delayLoad: true,
                         checkbox:true,
-                        urlParms: { ID: carinfo['ID'] },
+                        urlParms: { ID: record['ID'] },
                         rownumbers: true,
                         isScroll:true,
                         toolbar: {
@@ -302,7 +275,7 @@
                                 click: function () {
                                    var dialog=$.ligerDialog.open({
                                         height: 600,
-                                        url: 'index.php?&g=Query&m=Consume&a=addproject&itemID=' + carinfo['流水号'] + '&ID=' + carinfo['ID'] + "&discount="+{pigcms:$discount['服务折扣1']} + "&zhuxiu=" + carinfo['当前主修人'],
+                                        url: 'index.php?&g=Query&m=Consume&a=addproject&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + {pigcms:$discount['服务折扣1']} + "&zhuxiu=" + record['当前主修人'],
                                         width: 900,
                                         showMax: true,
                                         showToggle: true,
@@ -403,7 +376,7 @@
                         pageSize: 10,
                         isScroll: true,
                         delayLoad: true,
-                        urlParms:{id:carinfo['ID']},
+                        urlParms: { id: record['ID'] },
                         rownumbers: true,
                         checkbox:true,
                         toolbar: {
@@ -412,7 +385,7 @@
                             text: '增加', click: function () {
                                 $.ligerDialog.open({
                                     height: 600,
-                                    url: 'index.php?&g=Query&m=Consume&a=addproduct&itemID=' + carinfo['流水号'] + '&ID=' + carinfo['ID'] + "&shop=" + carinfo['门店'] + "&discount=" +{pigcms:$discount['销售折扣1']},
+                                    url: 'index.php?&g=Query&m=Consume&a=addproduct&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&shop=" + record['门店'] + "&discount=" + {pigcms:$discount['销售折扣1'] },
                                     width: 900,
                                     showMax: true,
                                     showToggle: true,
@@ -480,7 +453,7 @@
                         pageSize: 10,
                         isScroll: true,
                         delayLoad: true,
-                        urlParms:{id:carinfo['ID']},
+                        urlParms: { id: record['ID'] },
                         rownumbers: true,
                         toolbar: {
                             items: [
@@ -505,7 +478,7 @@
                         url: '/index.php?g=Query&m=Consume&a=getlog',
                         pageSize: 10,
                         isScroll: true,
-                        urlParms: { id: carinfo['业务编号'] },
+                        urlParms: { id: record['业务编号'] },
                         rownumbers: true,
                     });            }
             }
@@ -521,7 +494,7 @@
                         var zhuxiu = $('#zhuxiu').val();
                         var data = {
                             zhuxiu: zhuxiu,
-                            itemid:carinfo["ID"]
+                            itemid: record["ID"]
                         };
                         $.post('/index.php?g=Query&m=Consume&a=assigntask', data,
                           function (msg) {

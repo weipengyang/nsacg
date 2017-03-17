@@ -94,6 +94,7 @@
                             }
                             row = parent.grid.getSelectedRow();
                             parent.grid.updateRow(row, data);
+                            if(parent.form)
                             parent.form.setData(data);
                             row['结算账户'] = data['结算账户'];
                             var data = {

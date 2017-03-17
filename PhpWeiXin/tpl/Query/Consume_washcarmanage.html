@@ -47,6 +47,7 @@
                             <button type="button" class="am-btn am-btn-default am-margin-right" id="my-start">开始日期</button><span id="my-startDate"></span>
                             <button type="button" class="am-btn am-btn-default am-margin-right" id="my-end">结束日期</button><span id="my-endDate"></span>
                             <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="washcar();">洗车录入</button>
+                            <button type="button" class="am-btn am-btn-secondary  am-btn-sm" onclick="checkin();">结算</button>
                             <button id="print" class="am-btn am-btn-warning" onclick="printbill();" type="button">打印结算单</button>
                         </div>
                     </div>
@@ -96,7 +97,7 @@
     <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
-        var grid,memberdialog, wxdialog,washdialog, printdialog;
+        var grid,memberdialog, wxdialog,washdialog,caldialog, printdialog;
         function wxinfo(xh) {
             if (wxdialog) {
                 wxdialog.setUrl('/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh);
@@ -200,14 +201,24 @@
             }
         }
         function submitcarkey(itemid) {
-            var data = {
-                itemid: itemid
-            };
-            $.post('/index.php?g=Query&m=Consume&a=submitcarkey', data,
-              function (msg) {
-                  $.ligerDialog.alert(msg);
-                  location.href = location.href;
-              });
+            $.ligerDialog.prompt('输入钥匙扣编号', function (yes, value) {
+                if (yes) {
+                    if (value == null || value == "") {
+                        $.ligerDialog.alert('钥匙扣编号为空');
+                        return;
+                    }
+                    var data = {
+                        itemid: itemid,
+                        keynum:value
+                        
+                    };
+                    $.post('/index.php?g=Query&m=Consume&a=submitcarkey', data,
+                      function (msg) {
+                          $.ligerDialog.alert(msg);
+                          grid.reload();
+                      });
+                }
+            });
         }
         function completework(itemid) {
             var data = {
@@ -216,7 +227,7 @@
             $.post('/index.php?g=Query&m=Consume&a=completework', data,
               function (msg) {
                   $.ligerDialog.alert(msg);
-                  location.href = location.href;
+                  grid.reload();
               });
         }
         function stopBubble(e) {
@@ -238,7 +249,47 @@
                 window.event.returnValue = false;
             return false;
         }
-               function assigntask(itemid) {
+        function checkin() {
+            var row = grid.getSelectedRow();
+            if (row['当前状态'] == '结束') {
+                $.ligerDialog.alert('不要重复结算');
+                return;
+            }
+            if (row) {
+                if (caldialog) {
+                    caldialog.setUrl('/index.php?g=Query&m=Consume&a=pay');
+                    caldialog.show();
+                }
+                else {
+                    caldialog = $.ligerDialog.open({
+                        height: 340,
+                        url: '/index.php?g=Query&m=Consume&a=pay',
+                        width: 600,
+                        showMax: false,
+                        showToggle: true,
+                        showMin: false,
+                        isResize: true,
+                        modal: false,
+                        title: '结算信息'
+                    });
+                }
+
+            }
+            else {
+                $.ligerDialog.alert('选择审核记录');
+            }
+        }
+        function changeState(id) {
+            var data = {
+                id: id
+            };
+            $.post('/index.php?g=Query&m=Consume&a=outfactory', data,
+                function (msg) {
+                    $.ligerDialog.alert(msg);
+                    grid.reload();
+                });
+        }
+        function assigntask(itemid) {
             $('#doc-modal-4').modal({
                 relatedTarget: this,
                 width: 380,
@@ -308,19 +359,46 @@
                         if (rowdata.上交钥匙 ==""||rowdata.上交钥匙 == null || rowdata.上交钥匙 == "null" || todate(rowdata.上交钥匙, false) == '1900-01-1') {
                             strhtml += '<a href="javascript:void(0);" onclick="submitcarkey(\'' + rowdata.流水号 + '\');"><strong>钥匙上交</strong></a>|';
                         }
-                        if (rowdata['主修人'] == '') {
+                        if (rowdata.开工时间 == "" || rowdata.开工时间 == null || rowdata.开工时间 == "null" || todate(rowdata.开工时间, false) == '1900-01-1') {
                             strhtml += '<a href="javascript:void(0);" onclick="assigntask(\'' + rowdata.流水号 + '\');"><strong>派工</strong></a>|';
                         }
                         if (rowdata.实际完工 == null|rowdata.实际完工 == "" | rowdata.实际完工 == "null" | todate(rowdata.实际完工, false) == '1900-01-1') {
                             strhtml += '<a href="javascript:void(0);" onclick="completework(\'' + rowdata.流水号 + '\');"><strong>完工</strong></a>';
                         }
+                        if (rowdata.当前状态=='出厂')
+                            strhtml += '<a href="javascript:void(0);" onclick="changeState(\'' + rowdata.流水号 + '\');"><strong>出厂</strong></a>';
                         return strhtml;
                     }
                 }
                  ,
                 { display: '状态', name: '当前状态', align: 'left', width: 50 },
+                { display: '主修人', name: '主修人', width: 60, align: 'left' },
+                 {
+                     display: '等待时间', name: '等待时间', minWidth: 80, render: function (rowdata, index, value) {
+                         if (rowdata.上交钥匙 != "" && rowdata.上交钥匙 != null && rowdata.上交钥匙 != "null" && todate(rowdata.上交钥匙, false) != '1900-01-1') {
+                             var start = new Date(Date.parse(todate(rowdata.上交钥匙, true)));
+                             if (rowdata.实际完工 != null && rowdata.实际完工 != "" && rowdata.实际完工 != "null" && todate(rowdata.实际完工, false) != '1900-01-1') {
+                                 end = new Date(Date.parse(todate(rowdata.实际完工, true)));
+                                 return (end - start) / 60000 + '分钟';
+                             }
+                             else {
+                                 var end = new Date();
+                                 return parseInt((end - start) / 60000) + '分钟';
+                             }
+                         }
+                         return '';
+                     }
+                 },
                 {
-                    display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
+                    display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
+
+                        return '<a href="javascript:void(0);" onclick="carinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                    }
+                },
+                { display: '钥匙编号', name: '钥匙编号', align: 'left', width: 60 },
+               {
+                    display: '制单日期', name: '制单日期', hide: true, minWidth: 100, render: function (rowdata, index, value) {
                        return todate(value,false);
                     }
                 },
@@ -344,23 +422,6 @@
                          return todate(value, true);
                      }
                  },
-                 {
-                     display: '等待时间', name: '等待时间', minWidth: 80, render: function (rowdata, index, value) {
-                         if (rowdata.上交钥匙 != "" && todate(rowdata.上交钥匙, false) != '1900-01-1') {
-                             var start = new Date(Date.parse(todate(rowdata.上交钥匙, true)));
-                             if (rowdata.实际完工 != "" && todate(rowdata.实际完工, false) != '1900-01-1') {
-                                 end = new Date(Date.parse(todate(rowdata.实际完工, true)));
-                                 return (end - start) / 60000 + '分钟';
-                             }
-                             else {
-                                 var end = new Date();
-                                 return parseInt((end - start) / 60000)+'分钟';
-                             }
-                         }
-                         return '';
-                     }
-                 },
-                { display: '主修人', name: '主修人', width: 60, align: 'left' },
                 {
                     display: '客户确认', name: '确认维修', align: 'center', hide: true, width: 60, render: function (rowdata, index, value) {
                         if (value==null||value == '')
@@ -391,13 +452,7 @@
 
                     }
                 },
-                {
-                    display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
-
-                        return '<a href="javascript:void(0);" onclick="carinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
-
-                    }
-                },
+               
                 {
                     display: '客户类别', name: '客户类别', minWidth: 100, render: function (rowdata, index, value) {
                         switch(value){
@@ -442,6 +497,7 @@
                     return todate(value,false);
                   }
                 },
+                { display: '门店', name: '门店', minWidth: 80 },
                 ],
                 rowAttrRender: function (rowdata, rowid) {
                     if (rowdata.商保到期 != "" && todate(rowdata.商保到期, false) != '1900-01-1') {

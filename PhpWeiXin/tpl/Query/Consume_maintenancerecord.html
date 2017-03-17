@@ -42,7 +42,7 @@
         <div class="admin-content">
             <div class="admin-content-body">
                 <div style="margin-bottom:5px;padding-left:10px">
-                    <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="washcar();"><i class="iconfont icon-xiche"></i>洗车</button>
+                    <!--<button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="washcar();"><i class="iconfont icon-xiche"></i>洗车</button>-->
                     <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="meirong();"><i class="iconfont icon-meirong"></i>美容</button>
                     <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="weixiu();"><i class="iconfont icon-weixiu"></i>维修</button>
                     <button type="button" id="baojia" class="am-btn am-btn-default am-btn-sm">报价</button>
@@ -62,7 +62,7 @@
                         类别
                         <select id="lb">
                             <option value="">所有分类</option>
-                            <option value="蜡水洗车">蜡水洗车</option>
+                            <!--<option value="蜡水洗车">蜡水洗车</option>-->
                             <option value="汽车美容">汽车美容</option>
                             <option value="普通快修">普通快修</option>
                             <option value="常规保养">常规保养</option>
@@ -98,9 +98,8 @@
                         </div>
                     </div>
                 </div>
-                <div id="maingrid4" style="margin:0; padding:0;"></div>
-                <div id="maingrid5" style="margin:0; padding:0;height:50%">
-                <div id="form1">
+                <div id="maingrid4" style="margin:0; padding:0;height:60%"></div>
+                <div id="form1" style="margin:0; padding:0;height:40%">
                 </div>
                 </div>
             </div>
@@ -389,7 +388,7 @@
             if (wxdialog) wxdialog.show();
             else {
                 wxdialog = $.ligerDialog.open({
-                    height: 440,
+                    height: 480,
                     url: '/index.php?g=Query&m=Consume&a=wxrecord',
                     width: 600,
                     showToggle: false,
@@ -717,7 +716,7 @@
                 pageSize: 6,
                 pageSizeOptions: [5,8,10,20, 50],
                 url: '/index.php?g=Query&m=Consume&a=getwxinfo',
-                height: '45%',
+                height: '60%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                    // wxinfo(data['流水号']);
                 },

@@ -59,8 +59,6 @@
                         <div class="item-title" style="color:#0055CC;font-size:12px;"><span>积分卡会员价：<em id="vprice">￥{pigcms:$product.discount1}</em></span></div>
                         <div class="item-title" style="color:#0055CC;font-size:12px;"> <span>白金卡会员价：<em id="vprice">￥{pigcms:$product.discount2}</em></span></div>
                         <div class="item-title" style="color:#0055CC;font-size:12px;"> <span>钻石卡会员价：<em id="vprice">￥{pigcms:$product.discount3}</em></span></div>
-                        <div class="item-title">
-                        <div>
                         </div>
                         </div>
                         <div class="item-title" style="padding-top:10px">
@@ -76,8 +74,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
             <div class="d-info">
                 <div style="display:none;" class="price">促销：<font color="red">新春热卖~~~</font></div>
                 <if condition="empty($catData['color']) neq true">
@@ -182,7 +178,7 @@
         var InterValObj;
         var buyDetailId = '';
         $(document).ready(function () {
-            SysSecond = parseInt($("#remainSeconds").html()); //这里获取倒计时的起始时间
+            SysSecond = parseInt('{pigcms:$leftSeconds}');//这里获取倒计时的起始时间
             InterValObj = window.setInterval(SetRemainTime, 1000); //间隔函数，1秒执行
             $(".color").click(function () {
                 if ($(this).attr('class') != 'color on') {

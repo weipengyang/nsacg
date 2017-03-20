@@ -123,10 +123,48 @@
                     isResize: true,
                     modal: false,
                     data: data,
+                    type:'add',
                     title: '保险跟踪'
                 });
             }
         }
+        function deleteinfo(code) {
+            $.ligerDialog.confirm('是否确认删除？', function (yes) {
+                if (yes) {
+                    $.post('index.php?g=Query&m=Consume&a=deleteinsurancetrace', {code:code},
+                        function (data) {
+                            $.ligerDialog.alert(data);
+                            cargird.reload();
+                        }, 'text');
+                }
+                
+            });
+
+        }
+        function modify(data) {
+            if (adddialog) {
+                adddialog.set('data', data);
+                adddialog.set('type', 'modify');
+                adddialog.setUrl('/index.php?g=Query&m=Consume&a=insurancetrace');
+                adddialog.show();
+            }
+            else {
+                adddialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=insurancetrace',
+                    width: 850,
+                    showToggle: false,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    data: data,
+                    type: 'modify',
+                    title: '保险跟踪'
+                });
+            }
+        }
+
+
         function memberinfo(carno) {
             if (memberdialog) {
                 memberdialog.setUrl('/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno);
@@ -218,6 +256,15 @@
                 { display: '方式', name: '跟踪类型' },
                 { display: '跟踪人', name: '跟踪人' },
                 { display: '跟踪内容', name: '内容', minWidth: 500 },
+                { display: '登记人', name: '登记人' },
+                {
+                    display: '操作', name: '操作',align: 'left', width: 130, render: function (rowdata, index, value) {
+                        var strhtml = '';
+                        strhtml += '<a href="javascript:void(0);" onclick="modify(\'' + rowdata.流水号 + '\');"><strong>修改</strong></a>|';
+                            strhtml += '<a href="javascript:void(0);" onclick="deleteinfo(\'' + rowdata.流水号 + '\');"><strong>删除</strong></a>';
+                        return strhtml;
+                    }
+                }
                 ],
                 isScroll: false,
                 showToggleColBtn: false,

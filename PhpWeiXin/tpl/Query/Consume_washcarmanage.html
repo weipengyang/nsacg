@@ -360,10 +360,13 @@
                             strhtml += '<a href="javascript:void(0);" onclick="submitcarkey(\'' + rowdata.流水号 + '\');"><strong>钥匙上交</strong></a>|';
                         }
                         if (rowdata.开工时间 == "" || rowdata.开工时间 == null || rowdata.开工时间 == "null" || todate(rowdata.开工时间, false) == '1900-01-1') {
-                            strhtml += '<a href="javascript:void(0);" onclick="assigntask(\'' + rowdata.流水号 + '\');"><strong>派工</strong></a>|';
+                            if (rowdata.上交钥匙 != "" && rowdata.上交钥匙 != null && rowdata.上交钥匙 != "null" && todate(rowdata.上交钥匙, false) != '1900-01-1') {
+                                strhtml += '<a href="javascript:void(0);" onclick="assigntask(\'' + rowdata.流水号 + '\');"><strong>派工</strong></a>|';
+                            }
                         }
-                        if (rowdata.实际完工 == null|rowdata.实际完工 == "" | rowdata.实际完工 == "null" | todate(rowdata.实际完工, false) == '1900-01-1') {
-                            strhtml += '<a href="javascript:void(0);" onclick="completework(\'' + rowdata.流水号 + '\');"><strong>完工</strong></a>';
+                        if (rowdata.开工时间 != "" && rowdata.开工时间 != null && rowdata.开工时间 != "null" && todate(rowdata.开工时间, false) != '1900-01-1') {
+                            if (rowdata.当前状态 == '派工')
+                               strhtml += '<a href="javascript:void(0);" onclick="completework(\'' + rowdata.流水号 + '\');"><strong>完工</strong></a>';
                         }
                         if (rowdata.当前状态=='出厂')
                             strhtml += '<a href="javascript:void(0);" onclick="changeState(\'' + rowdata.流水号 + '\');"><strong>出厂</strong></a>';

@@ -476,7 +476,20 @@ class WeixinAction extends Action{
         }
         $weixin = new Wechat($this->token,$this->wxuser);
         
-        $taglist=$weixin->gettaglist($this -> data['FromUserName']);
+        $taglist=$weixin->gettaglist($this->data['FromUserName']);
+        if(strpos(strtoupper($data['Content']), '@保险报价') === 0){
+            $cars=M('member_card_car')->where(array('wecha_id'=>$this->data['FromUserName']))->select();
+            if(count(cars)>0){
+                foreach($cars as $mycarinfo){
+                    $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$mycarinfo['carno'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'报价方案'))->select();
+                    if(count($projects)>0){
+                        foreach($projects as $project){
+                            $weixin->send($project['内容'],$mycarinfo['wecha_id']);
+                        }
+                    }
+                }
+            }
+        }
         if(strpos(strtoupper($data['Content']), '*#') === 0){
             $arr = explode("*#",$data['Content']);
             $key=$arr[1];

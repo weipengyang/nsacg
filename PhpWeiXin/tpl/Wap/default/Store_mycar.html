@@ -150,9 +150,18 @@
                 $("#carno").attr('readonly', 'readonly');
                 if (baoxian && baoxian != '') {
                     $('#baoxian').val(todate(baoxian));
+                    $("#baoxian").attr('readonly', 'readonly');
+
+                }
+                else {
+                    $("#baoxian").calendar();
                 }
                 if (nianjian && nianjian != '') {
                     $('#nianjian').val(todate(nianjian));
+                    $("#nianjian").attr('readonly', 'readonly');
+
+                } else {
+                    $("#nianjian").calendar();
                 }
                 $('#licheng').val(licheng);
             }
@@ -240,8 +249,7 @@
             'use strict';
             //对话框
             $.init();
-            $("#baoxian").calendar();
-            $("#nianjian").calendar();
+           
             $(document).on('click', '#addcar', function () {
                   modify('');
                 });

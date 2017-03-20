@@ -1,5 +1,5 @@
 ﻿<!doctype html>
-<html class="no-js fixed-layout">
+<html style="margin:0px;padding:0px">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,7 +14,6 @@
     <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
     <link href="//at.alicdn.com/t/font_1477193360_4766667.css" rel="stylesheet" type="text/css" />
-
     <style type="text/css">
         .l-text-field {
             position: absolute;
@@ -34,14 +33,13 @@
             color: #555555;
         }
     </style>
-
 </head>
-<body>
+<body style="margin:0px;padding:0px;margin-top:0px">
     <div class="am-cf admin-main" style="padding:0;margin:0">
         <!-- content start -->
         <div class="admin-content">
             <div class="admin-content-body">
-                <div style="margin-bottom:5px;padding-left:10px">
+                <div style="margin:0px;padding:0px;padding-left:10px">
                     <!--<button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="washcar();"><i class="iconfont icon-xiche"></i>洗车</button>-->
                     <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="meirong();"><i class="iconfont icon-meirong"></i>美容</button>
                     <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="weixiu();"><i class="iconfont icon-weixiu"></i>维修</button>
@@ -98,8 +96,8 @@
                         </div>
                     </div>
                 </div>
-                <div id="maingrid4" style="margin:0; padding:0;height:60%"></div>
-                <div id="form1" style="margin:0; padding:0;height:40%">
+                <div id="maingrid4" style="margin:0; padding:0;"></div>
+                <div id="form1">
                 </div>
                 </div>
             </div>
@@ -213,7 +211,6 @@
                 modal: false,
                 title: '车辆维修详细信息'
            });
-           wxdialog.max();
         }
         function pick() {
             if (record['当前状态'] == '结束') {
@@ -351,7 +348,6 @@
                     modal: true,
                     title: '车辆信息编辑'
                 });
-                cardialog.max();
             }
         }
         function washcar() {
@@ -664,6 +660,23 @@
                         return todate(value, false);
                     }
                 },
+                {
+                    display: '已处理', name: '', minWidth: 80, render: function (rowdata, index, value) {
+                        if (rowdata.进厂时间 != "" && rowdata.进厂时间 != null && rowdata.进厂时间 != "null" && todate(rowdata.进厂时间, false) != '1900-01-1') {
+                            var start = new Date(Date.parse(todate(rowdata.进厂时间, true)));
+                            if (rowdata.实际完工 != null && rowdata.实际完工 != "" && rowdata.实际完工 != "null" && todate(rowdata.实际完工, false) != '1900-01-1') {
+                                end = new Date(Date.parse(todate(rowdata.实际完工, true)));
+                                return ((end - start) / 60000 / 60).toFixed(2) + '小时';
+                            }
+                            else {
+                                var end = new Date();
+                                return ((end - start) / 60000 / 60).toFixed(2) + '小时';
+                            }
+                        }
+                        return '';
+                    }
+                },
+
                 { display: '主修人', name: '主修人', width: 60, align: 'left' },
                 {
                     display: '客户确认', name: '确认维修', align: 'center', width: 50, render: function (rowdata, index, value) {
@@ -716,7 +729,7 @@
                 pageSize: 6,
                 pageSizeOptions: [5,8,10,20, 50],
                 url: '/index.php?g=Query&m=Consume&a=getwxinfo',
-                height: '60%',
+                height: '55%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                    // wxinfo(data['流水号']);
                 },
@@ -737,7 +750,7 @@
             form = $("#form1").ligerForm({
                 inputWidth: 100, labelWidth: 80, space: 1,
                 validate: true,
-                height:'30%',
+                height:'35%',
                 buttons: [
                     { text: "更新", width: 60, click: submitForm }
                 ],
@@ -1321,7 +1334,7 @@
                 setTimeout(function () {
                     grid.select(grid.data.Rows[0]);
                     $("li[data-index='1']").click();
-                }, 200);
+                }, 400);
 
             });
             $('#paigong').click(function () {
@@ -1339,7 +1352,7 @@
                 setTimeout(function () {
                     grid.select(grid.data.Rows[0]);
                     $("li[data-index='1']").click();
-                }, 200);
+                }, 400);
 
 
             });
@@ -1360,7 +1373,7 @@
                 setTimeout(function () {
                     grid.select(grid.data.Rows[0]);
                     $("li[data-index='2']").click();
-                }, 200);
+                }, 400);
                 
 
             });
@@ -1381,7 +1394,7 @@
                 setTimeout(function () {
                     grid.select(grid.data.Rows[0]);
                     $("li[data-index='0']").click();
-                }, 200);
+                }, 400);
             });
             $('#jiesuan').click(function () {
                 $('#optdiv').find('div').each(function () {
@@ -1402,7 +1415,7 @@
                 setTimeout(function () {
                     grid.select(grid.data.Rows[0]);
                     $("li[data-index='4']").click();
-                }, 200);
+                }, 400);
             });
             $('#chuchang').click(function () {
                 $('#optdiv').find('div').each(function () {
@@ -1418,7 +1431,7 @@
                 setTimeout(function () {
                     grid.select(grid.data.Rows[0]);
                     $("li[data-index='0']").click();
-                }, 200);
+                }, 400);
             });
             $('#all').click(function () {
                 var parms = {
@@ -1430,6 +1443,10 @@
                 $('#optdiv').find('div').each(function () {
                     $(this).hide();
                 });
+                setTimeout(function () {
+                    grid.select(grid.data.Rows[0]);
+                    $("li[data-index='0']").click();
+                }, 400);
             });
             $('#search').click(function () {
                 grid.changePage('first');

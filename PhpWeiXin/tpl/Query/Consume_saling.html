@@ -114,6 +114,15 @@
                         }
 
                     },
+                    {
+                        display: "业务员", name: "业务员", newline: false, type: "combobox", comboboxName: 'fwgw',
+                        options: {
+                            valueField: '姓名',
+                            textField: '姓名',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getfwgw',
+                        }
+                    },
                    {
                        display: "客户名称", name: "客户名称", newline: false, type: "popup", options: {
                              condition: {

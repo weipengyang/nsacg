@@ -510,7 +510,17 @@ private function MessageTip($carinfo,$mendian,$wxlb){
             $data['类别']='保险';
             $data['内容']=$content;
             M('客户跟踪','dbo.','difo')->add($data);
+            $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'报价方案'))->select();
+            if(count($projects)>0){
+                $membercar=M('member_card_car')->where(array('carno'=>$carinfo['车牌号码']))->find();
+                foreach($projects as $project){
+                    if($membercar){
+                        $this->weixin->send($project['内容'],$membercar['wecha_id']);
+                   }
+                    $this->weixinmessage($project['内容'],$mendian);
 
+                }
+            }
         }
     }
     if(date('Y-m-d',strtotime($carinfo['年检日期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['年检日期']))!='1970-01-01'){
@@ -522,8 +532,17 @@ private function MessageTip($carinfo,$mendian,$wxlb){
             $data['类别']='年审';
             $data['内容']=$content;
             M('客户跟踪','dbo.','difo')->add($data);
+            $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'年审','跟踪类型'=>'报价方案'))->select();
+            if(count($projects)>0){
+                $membercar=M('member_card_car')->where(array('carno'=>$carinfo['车牌号码']))->find();
+                foreach($projects as $project){
+                    if($membercar){
+                        $this->weixin->send($project['类容'],$membercar['wecha_id']);
+                    }
+                    $this->weixinmessage($project['类容'],$mendian);
 
-
+                }
+            }
         }
     }
     if(date('Y-m-d',strtotime($carinfo['下次保养']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['下次保养']))!='1970-01-01'){
@@ -532,6 +551,9 @@ private function MessageTip($carinfo,$mendian,$wxlb){
             $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
             $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
             $this->weixinmessage($content,$mendian);
+            $data['类别']='保养';
+            $data['内容']=$content;
+            M('客户跟踪','dbo.','difo')->add($data);
         }
     }
 }
@@ -605,6 +627,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
             $data['维修状态']='派工';
             $data['进厂时间']=date('Y-m-d H:i',time());
             unset($data['出厂时间']);
+            unset($data['开工时间']);
             unset($data['实际完工']);
             unset($data['购买日期']);
             unset($data['结束日期']);
@@ -731,8 +754,8 @@ private function genbyrecord($carno,$shop='',$comment){
     $data['门店']=$shop;
     $data['结算客户']=$carinfo['车主'];;
     $data['结算客户ID']=$carinfo['客户ID'];
-    $data['当前状态']='派工';
-    $data['维修状态']='派工';
+    $data['当前状态']='报价';
+    $data['维修状态']='报价';
     $data['进厂时间']=date('Y-m-d',time());
     //$data['结算日期']=date('Y-m-d',time());
     $data['下次保养']=null;
@@ -3087,7 +3110,7 @@ private function genbyrecord($carno,$shop='',$comment){
             $shop=$_POST['shop'];
             $carno=$_POST['carno'];
             $this->genwxrecord('40',$carno,'AYC10009','蜡水洗车',$shop);
-            $wxcount=M('维修','dbo.','difo')->where(array('维修类别'=>'蜡水洗车','门店'=>$shop,'_string'=>"当前状态='派工'"))->count();
+            $wxcount=M('维修','dbo.','difo')->where(array('维修类别'=>'蜡水洗车','门店'=>$shop,'_string'=>"当前状态  in ('报价','派工')"))->count();
             $this->weixin->send('您的前面还有'.$wxcount.'辆车正在排队洗车，为了减少您的等待时间，请把汽车钥匙交到前台。',$this->wecha_id);
             //尊敬的*星级会员，您的前面还有6人正在排队，为了减少您的等待时间，请把汽车钥匙交到前台，从交钥匙时刻起等待时间超过60分钟，本次洗车可以免单哦
             echo '预约成功';

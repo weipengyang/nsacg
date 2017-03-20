@@ -53,6 +53,14 @@
                          }
 
                      },
+                     {
+                         display: "业务员", name: "业务员", newline: false, type: "combobox", comboboxName: 'fwgw',
+                         options: {
+                             valueField: '姓名',
+                             textField: '姓名',
+                             url: '/index.php?g=Query&m=Consume&a=getfwgw',
+                         }
+                     },
                    {
                        display: "客户名称", name: "客户名称", newline: false, type: "popup", options: {
                              condition: {
@@ -182,18 +190,21 @@
                         }
                     }            ]             });
              var data = frameElement.dialog.data;
-             form.setData(data);
-             $("input[ligeruiid='运费']").val(0);
-             $("input[ligeruiid='客户名称']").val(data['客户名称']);
-             $("input[ligeruiid='发票类别']").val(data['发票类别']);
-             $("input[ligeruiid='结算方式']").val(data['结算方式']);
-             $("input[ligeruiid='货运方式']").val(data['货运方式']);
-             $("input[ligeruiid='收款日期']").val(todate(data['收款日期']));
-             var carno = liger.get('combcarno');
-             if (carno) {
-                 carno.setParm('id', data['客户ID']);
-                 carno.reload();
-             }
+             setTimeout(function () {
+                 form.setData(data);
+                 $("input[ligeruiid='运费']").val(0);
+                 $("input[ligeruiid='客户名称']").val(data['客户名称']);
+                 $("input[ligeruiid='发票类别']").val(data['发票类别']);
+                 $("input[ligeruiid='结算方式']").val(data['结算方式']);
+                 $("input[ligeruiid='货运方式']").val(data['货运方式']);
+                 $("input[ligeruiid='收款日期']").val(todate(data['收款日期']));
+                 var carno = liger.get('combcarno');
+                 if (carno) {
+                     carno.setParm('id', data['客户ID']);
+                     carno.reload();
+                 }
+             }, 300);
+             
             //calprice();
         });
 

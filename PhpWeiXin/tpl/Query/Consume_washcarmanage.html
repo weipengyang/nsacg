@@ -47,8 +47,8 @@
                             <button type="button" class="am-btn am-btn-default am-margin-right" id="my-start">开始日期</button><span id="my-startDate"></span>
                             <button type="button" class="am-btn am-btn-default am-margin-right" id="my-end">结束日期</button><span id="my-endDate"></span>
                             <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="washcar();">洗车录入</button>
-                            <button type="button" class="am-btn am-btn-secondary  am-btn-sm" onclick="checkin();">结算</button>
-                            <button id="print" class="am-btn am-btn-warning" onclick="printbill();" type="button">打印结算单</button>
+                            <!--<button type="button" class="am-btn am-btn-secondary  am-btn-sm" onclick="checkin();">结算</button>
+                            <button id="print" class="am-btn am-btn-warning" onclick="printbill();" type="button">打印结算单</button>-->
                         </div>
                     </div>
                     <div class="am-u-sm-2 am-u-md-3">
@@ -117,28 +117,22 @@
                 }
            wxdialog.max();
         }
-        function printbill() {
-            var row = grid.getSelectedRow();
-            if (row) {
-                if (printdialog) {
-                    printdialog.setUrl('/index.php?g=Query&m=Consume&a=printbill&ID=' + row['ID']);
-                    printdialog.show();
-                } else {
-                    printdialog = $.ligerDialog.open({
-                        height: 600,
-                        url: '/index.php?g=Query&m=Consume&a=printbill&ID=' + row['ID'],
-                        width: 950,
-                        showMax: true,
-                        showToggle: true,
-                        showMin: true,
-                        isResize: true,
-                        modal: false,
-                        title: '打印结算单'
-                    });
-                }
-            }
-            else {
-                $.ligerDialog.alert('请选择要打印的单');
+        function printbill(ID) {
+            if (printdialog) {
+                printdialog.setUrl('/index.php?g=Query&m=Consume&a=printbill&ID='+ID);
+                printdialog.show();
+            } else {
+                printdialog = $.ligerDialog.open({
+                    height: 600,
+                    url: '/index.php?g=Query&m=Consume&a=printbill&ID=' + ID,
+                    width: 950,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '打印结算单'
+                });
             }
         }
         $("#wxtype").change(function () {
@@ -249,34 +243,25 @@
                 window.event.returnValue = false;
             return false;
         }
-        function checkin() {
-            var row = grid.getSelectedRow();
-            if (row['当前状态'] == '结束') {
-                $.ligerDialog.alert('不要重复结算');
-                return;
-            }
-            if (row) {
-                if (caldialog) {
-                    caldialog.setUrl('/index.php?g=Query&m=Consume&a=pay');
-                    caldialog.show();
-                }
-                else {
-                    caldialog = $.ligerDialog.open({
-                        height: 340,
-                        url: '/index.php?g=Query&m=Consume&a=pay',
-                        width: 600,
-                        showMax: false,
-                        showToggle: true,
-                        showMin: false,
-                        isResize: true,
-                        modal: false,
-                        title: '结算信息'
-                    });
-                }
-
+        function checkin(code) {
+            if (caldialog) {
+                caldialog.setUrl('/index.php?g=Query&m=Consume&a=newpay');
+                caldialog.set('code', code);
+                caldialog.show();
             }
             else {
-                $.ligerDialog.alert('选择审核记录');
+                caldialog = $.ligerDialog.open({
+                    height: 340,
+                    url: '/index.php?g=Query&m=Consume&a=newpay',
+                    width: 600,
+                    showMax: false,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    code:code,
+                    title: '结算信息'
+                });
             }
         }
         function changeState(id) {
@@ -354,7 +339,7 @@
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                 {
-                    display: '操作', name: '操作', minWidth: 150, render: function (rowdata, index, value) {
+                    display: '操作', name: '操作', minWidth: 85, render: function (rowdata, index, value) {
                         var strhtml = '';
                         if (rowdata.上交钥匙 ==""||rowdata.上交钥匙 == null || rowdata.上交钥匙 == "null" || todate(rowdata.上交钥匙, false) == '1900-01-1') {
                             strhtml += '<a href="javascript:void(0);" onclick="submitcarkey(\'' + rowdata.流水号 + '\');"><strong>钥匙上交</strong></a>|';
@@ -368,8 +353,12 @@
                             if (rowdata.当前状态 == '派工')
                                strhtml += '<a href="javascript:void(0);" onclick="completework(\'' + rowdata.流水号 + '\');"><strong>完工</strong></a>';
                         }
+                        if (rowdata.当前状态 == '结算' && rowdata.当前状态.标志 !='已结算')
+                            strhtml += '<a href="javascript:void(0);" onclick="checkin(\'' + rowdata.流水号 + '\');"><strong>结算</strong></a>';
                         if (rowdata.当前状态=='出厂')
                             strhtml += '<a href="javascript:void(0);" onclick="changeState(\'' + rowdata.流水号 + '\');"><strong>出厂</strong></a>';
+                        if (rowdata.当前状态 == '结束')
+                            strhtml += '<a href="javascript:void(0);" onclick="printbill(\'' + rowdata.ID + '\');"><strong>打印</strong></a>';
                         return strhtml;
                     }
                 }

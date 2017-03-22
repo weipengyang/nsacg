@@ -282,7 +282,7 @@ class StoreAction extends WapAction{
             }
             if(!empty($car)){
                 $item['车主']=$card['number'];
-                $item['联系人']=$user['truename'];
+                //$item['联系人']=$user['truename'];
                 $item['联系电话']=$user['tel'];
                 $item['手机号码']=$user['tel'];
                 $item['客户类别']=$lb;
@@ -510,7 +510,7 @@ private function MessageTip($carinfo,$mendian,$wxlb){
             $data['类别']='保险';
             $data['内容']=$content;
             M('客户跟踪','dbo.','difo')->add($data);
-            $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'报价方案'))->select();
+            $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'推广方案'))->select();
             if(count($projects)>0){
                 $membercar=M('member_card_car')->where(array('carno'=>$carinfo['车牌号码']))->find();
                 foreach($projects as $project){
@@ -532,7 +532,7 @@ private function MessageTip($carinfo,$mendian,$wxlb){
             $data['类别']='年审';
             $data['内容']=$content;
             M('客户跟踪','dbo.','difo')->add($data);
-            $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'年审','跟踪类型'=>'报价方案'))->select();
+            $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'年审','跟踪类型'=>'推广方案'))->select();
             if(count($projects)>0){
                 $membercar=M('member_card_car')->where(array('carno'=>$carinfo['车牌号码']))->find();
                 foreach($projects as $project){
@@ -640,6 +640,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
             $data['维修类别']=$wxlb;
             $data['报价金额']=$price;
             $data['应收金额']=$price;
+            $data['客付金额']=$price;
             $data['业务编号']=$bianhao;
             $row=array();
             $row['ID']=$data['ID'];

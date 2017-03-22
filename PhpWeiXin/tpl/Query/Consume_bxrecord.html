@@ -18,8 +18,10 @@
                 var syfd = parseFloat($("input[ligeruiid='商业返点']").val() == "" ? 0 : $("input[ligeruiid='商业返点']").val());
                 var jqfd = parseFloat($("input[ligeruiid='交强返点']").val() == "" ? 0 : $("input[ligeruiid='交强返点']").val());
                 var cqs = parseFloat($("input[ligeruiid='车船税']").val() == "" ? 0 : $("input[ligeruiid='车船税']").val());
+                var yhje = parseFloat($("input[ligeruiid='优惠金额']").val() == "" ? 0 : $("input[ligeruiid='优惠金额']").val());
                 $("input[ligeruiid='总金额']").val(sxf + jqbf + sybf + cqs);
                 $("input[ligeruiid='应缴保费']").val(jqbf + sybf);
+                $("input[ligeruiid='应收金额']").val(sxf + jqbf + sybf + cqs - yhje);
                 $("input[ligeruiid='合计返点']").val(jqbf * jqfd + sybf * syfd);
             }
             var form = $("#form1").ligerForm({
@@ -80,6 +82,7 @@
                  { display: "驾驶员电话", name: "驾驶员电话", newline: false, type: "text" },
                  { display: "车型", name: "车型", newline: false, type: "text", readonly: true },
                  { display: "品牌", name: "品牌", newline: false, type: "text" },
+                 { display: "流水号", name: "流水号", newline: false, type: "text" ,hide:true},
                  { display: '座位数', name: '座位数', newline: false, type: "text", },
                  { display: '车架号', name: '车架号', newline: false, type: "text", },
                  { display: '发动机号', name: '发动机号', newline: false, type: "text", },
@@ -148,7 +151,15 @@
                          }
                      }
                  },
+                 {
+                     display: '优惠金额', name: '优惠金额', newline: false, type: "float", options: {
+                         onBlur: function (value) {
+                             calprice();
+                         }
+                     }
+                 },
                  { display: '总金额', name: '总金额', newline: false, type: "float",readonly:true },
+                 { display: '应收金额', name: '应收金额', newline: false, type: "float", readonly: true },
                  { display: '备注', name: '备注', type: "textarea", width: 430, height: 100 },
 
                 ],
@@ -165,7 +176,7 @@
                             }
                             data=JSON2.parse(JSON2.stringify(data));
                             var submitData = {
-                                type:'add',
+                                type: frameElement.dialog.get('type'),
                                 bxinfo: data
                             };
                             $.post('index.php?g=Query&m=Consume&a=savebxinfo', submitData,
@@ -177,7 +188,16 @@
                               });
                         }
                     }            ]            });
+            if (frameElement.dialog.get('type') == 'modify')
+            {
+                setTimeout(function () {
+                    var record = JSON2.stringify(frameElement.dialog.get('data'));
+                    record = JSON2.parse(record);
+                    form.setData(record);
 
+                }, 300);
+                
+            }
             $("input[ligeruiid='交强起始']").blur(function () {
                 var strdate = this.value;
                 var myDate = new Date();

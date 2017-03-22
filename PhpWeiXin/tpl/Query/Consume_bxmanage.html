@@ -110,7 +110,7 @@
                     width: 900,
                     showMax: true,
                     showToggle: true,
-                    showMin: true,
+                    showMin: false,
                     isResize: true,
                     modal: false,
                     title: '车辆信息编辑'
@@ -130,7 +130,7 @@
                     width: 900,
                     showMax: true,
                     showToggle: true,
-                    showMin: true,
+                    showMin: false,
                     isResize: true,
                     modal: false,
                     title: '会员资料编辑'
@@ -140,6 +140,31 @@
         function record() {
             if (bxdialog) {
                 bxdialog.setUrl('/index.php?g=Query&m=Consume&a=bxrecord');
+                bxdialog.set('type', 'add');
+                bxdialog.show();
+                
+            }
+            else {
+                bxdialog = $.ligerDialog.open({
+                    height: 620,
+                    url: '/index.php?g=Query&m=Consume&a=bxrecord',
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    type:'add',
+                    title: '保险登记'
+                });
+            }
+            bxdialog.max();
+        }
+        function modifyinfo(data) {
+            if (bxdialog) {
+                bxdialog.setUrl('/index.php?g=Query&m=Consume&a=bxrecord');
+                bxdialog.set('type', 'modify');
+                bxdialog.set('data', data);
                 bxdialog.show();
             }
             else {
@@ -149,13 +174,17 @@
                     width: 900,
                     showMax: true,
                     showToggle: true,
-                    showMin: true,
+                    showMin: false,
                     isResize: true,
                     modal: false,
+                    data:data,
+                    type:'modify',
                     title: '保险登记'
                 });
             }
+            bxdialog.max();
         }
+
         function check() {
             var row = grid.getSelectedRow();
             if (row) {
@@ -296,6 +325,9 @@
                 totalRender: f_totalRender,
                 url: '/index.php?g=Query&m=Consume&a=getbxdata',
                 height: '95%',
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    modifyinfo(data);
+                }
             });
            
             $("#fwgw").change(function () {

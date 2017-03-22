@@ -836,7 +836,7 @@ class ConsumeAction extends Action{
             $count=M('出入库明细','dbo.','difo')->join('left join 出入库单 on 出入库明细.ID=出入库单.ID left join 采购单 on 采购单.单据编号=出入库单.引用单号')->where($where)->count();
             $yelist=M('出入库明细','dbo.','difo')
                 ->join('left join 出入库单 on 出入库明细.ID=出入库单.ID left join 采购单 on 采购单.单据编号=出入库单.引用单号')->where($where)
-                ->field('出入库明细.*,出入库单.单据编号,出入库单.原因,出入库单.引用单号,出入库单.引用类别,出入库单.制单日期,出入库单.审核日期,采购单.供应商 客户名称')
+                ->field('出入库明细.*,出入库单.单据编号,出入库单.车牌号码,出入库单.原因,出入库单.引用单号,出入库单.引用类别,出入库单.制单日期,出入库单.审核日期,采购单.供应商 客户名称')
                 ->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
         }else{
             $count=M('出入库明细','dbo.','difo')->join('left join 出入库单 on 出入库明细.ID=出入库单.ID left join 销售单 on 销售单.单据编号=出入库单.引用单号')->where($where)->count();
@@ -1796,6 +1796,11 @@ class ConsumeAction extends Action{
         echo json_encode($data);
         
     }
+    public function getwxinfobyid(){
+        $carinfo=M('维修','dbo.','difo')->where(array('流水号'=>$_GET['code']))->find();
+        echo json_encode($carinfo);
+
+    }
     public  function getwxinfo(){
         $type=$_POST['type'];
         $page=$_POST['page'];
@@ -1996,6 +2001,7 @@ class ConsumeAction extends Action{
             $type=$_POST['type'];
             $bxinfo=$_POST['bxinfo'];
             if($type&&$type=='add'){
+                unset($bxinfo['流水号']);
                 $bxinfo['ID']=$this->getcode(18,0,1);;
                 $bxinfo['业务编号']=$this->getcodenum('BX');
                 $bxinfo['制单人']=cookie('username');
@@ -2005,8 +2011,14 @@ class ConsumeAction extends Action{
                 M('车辆保险','dbo.','difo')->add($bxinfo);
                 $carinfo['交保到期']=$bxinfo['交强截至'];
                 $carinfo['商保到期']=$bxinfo['商业截至'];
-                M('车辆档案')->where(array('车牌号码'=>$bxinfo['车牌号码']))->save($carinfo);
+                M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$bxinfo['车牌号码']))->save($carinfo);
             }else{
+                $code=$bxinfo['流水号'];
+                unset($bxinfo['流水号']);
+                $carinfo['交保到期']=$bxinfo['交强截至'];
+                $carinfo['商保到期']=$bxinfo['商业截至'];
+                M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$bxinfo['车牌号码']))->save($carinfo);
+                M('车辆保险','dbo.','difo')->where(array('流水号'=>$code))->save($bxinfo);
 
             }
             echo '保存成功';
@@ -2457,9 +2469,11 @@ class ConsumeAction extends Action{
         {
             $where['当前状态']='待审核';
         }
-        if(isset($_POST['lb'])&&$_POST['lb']!='all'){
-            $where['单据类别']=$_POST['lb'];
+        if(isset($_GET['type'])&&$_GET['type']=='1'){
+            $where['单据类别']='入库';
 
+        }else{
+            $where['单据类别']='出库';
         }
         if($searchkey){       
             $searchwhere['制单人']=array('like',$searchkey);
@@ -2578,7 +2592,8 @@ class ConsumeAction extends Action{
             $searchwhere['制单人']=array('like',$searchkey);
             $searchwhere['业务员']=array('like',$searchkey);
             $searchwhere['客户名称']=array('like',$searchkey);
-            $searchwhere['单据备注']=array('like',$searchkey);
+            $searchwhere['单据编号']=array('like',$searchkey);
+            $searchwhere['备注']=array('like',$searchkey);
             $searchwhere['_logic']='OR';
             $where['_complex']=$searchwhere;
             
@@ -3806,25 +3821,27 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $crk=$_POST['crk'];
            $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
            if($crk['单据类别']=='出库'){
-               foreach($crkmx as $item){
-                   $num=$item['数量'];
-                   $code=$item['编号'];
-                   $ck=$item['仓库'];
-                   if($crk['引用类别']=='维修领料'){
-                       $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
-                       $num=$pj['待审核数量'];
-                       $data['待审核数量']=0;
-                       $data['已领料数量']=$pj['已领料数量']+ $num;
-                       M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
+               if($crkmx){
+                   foreach($crkmx as $item){
+                       $num=$item['数量'];
+                       $code=$item['编号'];
+                       $ck=$item['仓库'];
+                       if($crk['引用类别']=='维修领料'){
+                           $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
+                           $num=$pj['待审核数量'];
+                           $data['待审核数量']=0;
+                           $data['已领料数量']=$pj['已领料数量']+ $num;
+                           M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
+                       }
+                       M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num where 编号='$code'");
+                       M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓库='$ck'");
                    }
-                   M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num where 编号='$code'");
-                   M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓库='$ck'");
-                   $crkitem['当前状态']='已审核';
-                   $crkitem['审核人']=cookie('username');
-                   $crkitem['审核日期']=date('Y-m-d',time());
-                   M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
-                   $this->writeLog($crk['ID'],$crk['单据编号'],'出库审核',$crk['单据类别'].'出库审核');
                }
+               $crkitem['当前状态']='已审核';
+               $crkitem['审核人']=cookie('username');
+               $crkitem['审核日期']=date('Y-m-d',time());
+               M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
+               $this->writeLog($crk['ID'],$crk['单据编号'],'出库审核',$crk['单据类别'].'出库审核');
                echo '审核通过';
                exit;
            }
@@ -4348,7 +4365,11 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $item['联系人']=$user['truename'];
             $item['联系电话']=$user['tel']; 
             $item['客户类别']=$czinfo['类别'];
-            M('车辆档案','dbo.','difo')->add($item);
+            if(M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find()){
+                M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->save($item);
+            }else{
+             M('车辆档案','dbo.','difo')->add($item);
+           }
             echo '添加成功';
             exit();
         }
@@ -5436,6 +5457,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            M('维修项目','dbo.','difo')->where(array('ID'=>$wx['ID']))->save(array('主修人'=>$zhuxiu,'班组'=>$yg['班组'],'开工时间'=>date('Y-m-d H:i',time())));
            $data['当前主修人']=$zhuxiu;
            $data['主修人']=$zhuxiu;
+           $data['当前状态']='派工';
            $data['开工时间']=date('Y-m-d H:i',time());
            $data['门店']=$yg['部门'];
            M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save($data);
@@ -5454,6 +5476,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            M('维修项目','dbo.','difo')->where(array('ID'=>$wx['ID']))->save(array('完工时间'=>date('Y-m-d H:i',time())));
            $data['当前状态']='结算'; 
            $data['实际完工']=date('Y-m-d H:i',time());
+           //$data['已处理']=intval((time()-strtotime($wx['开工时间']))/60);
            M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save($data);
            echo '更新完成';
            exit;
@@ -5894,11 +5917,15 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $data['预计完工']=date('Y-m-d',time());
            $data['进厂时间']=date('Y-m-d H:i',time());
            unset($data['出厂时间']);
-           unset($data['下次保养']);
+           unset($data['开工时间']);
            unset($data['实际完工']);
            unset($data['购买日期']);
            unset($data['结束日期']);
-           //$data['结算日期']=date('Y-m-d',time());
+           unset($data['预计完工']);
+           unset($data['结算日期']);
+           unset($data['上交钥匙']);
+           unset($data['完工时间']);
+           unset($data['评价时间']);
            $data['报价金额']=0;
            $data['应收金额']=0; 
            if($carinfo['客户类别']=='VIP客户'){
@@ -6415,7 +6442,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $data['类别']='保险';
                $data['内容']=$content;
                M('客户跟踪','dbo.','difo')->add($data);
-               $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'报价方案'))->select();
+               $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'推广方案'))->select();
                if(count($projects)>0){
                    $membercar=M('member_card_car')->where(array('carno'=>$carinfo['车牌号码']))->find();
                    foreach($projects as $project){
@@ -6437,7 +6464,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $data['类别']='年审';
                $data['内容']=$content;
                M('客户跟踪','dbo.','difo')->add($data);
-               $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'年审','跟踪类型'=>'报价方案'))->select();
+               $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'年审','跟踪类型'=>'推广方案'))->select();
                if(count($projects)>0){
                    $membercar=M('member_card_car')->where(array('carno'=>$carinfo['车牌号码']))->find();
                    foreach($projects as $project){
@@ -6942,7 +6969,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
    private function changecarinfo($user,$number)
    {
        $car=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$user['carno']))->find();
-       $lb='2星客户';
+       $lb='1星客户';
        if(!empty($car)){
            $item['车主']=$number;
            $item['联系人']=$user['truename'];
@@ -6954,7 +6981,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            
            $czinfo['名称']=$number;
            $czinfo['会员']=1;
-           $czinfo['等级']='★★';
+           $czinfo['等级']='★';
            $czinfo['会员编号']=$number;
            $czinfo['入会日期']=date('Y-m-d',time());
            $czinfo['联系人']=$user['truename'];

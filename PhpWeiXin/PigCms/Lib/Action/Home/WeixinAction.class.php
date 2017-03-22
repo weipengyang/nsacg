@@ -481,7 +481,7 @@ class WeixinAction extends Action{
             $cars=M('member_card_car')->where(array('wecha_id'=>$this->data['FromUserName']))->select();
             if(count(cars)>0){
                 foreach($cars as $mycarinfo){
-                    $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$mycarinfo['carno'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'报价方案'))->select();
+                    $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$mycarinfo['carno'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'推广方案'))->select();
                     if(count($projects)>0){
                         foreach($projects as $project){
                             $weixin->send($project['内容'],$mycarinfo['wecha_id']);

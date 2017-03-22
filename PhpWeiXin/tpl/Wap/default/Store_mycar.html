@@ -171,7 +171,8 @@
                 $('#nianjian').val('');
                 $('#licheng').val('');
                 $("#carno").removeAttr('readonly');
-
+                $("#baoxian").calendar();
+                $("#nianjian").calendar();
             }
             $('.weui_dialog_confirm').show().on('click', '.default ', function () {
                 $('.weui_dialog_confirm').off('click').hide();

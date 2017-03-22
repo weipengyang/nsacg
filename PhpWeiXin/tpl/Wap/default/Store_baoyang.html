@@ -130,9 +130,10 @@
                     shop: shop,
                     carno:carno
                 };
-
+                $.showPreloader('正在排队中');
                 $.post('/index.php?g=Wap&m=Store&a=baoyang&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData,
                 function (data) {
+                    $.hidePreloader();
                     $.alert(data);
                     location.href = '/index.php?g=Wap&m=Store&a=cats&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}';
                 });

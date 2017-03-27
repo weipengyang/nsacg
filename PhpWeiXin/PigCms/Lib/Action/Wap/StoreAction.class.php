@@ -472,28 +472,27 @@ private function sellbill($price,$name){
 
 }
 
-private function weixinmessage($content,$depart,$type=null){
+private function weixinmessage($content,$fwgw){
     $this->weixin->send($content,'ohD3dvqz0EpNooXm4MgE4Xth8UVM');//刘伟
     $this->weixin->send($content,'ohD3dvtYWyjpTMAlWyLF2UPZKSv8');//刘飞
     $this->weixin->send($content,'ohD3dvkNqFLmM83oLxTK2hcKqoRM');//周四红
-    $this->weixin->send($content,'ohD3dvvygQTJUa8U2mTCRCr4YC3g');//公司手机号
     $this->weixin->send($content,'ohD3dviFloHSvcl9ieoXFibqPFJM');//欧阳伟鹏
-    $this->weixin->send($content,'ohD3dvux1Tdb71ZJZIH5bpKLuXNo');//张超群
-    if(!$type){
-        if($depart=='塘坑店'){
-            $this->weixin->send($content,'ohD3dvmBt8Y82WjV5VceLc96-jO8');//王前进
-        }else{
-            $this->weixin->send($content,'ohD3dviLfAhv63_C5tCbNrO2mfqU');//姜*英
-            $this->weixin->send($content,'ohD3dvhb9V5DXEoCZO5yMfg6clgc');//刘叔
+    //$this->weixin->send($content,'ohD3dvvygQTJUa8U2mTCRCr4YC3g');//公司手机号
+    //$this->weixin->send($content,'ohD3dvux1Tdb71ZJZIH5bpKLuXNo');//张超群
+    //$this->weixin->send($content,'ohD3dvmBt8Y82WjV5VceLc96-jO8');//王前进
+    //$this->weixin->send($content,'ohD3dvpJALNBXqpu5Kz70kz0caGo');//欧建银
+    //$this->weixin->send($content,'ohD3dviLfAhv63_C5tCbNrO2mfqU');//姜*英
+    //$this->weixin->send($content,'ohD3dvh3B7LCBTlCT63ijG-blt6U');//侯碧婷
+    if($fwgw&$fwgw!=''){
+        if($fwgw=='刘亮'){
             $this->weixin->send($content,'ohD3dvlwa5PgS7n6z3s1tAK2NnTY');//刘亮
             $this->weixin->send($content,'ohD3dvnoP57_LF0vXtTIbN1L4PZo');//刘亮
-            $this->weixin->send($content,'ohD3dvpJALNBXqpu5Kz70kz0caGo');//欧建银
-            $this->weixin->send($content,'ohD3dvh3B7LCBTlCT63ijG-blt6U');//侯碧婷
+        }else{
+            $this->weixin->send($content,'ohD3dvhb9V5DXEoCZO5yMfg6clgc');//刘叔
 
         }
     }
 }
-
 private function MessageTip($carinfo,$mendian,$wxlb){
     $data['车主']=$carinfo['车主'];
     $data['车牌号码']=$carinfo['车牌号码'];
@@ -501,12 +500,27 @@ private function MessageTip($carinfo,$mendian,$wxlb){
     $data['跟踪人']='系统';
     $data['跟踪类型']='到店消费';
     $data['年份']=date('Y');
+    $model=new templateNews();
+    //$booturl='https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7';
+    $booturl='https://oapi.dingtalk.com/robot/send?access_token=e148663d51dddb27d8e2a586420f5a8cbcf629f111a34736f50cfa64a3f21853';
+
+
     if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
         if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
             $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
             $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已到'.$mendian.$wxlb;
             $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
-            $this->weixinmessage($content,$mendian);
+            $this->weixinmessage($content,$carinfo['服务顾问']);
+            $msgdata='{
+                "msgtype": "text", 
+                "text": {
+                    "content": "'.$content.'"
+                }, 
+                "at": {
+                    "isAtAll": true
+                }
+                }';
+            $model->postMessage($booturl,$msgdata);
             $data['类别']='保险';
             $data['内容']=$content;
             M('客户跟踪','dbo.','difo')->add($data);
@@ -516,9 +530,21 @@ private function MessageTip($carinfo,$mendian,$wxlb){
                 foreach($projects as $project){
                     if($membercar){
                         $this->weixin->send($project['内容'],$membercar['wecha_id']);
-                   }
-                    $this->weixinmessage($project['内容'],$mendian);
-
+                    }
+                    $msgdata='{
+                        "msgtype": "text", 
+                        "text": {
+                            "content": "'.$project['内容'].'"
+                        }, 
+                        "at": {
+                            "isAtAll": true
+                        }
+                        }';
+                    $model->postMessage($booturl,$msgdata);
+                    $this->weixinmessage($project['内容'],$carinfo['服务顾问']);
+                    $data['类别']='推广信息';
+                    $data['内容']=$project['内容'];
+                    M('客户跟踪','dbo.','difo')->add($data);
                 }
             }
         }
@@ -528,7 +554,17 @@ private function MessageTip($carinfo,$mendian,$wxlb){
             $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
             $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
             $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
-            $this->weixinmessage($content,$mendian);
+            $this->weixinmessage($content,$carinfo['服务顾问']);
+            $msgdata='{
+                "msgtype": "text", 
+                "text": {
+                    "content": "'.$content.'"
+                }, 
+                "at": {
+                    "isAtAll": true
+                }
+                }';
+            $model->postMessage($booturl,$msgdata);
             $data['类别']='年审';
             $data['内容']=$content;
             M('客户跟踪','dbo.','difo')->add($data);
@@ -537,10 +573,22 @@ private function MessageTip($carinfo,$mendian,$wxlb){
                 $membercar=M('member_card_car')->where(array('carno'=>$carinfo['车牌号码']))->find();
                 foreach($projects as $project){
                     if($membercar){
-                        $this->weixin->send($project['类容'],$membercar['wecha_id']);
+                        $this->weixin->send($project['内容'],$membercar['wecha_id']);
                     }
-                    $this->weixinmessage($project['类容'],$mendian);
-
+                    $this->weixinmessage($project['内容'],$carinfo['服务顾问']);
+                    $msgdata='{
+                        "msgtype": "text", 
+                        "text": {
+                            "content": "'.$project['内容'].'"
+                        }, 
+                        "at": {
+                            "isAtAll": true
+                        }
+                        }';
+                    $model->postMessage($booturl,$msgdata);
+                    $data['类别']='推广信息';
+                    $data['内容']=$project['内容'];
+                    M('客户跟踪','dbo.','difo')->add($data);
                 }
             }
         }
@@ -550,7 +598,17 @@ private function MessageTip($carinfo,$mendian,$wxlb){
             $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
             $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
             $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
-            $this->weixinmessage($content,$mendian);
+            $this->weixinmessage($content,$carinfo['服务顾问']);
+            $msgdata='{
+                "msgtype": "text", 
+                "text": {
+                    "content": "'.$content.'"
+                }, 
+                "at": {
+                    "isAtAll": true
+                }
+                }';
+            $model->postMessage($booturl,$msgdata);
             $data['类别']='保养';
             $data['内容']=$content;
             M('客户跟踪','dbo.','difo')->add($data);
@@ -765,7 +823,7 @@ private function genbyrecord($carno,$shop='',$comment){
     M('维修','dbo.','difo')->add($data);
     $row=array();
     $row['ID']=$data['ID'];
-    $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>'工时费'))->find();
+    $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>'机油更换'))->find();
     $row['项目编号']=$xm['项目编号'];
     $row['项目名称']=$xm['项目名称'];
     $row['券编码']=$xm['券编码'];
@@ -1179,73 +1237,86 @@ private function genbyrecord($carno,$shop='',$comment){
            $itemid=$_GET['id'];
            $tolalprice=doubleval($_GET['price']);
            $type=intval($_GET['type']);
+           $isfree=0;
            if($type==1){
                $tolalprice=0;
                $projectprice=0;
                $couponlist=array();
                $wx=M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->find();
-               $projects=M('维修项目','dbo.','difo')->where(array('ID'=>$wx['ID']))->select();
-               if($projects){
-                   foreach($projects as $project){
-                       if(doubleval($project['虚增金额'])>0){
-                           $projectprice+=$project['虚增金额']*$project['折扣']+$project['税额'];
-                       }else{
-                           if($project['券编码']){
-                               $coupon=M("member_card_coupon_record")
-                                   ->where(array('token' => $this->token,
-                                   'wecha_id'=>$this->wecha_id,
-                                   'is_use'=>'0',
-                                   'over_time'=>array('egt',strtotime(date('Y-m-d',time()))),
-                                   'coupon_id'=>$project['券编码']
-                                   ))->order('over_time')->find();
-                               if(!$coupon){
-                                   $projectprice+=$project['金额']*$project['折扣']+$project['税额'];
-                               }else{
-                                  $couponlist[]=$coupon;
-                               }
+               //if($wx['维修类别']=='蜡水洗车'&&intval($wx['已处理'])>60)
+               //{
+               //    $tolalprice=0;
+               //    $isfree=1;
+
+
+               //}else
+               {
+                   $projects=M('维修项目','dbo.','difo')->where(array('ID'=>$wx['ID']))->select();
+                   if($projects){
+                       foreach($projects as $project){
+                           if(doubleval($project['虚增金额'])>0){
+                               $projectprice+=$project['虚增金额']*$project['折扣']+$project['税额'];
                            }else{
-                              $projectprice+=$project['金额']*$project['折扣']+$project['税额'];
-                           }
-                       }
-                       
-                   }
-               }
-               $productprice=0;
-               $products=M('维修配件','dbo.','difo')->where(array('ID'=>$wx['ID'],'仅内部核算成本'=>'0'))->select();
-               if($products){
-                   foreach($products as $product){
-                       if(doubleval($product['虚增金额'])>0){
-                           $productprice+=$product['虚增金额']*$product['折扣']+$product['税额'];
-                       }
-                       else{
-                            if($product['券编码']){
-                               $coupons=M("member_card_coupon_record")
-                                   ->where(array('token' => $this->token,
-                                   'wecha_id'=>$this->wecha_id,
-                                   'is_use'=>'0',
-                                   'over_time'=>array('egt',strtotime(date('Y-m-d',time()))),
-                                   'coupon_id'=>$product['券编码']
-                                   ))->order('over_time')->select();
-                               if(!$coupons){
-                                   $productprice+=$product['金额']*$product['折扣']+$product['税额'];
+                               if($project['券编码']){
+                                   $coupon=M("member_card_coupon_record")
+                                       ->where(array('token' => $this->token,
+                                       'wecha_id'=>$this->wecha_id,
+                                       'is_use'=>'0',
+                                       'over_time'=>array('egt',strtotime(date('Y-m-d',time()))),
+                                       'coupon_id'=>$project['券编码']
+                                       ))->order('over_time')->find();
+                                   if(!$coupon){
+                                       $projectprice+=$project['金额']*$project['折扣']+$project['税额'];
+                                   }else{
+                                       $couponlist[]=$coupon;
+                                   }
                                }else{
-                                   $count=intval($product['数量'])-count($coupons)>0?intval($product['数量'])-count($coupons):0;
-                                   $productprice+=$count*$product['单价']*$product['折扣']+$product['税额'];
-                                   $couponlist= array_merge($couponlist,array_slice($coupons,0,intval($product['数量'])-count($coupons)>0?count($coupons):intval($product['数量'])));
+                                   $projectprice+=$project['金额']*$project['折扣']+$project['税额'];
                                }
-                            }
-                               else{
-                                  $productprice+=$product['金额']*$product['折扣']+$product['税额'];
-                               }
+                           }
+                           
                        }
-                       
                    }
+                   $productprice=0;
+                   $products=M('维修配件','dbo.','difo')->where(array('ID'=>$wx['ID'],'仅内部核算成本'=>'0'))->select();
+                   if($products){
+                       foreach($products as $product){
+                           if(doubleval($product['虚增金额'])>0){
+                               $productprice+=$product['虚增金额']*$product['折扣']+$product['税额'];
+                           }
+                           else{
+                               if($product['券编码']){
+                                   $where['token']=$this->token;
+                                   $where['wecha_id']=$this->wecha_id;
+                                   $where['is_use']='0';
+                                   $where['over_time']=array('egt',strtotime(date('Y-m-d',time())));
+                                   $where['coupon_id']=$product['券编码'];
+                                   if(count($couponlist)>0){
+                                       $where['coupon_num']=array('not in',array_column($couponlist,'coupon_num'));
+                                   }
+                                   $coupons=M("member_card_coupon_record")->where($where)->order('over_time')->select();
+                                   if(!$coupons){
+                                       $productprice+=$product['金额']*$product['折扣']+$product['税额'];
+                                   }else{
+                                       $count=intval($product['数量'])-count($coupons)>0?intval($product['数量'])-count($coupons):0;
+                                       $productprice+=$count*$product['单价']*$product['折扣']+$product['税额'];
+                                       $couponlist= array_merge($couponlist,array_slice($coupons,0,intval($product['数量'])-count($coupons)>0?count($coupons):intval($product['数量'])));
+                                   }
+                               }
+                               else{
+                                   $productprice+=$product['金额']*$product['折扣']+$product['税额'];
+                               }
+                           }
+                           
+                       }
+                   }
+                   $tolalprice=$productprice+$projectprice;
                }
-               $tolalprice=$productprice+$projectprice;
                $this->assign('couponlist',$couponlist);
-              
+
            }
          $this->assign('total',$tolalprice);
+         $this->assign('isfree',$isfree);
          $this->assign('couponids',json_encode(array_column($couponlist,'id')));
          $this->display();
        }
@@ -3113,7 +3184,7 @@ private function genbyrecord($carno,$shop='',$comment){
             $this->genwxrecord('40',$carno,'AYC10009','蜡水洗车',$shop);
             $wxcount=M('维修','dbo.','difo')->where(array('维修类别'=>'蜡水洗车','门店'=>$shop,'_string'=>"当前状态  in ('报价','派工')"))->count();
             $this->weixin->send('您的前面还有'.$wxcount.'辆车正在排队洗车，为了减少您的等待时间，请把汽车钥匙交到前台。',$this->wecha_id);
-            //尊敬的*星级会员，您的前面还有6人正在排队，为了减少您的等待时间，请把汽车钥匙交到前台，从交钥匙时刻起等待时间超过60分钟，本次洗车可以免单哦
+            //$this->weixin->send('您的前面还有'.$wxcount.'辆车正在排队洗车，为了减少您的等待时间，请把汽车钥匙交到前台，从交钥匙时刻起等待时间超过60分钟，本次洗车可以免单哦。',$this->wecha_id);
             echo '预约成功';
 
         }

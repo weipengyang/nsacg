@@ -50,7 +50,7 @@ class templateNews{
 
 		$this->postCurl($requestUrl,$sendData);
         //Log::write(json_encode($r),Log::DEBUG);
-        //Log::write($sendData,Log::DEBUG);
+        Log::write($sendData,Log::DEBUG);
 
 
 	}
@@ -189,7 +189,36 @@ class templateNews{
 // Post Request
 	function postCurl($url, $data){
 		$ch = curl_init();
-		$header = "Accept-Charset: utf-8";
+        $header =array("Accept-Charset:utf-8");
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+		curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$tmpInfo = curl_exec($ch);
+		$errorno=curl_errno($ch);
+		if ($errorno) {
+			return array('rt'=>false,'errorno'=>$errorno);
+		}else{
+			$js=json_decode($tmpInfo,1);
+			if ($js['errcode']=='0'){
+				return array('rt'=>true,'errorno'=>0);
+			}else {
+				//$this->error('模板消息发送失败。错误代码'.$js['errcode'].',错误信息：'.$js['errmsg']);
+				return array('rt'=>false,'errorno'=>$js['errcode'],'errmsg'=>$js['errmsg']);
+
+			}
+		}
+	}
+	function postMessage($url, $data){
+		$ch = curl_init();
+        $header =array("Accept-Charset:utf-8","Content-Type:application/json");
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -223,7 +252,7 @@ class templateNews{
 // Get Access_token Request
 	function curlGet($url){
 		$ch = curl_init();
-		$header = "Accept-Charset: utf-8";
+        $header =array("Accept-Charset: utf-8");
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);

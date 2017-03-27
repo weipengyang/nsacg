@@ -112,7 +112,7 @@
   }
   function curlPost($url, $data,$showError=1){
       $ch = curl_init();
-      $header = "Accept-Charset: utf-8";
+      $header =array("Accept-Charset: utf-8");
       curl_setopt($ch, CURLOPT_URL, $url);
       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -143,7 +143,7 @@
   }
   function curlGet($url){
       $ch = curl_init();
-      $header = "Accept-Charset: utf-8";
+      $header =array("Accept-Charset: utf-8");
       curl_setopt($ch, CURLOPT_URL, $url);
       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);

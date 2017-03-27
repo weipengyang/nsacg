@@ -2,12 +2,12 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>洗车管理</title>
+    <title>保养管理</title>
     <meta name="description" content="爱养车">
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.2/css/amazeui.min.css" />
+    <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.7.0/css/amazeui.min.css" />
     <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
@@ -28,16 +28,10 @@
                                 <option value="塘坑店">塘坑店</option>
                                 <option value="区府店">区府店</option>
                             </select>
-                            主修人
-                            <select id="zhuxiu">
-                                <option value="">所有人</option>
-                                <volist name="list" id="item">
-                                    <option value="{pigcms:$item.姓名}">{pigcms:$item.姓名}</option>
-                                </volist>
-                            </select>
-                            <!--<select id="khlb">
+                            客户
+                            <select id="khlb">
                                 <option value="">所有分类</option>
-                            </select>-->
+                            </select>
                            当前状态
                             <select id="zt">
                                 <option value="">所有</option>
@@ -100,7 +94,7 @@
         <!-- content end -->
     </div>
     <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.2/js/amazeui.min.js"></script>
+    <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         var grid,memberdialog, wxdialog,washdialog,caldialog, printdialog;
@@ -321,13 +315,9 @@
         function f_totalRender(data, currentPageData) {
             return " 入场台次:" + data.Total
                 + "  会员入场台次:" + data.hyCount
-                + "  平均洗车时间:" + (data.dealtime / data.Total).toFixed(2)+"分钟"
+                + "  评价台次:" + data.commentCount
                 + "  会员入场比:" + (data.hyCount / data.Total*100).toFixed(2)+"%"
-                + "  评价台次:" + data.TotalData.commentcount
-                + "  会员评价比:" + (data.TotalData.commentcount / data.hyCount * 100).toFixed(2) + "%"
-                + "  服务态度平均分:" + (parseFloat(data.TotalData.服务态度)).toFixed(2)
-                + "  服务质量平均分:" + (parseFloat(data.TotalData.服务质量)).toFixed(2)
-                + "  前台接待平均分:" + (parseFloat(data.TotalData.前台接待)).toFixed(2);
+                + "  会员评价比:" + (data.commentCount / data.hyCount * 100).toFixed(2) + "%";
         }
         $(document).ready(function () {
             $(document).keydown(function (event) {
@@ -510,46 +500,29 @@
                             return "style='background:#F1D3F7'";
                         }
                     }
-                    if (rowdata.年检日期 != "" && todate(rowdata.年检日期, false) != '1900-01-1') {
-                        var myDate = new Date();
-                        var end = myDate.DateAdd('d', 60);
-                        start = new Date(Date.parse(todate(rowdata.年检日期, false)));
-                        if (end - start > 0) {
-                            return "style='background:#F1D3F7'";
-                        }
-                    }
                     return "";
                 },
-                //rowClsRender: function (rowdata, rowid) {
-                //    if (rowdata.商保到期 != "" && todate(rowdata.商保到期, false) != '1900-01-1') {
-                //        var myDate = new Date();
-                //        var end = myDate.DateAdd('d', 90);
-                //        start = new Date(Date.parse(todate(rowdata.商保到期, false)));
-                //        if (end - start < 0) {
-                //            if (rowdata['__index'] % 2 == 1) {
-                //                return 'l-grid-row-alt';
-                //            }
-                //        }
-                //    }
-                //    if (rowdata.年检日期 != "" && todate(rowdata.年检日期, false) != '1900-01-1') {
-                //            var myDate = new Date();
-                //            var end = myDate.DateAdd('d', 60);
-                //            start = new Date(Date.parse(todate(rowdata.年检日期, false)));
-                //            if (end - start < 0) {
-                //                if (rowdata['__index'] % 2 == 1) {
-                //                    return 'l-grid-row-alt';
-                //                }
-                //            }
-                //    }
-                //if (rowdata['__index'] % 2 == 1) {
-                //    return 'l-grid-row-alt';
-                //}
-                //},
+                rowClsRender: function (rowdata, rowid) {
+                    if (rowdata.商保到期 != "" && todate(rowdata.商保到期, false) != '1900-01-1') {
+                        var myDate = new Date();
+                        var end = myDate.DateAdd('d', 90);
+                        start = new Date(Date.parse(todate(rowdata.商保到期, false)));
+                        if (end - start < 0) {
+                            if (rowdata['__index'] % 2 == 1) {
+                                return 'l-grid-row-alt';
+                            }
+                        }
+                    } else {
+                        if (rowdata['__index'] % 2 == 1) {
+                            return 'l-grid-row-alt';
+                        }
+                    }
+                },
                 isScroll: true,
                 pageSize: 20,
                 totalRender: f_totalRender,
                 alternatingRow: false,
-                url: '/index.php?g=Query&m=Consume&a=getwxinfo&lb=蜡水洗车',
+                url: '/index.php?g=Query&m=Consume&a=getwxinfo&lb=常规保养',
                 height: '97%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     wxinfo(data['流水号']);
@@ -561,9 +534,7 @@
             $("#khlb").change(function () {
                 $('#search').click();
             });
-            $("#zhuxiu").change(function () {
-                $('#search').click();
-            });
+           
             $("#shop").change(function () {
                 $('#search').click();
             });
@@ -592,12 +563,9 @@
                 var lb = $('#lb').val();
                 if (lb != '')
                     parms.lb = lb;
-                var zhuxiu = $('#zhuxiu').val();
-                if (zhuxiu != '')
-                    parms.zhuxiu = zhuxiu;
-                //var khlb = $('#khlb').val();
-                //if (khlb != '')
-                //    parms.khlb = khlb;
+                var khlb = $('#khlb').val();
+                if (khlb != '')
+                    parms.khlb = khlb;
                 var zt = $('#zt').val();
                 if (zt != '')
                     parms.zt = zt;

@@ -14659,6 +14659,7 @@
     <Content Include="tpl\Query\Consume_addproductlist.html" />
     <Content Include="tpl\Query\Consume_inbound.html" />
     <Content Include="tpl\Query\Consume_newpay.html" />
+    <Content Include="tpl\Query\Consume_maintainmanage.html" />
     <Content Include="tpl\Query\Consume_washcarmanage.html" />
     <Content Include="tpl\Query\Consume_projectedit.html" />
     <Content Include="tpl\Query\Consume_projectmanage.html" />

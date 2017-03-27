@@ -32,7 +32,6 @@
                                             
                                         </li>
                                      </volist>
-
                                         <li>
                                             <div class="item-content">
                                                 <div class="item-inner">
@@ -43,6 +42,15 @@
                                                 </div>
                                             </div>
                                         </li>
+                                    <if condition="$isfree eq 1">
+                                        <li>
+                                            <div class="item-content">
+                                                <div class="item-inner">
+                                                    <div class="item-title"><span style="color:red;font-size:small">等待时间超过60分钟，本次洗车免费</span></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </if>
 </ul>
                             </div>
                         </div>

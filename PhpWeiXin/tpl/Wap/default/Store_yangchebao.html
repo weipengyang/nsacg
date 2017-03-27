@@ -127,6 +127,10 @@
                 });
             });
         });
+        $(document).on('click', '#tixian', function () {
+            myalert("提示", '提现请到门店前台申请!');
+
+        });
         $('#container').highcharts({
                 title: {
                     text: '七日年化收益率(%)',
@@ -210,7 +214,8 @@
         <nav class="bar bar-tab">
             <a href="#" id="turnin" class="tab-item" style="color:#006AFF">转入</a>
             <a href="#" id="turnout" class="tab-item" style="color:#006AFF">转出</a>
-            <a href="{pigcms::U('Store/withdrawrecord',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id']))}" id="withdraw" class="tab-item" style="color:#006AFF">提现</a>
+            <a href="#" id="tixian" class="tab-item" style="color:#006AFF">提现</a>
+            <!--<a href="{pigcms::U('Store/withdrawrecord',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id']))}" id="withdraw" class="tab-item" style="color:#006AFF">提现</a>-->
         </nav>
         <div class="content" style="margin:0px;padding:0px">
             <div class="card bg"  style="padding:0px;margin:0px">

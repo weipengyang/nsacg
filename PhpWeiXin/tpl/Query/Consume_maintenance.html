@@ -8,7 +8,7 @@
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
-    <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.7.0/css/amazeui.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.0/css/amazeui.min.css" />
     <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
@@ -69,41 +69,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="am-modal am-modal-prompt" tabindex="-1" id="doc-modal-4">
-                    <div class="am-modal-dialog">
-                        <div class="am-modal-hd">
-                            派工
-                            <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
-                        </div>
-                        <div class="am-modal-bd">
-                            <div class="am-form">
-                                <div class="am-g am-margin-top">
-                                    <div class="am-u-sm-4 am-u-md-4 am-text-right">
-                                        <span class="red">*</span>主修人
-                                    </div>
-                                    <div class="am-u-sm-8 am-u-md-8">
-                                        <select data-am-selected name="zhuxiu" id="zhuxiu">
-                                            <volist name="list" id="item">
-                                                <option value="{pigcms:$item.姓名}">{pigcms:$item.姓名}</option>
-                                            </volist>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="am-modal-footer">
-                            <span class="am-modal-btn" data-am-modal-cancel>取消</span>
-                            <span class="am-modal-btn" data-am-modal-confirm>提交</span>
-                        </div>
-                    </div>
-                </div>
                 <div id="maingrid4" style="margin:0; padding:0"></div>
             </div>
         </div>
         <!-- content end -->
     </div>
     <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
-    <script src="http://cdn.amazeui.org/amazeui/2.7.0/js/amazeui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         var grid,memberdialog, wxdialog, printdialog;
@@ -194,48 +166,6 @@
                 });
             }
         }
-
-        function stopBubble(e) {
-            //如果提供了事件对象，则这是一个非IE浏览器 
-            if (e && e.stopPropagation)
-                //因此它支持W3C的stopPropagation()方法 
-                e.stopPropagation();
-            else
-                //否则，我们需要使用IE的方式来取消事件冒泡 
-                window.event.cancelBubble = true;
-        }
-        //阻止浏览器的默认行为 
-        function stopDefault(e) {
-            //阻止默认浏览器动作(W3C) 
-            if (e && e.preventDefault)
-                e.preventDefault();
-                //IE中阻止函数器默认动作的方式 
-            else
-                window.event.returnValue = false;
-            return false;
-        }
-               function assigntask(itemid) {
-            $('#doc-modal-4').modal({
-                relatedTarget: this,
-                width: 380,
-                closeOnConfirm: false,
-                onConfirm: function (e) {
-                    var zhuxiu = $('#zhuxiu').val();
-                    var data = {
-                        zhuxiu: zhuxiu,
-                        itemid: itemid,
-                    };
-                    $.post('/index.php?g=Query&m=Consume&a=maintenance', data,
-                      function (msg) {
-                          alert(msg);
-                          $('#doc-modal-4').modal('close');
-                          location.href = location.href;
-                      });
-                },
-                onCancel: function (e) {
-                }
-            });
-        }
         //+---------------------------------------------------
         //| 日期计算
         //+---------------------------------------------------
@@ -254,10 +184,14 @@
         }
         function f_totalRender(data, currentPageData) {
             return " 入场台次:" + data.Total
-                + "  会员入场台次:" + data.hyCount
-                + "  评价台次:" + data.commentCount
-                + "  会员入场比:" + (data.hyCount / data.Total*100).toFixed(2)+"%"
-                + "  会员评价比:" + (data.commentCount / data.hyCount * 100).toFixed(2) + "%";
+                 + "  会员入场台次:" + data.hyCount
+                 + "  平均维修时间:" + (data.dealtime / data.Total).toFixed(2) + "分钟"
+                 + "  会员入场比:" + (data.hyCount / data.Total * 100).toFixed(2) + "%"
+                 + "  评价台次:" + data.TotalData.commentcount
+                 + "  会员评价比:" + (data.TotalData.commentcount / data.hyCount * 100).toFixed(2) + "%"
+                 + "  服务态度平均分:" + (parseFloat(data.TotalData.服务态度)).toFixed(2)
+                 + "  服务质量平均分:" + (parseFloat(data.TotalData.服务质量)).toFixed(2)
+                 + "  前台接待平均分:" + (parseFloat(data.TotalData.前台接待)).toFixed(2);
         }
         $(document).ready(function () {
             $(document).keydown(function (event) {

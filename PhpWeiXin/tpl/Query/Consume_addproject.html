@@ -185,7 +185,9 @@
                             $.post('index.php?g=Query&m=Consume&a=saveproject', submitData,
                               function (data) {
                                   haveproject.reload();
-                                  parent.reflash();
+                                  if (parent.reflash) {
+                                      parent.reflash();
+                                  }
                                   $.ligerDialog.alert(data);
                               });
                             //alert(JSON.stringify(data));

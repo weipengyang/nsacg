@@ -14658,6 +14658,7 @@
     <Content Include="tpl\Other\index.html" />
     <Content Include="tpl\Query\Consume_addproductlist.html" />
     <Content Include="tpl\Query\Consume_inbound.html" />
+    <Content Include="tpl\Query\Consume_repaircarmanage.html" />
     <Content Include="tpl\Query\Consume_newpay.html" />
     <Content Include="tpl\Query\Consume_maintainmanage.html" />
     <Content Include="tpl\Query\Consume_washcarmanage.html" />
@@ -14745,7 +14746,6 @@
     <Content Include="tpl\Query\Consume_acgmembercard.html" />
     <Content Include="tpl\Query\Consume_membercard.html" />
     <Content Include="tpl\Query\Consume_clxx.html" />
-    <Content Include="tpl\Query\Consume_wxcx.html" />
     <Content Include="tpl\Query\Consume_purchase.html" />
     <Content Include="tpl\Query\Consume_days.html" />
     <Content Include="tpl\Query\Consume_fwgw.html" />
@@ -14758,7 +14758,6 @@
     <Content Include="tpl\Query\Consume_list.html" />
     <Content Include="tpl\Query\Consume_quick.html" />
     <Content Include="tpl\Query\Consume_setprice.html" />
-    <Content Include="tpl\Query\Consume_record.html" />
     <Content Include="tpl\Query\Consume_index.html" />
     <Content Include="tpl\Query\Store_yangchebao.html" />
     <Content Include="tpl\static\alert.js" />

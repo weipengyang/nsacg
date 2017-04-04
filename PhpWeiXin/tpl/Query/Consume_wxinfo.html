@@ -27,20 +27,33 @@
         var record = {pigcms:$carinfo};
         $(function ()
         {
-            var form = $("#form1").ligerForm({
-                inputWidth: 160, labelWidth: 85, space: 20,
+            form = $("#form1").ligerForm({
+                inputWidth: 100, labelWidth: 80, space: 1,
                 validate: true,
-                buttons: [                    { text: "更新", width: 60, click: submitForm }                ],                tab: {
+                height: '35%',
+                buttons: [
+                    { text: "更新", width: 60, click: submitForm }
+                ],
+                tab: {
                     items: [
                         {
                             title: '基本信息',
                             fields: [
                                 { display: "流水号", name: "流水号", newline: false, type: "hidden" },
                                 { display: "客户ID", name: "客户ID", newline: false, type: "hidden" },
+                                { display: "结算客户ID", name: "结算客户ID", newline: false, type: "hidden" },
                                 { display: "业务编号 ", name: "业务编号", newline: false, type: "text", readonly: true },
                                 { display: "制单日期 ", name: "制单日期", newline: false, type: "text", readonly: true },
-                                { display: "制单人 ", name: "制单人", newline: false, type: "text",readonly: true },
-                                { display: "服务顾问", name: "接车人", newline: false, type: "text" },
+                                { display: "制单人 ", name: "制单人", newline: false, type: "text", readonly: true },
+                                {
+                                    display: "服务顾问", name: "接车人", newline: false, type: "text", type: "combobox",
+                                    options: {
+                                        valueField: '姓名',
+                                        textField: '姓名',
+                                        autocomplete: true,
+                                        url: '/index.php?g=Query&m=Consume&a=getfwgw',
+                                    }
+                                },
                                 { display: "维修类别 ", name: "维修类别", newline: false, type: "text" },
                                 { display: "保修类别 ", name: "保修类别", newline: false, type: "text" },
                                 { display: "车牌号码", name: "车牌号码", newline: false, type: "text" },
@@ -49,18 +62,18 @@
                                 { display: "进厂里程", name: "进厂里程", newline: false, type: "text" },
                                 {
                                     display: "进厂时间", name: "进厂时间", newline: false, type: "date", options: {
-                                        showTime:true
+                                        showTime: true
                                     }
                                 },
                                 { display: "油表数", name: "油表数", newline: false, type: "text" },
                                 {
                                     display: "预计完工", name: "预计完工", newline: false, type: "date", options: {
-                                    showTime:true
-                                 }
+                                        showTime: true
+                                    }
                                 },
                                 { display: "下次保养 ", name: "下次保养", newline: false, type: "date" },
-                                { display: "车辆类型", name: "车辆类别", newline: false, type: "text"  },
-                                { display: "年份 ", name: "年份", newline: true, type: "text" },
+                                { display: "车辆类型", name: "车辆类别", newline: false, type: "text" },
+                                { display: "年份 ", name: "年份", newline: false, type: "text" },
                                 { display: "排量", name: "排量", newline: false, type: "text" },
                                 { display: "车架号", name: "车架号", newline: false, type: "text" },
                                 { display: "轮胎规格", name: "轮胎规格", newline: false, type: "text" },
@@ -72,10 +85,36 @@
                                 { display: "发动机号", name: "发动机号", newline: false, type: "text" },
                                 { display: "发动机型号", name: "发动机型号", newline: false, type: "text" },
                                 { display: "电池", name: "电池", newline: false, type: "text" },
-                                { display: "车主", name: "车主", newline: true, type: "text", readonly: true },
-                                { display: "客户类别", name: "客户类别", newline: false, type: "text",readonly: true },
+                                {
+                                    display: "车主", name: "车主", newline: false, type: "popup", options: {
+                                        condition: {
+                                            prefixID: 'condtion_',
+                                            fields: [{ name: 'searchkey', type: 'text', width: 120, label: '客户信息', labelWidth: 90 }]
+
+
+                                        },
+                                        onSelected: function (e) {
+                                            var row = e.data[0];
+                                            $("input[name='联系电话']").val(row['联系电话']);
+                                            $("input[name='客户ID']").val(row['ID']);
+                                            $("input[name='客户类别']").val(row['类别']);
+                                            $("input[name='结算客户ID']").val(row['ID']);
+                                            $("input[name='手机号码']").val(row['手机号码']);
+                                            $("input[name='联系人']").val(row['联系人']);
+                                        },
+                                        searchClick: function (e) {
+                                            e.grid.set('parms', { 'searchkey': e.rules[0]['value'] });
+                                            e.grid.reload();
+                                        },
+                                        grid: getGridOptions(false),
+                                        valueField: '名称',
+                                        textField: '名称',
+                                        width: 600
+                                    }
+                                },
+                                { display: "客户类别", name: "客户类别", newline: false, type: "text", readonly: true },
                                 { display: "联系人", name: "联系人", newline: false, type: "text" },
-                                { display: "联系电话", name: "联系电话", newline: false, type: "text" },
+                                { display: "联系电话", name: "联系电话", newline: true, type: "text" },
                                 { display: "手机号", name: "手机号码", newline: false, type: "text" },
                                 { display: "地址", name: "地址", newline: false, type: "text" },
                                 { display: "身份证号", name: "身份证号", newline: false, type: "text" },
@@ -85,7 +124,11 @@
                                 { display: "报价人", name: "报价人", newline: false, type: "text" },
                                 { display: "审核人", name: "审核人", newline: false, type: "text" },
                                 { display: "出厂里程", name: "出厂里程", newline: false, type: "text" },
-                                { display: "出厂时间", name: "出厂时间", newline: false, type: "text", readonly: true },
+                                {
+                                    display: "出厂时间", name: "出厂时间", newline: false, type: "date", options: {
+                                        showTime: true
+                                    }
+                                },
                                 {
                                     display: "实际完工", name: "实际完工", newline: false, type: "date", options: {
                                         showTime: true
@@ -94,6 +137,7 @@
                                 { display: "取消原因", name: "取消原因", newline: false, type: "text" },
                                 { display: "维修状态", name: "维修状态", newline: false, type: "text" },
                                 { display: "当前状态", name: "当前状态", newline: false, type: "text" },
+                                { display: "门店", name: "门店", newline: false, type: "text" },
                                 //{
                                 //    display: "保险公司 ", name: "保险公司", newline: false, type: "combobox",
                                 //    options: {
@@ -102,10 +146,10 @@
                                 //        autocomplete: true,
                                 //        url: '/index.php?g=Query&m=Consume&a=baoxian',
                                 //    } },
-                                
-                                { display: "报称故障 ", name: "报称故障", newline: false, width: 300, type: "textarea" },
-                                { display: "重要提示 ", name: "重要提示", newline: false, width: 300, type: "textarea" },
-                                { display: "备注 ", name: "单据备注", newline: true, width: 300, type: "textarea" },
+
+                                { display: "报称故障 ", name: "报称故障", newline: true, width: 240, type: "textarea" },
+                                { display: "重要提示 ", name: "重要提示", newline: false, width: 240, type: "textarea" },
+                                { display: "备注 ", name: "单据备注", newline: false, width: 240, type: "textarea" },
                             ]
 
                         },
@@ -121,45 +165,54 @@
                         {
                             title: '结算信息',
                             fields: [
-                                {display:'结算客户',name:'结算客户',newline:true,type:'text'},
-                                {display:'三包厂商',name:'三包厂商',newline:false,type:'text'},
+                                { display: '结算客户', name: '结算客户', newline: true, type: 'text' },
+                                { display: '三包厂商', name: '三包厂商', newline: false, type: 'text' },
                                 { display: '保险公司', name: '保险公司', newline: false, type: 'text' },
-                                { display: '服务折扣', name: '整单服务折扣', newline: true, type: 'text' },
+                                { display: '服务折扣', name: '整单服务折扣', newline: false, type: 'text' },
                                 { display: '销售折扣', name: '整单销售折扣', newline: false, type: 'text' },
                                 { display: '费用折扣', name: '整单费用折扣', newline: false, type: 'text' },
                                 { display: '服务税率', name: '整单服务税率', newline: true, type: 'text' },
                                 { display: '销售税率', name: '整单销售税率', newline: false, type: 'text' },
                                 { display: '费用税率', name: '整单费用税率', newline: false, type: 'text' },
-                                {display:'计次金额',name:'计次金额',newline:true,type:'text'},
+                                { display: '计次金额', name: '计次金额', newline: false, type: 'text' },
                                 { display: '材料费', name: '材料费', newline: false, type: 'text' },
                                 { display: '管理费', name: '管理费', newline: false, type: 'text' },
-                                {display:'工时费',name:'工时费',newline:true,type:'text'},
+                                { display: '工时费', name: '工时费', newline: true, type: 'text' },
                                 { display: '附加费', name: '附加费', newline: false, type: 'text' },
                                 { display: '款项总额', name: '款项总额', newline: false, type: 'text' },
-                                {display:'三包金额',name:'三包金额',newline:true,type:'text'},
+                                { display: '三包金额', name: '三包金额', newline: false, type: 'text' },
                                 { display: '保险金额', name: '保险金额', newline: false, type: 'text' },
                                 { display: '保险客付', name: '保险客付', newline: false, type: 'text' },
-                                {display:'客付金额',name:'客付金额',newline:true,type:'text'},
+                                { display: '客付金额', name: '客付金额', newline: true, type: 'text' },
                                 { display: '客付税额', name: '客付税额', newline: false, type: 'text' },
                                 { display: '客付虚增', name: '客付虚增', newline: false, type: 'text' },
-                                {display:'优惠金额',name:'优惠金额',newline:true,type:'text'},
+                                { display: '优惠金额', name: '优惠金额', newline: false, type: 'text' },
                                 { display: '应收金额', name: '应收金额', newline: false, type: 'text' },
                                 { display: '现收金额', name: '现收金额', newline: false, type: 'text' },
-                                { display: '发票类型', name: '发票类别', newline: true, type: 'text' },
-                                { display: '发票号码', name: '发票号码', newline: false, type: 'text' },
-                                {display:'结算日期',name:'结算日期',newline:false,type:'text',readonly:true},
-                                { display: '结算方式', name: '结算方式', newline: true, type: 'text' },
-                                { display: '结算人', name: '收款人', newline: false, type: 'text' },
+                                { display: '结算日期', name: '结算日期', newline: true, type: 'date' },
+                                {
+                                    display: '结算方式', name: '结算方式', newline: false, type: 'text', type: "combobox",
+                                    options: {
+                                        valueField: '名称',
+                                        textField: '名称',
+                                        autocomplete: true,
+                                        url: '/index.php?g=Query&m=Consume&a=getjsfs',
+                                    }
+                                },
+                                { display: '结算人', name: '收款人', newline: false, type: 'text', readonly: true },
                                 { display: '毛利', name: '毛利', newline: false, type: 'text' },
 
                             ]
-                                                             
+
                         },
                         {
-                            title: '车辆图片'
+                            title: '维修照片'
                         },
                         {
                             title: '操作日志'
+                        },
+                        {
+                            title: '维修历史'
                         }
                     ]
                 }
@@ -180,7 +233,6 @@
                   });
 
             }
-
             function getGridOptions(checkbox) {
                 var options = {
                     columns: [
@@ -509,8 +561,6 @@
             }
 
         });
-
-
     </script>
 </head>
 

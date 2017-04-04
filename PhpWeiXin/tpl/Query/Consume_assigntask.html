@@ -30,7 +30,11 @@
                               function (msg) {
                                   $.ligerDialog.alert(msg);
                                   parent.grid.reload();
-                                  parent.reload();
+                                  if (parent.project) {
+                                      parent.project.reload();
+                                  }
+                                  frameElement.dialog.hide();
+                                  //parent.reload();
                                   //location.href = location.href;
                               });
                         }
@@ -47,7 +51,8 @@
                             textField: '姓名',
                             autocomplete: true,
                             alwayShowInDown: true,
-                            selectBoxHeight:90,
+                            selectBoxHeight:50,
+                            //selectBoxWidth:180,
                             parms: {
                                 wxlx:getQueryString('wxlb'),
                                 shop:getQueryString('shop')
@@ -60,18 +65,6 @@
             });
 
         });
-
-        function getQueryString(name) {
-            var now_url = document.location.search.slice(1), q_array = now_url.split('&');
-            for (var i = 0; i < q_array.length; i++) {
-                var v_array = q_array[i].split('=');
-                if (v_array[0] == name) {
-                    
-                    return decodeURIComponent(v_array[1]);
-                }
-            }
-            return false;
-        }
     </script>
 </head>
 

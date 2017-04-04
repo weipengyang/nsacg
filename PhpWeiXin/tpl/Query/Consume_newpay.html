@@ -110,7 +110,7 @@
             $.post('index.php?g=Query&m=Consume&a=getwxinfobyid&code=' + frameElement.dialog.get('code'), null,
                    function (data) {
                        form.setData(data);
-                       //calprice();
+                       calprice();
                    }, 'json');
         });
 

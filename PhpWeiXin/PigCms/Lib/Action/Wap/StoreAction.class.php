@@ -619,8 +619,6 @@ private function MessageTip($carinfo,$mendian,$wxlb){
 private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车',$shop='',$comment){
     if($shop=='')
         $shop=$this->getshopname();
-    //if($this->wecha_id=='ohD3dviFloHSvcl9ieoXFibqPFJM')
-    {
         $wxrecord=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'_string'=>"当前状态 not in ('结束','取消')"))->find();
         if($wxrecord){
             $row=array();
@@ -647,8 +645,6 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
             $row['提成工时']=1;
             $row['提成金额']=0;
             $row['备注']=$comment;
-            //$row['开工时间']=date('Y-m-d H:i',time());
-            //$row['完工时间']=date('Y-m-d H:i',time());
             $row['是否同意']=1;
             $row['已维修']='0小时'; 
             M('维修项目','dbo.','difo')->where(array('ID'=>$wxrecord['ID']))->save($row);
@@ -724,13 +720,10 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
             $row['折扣']=1;
             $row['提成工时']=1;
             $row['提成金额']=0;
-            //$row['开工时间']=date('Y-m-d H:i',time());
-            //$row['完工时间']=date('Y-m-d H:i',time());
             $row['是否同意']=1;
             $row['已维修']='0小时'; 
             M('维修项目','dbo.','difo')->add($row);
             $this->MessageTip($carinfo,$shop,$wxlb);
-        }
     }
 } 
 private function calprice($id){
@@ -972,11 +965,8 @@ private function genbyrecord($carno,$shop='',$comment){
             $wx=M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->find();
             $this->genbill($price,$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID'],'维修','维修收款',$wx['车牌号码'],$wx['门店']);
             M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save(array('当前状态'=>'出厂'));
-            $this->consumerecord($price,'汽车维修支付',$userinfo,$wx['车牌号码'],$wx['门店']);
-            $data['出厂时间']=date('Y-m-d H:i',time());
-            $data['实际完工']=date('Y-m-d H:i',time());
+            $this->consumerecord($price,'汽车维修支付',$userinfo,$wx['车牌号码'],$wx['门店']);          
             $data['结算日期']=date('Y-m-d',time());
-            $data['结束日期']=date('Y-m-d',time());
             $data['挂账金额']=0;
             $data['现收金额']=$price;
             $data['标志']='已结算';
@@ -1243,13 +1233,20 @@ private function genbyrecord($carno,$shop='',$comment){
                $projectprice=0;
                $couponlist=array();
                $wx=M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->find();
-               //if($wx['维修类别']=='蜡水洗车'&&intval($wx['已处理'])>60)
-               //{
-               //    $tolalprice=0;
-               //    $isfree=1;
+               $coupon=M("member_card_coupon_record")
+                                      ->where(array('token' => $this->token,
+                                      'wecha_id'=>$this->wecha_id,
+                                      'is_use'=>'0',
+                                      'over_time'=>array('egt',strtotime(date('Y-m-d',time()))),
+                                      'coupon_id'=>'11'
+                                      ))->order('over_time')->find();
+               if($wx['维修类别']=='蜡水洗车'&&strtotime($wx['实际完工'])-strtotime($wx['上交钥匙'])>60*60&&count($coupon)>0)
+               {
+                   $tolalprice=0;
+                   $isfree=1;
 
 
-               //}else
+               }else
                {
                    $projects=M('维修项目','dbo.','difo')->where(array('ID'=>$wx['ID']))->select();
                    if($projects){
@@ -3183,8 +3180,17 @@ private function genbyrecord($carno,$shop='',$comment){
             $carno=$_POST['carno'];
             $this->genwxrecord('40',$carno,'AYC10009','蜡水洗车',$shop);
             $wxcount=M('维修','dbo.','difo')->where(array('维修类别'=>'蜡水洗车','门店'=>$shop,'_string'=>"当前状态  in ('报价','派工')"))->count();
-            $this->weixin->send('您的前面还有'.$wxcount.'辆车正在排队洗车，为了减少您的等待时间，请把汽车钥匙交到前台。',$this->wecha_id);
-            //$this->weixin->send('您的前面还有'.$wxcount.'辆车正在排队洗车，为了减少您的等待时间，请把汽车钥匙交到前台，从交钥匙时刻起等待时间超过60分钟，本次洗车可以免单哦。',$this->wecha_id);
+            $where['token']=$this->token;
+            $where['wecha_id']=$this->wecha_id;
+            $where['is_use']='0';
+            $where['over_time']=array('egt',strtotime(date('Y-m-d',time())));
+            $where['coupon_id']=11;
+            $coupons=M("member_card_coupon_record")->where($where)->order('over_time')->select();
+            if(count($coupons)>0){
+                $this->weixin->send('您的前面还有'.$wxcount.'辆车正在排队洗车，为了减少您的等待时间，请把汽车钥匙交到前台，从交钥匙时刻起等待时间超过60分钟，本次洗车可以免单哦。',$this->wecha_id);
+            }else{
+                $this->weixin->send('您的前面还有'.$wxcount.'辆车正在排队洗车，为了减少您的等待时间，请把汽车钥匙交到前台。',$this->wecha_id);
+            }
             echo '预约成功';
 
         }

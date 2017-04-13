@@ -504,7 +504,7 @@
                     }
                     if (rowdata.年检日期 != "" && todate(rowdata.年检日期, false) != '1900-01-1') {
                         var myDate = new Date();
-                        var end = myDate.DateAdd('d', 60);
+                        var end = myDate.DateAdd('d', 90);
                         start = new Date(Date.parse(todate(rowdata.年检日期, false)));
                         if (end - start > 0) {
                             return "style='background:#F1D3F7'";
@@ -550,10 +550,10 @@
             $("#zt").change(function () {
                 $('#search').click();
             });
-            $("#khlb").change(function () {
+            $("#lb").change(function () {
                 $('#search').click();
             });
-            $("#zhuxiu").change(function () {
+            $("#zhuxiuren").change(function () {
                 $('#search').click();
             });
             $("#shop").change(function () {

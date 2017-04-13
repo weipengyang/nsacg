@@ -14,7 +14,9 @@
             function calprice() {
                 var sxf = parseFloat($("input[ligeruiid='手续费']").val() == "" ? 0 : $("input[ligeruiid='手续费']").val());
                 var dbf = parseFloat($("input[ligeruiid='代办费用']").val() == "" ? 0 : $("input[ligeruiid='代办费用']").val());
-                $("input[ligeruiid='总金额']").val(sxf+dbf);
+                $("input[ligeruiid='总金额']").val(sxf + dbf);
+                $("input[ligeruiid='应收金额']").val(sxf + dbf);
+
             }
             var form = $("#form1").ligerForm({
                 inputWidth: 160, labelWidth: 85, space: 20,
@@ -113,7 +115,8 @@
                          }
                      }
                  },
-                 { display: '总金额', name: '总金额', newline: false, type: "float",readonly:true },
+                 { display: '总金额', name: '总金额', newline: false, type: "float", readonly: true },
+                 { display: '应收金额', name: '应收金额', newline: false, type: "float", readonly: true },
                  { display: '备注', name: '备注', type: "textarea", width: 430, height: 100 },
 
                 ],

@@ -881,9 +881,6 @@
                             title: '维修配件'
                         },
                         {
-                            title: '附加费用'
-                        },
-                        {
                             title: '结算信息',
                             fields: [
                                 { display: '结算客户', name: '结算客户', newline: true, type: 'text' },
@@ -1210,44 +1207,6 @@
                         ]
                     }
                 });
-                append = $("#appendgrid").ligerGrid({
-                    height: '45%',
-                    columns: [
-                    { display: '编号', name: '编号', minWidth: 100 },
-                    { display: '名称', name: '名称', minWidth: 140 },
-                    { display: '结算方式', name: '结算方式', minWidth: 120 },
-                    { display: '金额', name: '金额', minWidth: 120 },
-                    { display: '折扣', name: '折扣', minWidth: 120 },
-                    { display: '税率', name: '税率', minWidth: 120 },
-                    { display: '税额', name: '税额', minWidth: 120 },
-                    { display: '托外单位', name: '托外单位', minWidth: 120 },
-                    { display: '托外金额', name: '托外金额', minWidth: 120 },
-                    { display: '付款金额', name: '付款金额', minWidth: 120 },
-                    {
-                        display: '是否同意', name: '是否同意', align: 'left', width: 100, minWidth: 60, render: function (rowdata, index, value) {
-                            if (value == '1')
-                                return '是';
-                            return '否';
-                        }
-                    },
-                    { display: '备注', name: '备注', minWidth: 240 }
-                    ],
-                    url: '/index.php?g=Query&m=Consume&a=getappend',
-                    pageSize: 10,
-                    isScroll: true,
-                    delayLoad: true,
-                    urlParms: { id: record['ID'] },
-                    rownumbers: true,
-                    toolbar: {
-                        items: [
-                        { text: '增加', click: null, icon: 'add' },
-                        { line: true },
-                        { text: '修改', click: null, icon: 'modify' },
-                        { line: true },
-                        { text: '删除', click: null, icon: 'delete' }
-                        ]
-                    }
-                });
                 opgrid = $("#opgrid").ligerGrid({
                     height: '45%',
                     columns: [
@@ -1333,10 +1292,18 @@
                 grid.reload();
                 setdisabled();
                 setTimeout(function () {
-                    grid.select(grid.data.Rows[0]);
-                    $("li[data-index='1']").click();
-                }, 400);
+                    if (record) {
+                        for (var i = 0; i < grid.data.Rows.length; i++) {
+                            if (grid.data.Rows[i]['流水号'] == record['流水号']) {
+                                grid.select(grid.data.Rows[i]);
 
+                            }
+                        }
+                    } else {
+                        grid.select(grid.data.Rows[0]);
+                    }
+                    $("li[data-index='1']").click();
+                }, 800);
             });
             $('#paigong').click(function () {
                 $('#optdiv').find('div').each(function () {
@@ -1351,7 +1318,16 @@
                 setdisabled();
                 project.toolbarManager.setEnabled('assign');
                 setTimeout(function () {
-                    grid.select(grid.data.Rows[0]);
+                    if (record) {
+                        for (var i = 0; i < grid.data.Rows.length; i++) {
+                            if (grid.data.Rows[i]['流水号'] == record['流水号']) {
+                                grid.select(grid.data.Rows[i]);
+
+                            }
+                        }
+                    } else {
+                        grid.select(grid.data.Rows[0]);
+                    }
                     $("li[data-index='1']").click();
                 }, 400);
 
@@ -1372,7 +1348,16 @@
                 product.toolbarManager.setEnabled('btntuiliao');
                 product.toolbarManager.setEnabled('btncaigou');
                 setTimeout(function () {
-                    grid.select(grid.data.Rows[0]);
+                    if (record) {
+                        for (var i = 0; i < grid.data.Rows.length; i++) {
+                            if (grid.data.Rows[i]['流水号'] == record['流水号']) {
+                                grid.select(grid.data.Rows[i]);
+
+                            }
+                        }
+                    } else {
+                        grid.select(grid.data.Rows[0]);
+                    }
                     $("li[data-index='2']").click();
                 }, 400);
                 
@@ -1393,7 +1378,16 @@
                 product.toolbarManager.setDisabled('btntuiliao');
                 product.toolbarManager.setDisabled('btncaigou');
                 setTimeout(function () {
-                    grid.select(grid.data.Rows[0]);
+                    if (record) {
+                        for (var i = 0; i < grid.data.Rows.length; i++) {
+                            if (grid.data.Rows[i]['流水号'] == record['流水号']) {
+                                grid.select(grid.data.Rows[i]);
+
+                            }
+                        }
+                    } else {
+                        grid.select(grid.data.Rows[0]);
+                    }
                     $("li[data-index='0']").click();
                 }, 400);
             });
@@ -1414,7 +1408,16 @@
 
                 }
                 setTimeout(function () {
-                    grid.select(grid.data.Rows[0]);
+                    if (record) {
+                        for (var i = 0; i < grid.data.Rows.length; i++) {
+                            if (grid.data.Rows[i]['流水号'] == record['流水号']) {
+                                grid.select(grid.data.Rows[i]);
+
+                            }
+                        }
+                    } else {
+                        grid.select(grid.data.Rows[0]);
+                    }
                     $("li[data-index='4']").click();
                 }, 400);
             });
@@ -1430,7 +1433,16 @@
                 grid.set('parms', parms);
                 grid.reload();
                 setTimeout(function () {
-                    grid.select(grid.data.Rows[0]);
+                    if (record) {
+                        for (var i = 0; i < grid.data.Rows.length; i++) {
+                            if (grid.data.Rows[i]['流水号'] == record['流水号']) {
+                                grid.select(grid.data.Rows[i]);
+
+                            }
+                        }
+                    } else {
+                        grid.select(grid.data.Rows[0]);
+                    }
                     $("li[data-index='0']").click();
                 }, 400);
             });
@@ -1445,7 +1457,16 @@
                     $(this).hide();
                 });
                 setTimeout(function () {
-                    grid.select(grid.data.Rows[0]);
+                    if (record) {
+                        for (var i = 0; i < grid.data.Rows.length; i++) {
+                            if (grid.data.Rows[i]['流水号'] == record['流水号']) {
+                                grid.select(grid.data.Rows[i]);
+
+                            }
+                        }
+                    } else {
+                        grid.select(grid.data.Rows[0]);
+                    }
                     $("li[data-index='0']").click();
                 }, 400);
             });

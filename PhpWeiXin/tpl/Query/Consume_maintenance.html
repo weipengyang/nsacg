@@ -318,24 +318,33 @@
                             return "style='background:#F1D3F7'";
                         }
                     }
-                    return "";
-                },
-                rowClsRender: function (rowdata, rowid) {
-                    if (rowdata.商保到期 != "" && todate(rowdata.商保到期, false) != '1900-01-1') {
+                    if (rowdata.年检日期 != "" && todate(rowdata.年检日期, false) != '1900-01-1') {
                         var myDate = new Date();
                         var end = myDate.DateAdd('d', 90);
-                        start = new Date(Date.parse(todate(rowdata.商保到期, false)));
-                        if (end - start < 0) {
-                            if (rowdata['__index'] % 2 == 1) {
-                                return 'l-grid-row-alt';
-                            }
-                        }
-                    } else {
-                        if (rowdata['__index'] % 2 == 1) {
-                            return 'l-grid-row-alt';
+                        start = new Date(Date.parse(todate(rowdata.年检日期, false)));
+                        if (end - start > 0) {
+                            return "style='background:#F1D3F7'";
                         }
                     }
+                    return "";
                 },
+
+                //rowClsRender: function (rowdata, rowid) {
+                //    if (rowdata.商保到期 != "" && todate(rowdata.商保到期, false) != '1900-01-1') {
+                //        var myDate = new Date();
+                //        var end = myDate.DateAdd('d', 90);
+                //        start = new Date(Date.parse(todate(rowdata.商保到期, false)));
+                //        if (end - start < 0) {
+                //            if (rowdata['__index'] % 2 == 1) {
+                //                return 'l-grid-row-alt';
+                //            }
+                //        }
+                //    } else {
+                //        if (rowdata['__index'] % 2 == 1) {
+                //            return 'l-grid-row-alt';
+                //        }
+                //    }
+                //},
                 isScroll: true,
                 pageSize: 20,
                 totalRender: f_totalRender,

@@ -361,7 +361,7 @@
                 fixedCellHeight: false,
                 totalRender: f_totalRender,
                 url: '/index.php?g=Query&m=Consume&a=getstacks',
-                height: '97%',
+                height: '96%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     editinfo(data['编号']);  
                 },
@@ -381,44 +381,44 @@
         <div class="admin-content">
                 <div class="admin-content-body">
                     <div class="am-g">
-                        <div class="am-u-sm-10 am-u-md-9">
+                        <div class="am-u-sm-8 am-u-md-8">
                             <div class="am-form-group">
                                 仓库
-                                <select data-am-selected="{btnSize: 'sm'}" id="shop">
+                                <select data-am-selected="{btnSize: 'sm',btnWidth:'100px'}" id="shop">
                                     <option value="all">所有仓库</option>
                                     <option value="区府店">区府店</option>
                                     <option value="塘坑店">塘坑店</option>
                                 </select>
                                 配件分类
-                                <select data-am-selected="{btnSize: 'sm'}" id="yjml">
+                                <select data-am-selected="{btnSize: 'sm',btnWidth:'100px'}" id="yjml">
                                     <option value="">所有分类</option>
                                         <volist name="pjlist" id="item">
                                             <option value="{pigcms:$item.名称}">{pigcms:$item.名称}</option>
                                         </volist>
                                 </select>
-                                <select data-am-selected="{btnSize: 'sm'}" id="ejml">
+                                <select data-am-selected="{btnSize: 'sm',btnWidth:'100px'}" id="ejml">
                                     <option value="">所有分类</option>
                                 </select>
-                                <select data-am-selected="{btnSize: 'sm'}" id="sjml">
+                                <select data-am-selected="{btnSize: 'sm',btnWidth:'100px'}" id="sjml">
                                     <option value="">所有分类</option>
                                 </select>
                                 低于警戒线
-                                <select data-am-selected="{btnSize:'sm'}" id="flag" >
+                                <select data-am-selected="{btnSize: 'sm',btnWidth:'40px'}" id="flag" >
                                     <option value="0">否</option>
                                     <option value="1">是</option>
                                 </select>
                            </div>
                         </div>
-                        <div class="am-u-sm-1 am-u-md-1">
-                          <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="exportdata();">导出数据</button>
-                         </div>
                         <div class="am-u-sm-2 am-u-md-2">
-                            <div class="am-input-group am-input-group-sm" style="width:200px">
+                            <div class="am-input-group am-input-group-sm">
                                 <input type="text" id="searchkey" class="am-form-field" />
                                 <span class="am-input-group-btn">
                                     <button id="search" class="am-btn am-btn-default" type="button">搜索</button>
                                 </span>
                             </div>
+                        </div>
+                        <div class="am-u-sm-1 am-u-md-1">
+                            <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="exportdata();">导出数据</button>
                         </div>
                         </div>
                     <div id="maingrid4" style="margin:0; padding:0;"></div>

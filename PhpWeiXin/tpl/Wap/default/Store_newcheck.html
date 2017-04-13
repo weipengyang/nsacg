@@ -131,12 +131,12 @@
                     <div class="card-content">
                         <div class="card-content-inner" style="font-size:0.6rem;">
                             <div class="row" style="color:orange;font-size:1rem">
-                                {pigcms:$item.应收金额}元
+                                {pigcms:$item.总金额}元
                             </div>
                         </div>
                     </div>
                     <div class="card-footer" style="font-size:0.6rem;color:white">
-                        <a href="#" class="button button-big button-round button-fill button-warning" onclick="checkin({pigcms:$item.流水号},4, {pigcms:$item.应收金额})" style="width:100%">结账</a>
+                        <a href="#" class="button button-big button-round button-fill button-warning" onclick="checkin({pigcms:$item.流水号}, 4,{pigcms:$item.总金额})" style="width:100%">结账</a>
                     </div>
                 </div>
             </volist>

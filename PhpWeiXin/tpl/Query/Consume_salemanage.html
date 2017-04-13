@@ -49,6 +49,14 @@
                             <option value="塘坑店">塘坑店</option>
                             <option value="区府店">区府店</option>
                         </select>
+                        业务员
+                        <select id="fwgw">
+                            <option value="">所有人</option>
+                        </select>
+                        销售类别
+                        <select id="xslb">
+                            <option value="">所有</option>
+                        </select>
                         状态
                         <select id="zt">
                             <option value="all">所有状态</option>
@@ -288,6 +296,39 @@
             return todate(value);
         }
         $(function () {
+            $.post('index.php?g=Query&m=Consume&a=getywy', null,
+          function (data) {
+              if (data) {
+                  $('#fwgw').empty();
+                  $('#fwgw').append("<option value=''>所有人</option>");
+                  $(data).each(function () {
+                      var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
+                      $('#fwgw').append(option);
+                  });
+              }
+          }, 'JSON');
+            $.post('index.php?g=Query&m=Consume&a=getshoplist', null,
+           function (data) {
+               if (data) {
+                   $('#shop').empty();
+                   $('#shop').append("<option value='all'>所有门店</option>");
+                   $(data).each(function () {
+                       var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                       $('#shop').append(option);
+                   });
+               }
+           }, 'JSON');
+            $.post('/index.php?g=Query&m=Consume&a=getsaletype', null,
+          function (data) {
+              if (data) {
+                  $('#xslb').empty();
+                  $('#xslb').append("<option value=''>所有</option>");
+                  $(data).each(function () {
+                      var option = "<option value='" + this.params_name + "'>" + this.params_name + "</option>";
+                      $('#xslb').append(option);
+                  });
+              }
+          }, 'JSON');
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                 { display: '当前状态', name: '当前状态', align: 'left', width: 60,render: function (rowdata, index, value) {
@@ -414,6 +455,12 @@
             $("#shop").change(function () {
                 $('#search').click();
             });
+            $("#fwgw").change(function () {
+                $('#search').click();
+            });
+            $("#xslb").change(function () {
+                $('#search').click();
+            });
             $("#zt").change(function () {
                 $('#search').click();
             });
@@ -424,6 +471,12 @@
                 var shop = $('#shop').val();
                 if (shop != '')
                     parms.shop = shop;
+                var xslb = $('#xslb').val();
+                if (xslb != '')
+                    parms.xslb = xslb;
+                var fwgw = $('#fwgw').val();
+                if (fwgw != '')
+                    parms['zdr'] = fwgw;
                 var zt = $('#zt').val();
                 if (zt != '')
                     parms.zt = zt;

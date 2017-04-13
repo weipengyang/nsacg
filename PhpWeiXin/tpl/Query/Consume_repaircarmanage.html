@@ -52,26 +52,27 @@
                         <button id="search" type="button">模糊查询</button>
                     </div>
                     <div class="am-u-sm-4 am-u-md-4" id="optdiv">
-                        <div id="baojiadiv"  style="display:none"><button type="button" onclick="changeState('派工', '派工', 'paigong');" class="am-btn am-btn-primary am-round am-btn-sm"><i class="am-icon-hand-o-right"></i>主管派工</button>
+                        <div id="baojiadiv" style="display:none">
+                            <button type="button" onclick="changeState('派工', '派工', 'paigong');" class="am-btn am-btn-primary am-round am-btn-sm"><i class="am-icon-hand-o-right"></i>主管派工</button>
                         </div>
                         <div id="paigongdiv" style="display:none">
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('派工','报价','baojia');" ><i class="am-icon-hand-o-left"></i>维修报价</button>
+                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('派工','报价','baojia');"><i class="am-icon-hand-o-left"></i>维修报价</button>
                             <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('派工','领料','lingliao');"><i class="am-icon-hand-o-right"></i>维修领料</button>
                         </div>
-                        <div id="lingliaodiv"  style="display:none">
+                        <div id="lingliaodiv" style="display:none">
                             <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('领料', '派工', 'paigong');"><i class="am-icon-hand-o-left"></i>主管派工</button>
                             <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('领料','审核','shenhe');"><i class="am-icon-hand-o-right"></i>完工审核</button>
                         </div>
-                        <div id="shenhediv"  style="display:none">
+                        <div id="shenhediv" style="display:none">
                             <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('审核', '派工', 'paigong');"><i class="am-icon-hand-o-left"></i>驳回派工</button>
                             <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('审核','结算','jiesuan');"><i class="am-icon-hand-o-right"></i>维修结算</button>
                         </div>
-                        <div id="jiesuandiv"  style="display:none">
+                        <div id="jiesuandiv" style="display:none">
                             <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('结算', '审核', 'shenhe');"><i class="am-icon-hand-o-left"></i>完工审核</button>
                             <!--<button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('结算','出厂','chuchang');"><i class="am-icon-hand-o-right"></i>车辆出厂</button>-->
-                            <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="checkin();"><i class="am-icon-check"></i>确认结算</button>
-                       </div>
-                        <div id="chuchangdiv"  style="display:none">
+                            <!--<button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="checkin();"><i class="am-icon-check"></i>确认结算</button>-->
+                        </div>
+                        <div id="chuchangdiv" style="display:none">
                             <!--<button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="changeState('出厂', '结算', 'jiesuan');"><i class="am-icon-hand-o-left"></i>维修结算</button>-->
                             <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="changeState('出厂','结束','baojia');"><i class="am-icon-hand-o-right"></i>确认出厂</button>
                         </div>
@@ -80,78 +81,17 @@
                 <div id="maingrid4" style="margin:0; padding:0;"></div>
                 <div id="form1">
                 </div>
-                </div>
             </div>
         </div>
-        <!-- content end -->
+    </div>
+    <!-- content end -->
     </div>
     <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
-        var row,form, grid, project, product, append, opgrid, historygrid = null;
-        var printdialog,washdialog, caldialog, mrdialog, wxdialog, pickdialog,
-            cardialog, purchasedialog, addprojectdialog, editprojectdialog,
-            memberdialog, addproductdialog,editproductdialog, assigntaskdialog, backpickdialog;
-        var record, discount = {};
-        function editproject() {
-            if (record['当前状态'] == '结束') {
-                $.ligerDialog.alert('结束状态不能修改项目信息');
-                return;
-            }
-            var row = project.getSelectedRow();
-            if (row) {
-                if (editprojectdialog) {
-                    editprojectdialog.setUrl('index.php?&g=Query&m=Consume&a=modifyproject&id=' + row['流水号']);
-                    editprojectdialog.show();
-                } else {
-                    editprojectdialog = $.ligerDialog.open({
-                        height: 400,
-                        url: 'index.php?&g=Query&m=Consume&a=modifyproject&id=' + row['流水号'],
-                        width: 600,
-                        showMax: true,
-                        showToggle: true,
-                        showMin: false,
-                        isResize: true,
-                        modal: true,
-                        title: '修改维修项目'
-                    });
-                }
-            }
-            else {
-                $.ligerDialog.alert('请选择要修改的项目');
-            }
-
-        }
-        function editproduct() {
-            if (record['当前状态'] == '结束') {
-                $.ligerDialog.alert('结束状态不能修改配件信息');
-                return;
-            }
-            var row = product.getSelectedRow();
-            if (row) {
-                if (editproductdialog) {
-                    editproductdialog.setUrl('index.php?&g=Query&m=Consume&a=modifyproduct&id=' + row['流水号']);
-                    editproductdialog.show();
-                } else {
-                    editproductdialog = $.ligerDialog.open({
-                        height: 420,
-                        url: 'index.php?&g=Query&m=Consume&a=modifyproduct&id=' + row['流水号'],
-                        width: 600,
-                        showMax: true,
-                        showToggle: true,
-                        showMin: false,
-                        isResize: true,
-                        modal: true,
-                        title: '编辑配件'
-                    });
-                }
-            }
-            else {
-                $.ligerDialog.alert('请选择要修改的配件');
-            }
-
-        }
+        var record, grid, printdialog, caldialog, mrdialog, wxdialog, pickdialog, cardialog,
+            purchasedialog, addprojectdialog, memberdialog, addproductdialog, assigntaskdialog;
         function printbill(ID) {
             if (printdialog) {
                 printdialog.setUrl('/index.php?g=Query&m=Consume&a=printbill&ID=' + ID);
@@ -181,11 +121,7 @@
                 $.ligerDialog.alert('结束状态不能增加维修项目');
                 return;
             }
-            var c = 1;
-            if (discount && discount['销售折扣1'] != null) {
-                c = discount['销售折扣1'];
-            }
-            var url = 'index.php?&g=Query&m=Consume&a=addproduct&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + c + "&shop=" + record['门店'];
+           var url = 'index.php?&g=Query&m=Consume&a=addproduct&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + record['整单销售折扣'] + "&shop=" + record['门店'];
            if (addproductdialog) {
                 addproductdialog.setUrl(url);
                 addproductdialog.show();
@@ -215,11 +151,7 @@
                 $.ligerDialog.alert('结束状态不能增加维修项目');
                 return;
             }
-            var c = 1;
-            if (discount&&discount['服务折扣1'] != null) {
-                c = discount['服务折扣1'];
-            }
-            var url='index.php?&g=Query&m=Consume&a=addproject&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + c + "&zhuxiu=" + record['当前主修人'];
+            var url = 'index.php?&g=Query&m=Consume&a=addproject&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + record['整单服务折扣'] + "&zhuxiu=" + record['当前主修人'];
             if (addprojectdialog) {
                 addprojectdialog.setUrl(url);
                 addprojectdialog.show();
@@ -250,52 +182,6 @@
                 modal: false,
                 title: '车辆维修详细信息'
            });
-        }
-        function pick() {
-            if (record['当前状态'] == '结束') {
-                $.ligerDialog.alert('结束状态不能领料');
-                return;
-            }
-            if (pickdialog) {
-                pickdialog.setUrl('/index.php?g=Query&m=Consume&a=picking');
-                pickdialog.show();
-            }
-            else {
-                  pickdialog = $.ligerDialog.open({
-                    height: 540,
-                    url: '/index.php?g=Query&m=Consume&a=picking',
-                    width: 800,
-                    showMax: true,
-                    showToggle: true,
-                    showMin: false,
-                    isResize: true,
-                    modal: true,
-                    title: '维修领料'
-                });
-            }
-        }
-        function backpick() {
-            if (record['当前状态'] == '结束') {
-                $.ligerDialog.alert('结束状态不能退料');
-                return;
-            }
-            if (backpickdialog) {
-                backpickdialog.setUrl('/index.php?g=Query&m=Consume&a=backpick');
-                backpickdialog.show();
-            }
-            else {
-                backpickdialog = $.ligerDialog.open({
-                    height: 540,
-                    url: '/index.php?g=Query&m=Consume&a=backpick',
-                    width: 800,
-                    showMax: true,
-                    showToggle: true,
-                    showMin: false,
-                    isResize: true,
-                    modal: true,
-                    title: '维修领料'
-                });
-            }
         }
         function memberinfo(carno) {
             if (memberdialog) {
@@ -331,7 +217,7 @@
                     caldialog = $.ligerDialog.open({
                         height: 340,
                         url: '/index.php?g=Query&m=Consume&a=pay',
-                        width: 600, 
+                        width: 600,
                         showMax: false,
                         showToggle: true,
                         showMin: false,
@@ -346,22 +232,69 @@
                 $.ligerDialog.alert('选择要结算的维修记录');
             }
         }
-        function purchasing() {
+        function pick(rowid) {
+            for (var i = 0; i < grid.data.Rows.length; i++) {
+                if (grid.data.Rows[i]['流水号'] == rowid) {
+                    record = grid.data.Rows[i];
+
+                }
+            }
+            if (record['当前状态'] == '结束') {
+                $.ligerDialog.alert('结束状态不能领料');
+                return;
+            }
+            var data = {
+                type: 1,
+                record: record
+            }
+            if (pickdialog) {
+                pickdialog.set('data', data);
+                pickdialog.setUrl('/index.php?g=Query&m=Consume&a=productselect');
+                pickdialog.show();
+            }
+            else {
+                pickdialog = $.ligerDialog.open({
+                    height: 540,
+                    url: '/index.php?g=Query&m=Consume&a=productselect',
+                    width: 800,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    data:data,
+                    isResize: true,
+                    modal: true,
+                    title: '维修领料'
+                });
+            }
+        }
+        function purchase(rowid) {
+            for (var i = 0; i < grid.data.Rows.length; i++) {
+                if (grid.data.Rows[i]['流水号'] == rowid) {
+                    record = grid.data.Rows[i];
+
+                }
+            }
             if (record['当前状态'] == '结束')
             {
                 $.ligerDialog.alert('结束状态不能开采购单');
                 return;
             }
+            var data = {
+                type: 2,
+                record: record
+            }
             if (purchasedialog) {
-                purchasedialog.setUrl('/index.php?g=Query&m=Consume&a=purchasing');
+                purchasedialog.set('data', data);
+                purchasedialog.setUrl('/index.php?g=Query&m=Consume&a=productselect');
                 purchasedialog.show();
             }
             else {
                 purchasedialog = $.ligerDialog.open({
                     height: 540,
-                    url: '/index.php?g=Query&m=Consume&a=purchasing',
+                    url: '/index.php?g=Query&m=Consume&a=productselect',
                     width: 800,
                     showMax: true,
+                    data:data,
                     showToggle: true,
                     showMin: false,
                     isResize: true,
@@ -419,37 +352,6 @@
                 });
             }
         }
-        function assigntask() {
-            var row =  project.getSelected();
-            if (row) {
-                var url = '/index.php?g=Query&m=Consume&a=assigntask';
-                url += '&id=' + record['ID'];
-                url += '&shop=' + record['门店'];
-                url += '&wxlb=' + record['维修类别'];
-                url += '&code=' + row['流水号'];
-
-                if (assigntaskdialog) {
-                    assigntaskdialog.setUrl(url);
-                    assigntaskdialog.show();
-                }
-                else {
-                    assigntaskdialog = $.ligerDialog.open({
-                        height: 180,
-                        url: url,
-                        width: 280,
-                        showMax: false,
-                        showToggle: true,
-                        showMin: true,
-                        isResize: true,
-                        modal: true,
-                        title: '派工'
-                    });
-                }
-            }
-            else {
-                $.ligerDialog.alert('请选择要派工的项目');
-            }
-        }
         function submitcarkey(itemid) {
             $.ligerDialog.prompt('输入钥匙扣编号', function (yes, value) {
                 if (yes) {
@@ -477,7 +379,7 @@
             $.post('/index.php?g=Query&m=Consume&a=completework', data,
               function (msg) {
                   $.ligerDialog.alert(msg);
-                  grid.reload();
+                  changeState('审核', '结算', 'jiesuan');
               });
         }
         function cancelwash(itemid, flag) {
@@ -538,10 +440,10 @@
             }
         }
         function changeState(oldzt,zt, opt) {
-            row = grid.getSelectedRow();
-            if (row) {
+            record = grid.getSelectedRow();
+            if (record) {
                 var data = {
-                    id: row['流水号'],
+                    id: record['流水号'],
                     zt: zt,
                     oldzt:oldzt
                 };
@@ -554,7 +456,7 @@
                           $.ligerDialog.alert(msg);
                       }
                       });
-                  
+
             }
         }
 
@@ -572,20 +474,14 @@
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                  {
-                     display: '操作', name: '操作', minWidth: 85, render: function (rowdata, index, value) {
+                     display: '操作', name: '操作', minWidth: 180, render: function (rowdata, index, value) {
                          var strhtml = '';
                          if (rowdata.当前状态 == '报价') {
                              strhtml += '|<a href="javascript:void(0);" onclick="addproject(\'' + rowdata.流水号 + '\');"><strong>项目</strong></a>';
                              strhtml += '|<a href="javascript:void(0);" onclick="addproduct(\'' + rowdata.流水号 + '\');"><strong>配件</strong></a>';
                          }
                          if (rowdata.上交钥匙 == "" || rowdata.上交钥匙 == null || rowdata.上交钥匙 == "null" || todate(rowdata.上交钥匙, false) == '1900-01-1') {
-                             var start = new Date(Date.parse(todate(rowdata.进厂时间, true)));
-                             var end = new Date();
-                             if (parseInt((end - start) / 60000) > 30) {
-                                 //cancelwash(rowdata.流水号, false);
-                             } else {
-                                 strhtml += '<a href="javascript:void(0);" onclick="changeState(\'' + rowdata.流水号 + '\');"><strong>钥匙上交</strong></a>|';
-                             }
+                             strhtml += '|<a href="javascript:void(0);" onclick="submitcarkey(\'' + rowdata.流水号 + '\');"><strong>钥匙上交</strong></a>';
                          }
                          if (rowdata.当前状态 == '派工') {
                              if (rowdata.开工时间 == "" || rowdata.开工时间 == null || rowdata.开工时间 == "null" || todate(rowdata.开工时间, false) == '1900-01-1') {
@@ -593,43 +489,74 @@
                              }
 
                          }
+                         if (rowdata.当前状态 == '领料') {
+                             strhtml += '|<a href="javascript:void(0);" onclick="purchase(\'' + rowdata.流水号 + '\');"><strong>采购</strong></a>';
+                             strhtml += '|<a href="javascript:void(0);" onclick="pick(\'' + rowdata.流水号 + '\');"><strong>领料</strong></a>';
+
+
+                         }
                          if (rowdata.当前状态 == '审核') {
-                             if (rowdata.实际完工 != "" && rowdata.实际完工 != null && rowdata.实际完工 != "null" && todate(rowdata.实际完工, false) != '1900-01-1') {
-                                 strhtml += '<a href="javascript:void(0);" onclick="completework(\'' + rowdata.流水号 + '\');"><strong>完工</strong></a>';
+                             if (rowdata.实际完工 == "" && rowdata.实际完工 == null && rowdata.实际完工 == "null" && todate(rowdata.实际完工, false) == '1900-01-1') {
+                                 strhtml += '|<a href="javascript:void(0);" onclick="completework(\'' + rowdata.流水号 + '\');"><strong>完工</strong></a>';
                              }
                          }
-                         if (rowdata.当前状态 == '结算' && rowdata.当前状态.标志 !='已结算')
-                             strhtml += '<a href="javascript:void(0);" onclick="checkin(\'' + rowdata.流水号 + '\');"><strong>结算</strong></a>';
+                         if (rowdata.当前状态 == '结算' && rowdata.标志 !='已结算')
+                             strhtml += '|<a href="javascript:void(0);" onclick="checkin(\'' + rowdata.流水号 + '\');"><strong>结算</strong></a>';
                          if (rowdata.当前状态=='出厂')
-                             strhtml += '<a href="javascript:void(0);" onclick="changeState(\'' + rowdata.流水号 + '\');"><strong>出厂</strong></a>';
+                             strhtml += '|<a href="javascript:void(0);" onclick="changeState(\'' + rowdata.流水号 + '\');"><strong>出厂</strong></a>';
                          if (rowdata.当前状态 == '结束')
-                             strhtml += '<a href="javascript:void(0);" onclick="printbill(\'' + rowdata.ID + '\');"><strong>打印</strong></a>';
+                             strhtml += '|<a href="javascript:void(0);" onclick="printbill(\'' + rowdata.ID + '\');"><strong>打印</strong></a>';
                          return strhtml;
                      }
                  },
-                { display: '当前状态', name: '当前状态', align: 'left', width: 60 },
-                {
-                    display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
-                        return todate(value, false);
-                    }
-                },
-                {
-                    display: '已处理', name: '', minWidth: 80, render: function (rowdata, index, value) {
-                        if (rowdata.进厂时间 != "" && rowdata.进厂时间 != null && rowdata.进厂时间 != "null" && todate(rowdata.进厂时间, false) != '1900-01-1') {
-                            var start = new Date(Date.parse(todate(rowdata.进厂时间, true)));
-                            if (rowdata.实际完工 != null && rowdata.实际完工 != "" && rowdata.实际完工 != "null" && todate(rowdata.实际完工, false) != '1900-01-1') {
-                                end = new Date(Date.parse(todate(rowdata.实际完工, true)));
-                                return ((end - start) / 60000 / 60).toFixed(2) + '小时';
-                            }
-                            else {
-                                var end = new Date();
-                                return ((end - start) / 60000 / 60).toFixed(2) + '小时';
-                            }
-                        }
-                        return '';
-                    }
-                },
+                  { display: '状态', name: '当前状态', align: 'left', width: 40 },
+                  {
+                      display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
 
+                          return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                      }
+                  },
+                 { display: '钥匙编号', name: '钥匙编号', align: 'left', width: 60 },
+              {
+                  display: '已处理', name: '', minWidth: 175, render: function (rowdata, index, value) {
+                      if (rowdata.进厂时间 != "" && rowdata.进厂时间 != null && rowdata.进厂时间 != "null" && todate(rowdata.进厂时间, false) != '1900-01-1') {
+                          var start = new Date(Date.parse(todate(rowdata.进厂时间, true)));
+                          var pretime = new Date(Date.parse(todate(rowdata.预计完工, true)));
+                          var prehour = ((pretime - start) / 60000 / 60).toFixed(2);
+                          var usehour = 0;
+                          if (rowdata.实际完工 != null && rowdata.实际完工 != "" && rowdata.实际完工 != "null" && todate(rowdata.实际完工, false) != '1900-01-1') {
+                              end = new Date(Date.parse(todate(rowdata.实际完工, true)));
+                              usehour = ((end - start) / 60000 / 60).toFixed(2);
+                          }
+                          else {
+                              var end = new Date();
+                              usehour = ((end - start) / 60000 / 60).toFixed(2);
+                          }
+                          if (parseFloat(usehour) > parseFloat(prehour)) {
+                              return "<span style='color:red'>预计" + prehour + '小时，实际' + usehour + "小时</span>";
+                          } else {
+                              return "<span style='color:blue'>预计" + prehour + '小时，实际' + usehour + "小时</span>";
+                          }
+                      }
+                      return '';
+                  }
+              },
+               {
+                    display: '进厂时间', name: '进厂时间', minWidth: 130, render: function (rowdata, index, value) {
+                        return todate(value, true);
+                    }
+                },
+                {
+                    display: '预计完工', name: '预计完工', minWidth: 130, render: function (rowdata, index, value) {
+                        return todate(value, true);
+                    }
+                },
+                {
+                    display: '完工时间', name: '实际完工', minWidth: 130, render: function (rowdata, index, value) {
+                        return todate(value, true);
+                    }
+                },
                 { display: '主修人', name: '主修人', width: 60, align: 'left' },
                 {
                     display: '客户确认', name: '确认维修', align: 'center', width: 50, render: function (rowdata, index, value) {
@@ -644,13 +571,7 @@
                 { display: '制单人', name: '制单人', width: 60, align: 'left' },
                 { display: '接车人', name: '接车人', minWidth: 60 },
                 { display: '维修类别', name: '维修类别', minWidth: 80 },
-                {
-                    display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
-
-                        return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
-
-                    }
-                },
+               
                 {
                     display: '车主', name: '车主', minWidth: 140, render: function (rowdata, index, value) {
 
@@ -668,14 +589,6 @@
                     display: '保险到期', name: '商保到期', minWidth: 100, render: function (rowdata, index, value) {
                         return todate(value, false);
                     }
-                },
-                {
-                    display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
-                        if (rowdata['制单人'] == '系统录单' && rowdata['主修人'] == '')
-                            return '<a href="javascript:void(0);" onclick="assignbatchtask(\'' + rowdata.ID + '\',\'' + rowdata['门店'] + '\',\'' + rowdata['维修类别'] + '\');"><strong>派工</strong></a>';
-                        else
-                            return '';
-                    }
                 }
                 ],
                 isScroll: true,
@@ -690,12 +603,7 @@
                     record = data;
                 },
                 onSuccess: function (data) {
-                    //if (data.Rows) {
-                    //    record = data.Rows[0];
-                    //    $.getJSON('index.php?&g=Query&m=Consume&a=getdiscount&id=' + record['客户ID'], function (data) {
-                    //        discount = data;
-                    //   });
-                    //}
+
                 }
             });
             $("#lb").change(function () {
@@ -717,7 +625,7 @@
                 setTimeout(function () {
                     grid.select(grid.data.Rows[0]);
                 }, 800);
-             
+
 
             });
             $('#paigong').click(function () {
@@ -731,9 +639,9 @@
                 grid.set('parms', parms);
                 grid.reload();
                 setTimeout(function () {
-                    if (row) {
+                    if (record) {
                         for (var i = 0; i < grid.data.Rows.length; i++) {
-                            if (grid.data.Rows[i]['流水号'] == row['流水号']) {
+                            if (grid.data.Rows[i]['流水号'] == record['流水号']) {
                                 grid.select(grid.data.Rows[i]);
 
                             }
@@ -756,9 +664,9 @@
                 grid.set('parms', parms);
                 grid.reload();
                 setTimeout(function () {
-                    if (row) {
+                    if (record) {
                         for (var i = 0; i < grid.data.Rows.length; i++) {
-                            if (grid.data.Rows[i]['流水号'] == row['流水号']) {
+                            if (grid.data.Rows[i]['流水号'] == record['流水号']) {
                                 grid.select(grid.data.Rows[i]);
 
                             }
@@ -780,9 +688,9 @@
                 grid.set('parms', parms);
                 grid.reload();
                 setTimeout(function () {
-                    if (row) {
+                    if (record) {
                         for (var i = 0; i < grid.data.Rows.length; i++) {
-                            if (grid.data.Rows[i]['流水号'] == row['流水号']) {
+                            if (grid.data.Rows[i]['流水号'] == record['流水号']) {
                                 grid.select(grid.data.Rows[i]);
 
                             }
@@ -803,9 +711,9 @@
                 grid.set('parms', parms);
                 grid.reload();
                 setTimeout(function () {
-                    if (row) {
+                    if (record) {
                         for (var i = 0; i < grid.data.Rows.length; i++) {
-                            if (grid.data.Rows[i]['流水号'] == row['流水号']) {
+                            if (grid.data.Rows[i]['流水号'] == record['流水号']) {
                                 grid.select(grid.data.Rows[i]);
 
                             }
@@ -827,9 +735,9 @@
                 grid.set('parms', parms);
                 grid.reload();
                 setTimeout(function () {
-                    if (row) {
+                    if (record) {
                         for (var i = 0; i < grid.data.Rows.length; i++) {
-                            if (grid.data.Rows[i]['流水号'] == row['流水号']) {
+                            if (grid.data.Rows[i]['流水号'] == record['流水号']) {
                                 grid.select(grid.data.Rows[i]);
 
                             }
@@ -850,9 +758,9 @@
                     $(this).hide();
                 });
                 setTimeout(function () {
-                   if (row) {
+                    if (record) {
                         for (var i = 0; i < grid.data.Rows.length; i++) {
-                            if (grid.data.Rows[i]['流水号'] == row['流水号']) {
+                            if (grid.data.Rows[i]['流水号'] == record['流水号']) {
                                 grid.select(grid.data.Rows[i]);
 
                             }

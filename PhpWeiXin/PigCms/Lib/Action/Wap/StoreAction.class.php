@@ -466,8 +466,23 @@ private function sellbill($price,$name){
       //$data['兑现备注']=;
       //$data['会员卡号']=;
       //$data['代币券结算']=;
-
-      M('销售单','dbo.','difo')->add($data);
+       M('销售单','dbo.','difo')->add($data);
+       $product=M('配件目录','dbo.','difo')->where(array('编号'=>'B500006'))->find();
+       $crk['ID']=$data['ID'];
+       $crk['仓库']='主仓库';
+       $crk['编号']=$product['编号'];
+       $crk['名称']=$product['名称'];
+       $crk['规格']=$product['规格'];
+       $crk['单位']=$product['单位'];
+       $crk['数量']=1;
+       $crk['单价']=$price;
+       $crk['成本价']=$price;
+       $crk['金额']=$price;
+       $crk['折扣']=1;
+       $crk['适用车型']=$product['适用车型'];
+       $crk['产地']=$product['产地'];
+       $crk['备注']=$product['备注'];
+       M('销售明细','dbo.','difo')->add($crk);
 
 
 }
@@ -503,11 +518,9 @@ private function MessageTip($carinfo,$mendian,$wxlb){
     $model=new templateNews();
     //$booturl='https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7';
     $booturl='https://oapi.dingtalk.com/robot/send?access_token=e148663d51dddb27d8e2a586420f5a8cbcf629f111a34736f50cfa64a3f21853';
-
-
     if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
         if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
-            $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
+            $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
             $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已到'.$mendian.$wxlb;
             $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
             $this->weixinmessage($content,$carinfo['服务顾问']);
@@ -550,8 +563,8 @@ private function MessageTip($carinfo,$mendian,$wxlb){
         }
     }
     if(date('Y-m-d',strtotime($carinfo['年检日期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['年检日期']))!='1970-01-01'){
-        if(strtotime($carinfo['年检日期'])-(time()+60*24*3600)<0){
-            $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
+        if(strtotime($carinfo['年检日期'])-(time()+90*24*3600)<0){
+            $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
             $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
             $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
             $this->weixinmessage($content,$carinfo['服务顾问']);
@@ -595,7 +608,7 @@ private function MessageTip($carinfo,$mendian,$wxlb){
     }
     if(date('Y-m-d',strtotime($carinfo['下次保养']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['下次保养']))!='1970-01-01'){
         if(strtotime($carinfo['下次保养'])<=time()&&strtotime($carinfo['下次保养'])+60*24*3600>=time()){
-            $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
+            $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
             $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
             $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
             $this->weixinmessage($content,$carinfo['服务顾问']);
@@ -723,6 +736,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
             $row['是否同意']=1;
             $row['已维修']='0小时'; 
             M('维修项目','dbo.','difo')->add($row);
+
             $this->MessageTip($carinfo,$shop,$wxlb);
     }
 } 
@@ -3063,6 +3077,27 @@ private function genbyrecord($carno,$shop='',$comment){
             if($data['服务态度']<4||$data['服务质量']<4||$data['前台接待']<4){
                 $content=$wx['联系人'].'车牌号为'.$wx['车牌号码'].'的车辆'.date('Y-m-d',strtotime($wx['制单日期'])).'日在'.$wx['门店'].$wx['维修类别'];
                 $content.='，客户对服务的评价低于3分，服务顾问:'.$wx['接车人'].'，服务技师:'.$wx['主修人'].',联系电话:'.$wx['联系电话'].'，请及时跟踪回访。';
+                $model=new templateNews();
+                $booturl='https://oapi.dingtalk.com/robot/send?access_token=e148663d51dddb27d8e2a586420f5a8cbcf629f111a34736f50cfa64a3f21853';
+                $msgdata='{
+                "msgtype": "text", 
+                "text": {
+                    "content": "'.$content.'"
+                }, 
+                "at": {
+                    "isAtAll": true
+                }
+                }';
+                $tracedata['车主']=$wx['车主'];
+                $tracedata['车牌号码']=$wx['车牌号码'];
+                $tracedata['跟踪时间']=date('Y-m-d H:i',time());
+                $tracedata['跟踪人']='系统';
+                $tracedata['跟踪类型']='到店消费';
+                $tracedata['年份']=date('Y');
+                $tracedata['类别']='投诉';
+                $tracedata['内容']=$content;
+                M('客户跟踪','dbo.','difo')->add($tracedata);
+                $model->postMessage($booturl,$msgdata);
                 $this->weixinmessage($content,$wx['门店'],'评价');
             }
             $data['评价时间'] =date('Y-m-d H:i',time());
@@ -3187,7 +3222,7 @@ private function genbyrecord($carno,$shop='',$comment){
             $where['coupon_id']=11;
             $coupons=M("member_card_coupon_record")->where($where)->order('over_time')->select();
             if(count($coupons)>0){
-                $this->weixin->send('您的前面还有'.$wxcount.'辆车正在排队洗车，为了减少您的等待时间，请把汽车钥匙交到前台，从交钥匙时刻起等待时间超过60分钟，本次洗车可以免单哦。',$this->wecha_id);
+                $this->weixin->send('您的前面还有'.$wxcount.'辆车正在排队洗车，为了减少您的等待时间，请把汽车钥匙交到前台，从交钥匙时刻起开始计时，等待时间超过60分钟，本次洗车免单哦。',$this->wecha_id);
             }else{
                 $this->weixin->send('您的前面还有'.$wxcount.'辆车正在排队洗车，为了减少您的等待时间，请把汽车钥匙交到前台。',$this->wecha_id);
             }
@@ -3195,7 +3230,7 @@ private function genbyrecord($carno,$shop='',$comment){
 
         }
         else{
-            $userinfo = M("Userinfo")->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
+            $userinfo = M("Userinfo")->where(array('token' =>$this->token,'wecha_id'=>$this->wecha_id))->find();
             $carinfo=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->select(); 
             $shopname=null;
             if(doubleval($userinfo['location_x'])>0&&$userinfo['getlocationtime']>time()-600){
@@ -3604,25 +3639,9 @@ private function genbyrecord($carno,$shop='',$comment){
         if($_POST)
         {
             $carno = isset($_POST['carno']) ? htmlspecialchars($_POST['carno']) : '';
-            $oldcarno = isset($_POST['oldcarno']) ? htmlspecialchars($_POST['oldcarno']) : '';
-            $licheng=htmlspecialchars($_POST['licheng']);
-            $baoxian=htmlspecialchars($_POST['baoxian']);
-            $nianjian=htmlspecialchars($_POST['nianjian']);
             $wecha_id=$this->wecha_id;
             if($_POST['opt']=='delete'){
                M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'carno'=>$carno))->delete(); 
-            }
-            else if($_POST['opt']=='modify')
-            {
-                //$where=array('token' => $this->token,'wecha_id'=>$this->wecha_id,'carno'=>$_POST['oldcarno']);
-                //M('member_card_car')->where($where)->save(array('token' => $this->token,'wecha_id'=>$this->wecha_id,'carno'=>$carno));
-                $user=M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->find();
-                $item['商保到期']=$baoxian;
-                $item['里程']=$licheng;
-                $item['年检日期']=$nianjian;
-                M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$oldcarno))->save($item);
-                echo '修改成功';
-                exit;
             }
             else
             {
@@ -3648,9 +3667,6 @@ private function genbyrecord($carno,$shop='',$comment){
                     $item['手机号码']=$user['tel'];
                     $item['联系人']=$user['truename'];
                     $item['联系电话']=$user['tel'];
-                    $item['商保到期']=$baoxian;
-                    $item['里程']=$licheng; 
-                    $item['年检日期']=$nianjian;
                     $item['客户类别']=$czinfo['类别'];
                     $mycar=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
                     if($mycar){

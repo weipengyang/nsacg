@@ -655,16 +655,16 @@ class ConsumeAction extends Action{
             $cangku=$_POST['shop'];
             $where['配件目录.停用']=0;
             $yelist=M('配件目录','dbo.','difo')
-                   ->join(' join  出入库统计  on 配件目录.编号=出入库统计.编号  and  出入库统计.仓库=\''.$cangku.'\' left join 信息分类统计  on 配件目录.编码=信息分类统计.类型')
+                   ->join(' left join  出入库统计  on 配件目录.编号=出入库统计.编号  and  出入库统计.仓库=\''.$cangku.'\' left join 信息分类统计  on 配件目录.编码=信息分类统计.类型')
                    ->field('配件目录.*,出入库统计.仓库,isnull(出入库统计.库存,0) 分库存,isnull(出入库统计.警戒下限,0) 警戒线,出入库统计.出库数量,出入库统计.入库数量,信息分类统计.数量')
                    ->where($where)->limit(($page-1)*$pagesize,$pagesize)
                    ->order("$sortname  $sortorder")
                    ->select();
             $count=M('配件目录','dbo.','difo')->where($where)
-                   ->join(' join 出入库统计  on 配件目录.编号=出入库统计.编号  and  出入库统计.仓库=\''.$cangku.'\' left join 信息分类统计  on 配件目录.编码=信息分类统计.类型')
+                   ->join(' left join 出入库统计  on 配件目录.编号=出入库统计.编号  and  出入库统计.仓库=\''.$cangku.'\' left join 信息分类统计  on 配件目录.编码=信息分类统计.类型')
                 ->count();
             $StockTotal=M('配件目录','dbo.','difo')
-                  ->join(' join 出入库统计  on 配件目录.编号=出入库统计.编号  and  出入库统计.仓库=\''.$cangku.'\' left join 信息分类统计  on 配件目录.编码=信息分类统计.类型')
+                  ->join(' left join 出入库统计  on 配件目录.编号=出入库统计.编号  and  出入库统计.仓库=\''.$cangku.'\' left join 信息分类统计  on 配件目录.编码=信息分类统计.类型')
                   ->field('sum(出入库统计.库存) 分库存,sum(配件目录.库存) 总库存,sum(参考进价*配件目录.库存) 总进货价,sum(参考售价*配件目录.库存) 总价值,sum(出入库统计.出库数量) 总出库数,sum(出入库统计.入库数量) 总入库数')
                   ->where($where)->find();
 
@@ -1222,10 +1222,12 @@ class ConsumeAction extends Action{
         if($enddate==''){
             $enddate=date('Y-m-d',time());
         }
+        $flag=100000;
         if($unconsume!='')
         {
             $startdate=date('Y-m-d',strtotime("-$unconsume month"));
             $enddate=date('Y-m-d',time());
+            $flag=0;
 
         }
         if($searchkey){       
@@ -1240,8 +1242,8 @@ class ConsumeAction extends Action{
             $where['_complex']=$searchwhere;
             
         }
-        $yelist=M('车辆消费分析','dbo.','difo')->query("exec 车辆消费分析 '$startdate','$enddate','$fwgw','$khlb',$page,$pagesize,'$searchkey'");
-        $StockTotal=M('出入库统计数量','dbo.','difo')->query("exec 车辆消费统计数据 '$startdate','$enddate','$fwgw','$khlb','$searchkey'");
+        $yelist=M('车辆消费分析','dbo.','difo')->query("exec 车辆消费分析 '$startdate','$enddate','$fwgw','$khlb',$page,$pagesize,'$searchkey',$flag");
+        $StockTotal=M('出入库统计数量','dbo.','difo')->query("exec 车辆消费统计数据 '$startdate','$enddate','$fwgw','$khlb','$searchkey',$flag");
         $count=$StockTotal[0]['数量'];        
         $data['Rows']=$yelist;
         $data['Total']=$count;
@@ -1956,9 +1958,14 @@ class ConsumeAction extends Action{
             $data['wxCount']=$wxCount;
         }
         else{
+            if($_GET['lb']&&$_GET['lb']=='蜡水洗车'&&$_POST['zt']==null){
+                $where['当前状态']=array('neq','取消');
+            }
             $wxinfo=M('维修档案','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
             $count=M('维修档案','dbo.','difo')->where($where)->count();
-            $dealtime=M('维修档案','dbo.','difo')->where($where)->field('sum(convert(int,isnull(已处理,0))) 已处理')->find();
+            $where1=$where;
+            $where1['_string']=" 当前状态 !='取消' and isnull(已处理,0)>10 and isnull(已处理,0)<100";
+            $dealtime=M('维修档案','dbo.','difo')->where($where1)->field('sum(convert(int,isnull(已处理,0))) 已处理')->find();
             $where['车主']=array('like','%AYC%');
             $hycount=M('维修档案','dbo.','difo')->where($where)->count();
             $where['是否评论']='是';
@@ -2135,7 +2142,10 @@ class ConsumeAction extends Action{
                 $tracedata['登记人']=cookie('username');
                 M('客户跟踪','dbo.','difo')->add($tracedata);
             }else{
-                
+                unset($tracedata['保险到期']);
+                $code=$tracedata['流水号'];
+                unset($tracedata['流水号']);
+                M('客户跟踪','dbo.','difo')->where(array('流水号'=>$code))->save($tracedata);
             }
             echo '保存成功';
         }
@@ -2638,6 +2648,12 @@ class ConsumeAction extends Action{
             $where['门店']=$_POST['shop'];
 
         }
+        if(isset($_POST['xslb'])&&$_POST['xslb']!=''){
+            $where['销售类别']=$_POST['xslb'];
+        }
+        if(isset($_POST['zdr'])&&$_POST['zdr']!=''){
+            $where['业务员']=$_POST['zdr'];
+        }
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
             $searchkey='%'.trim($_POST['searchkey']).'%';
         }
@@ -2672,7 +2688,10 @@ class ConsumeAction extends Action{
             $where['门店']=$_POST['shop'];
 
         }
-        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        if(isset($_POST['xslb'])&&$_POST['xslb']!=''){
+            $where['销售类别']=$_POST['xslb'];
+        }
+       if($_POST['startdate']&&trim($_POST['startdate'])!='')
         {
             $where['制单日期']=array('egt',trim($_POST['startdate']));
             
@@ -2710,7 +2729,7 @@ class ConsumeAction extends Action{
             ->where($where)->count();
         $yelist=M('销售单','dbo.','difo')
             ->join('left join 销售明细 on 销售单.ID=销售明细.ID')
-            ->field('销售明细.*,销售单.制单人,销售单.业务员,销售单.客户名称,销售单.制单日期,销售单.单据类别,销售单.当前状态,销售单.单据编号,销售单.收款日期,销售单.结算方式')
+            ->field('销售明细.*,销售单.制单人,销售单.销售类别,销售单.业务员,销售单.客户名称,销售单.制单日期,销售单.单据类别,销售单.当前状态,销售单.单据编号,销售单.收款日期,销售单.结算方式')
             ->where($where)->limit(($page-1)*$pagesize,$pagesize)
             ->order("$sortname  $sortorder")->select();
         $data['Rows']=$yelist;
@@ -2816,7 +2835,12 @@ class ConsumeAction extends Action{
             $where['车管单位']=trim($_POST['cgdw']);
             
         }
-        if($_POST['ywy']&&trim($_POST['ywy'])!='')
+        if($_POST['dblb']&&trim($_POST['dblb'])!='')
+        {
+            $where['代办类别']=trim($_POST['dblb']);
+            
+        }
+       if($_POST['ywy']&&trim($_POST['ywy'])!='')
         {
             $where['业务员']=trim($_POST['ywy']);
             
@@ -4726,8 +4750,10 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
              M('维修项目','dbo.','difo')->where(array('ID'=>$itemid))->save($item);
              $data['当前主修人']=$zhuxiu;
              $data['主修人']=$zhuxiu;
-             $data['当前状态']='派工';
-             $data['开工时间']=date('Y-m-d H:i',time());
+             if(!isset($wxinfo['开工时间'])||date('Y-m-d',strtotime($wxinfo['开工时间']))=='1900-01-01'){
+                 $data['当前状态']='派工';
+                 $data['开工时间']=date('Y-m-d H:i',time());
+             }
              M('维修','dbo.','difo')->where(array('ID'=>$itemid))->save($data);
           }
            //$data['当前状态']='结束'; 
@@ -6159,7 +6185,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $booturl='https://oapi.dingtalk.com/robot/send?access_token=e148663d51dddb27d8e2a586420f5a8cbcf629f111a34736f50cfa64a3f21853';
        if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
            if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
-               $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
+               $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
                $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已到'.$mendian.$wxlb;
                $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
                $this->weixinmessage($content,$carinfo['服务顾问']);
@@ -6202,8 +6228,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            }
        }
        if(date('Y-m-d',strtotime($carinfo['年检日期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['年检日期']))!='1970-01-01'){
-           if(strtotime($carinfo['年检日期'])-(time()+60*24*3600)<0){
-               $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
+           if(strtotime($carinfo['年检日期'])-(time()+90*24*3600)<0){
+               $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
                $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
                $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
                $this->weixinmessage($content,$carinfo['服务顾问']);
@@ -6247,7 +6273,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        }
        if(date('Y-m-d',strtotime($carinfo['下次保养']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['下次保养']))!='1970-01-01'){
            if(strtotime($carinfo['下次保养'])<=time()&&strtotime($carinfo['下次保养'])+60*24*3600>=time()){
-               $content=$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
+               $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
                $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
                $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
                $this->weixinmessage($content,$carinfo['服务顾问']);
@@ -6279,7 +6305,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>$type))->find();
         }
         $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>$fwgw))->find();
-              
         if($carinfo)
         {
             $carinfo['最近维修']=date('Y-m-d',time());
@@ -6291,7 +6316,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                     $baoyang=$carinfo['常规保养数'];
                     $bylc=$carinfo['保养里程'];
                     if(intval($licheng)-intval($carinfo['保养里程'])>intval($carinfo['常规保养数'])){
-                        $content=$carinfo['联系人'].'的'.$carinfo['车牌号码']."车辆已超过$baoyang 公里未进行保养，本次里程$licheng 公里，上次保养里程$bylc 公里";
+                        $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码']."车辆已超过$baoyang 公里未进行保养，本次里程$licheng 公里，上次保养里程$bylc 公里";
                         $content.='现车辆已进厂'.$yg['部门'].$wxlb;
                         $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
                         $this->weixinmessage($content,$yg['部门']);
@@ -6335,6 +6360,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 $czinfo['名称']=$carno;
                 $czinfo['客户']=1;
                 $czinfo['类别']='1星客户';
+                $czinfo['等级']='★';
                 $czinfo['手机号码']=$phone;
                 $czinfo['联系电话']=$phone;
                 $czinfo['联系人']=$lxr;
@@ -6427,6 +6453,13 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             unset($data['预计完工']);
         }else{
             $data['预计完工']=$yjwg;
+        }
+        $data['整单服务折扣']=1;
+        $data['整单销售折扣']=1;
+        if($wxlb!='保险理赔'){
+            $memberinfo=M('会员详细信息','dbo.','difo')->where(array('ID'=>$$carinfo['客户ID']))->find();         
+            $data['整单服务折扣']=$memberinfo['服务折扣1'];
+            $data['整单销售折扣']=$memberinfo['服务折扣1'];;
         }
         unset($data['结算日期']);
         unset($data['上交钥匙']);

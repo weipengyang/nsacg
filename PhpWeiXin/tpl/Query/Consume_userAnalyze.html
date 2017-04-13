@@ -130,11 +130,6 @@
                 });
             }
         }
-
-        $('#khlb').change(function () {
-            $('#search').click();
-
-        });
         var cargird;
         function f_totalRender(data, currentPageData) {
             return " 洗车次数:" + data.StockTotal[0].洗车次数
@@ -146,14 +141,15 @@
                 + "  保险次数:" + data.StockTotal[0].保险次数
                 + "  保险金额:" + data.StockTotal[0].保险金额
                 + "  代办次数:" + data.StockTotal[0].代办次数
-                + "  代办金额:" + data.StockTotal[0].代办金额;
+                + "  代办金额:" + data.StockTotal[0].代办金额
+                + "  消费金额:" + data.StockTotal[0].总金额;
         }
         $(document).ready(function () {
            $.post('index.php?g=Query&m=Consume&a=getgw', null,
           function (data) {
               if (data) {
                   $('#fwgw').empty();
-                  $('#fwgw').append("<option value=''>所有人</option>");
+                  $('#fwgw').append("<option value='ALL'>所有人</option>");
                   $(data).each(function () {
                       var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
                       $('#fwgw').append(option);
@@ -205,6 +201,15 @@
                 onDblClickRow: function (data, rowindex, rowobj) {
                     memberinfo(data['车主']);
                 }
+            });
+            $('#khlb').change(function () {
+                $('#search').click();
+            });
+            $('#unconsume').change(function () {
+                $('#search').click();
+            });
+            $('#fwgw').change(function () {
+                $('#search').click();
             });
             $('#search').click(function () {
                 cargird.changePage('first');

@@ -42,7 +42,7 @@
         <div class="admin-content">
             <div class="admin-content-body">
                 <div class="am-g">
-                    <div class="am-u-sm-4 am-u-md-4">
+                    <div class="am-u-sm-5 am-u-md-5">
                         <div class="am-form-group">
                             业务员
                             <select id="fwgw">
@@ -50,6 +50,10 @@
                             </select>
                             车管单位
                             <select id="cgdw">
+                                <option value="">所有</option>
+                            </select>
+                            代办类别
+                            <select id="dblb">
                                 <option value="">所有</option>
                             </select>
                         </div>
@@ -137,6 +141,17 @@
                    });
                }
            }, 'JSON');
+            $.post('/index.php?g=Query&m=Consume&a=getdblb', null,
+         function (data) {
+             if (data) {
+                 $('#dblb').empty();
+                 $('#dblb').append("<option value=''>所有</option>");
+                 $(data).each(function () {
+                     var option = "<option value='" + this.params_name + "'>" + this.params_name + "</option>";
+                     $('#dblb').append(option);
+                 });
+             }
+         }, 'JSON');
             $.post('index.php?g=Query&m=Consume&a=daiban', null,
           function (data) {
               if (data) {
@@ -188,6 +203,9 @@
             $("#fwgw").change(function () {
                 $('#search').click();
             });
+            $("#dblb").change(function () {
+                $('#search').click();
+            });
             $("#cgdw").change(function () {
                 $('#search').click();
             });
@@ -200,6 +218,9 @@
                 var startdate = $('#startdate').val();
                 if (startdate != '')
                     parms['startdate'] = startdate;
+                var dblb = $('#dblb').val();
+                if (dblb != '')
+                    parms['dblb'] = dblb
                 var fwgw = $('#fwgw').val();
                 if (fwgw != '')
                     parms['ywy'] = fwgw

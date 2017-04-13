@@ -52,14 +52,6 @@
                         <span class="icon icon-card" style="color:#FFFFFF;"></span>
                         <span class="tab-label" style="color:#FFFFFF;">维修档案</span>
                       </a>
-                        <a class="tab-item" href="javascript:;" onclick="modify('{pigcms:$item.carno}', '{pigcms:$item.carinfo.商保到期}', '{pigcms:$item.carinfo.年检日期}', '{pigcms:$item.carinfo.里程}');">
-                            <span class="icon icon-edit" style="color:#FFFFFF;"></span>
-                            <span class="tab-label" style="color:#FFFFFF;">修改信息</span>
-                        </a>                       
-                        <!--<a class="tab-item" href="javascript:;" onclick="deleteCar('{pigcms:$item.carno}');">
-                      <span class="icon icon-remove" style="color:#FFFFFF;"></span>
-                      <span class="tab-label" style="color:#FFFFFF;">删除车辆</span>
-                    </a>-->
                     </div>
                 </div>
             </volist>
@@ -79,24 +71,6 @@
                             <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">车牌号码</label></div>
                             <div class="weui_cell_bd weui_cell_primary">
                                 <input name="carno" class="weui_input" id="carno" value=""   type="text" placeholder="请输入车牌号码">
-                            </div>
-                        </div>
-                        <div class="weui_cell">
-                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">里程</label></div>
-                            <div class="weui_cell_bd weui_cell_primary">
-                                <input name="licheng" class="weui_input" id="licheng" value="" type="text" placeholder="请输入车辆里程">
-                            </div>
-                        </div>
-                        <div class="weui_cell">
-                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">保险到期</label></div>
-                            <div class="weui_cell_bd weui_cell_primary">
-                                <input name="baoxian" class="weui_input" id="baoxian" value="" type="text" placeholder="请选择保险到期日期">
-                            </div>
-                        </div>
-                        <div class="weui_cell">
-                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">年检到期</label></div>
-                            <div class="weui_cell_bd weui_cell_primary">
-                                <input name="nianjian" class="weui_input"  id="nianjian" value="" type="text" placeholder="请选择年检日期">
                             </div>
                         </div>
                     </div>
@@ -148,31 +122,10 @@
                 opt = 'modify';
                 $("#carno").val(oldcarno);
                 $("#carno").attr('readonly', 'readonly');
-                if (baoxian && baoxian != '') {
-                    $('#baoxian').val(todate(baoxian));
-                    $("#baoxian").attr('readonly', 'readonly');
-
-                }
-                else {
-                    $("#baoxian").calendar();
-                }
-                if (nianjian && nianjian != '') {
-                    $('#nianjian').val(todate(nianjian));
-                    $("#nianjian").attr('readonly', 'readonly');
-
-                } else {
-                    $("#nianjian").calendar();
-                }
-                $('#licheng').val(licheng);
             }
             else {
                 $("#carno").val('');
-                $('#baoxian').val('');
-                $('#nianjian').val('');
-                $('#licheng').val('');
                 $("#carno").removeAttr('readonly');
-                $("#baoxian").calendar();
-                $("#nianjian").calendar();
             }
             $('.weui_dialog_confirm').show().on('click', '.default ', function () {
                 $('.weui_dialog_confirm').off('click').hide();
@@ -190,27 +143,9 @@
                         return;
                     }
                 }
-                var licheng = $('#licheng').val();
-                if (licheng == '') {
-                    $.alert("请完善车辆里程");
-                    return;
-                }
-                var baoxian = $('#baoxian').val();
-                if (baoxian == '') {
-                    $.alert("请完善车辆保险日期");
-                    return;
-                }
-                var nianjian = $('#nianjian').val();
-                if (nianjian == '') {
-                    $.alert("请完善年检日期");
-                    return;
-                }
                 var submitData = {
                     carno: carno,
                     oldcarno: oldcarno,
-                    licheng:licheng,
-                    baoxian:baoxian,
-                    nianjian:nianjian,
                     opt:opt
                 };
                 if (opt == 'add') {

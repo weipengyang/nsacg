@@ -52,6 +52,10 @@
                             <select id="fwgw">
                                 <option value="">所有人</option>
                             </select>
+                            销售类别
+                            <select id="xslb">
+                                <option value="">所有</option>
+                            </select>
                         </div>
                     </div>
                     <div class="am-u-sm-1 am-u-md-1">
@@ -146,6 +150,17 @@
                    });
                }
            }, 'JSON');
+            $.post('/index.php?g=Query&m=Consume&a=getsaletype', null,
+          function (data) {
+              if (data) {
+                  $('#xslb').empty();
+                  $('#xslb').append("<option value=''>所有</option>");
+                  $(data).each(function () {
+                      var option = "<option value='" + this.params_name + "'>" + this.params_name + "</option>";
+                      $('#xslb').append(option);
+                  });
+              }
+          }, 'JSON');
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                 {
@@ -159,6 +174,7 @@
                 { display: '仓库', name: '仓库', minWidth: 120 },
                 { display: '编号', name: '编号', minWidth: 100 },
                 { display: '名称', name: '名称', minWidth: 140 },
+                { display: '销售类别', name: '销售类别', minWidth: 100 },
                 { display: '规格', name: '规格', minWidth: 100 },
                 { display: '单位', name: '单位', minWidth: 80 },
                 { display: '数量', name: '数量', minWidth: 60 },
@@ -184,7 +200,7 @@
                 pageSize: 20,
                 totalRender: f_totalRender,
                 url: '/index.php?g=Query&m=Consume&a=getsaledata',
-                height: '98%',
+                height: '97%',
             });
 
             $("#shop").change(function () {
@@ -193,13 +209,18 @@
             $("#fwgw").change(function () {
                 $('#search').click();
             });
-
+            $("#xslb").change(function () {
+                $('#search').click();
+            });
             $('#search').click(function () {
                 grid.changePage('first');
                 var parms = {};
                 var shop = $('#shop').val();
                 if (shop != '')
                     parms.shop = shop;
+                var xslb = $('#xslb').val();
+                if (xslb != '')
+                    parms.xslb = xslb;
                 var enddate = $('#enddate').val();
                 if (enddate != '')
                     parms['enddate'] = enddate;

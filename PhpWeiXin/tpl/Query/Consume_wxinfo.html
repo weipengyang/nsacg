@@ -24,7 +24,267 @@
         }
     </style>
     <script type="text/javascript">
+        var form, project, product, opgrid, historygrid = null;
+        var pickdialog,cardialog, purchasedialog, addprojectdialog, editprojectdialog,
+            memberdialog, editproductdialog, assigntaskdialog;
         var record = {pigcms:$carinfo};
+        var discount = {};
+        function editproject() {
+            if (record['当前状态'] == '结束') {
+                $.ligerDialog.alert('结束状态不能修改项目信息');
+                return;
+            }
+            var row = project.getSelectedRow();
+            if (row) {
+                if (editprojectdialog) {
+                    editprojectdialog.setUrl('index.php?&g=Query&m=Consume&a=modifyproject&id=' + row['流水号']);
+                    editprojectdialog.show();
+                } else {
+                    editprojectdialog = $.ligerDialog.open({
+                        height: 400,
+                        url: 'index.php?&g=Query&m=Consume&a=modifyproject&id=' + row['流水号'],
+                        width: 600,
+                        showMax: true,
+                        showToggle: true,
+                        showMin: false,
+                        isResize: true,
+                        modal: true,
+                        title: '修改维修项目'
+                    });
+                }
+            }
+            else {
+                $.ligerDialog.alert('请选择要修改的项目');
+            }
+
+        }
+        function editproduct() {
+            if (record['当前状态'] == '结束') {
+                $.ligerDialog.alert('结束状态不能修改配件信息');
+                return;
+            }
+            var row = product.getSelectedRow();
+            if (row) {
+                if (editproductdialog) {
+                    editproductdialog.setUrl('index.php?&g=Query&m=Consume&a=modifyproduct&id=' + row['流水号']);
+                    editproductdialog.show();
+                } else {
+                    editproductdialog = $.ligerDialog.open({
+                        height: 420,
+                        url: 'index.php?&g=Query&m=Consume&a=modifyproduct&id=' + row['流水号'],
+                        width: 600,
+                        showMax: true,
+                        showToggle: true,
+                        showMin: false,
+                        isResize: true,
+                        modal: true,
+                        title: '编辑配件'
+                    });
+                }
+            }
+            else {
+                $.ligerDialog.alert('请选择要修改的配件');
+            }
+
+        }
+        function addproject() {
+            if (record['当前状态'] == '结束') {
+                $.ligerDialog.alert('结束状态不能增加维修项目');
+                return;
+            }
+            var c = 1;
+            if (discount && discount['服务折扣1'] != null) {
+                c = discount['服务折扣1'];
+            }
+            var url = 'index.php?&g=Query&m=Consume&a=addproject&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + c + "&zhuxiu=" + record['当前主修人'];
+            if (addprojectdialog) {
+                addprojectdialog.setUrl(url);
+                addprojectdialog.show();
+            } else {
+                addprojectdialog = $.ligerDialog.open({
+                    height: 600,
+                    url: url,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: true,
+                    title: '增加维修项目'
+                });
+
+            }
+        }
+        function wxinfo(xh) {
+            var wxdialog = $.ligerDialog.open({
+                height: 540,
+                url: '/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh,
+                width: 950,
+                showMax: true,
+                showToggle: true,
+                showMin: false,
+                isResize: true,
+                modal: false,
+                title: '车辆维修详细信息'
+            });
+        }
+        function pick() {
+            if (record['当前状态'] == '结束') {
+                $.ligerDialog.alert('结束状态不能领料');
+                return;
+            }
+            if (pickdialog) {
+                pickdialog.setUrl('/index.php?g=Query&m=Consume&a=picking');
+                pickdialog.show();
+            }
+            else {
+                pickdialog = $.ligerDialog.open({
+                    height: 540,
+                    url: '/index.php?g=Query&m=Consume&a=picking',
+                    width: 800,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: true,
+                    title: '维修领料'
+                });
+            }
+        }
+        function memberinfo(carno) {
+            if (memberdialog) {
+                memberdialog.setUrl('/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno);
+                memberdialog.show();
+            }
+            else {
+                memberdialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '会员资料编辑'
+                });
+            }
+        }
+        function purchasing() {
+            if (record['当前状态'] == '结束') {
+                $.ligerDialog.alert('结束状态不能开采购单');
+                return;
+            }
+            if (purchasedialog) {
+                purchasedialog.setUrl('/index.php?g=Query&m=Consume&a=purchasing');
+                purchasedialog.show();
+            }
+            else {
+                purchasedialog = $.ligerDialog.open({
+                    height: 540,
+                    url: '/index.php?g=Query&m=Consume&a=purchasing',
+                    width: 800,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: true,
+                    title: '维修采购开单'
+                });
+            }
+        }
+        function viewcarinfo(carno) {
+            if (cardialog) {
+                cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
+                cardialog.show();
+            }
+            else {
+                cardialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: true,
+                    title: '车辆信息编辑'
+                });
+            }
+        }
+        function assigntask() {
+            var row = project.getSelected();
+            if (row) {
+                var url = '/index.php?g=Query&m=Consume&a=assigntask';
+                url += '&id=' + record['ID'];
+                url += '&shop=' + record['门店'];
+                url += '&wxlb=' + record['维修类别'];
+                url += '&code=' + row['流水号'];
+
+                if (assigntaskdialog) {
+                    assigntaskdialog.setUrl(url);
+                    assigntaskdialog.show();
+                }
+                else {
+                    assigntaskdialog = $.ligerDialog.open({
+                        height: 180,
+                        url: url,
+                        width: 280,
+                        showMax: false,
+                        showToggle: true,
+                        showMin: true,
+                        isResize: true,
+                        modal: true,
+                        title: '派工'
+                    });
+                }
+            }
+            else {
+                $.ligerDialog.alert('请选择要派工的项目');
+            }
+        }
+        function submitForm() {
+
+            var form = liger.get("form1");
+            var data = form.getData();
+            data = JSON.stringify(data);
+            data = JSON2.parse(data);
+            $.post('/index.php?g=Query&m=Consume&a=savewxinfo', data,
+              function (msg) {
+                  $.ligerDialog.alert(msg);
+                  location.href = location.href;
+              });
+
+        }
+        function assignbatchtask(id, shop, wxlb) {
+            if (typeof (id) == 'object') {
+                id = record['ID'];
+                shop = record['门店'];
+                wxlb = record['维修类别'];
+            }
+            var url = '/index.php?g=Query&m=Consume&a=assigntask';
+            url += '&id=' + id;
+            url += '&shop=' + shop;
+            url += '&wxlb=' + wxlb;
+
+            if (assigntaskdialog) {
+                assigntaskdialog.setUrl(url);
+                assigntaskdialog.show();
+            }
+            else {
+                assigntaskdialog = $.ligerDialog.open({
+                    height: 180,
+                    url: url,
+                    width: 280,
+                    showMax: false,
+                    showToggle: true,
+                    showMin: true,
+                    isResize: true,
+                    modal: false,
+                    title: '派工'
+                });
+            }
+        }
         $(function ()
         {
             form = $("#form1").ligerForm({
@@ -32,7 +292,7 @@
                 validate: true,
                 height: '35%',
                 buttons: [
-                    { text: "更新", width: 60, click: submitForm }
+                    { text: "保存", width: 60, click: submitForm }
                 ],
                 tab: {
                     items: [
@@ -114,7 +374,7 @@
                                 },
                                 { display: "客户类别", name: "客户类别", newline: false, type: "text", readonly: true },
                                 { display: "联系人", name: "联系人", newline: false, type: "text" },
-                                { display: "联系电话", name: "联系电话", newline: true, type: "text" },
+                                { display: "联系电话", name: "联系电话", newline: false, type: "text" },
                                 { display: "手机号", name: "手机号码", newline: false, type: "text" },
                                 { display: "地址", name: "地址", newline: false, type: "text" },
                                 { display: "身份证号", name: "身份证号", newline: false, type: "text" },
@@ -160,47 +420,36 @@
                             title: '维修配件'
                         },
                         {
-                            title: '附加费用'
-                        },
-                        {
                             title: '结算信息',
                             fields: [
-                                { display: '结算客户', name: '结算客户', newline: true, type: 'text' },
-                                { display: '三包厂商', name: '三包厂商', newline: false, type: 'text' },
-                                { display: '保险公司', name: '保险公司', newline: false, type: 'text' },
-                                { display: '服务折扣', name: '整单服务折扣', newline: false, type: 'text' },
-                                { display: '销售折扣', name: '整单销售折扣', newline: false, type: 'text' },
-                                { display: '费用折扣', name: '整单费用折扣', newline: false, type: 'text' },
-                                { display: '服务税率', name: '整单服务税率', newline: true, type: 'text' },
-                                { display: '销售税率', name: '整单销售税率', newline: false, type: 'text' },
-                                { display: '费用税率', name: '整单费用税率', newline: false, type: 'text' },
-                                { display: '计次金额', name: '计次金额', newline: false, type: 'text' },
-                                { display: '材料费', name: '材料费', newline: false, type: 'text' },
-                                { display: '管理费', name: '管理费', newline: false, type: 'text' },
-                                { display: '工时费', name: '工时费', newline: true, type: 'text' },
-                                { display: '附加费', name: '附加费', newline: false, type: 'text' },
-                                { display: '款项总额', name: '款项总额', newline: false, type: 'text' },
-                                { display: '三包金额', name: '三包金额', newline: false, type: 'text' },
-                                { display: '保险金额', name: '保险金额', newline: false, type: 'text' },
-                                { display: '保险客付', name: '保险客付', newline: false, type: 'text' },
-                                { display: '客付金额', name: '客付金额', newline: true, type: 'text' },
-                                { display: '客付税额', name: '客付税额', newline: false, type: 'text' },
-                                { display: '客付虚增', name: '客付虚增', newline: false, type: 'text' },
-                                { display: '优惠金额', name: '优惠金额', newline: false, type: 'text' },
-                                { display: '应收金额', name: '应收金额', newline: false, type: 'text' },
-                                { display: '现收金额', name: '现收金额', newline: false, type: 'text' },
-                                { display: '结算日期', name: '结算日期', newline: true, type: 'date' },
-                                {
-                                    display: '结算方式', name: '结算方式', newline: false, type: 'text', type: "combobox",
-                                    options: {
-                                        valueField: '名称',
-                                        textField: '名称',
-                                        autocomplete: true,
-                                        url: '/index.php?g=Query&m=Consume&a=getjsfs',
-                                    }
-                                },
+                                { display: '结算客户', name: '结算客户', newline: false, type: 'text', readonly: true },
+                                { display: '三包厂商', name: '三包厂商', newline: false, type: 'text', readonly: true },
+                                { display: '保险公司', name: '保险公司', newline: false, type: 'text', readonly: true },
+                                { display: '服务折扣', name: '整单服务折扣', newline: false, type: 'text', readonly: true },
+                                { display: '销售折扣', name: '整单销售折扣', newline: false, type: 'text', readonly: true },
+                                { display: '费用折扣', name: '整单费用折扣', newline: false, type: 'text', readonly: true },
+                                { display: '服务税率', name: '整单服务税率', newline: false, type: 'text', readonly: true },
+                                { display: '销售税率', name: '整单销售税率', newline: false, type: 'text', readonly: true },
+                                { display: '费用税率', name: '整单费用税率', newline: false, type: 'text', readonly: true },
+                                { display: '计次金额', name: '计次金额', newline: false, type: 'text', readonly: true },
+                                { display: '材料费', name: '材料费', newline: false, type: 'text', readonly: true },
+                                { display: '管理费', name: '管理费', newline: false, type: 'text', readonly: true },
+                                { display: '工时费', name: '工时费', newline: false, type: 'text', readonly: true },
+                                { display: '附加费', name: '附加费', newline: false, type: 'text', readonly: true },
+                                { display: '款项总额', name: '款项总额', newline: false, type: 'text', readonly: true },
+                                { display: '三包金额', name: '三包金额', newline: false, type: 'text', readonly: true },
+                                { display: '保险金额', name: '保险金额', newline: false, type: 'text', readonly: true },
+                                { display: '保险客付', name: '保险客付', newline: false, type: 'text', readonly: true },
+                                { display: '客付金额', name: '客付金额', newline: false, type: 'text', readonly: true },
+                                { display: '客付税额', name: '客付税额', newline: false, type: 'text', readonly: true },
+                                { display: '客付虚增', name: '客付虚增', newline: false, type: 'text', readonly: true },
+                                { display: '优惠金额', name: '优惠金额', newline: false, type: 'text', readonly: true },
+                                { display: '应收金额', name: '应收金额', newline: false, type: 'text', readonly: true },
+                                { display: '现收金额', name: '现收金额', newline: false, type: 'text', readonly: true },
+                                { display: '结算日期', name: '结算日期', newline: false, type: 'text', readonly: true },
+                                { display: '结算方式', name: '结算方式', newline: false, type: 'text', readonly: true },
                                 { display: '结算人', name: '收款人', newline: false, type: 'text', readonly: true },
-                                { display: '毛利', name: '毛利', newline: false, type: 'text' },
+                                { display: '毛利', name: '毛利', newline: false, type: 'text', readonly: true },
 
                             ]
 
@@ -218,21 +467,7 @@
                 }
 
             });
-            var project;
             setdata();
-            function submitForm() {
-
-                var form = liger.get("form1");
-                var data = form.getData();
-                data = JSON.stringify(data);
-                data = JSON2.parse(data);
-                $.post('/index.php?g=Query&m=Consume&a=savewxinfo', data,
-                  function (msg) {
-                      $.ligerDialog.alert(msg);
-                      location.href = location.href;
-                  });
-
-            }
             function getGridOptions(checkbox) {
                 var options = {
                     columns: [
@@ -251,7 +486,15 @@
                     checkbox: checkbox                   
                 };
                 return options;
-            }            function setdata()
+            }            function inidata() {
+                $("div[data-index='1']").html("<div id='projectgrid' style='margin:0;padding 0'><div>");
+                $("div[data-index='2']").html("<div id='productgrid'style='margin:0;padding 0'><div>");
+                $("div[data-index='4']").html('<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=wxfileupload&wxno=' + record['流水号'] + '"></iframe></div>');
+                $("div[data-index='5']").html("<div id='opgrid'style='margin:0;padding 0'><div>");
+                $("div[data-index='6']").html("<div id='historygrid'style='margin:0;padding 0'><div>");
+
+            }
+            function setdata()
             {
                 if (record && record != '') {
                     record = JSON2.stringify(record);
@@ -267,297 +510,384 @@
 
                     $("div[data-index='1']").html("<div id='projectgrid' style='margin:0;padding 0'><div>");
                     $("div[data-index='2']").html("<div id='productgrid'style='margin:0;padding 0'><div>");
-                    $("div[data-index='3']").html("<div id='appendgrid'style='margin:0;padding 0'><div>");
-                    $("div[data-index='6']").html("<div id='opgrid'style='margin:0;padding 0'><div>");
                     $("div[data-index='5']").html('<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=fileupload&carno=' + record['流水号'] + '"></iframe></div>');
+                    $("div[data-index='6']").html("<div id='opgrid'style='margin:0;padding 0'><div>");
+                     inidata();
+                     project = $("#projectgrid").ligerGrid({
+                         height: '100%',
+                         width: '100%',
+                         columns: [
+                         { display: '项目编号', name: '项目编号', minWidth: 80 },
+                         { display: '项目名称', name: '项目名称', minWidth: 160 },
+                         { display: '工时', name: '工时', minWidth: 40 },
+                         { display: '单价', name: '单价', minWidth: 60 },
+                         { display: '金额', name: '金额', minWidth: 60 },
+                         { display: '折扣', name: '折扣', minWidth: 60 },
+                          { display: '主修人', name: '主修人', minWidth: 80 },
+                         { display: '班组', name: '班组', minWidth: 120 },
+                         {
+                             display: '开工时间', name: '开工时间', type: 'date', minWidth: 120, render: function (rowdata, index, value) {
+                                 return todate(value, true);
+                             }
+                         },
+                         {
+                             display: '完工时间', name: '完工时间', type: 'date', minWidth: 120, render: function (rowdata, index, value) {
+                                 return todate(value, true);
+                             }
+                         },
+                         { display: '维修工艺', name: '维修工艺', minWidth: 120 },
+                         { display: '结算方式', name: '结算方式', minWidth: 120 },
+                         { display: '税率', name: '税率', minWidth: 60 },
+                         { display: '税额', name: '税额', minWidth: 120 },
+                         { display: '虚增类别', name: '虚增类别', minWidth: 120 },
+                         { display: '虚增金额', name: '虚增金额', minWidth: 120 },
+                         { display: '提成工时', name: '提成工时', minWidth: 120 },
+                         { display: '提成金额', name: '提成金额', minWidth: 120 },
+                         { display: '维修工扣款', name: '维修工扣款', minWidth: 120 },
+                         { display: '扣款原因', name: '扣款原因', minWidth: 120 },
+                          { display: '已维修', name: '已维修', minWidth: 120 },
+                         {
+                             display: '是否同意', name: '是否同意', align: 'left', width: 100, minWidth: 60, render: function (rowdata, index, value) {
+                                 if (value == '1')
+                                     return '是';
+                                 return '否';
+                             }
+                         },
+                         { display: '备注', name: '备注', minWidth: 240 },
+                         { display: '对应券编号', name: '券编码', minWidth: 40 },
 
-                       project=$("#projectgrid").ligerGrid({
-                        height: '100%',
-                        width: '100%',
-                        columns: [
-                        { display: '项目编号', name: '项目编号', minWidth: 80 },
-                        { display: '项目名称', name: '项目名称', minWidth: 160 },
-                        { display: '工时', name: '工时', minWidth: 40 },
-                        { display: '单价', name: '单价', minWidth: 60 },
-                        { display: '金额', name: '金额', minWidth: 60 },
-                        { display: '折扣', name: '折扣', minWidth: 60 },
-                         { display: '主修人', name: '主修人', minWidth: 80 },
-                        { display: '班组', name: '班组', minWidth: 120 },
-                        {
-                            display: '开工时间', name: '开工时间', type: 'date', minWidth: 120, render: function (rowdata, index, value) {
-                                return todate(value, true);
-                            }
-                        },
-                        {
-                            display: '完工时间', name: '完工时间', type: 'date', minWidth: 120, render: function (rowdata, index, value) {
-                                return todate(value, true);
-                            }
-                        },
-                        { display: '维修工艺', name: '维修工艺', minWidth: 120 },
-                        { display: '结算方式', name: '结算方式', minWidth: 120 },
-                        { display: '税率', name: '税率', minWidth: 60 },
-                        { display: '税额', name: '税额', minWidth: 120 },
-                        { display: '虚增类别', name: '虚增类别', minWidth: 120 },
-                        { display: '虚增金额', name: '虚增金额', minWidth: 120 },
-                        { display: '提成工时', name: '提成工时', minWidth: 120 }, 
-                        { display: '提成金额', name: '提成金额', minWidth: 120 },
-                        { display: '维修工扣款', name: '维修工扣款', minWidth: 120 },
-                        { display: '扣款原因', name: '扣款原因', minWidth: 120 },
-                         { display: '已维修', name: '已维修', minWidth: 120 },
-                        {
-                            display: '是否同意', name: '是否同意', align: 'left', width: 100, minWidth: 60, render: function (rowdata, index, value) {
-                                if (value == '1')
-                                    return '是';
-                                return '否';
-                            }
-                        },
-                        { display: '备注', name: '备注', minWidth: 240 }
-                        ],
-                        url: '/index.php?g=Query&m=Consume&a=getproject',
-                        pageSize: 10,
-                        delayLoad: true,
-                        checkbox:true,
-                        urlParms: { ID: record['ID'] },
-                        rownumbers: true,
-                        isScroll:true,
-                        toolbar: {
-                            items: [
-                            {
-                                text: '增加',
-                                click: function () {
-                                   var dialog=$.ligerDialog.open({
-                                        height: 600,
-                                        url: 'index.php?&g=Query&m=Consume&a=addproject&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + {pigcms:$discount['服务折扣1']} + "&zhuxiu=" + record['当前主修人'],
-                                        width: 900,
-                                        showMax: true,
-                                        showToggle: true,
-                                        showMin: true,
-                                        isResize: true,
-                                        modal: true,
-                                        title: '增加维修项目'
-                                    });
-                                   project.reload();
-                                }, icon: 'ad icon iconfont icon-dingdanguanli'
-                            },
-                            { line: true },
-                            {
-                                text: '派工', click: assigntask, icon: 'memeber'
-                            },
-                            { line: true },
-                            {
-                                text: '修改', click: function () {
-                                    var row = project.getSelectedRow();
-                                    if (row) {
-                                        $.ligerDialog.open({
-                                            height: 400,
-                                            url: 'index.php?&g=Query&m=Consume&a=modifyproject&id=' + row['流水号'],
-                                            width: 600,
-                                            showMax: true,
-                                            showToggle: true,
-                                            showMin: true,
-                                            isResize: true,
-                                            modal: true,
-                                            title: '修改维修项目'
-                                        });
-                                    }
-                                    else {
-                                        $.ligerDialog.alert('请选择要修改的项目');
-                                    }
+                         ],
+                         url: '/index.php?g=Query&m=Consume&a=getproject',
+                         pageSize: 10,
+                         delayLoad: true,
+                         checkbox: true,
+                         urlParms: { ID:record['ID']},
+                         rownumbers: true,
+                         isScroll: true,
+                         toolbar: {
+                             items: [
+                             {
+                                 id: 'addproject',
+                                 text: '增加',
+                                 click: addproject, icon: 'icon iconfont icon-dingdanguanli'
+                             },
+                             { line: true },
+                              {
+                                  id: 'deleteproject',
+                                  text: '删除', click: function () {
+                                      if (record['当前状态'] == '结束') {
+                                          $.ligerDialog.alert('结束状态不能删除项目');
+                                          return;
+                                      }
+                                      $.ligerDialog.confirm('确定要删除?', function (yes) {
+                                          if (yes) {
+                                              var rows = project.getSelectedRows();
+                                              if (rows.length > 0) {
+                                                  var data = {
+                                                      projects: rows
+                                                  }
+                                                  $.post('/index.php?g=Query&m=Consume&a=deleteproject', data,
+                                                    function (msg) {
+                                                        reflash();
+                                                    });
+                                              } else {
+                                                  $.ligerDialog.alert('请选择要删除项目');
+                                              }
+                                          }
+                                      });
+                                  }, icon: 'delete'
+                              },
+                             { line: true },
+                             {
+                                 id: 'modifyproject',
+                                 text: '修改', click: editproject, icon: 'modify'
+                             },
+                             { line: true },
+                              {
+                                  id: 'assign',
+                                  text: '派工', click: assigntask, icon: 'icon iconfont icon-wode'
+                              },
+                              { line: true },
+                              {
+                                  id: 'assign',
+                                  text: '批量派工', click: assignbatchtask, icon: 'icon iconfont icon-renren1'
+                              }
+                             ]
+                         }
+                     });
+                     product = $("#productgrid").ligerGrid({
+                         height: '100%',
+                         columns: [
+                         { display: '仓库', name: '仓库', minWidth: 120 },
+                         { display: '编号', name: '编号', minWidth: 100 },
+                         { display: '名称', name: '名称', minWidth: 140 },
+                         { display: '规格', name: '规格', minWidth: 100 },
+                         { display: '数量', name: '数量', type: 'date', minWidth: 60 },
+                         { display: '单价', name: '单价', minWidth: 80 },
+                         { display: '金额', name: '金额', minWidth: 80 },
+                         { display: '折扣', name: '折扣', minWidth: 80 },
+                         { display: '单位', name: '单位', minWidth: 80 },
+                         { display: '结算类别', name: '结算方式', minWidth: 100 },
+                         { display: '已领料数量', name: '已领料数量', minWidth: 60 },
+                         { display: '待审核数量', name: '待审核数量', minWidth: 60 },
+                         { display: '已退料数量', name: '已退料数量', minWidth: 60 },
+                         {
+                             display: '是否已采购', name: '是否采购', minWidth: 60, render: function (rowdata, index, value) {
+                                 if (value == '1')
+                                     return '是';
+                                 return '否';
+                             }
+                         },
+                         { display: '税率', name: '税率', minWidth: 60 },
+                         { display: '税额', name: '税额', minWidth: 60 },
+                         { display: '虚增类别', name: '虚增类别', minWidth: 100 },
+                         { display: '虚增金额', name: '虚增金额', minWidth: 80 },
+                         { display: '急件金额', name: '急件金额', minWidth: 80 },
+                         { display: '适用车型', name: '适用车型', minWidth: 100 },
+                         { display: '产地', name: '产地', minWidth: 100 },
+                         {
+                             display: '是否同意', name: '是否同意', align: 'left', width: 100, minWidth: 60, render: function (rowdata, index, value) {
+                                 if (value == '1')
+                                     return '是';
+                                 return '否';
+                             }
+                         },
+                         { display: '备注', name: '备注', minWidth: 200 },
+                         { display: '对应券编号', name: '券编码', minWidth: 40 },
 
-                                }, icon: 'modify'
-                            },
-                            { line: true },
-                            {
-                                text: '删除', click: function () {
-                                    $.ligerDialog.confirm('确定要删除?', function (yes) {
-                                        if (yes){
-                                            var rows = project.getSelectedRows();
-                                            if (rows.length > 0) {
-                                                var data = {
-                                                    projects: rows
-                                                }
-                                                $.post('/index.php?g=Query&m=Consume&a=deleteproject', data,
-                                                  function (msg) {
-                                                      alert(msg);
-                                                      project.reload();
-                                                  });
-                                            } else {
-                                                $.ligerDialog.alert('请选择要删除项目');
-                                            }
-                                        }
-                                    });                                }, icon: 'delete'
-                            }
-                            ]
-                        }
-                    });                    $("li[data-index='1']").live('click', function () {
-                        project.reload();
-                    });
+                         ],
+                         url: '/index.php?g=Query&m=Consume&a=getproduct',
+                         pageSize: 10,
+                         isScroll: true,
+                         delayLoad: true,
+                         urlParms: { id: record['ID'] },
+                         rownumbers: true,
+                         checkbox: true,
+                         toolbar: {
+                             items: [
+                             {
+                                 id: 'addproduct',
+                                 text: '增加', click: function () {
+                                     if (record['当前状态'] == '结束') {
+                                         $.ligerDialog.alert('结束状态不能增加配件');
+                                         return;
+                                     }
+                                     var c = 1;
+                                     if (discount && discount['销售折扣1'] != null) {
+                                         c = discount['销售折扣1'];
+                                     }
+                                     $.ligerDialog.open({
+                                         height: 600,
+                                         url: 'index.php?&g=Query&m=Consume&a=addproduct&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + c + "&shop=" + record['门店'],
+                                         width: 900,
+                                         showMax: true,
+                                         showToggle: true,
+                                         showMin: true,
+                                         isResize: true,
+                                         modal: true,
+                                         title: '增加维修配件'
+                                     });
 
-                    var product=$("#productgrid").ligerGrid({
-                        height: '100%',
-                        columns: [
-                        { display: '仓库', name: '仓库', minWidth: 120 },
-                        { display: '编号', name: '编号', minWidth: 100 },
-                        { display: '名称', name: '名称', minWidth: 140},
-                        { display: '规格', name: '规格', minWidth: 100 },
-                        { display: '数量', name: '数量', type: 'date', minWidth: 60},
-                        { display: '单价', name: '单价', minWidth: 80 },
-                        { display: '金额', name: '金额', minWidth: 80 },
-                        { display: '折扣', name: '折扣', minWidth: 80 },
-                        { display: '单位', name: '单位', minWidth: 80 },
-                        { display: '结算类别', name: '结算方式', minWidth: 100 },
-                        { display: '已领料数量', name: '已领料数量', minWidth: 60 },
-                        { display: '已退料数量', name: '已退料数量', minWidth: 60 },
-                        { display: '税率', name: '税率', minWidth: 60 },
-                        { display: '税额', name: '税额', minWidth: 60 },
-                        { display: '虚增类别', name: '虚增类别', minWidth: 100 },
-                        { display: '虚增金额', name: '虚增金额', minWidth: 80 },
-                        { display: '急件金额', name: '急件金额', minWidth: 80 },
-                        { display: '适用车型', name: '适用车型', minWidth: 100 },
-                        { display: '产地', name: '产地', minWidth: 100 },
-                        {
-                            display: '是否同意', name: '是否同意', align: 'left', width: 100, minWidth: 60, render: function (rowdata, index, value) {
-                                if (value == '1')
-                                    return '是';
-                                return '否';
-                            }
-                        },
-                        { display: '备注', name: '备注', minWidth: 200 },
-                    ],
-                        url: '/index.php?g=Query&m=Consume&a=getproduct',
-                        pageSize: 10,
-                        isScroll: true,
-                        delayLoad: true,
-                        urlParms: { id: record['ID'] },
-                        rownumbers: true,
-                        checkbox:true,
-                        toolbar: {
-                        items: [
-                        {
-                            text: '增加', click: function () {
-                                $.ligerDialog.open({
-                                    height: 600,
-                                    url: 'index.php?&g=Query&m=Consume&a=addproduct&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&shop=" + record['门店'] + "&discount=" + {pigcms:$discount['销售折扣1'] },
-                                    width: 900,
-                                    showMax: true,
-                                    showToggle: true,
-                                    showMin: true,
-                                    isResize: true,
-                                    modal: true,
-                                    title: '增加维修项目'
-                                });
+                                 }, icon: 'add'
+                             },
+                             { line: true },
+                             {
+                                 text: '删除',
+                                 click: function () {
+                                     if (record['当前状态'] == '结束') {
+                                         $.ligerDialog.alert('结束状态不能删除配件');
+                                         return;
+                                     }
+                                     $.ligerDialog.confirm('确定要删除?', function (yes) {
+                                         if (yes) {
+                                             var rows = product.getSelectedRows();
+                                             if (rows.length > 0) {
+                                                 for (var i = 0; i < rows.length; i++) {
+                                                     var count = rows[i]['数量'] + rows[i]['已退料数量'] - rows[i]['已领料数量'] - rows[i]['待审核数量'];
+                                                     if (count < 0) {
+                                                         $.ligerDialog.alert(rows[i]['名称'] + "已经领料");
+                                                         return;
+                                                     }
+                                                 }
+                                                 var data = {
+                                                     products: rows
+                                                 }
+                                                 $.post('/index.php?g=Query&m=Consume&a=deleteproduct', data,
+                                                   function (msg) {
+                                                       reflash();
+                                                   });
+                                             } else {
+                                                 $.ligerDialog.alert('请选择要删除项目');
+                                             }
+                                         }
+                                     });
+                                 }, icon: 'delete'
+                             },
+                             { line: true },
+                             { id: 'btnmodify', text: '修改', click: editproduct, icon: 'modify' },
+                             {
+                                 id: 'btnlingliao', text: '领料', click: function () {
 
-                            }, icon: 'add'
-                        },
-                        { line: true },
-                        { text: '修改', click:null , icon: 'modify' },
-                        { text: '领料', click: null, icon: 'modify' },
-                        { line: true },
-                        {
-                            text: '删除',
-                            click: function () {
-                                $.ligerDialog.confirm('确定要删除?', function (yes) {
-                                    if (yes) {
-                                        var rows = product.getSelectedRows();
-                                        if (rows.length > 0) {
-                                            var data = {
-                                                products: rows
-                                            }
-                                            $.post('/index.php?g=Query&m=Consume&a=deleteproduct', data,
-                                              function (msg) {
-                                                  alert(msg);
-                                                  product.reload();
-                                              });
-                                        } else {
-                                            $.ligerDialog.alert('请选择要删除项目');
-                                        }
-                                    }
-                                });
-                            }, icon: 'delete'
-                        }
-                        ]
-                    }
-                    });                    $("li[data-index='2']").live('click', function () {
-                        product.reload();
-                    });                    var append=$("#appendgrid").ligerGrid({
-                        height: '100%',
-                        columns: [
-                        { display: '编号', name: '编号', minWidth: 100 },
-                        { display: '名称', name: '名称', minWidth: 140},
-                        { display: '结算方式', name: '结算方式', minWidth: 120},
-                        { display: '金额', name: '金额', minWidth: 120 },
-                        { display: '折扣', name: '折扣', minWidth: 120 },
-                        { display: '税率', name: '税率', minWidth: 120 },
-                        { display: '税额', name: '税额', minWidth: 120 },
-                        { display: '托外单位', name: '托外单位', minWidth: 120 },
-                        { display: '托外金额', name: '托外金额', minWidth: 120 },
-                        { display: '付款金额', name: '付款金额', minWidth: 120 },
-                        {
-                            display: '是否同意', name: '是否同意', align: 'left', width: 100, minWidth: 60, render: function (rowdata, index, value) {
-                                if (value == '1')
-                                    return '是';
-                                return '否';
-                            }
-                        },
-                        { display: '备注', name: '备注', minWidth: 240 }
-                        ],
-                        url: '/index.php?g=Query&m=Consume&a=getappend',
-                        pageSize: 10,
-                        isScroll: true,
-                        delayLoad: true,
-                        urlParms: { id: record['ID'] },
-                        rownumbers: true,
-                        toolbar: {
-                            items: [
-                            { text: '增加', click:null , icon: 'add' },
-                            { line: true },
-                            { text: '修改', click:null , icon: 'modify' },
-                            { line: true },
-                            { text: '删除', click:null , icon: 'delete' }
-                            ]
-                        }
-                    });                    $("li[data-index='3']").live('click', function () {
-                        append.reload();
-                    });                                       var opgrid = $("#opgrid").ligerGrid({
-                        height: '100%',
-                        columns: [
-                        { display: '单据编号', name: '单据编号', align: 'left', width: 140, minWidth: 60 },
-                        { display: '单据类别', name: '单据类别', minWidth: 140 },
-                        { display: '时间', name: '时间', minWidth: 150,render: format },
-                        { display: '操作员', name: '操作员', minWidth: 150 },
-                        { display: '事件', name: '事件', minWidth: 200 }
-                        ],     
-                        url: '/index.php?g=Query&m=Consume&a=getlog',
-                        pageSize: 10,
-                        isScroll: true,
-                        urlParms: { id: record['业务编号'] },
-                        rownumbers: true,
-                    });            }
+                                     var rows = product.getSelectedRows();
+                                     if (rows.length > 0) {
+                                         var data = {
+                                             products: rows
+                                         }
+                                         $.post('/index.php?g=Query&m=Consume&a=havepick', data,
+                                                 function (msg) {
+                                                     if (msg == 'success') {
+                                                         pick();
+                                                     } else {
+                                                         $.ligerDialog.alert(msg);
+                                                         return;
+                                                     }
+                                                 });
+
+                                     } else {
+                                         $.ligerDialog.alert('请选择要领料的配件');
+                                     }
+                                 }, icon: 'ad icon iconfont icon-lingliao'
+                             },
+                             {
+                                 id: 'btncaigou', text: '采购开单', click: function () {
+                                     var rows = product.getSelectedRows();
+                                     if (rows.length > 0) {
+                                         for (var i = 0; i < rows.length; i++) {
+                                             if (rows[i]['是否采购'] == '1') {
+                                                 $.ligerDialog.alert(rows[i]['名称'] + "已开采购单");
+                                                 return;
+                                             }
+                                         }
+                                         purchasing();
+                                     } else {
+                                         $.ligerDialog.alert('请选择要采购的配件');
+                                     }
+
+                                 }, icon: 'ad icon iconfont icon-cart'
+                             },
+                             ]
+                         }
+                     });                     opgrid = $("#opgrid").ligerGrid({
+                         height: '98%',
+                         columns: [
+                         { display: '单据编号', name: '单据编号', align: 'left', width: 140, minWidth: 60 },
+                         { display: '单据类别', name: '单据类别', minWidth: 140 },
+                         { display: '时间', name: '时间', minWidth: 150, render: format },
+                         { display: '操作员', name: '操作员', minWidth: 150 },
+                         { display: '事件', name: '事件', minWidth: 200 }
+                         ],
+                         url: '/index.php?g=Query&m=Consume&a=getlog',
+                         pageSize: 10,
+                         isScroll: true,
+                     });
+                     historygrid = $("#historygrid").ligerGrid({
+                         height: '98%',
+                         columns: [
+                         { display: '当前状态', name: '当前状态', align: 'left', width: 60 },
+                         {
+                             display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
+                                 return todate(value, false);
+                             }
+                         },
+                         { display: '主修人', name: '主修人', width: 60, align: 'left' },
+                         {
+                             display: '客户确认', name: '确认维修', align: 'center', minWidth: 50, render: function (rowdata, index, value) {
+                                 if (value == null || value == '')
+                                     value = '<span style="color:red">否</span>';
+                                 else
+                                     value = '<span style="color:blue">是</span>';
+
+                                 return value;
+                             }
+                         },
+                         { display: '制单人', name: '制单人', width: 60, align: 'left' },
+                         { display: '接车人', name: '接车人', minWidth: 60 },
+                         { display: '维修类别', name: '维修类别', minWidth: 80 },
+                         { display: '车主', name: '车主', minWidth: 140 },
+                         {
+                             display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
+
+                                 return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                             }
+                         },
+                         { display: '客户类别', name: '客户类别', minWidth: 140 },
+                         { display: '联系人', name: '联系人', minWidth: 100 },
+                         { display: '轮胎规格', name: '轮胎规格', minWidth: 60 },
+                         { display: '机油格', name: '机油格', minWidth: 60 },
+                         { display: '空气格', name: '空气格', minWidth: 60 },
+                         { display: '冷气格', name: '冷气格', minWidth: 60 },
+                         {
+                             display: '保险到期', name: '商保到期', minWidth: 100, render: function (rowdata, index, value) {
+                                 return todate(value, false);
+                             }
+                         }
+                         ],
+                         isScroll: true,
+                         pageSize: 10,
+                         url: '/index.php?g=Query&m=Consume&a=getwxinfo',
+                         onDblClickRow: function (data, rowindex, rowobj) {
+                             wxinfo(data['流水号']);
+                         }
+                     });                  
+                     $("li[data-index='0']").live('click', function () {
+                         $("div[ligeruiid='Button1001']").show();
+
+                     });
+                     $("li[data-index='1']").live('click', function () {
+                         project.setOptions({ urlParms: { ID: record['ID'] } });
+                         project.reload();
+                         $("div[ligeruiid='Button1001']").hide();
+
+                     });
+                     $("li[data-index='2']").live('click', function () {
+                         product.setOptions({ urlParms: { id: record['ID'] } });
+                         product.reload();
+                         $("div[ligeruiid='Button1001']").hide();
+
+                     });                     $("li[data-index='3']").live('click', function () {
+                         $("div[ligeruiid='Button1001']").hide();
+
+                     });                     $("li[data-index='5']").live('click', function () {
+                         opgrid.setOptions({ urlParms: { id: record['业务编号'] } });
+                         opgrid.reload();
+                         $("div[ligeruiid='Button1001']").hide();
+
+                     });
+                     $("li[data-index='6']").live('click', function () {
+                         historygrid.set('parms', { carno: record['车牌号码'] });
+                         historygrid.reload();
+                         $("div[ligeruiid='Button1001']").hide();
+
+                     });
+            }
             }
             function format(rowdata, index, value) {
                 return todate(value);
             }
             function assigntask() {
-                $('#doc-modal-1').modal({
-                    relatedTarget: this,
-                    width: 380,
-                    closeOnConfirm: false,
-                    onConfirm: function (e) {
-                        var zhuxiu = $('#zhuxiu').val();
-                        var data = {
-                            zhuxiu: zhuxiu,
-                            itemid: record["ID"]
-                        };
-                        $.post('/index.php?g=Query&m=Consume&a=assigntask', data,
-                          function (msg) {
-                              alert(msg);
-                              $('#doc-modal-1').modal('close');
-                              project.reload();
-                          });
-                    },
-                    onCancel: function (e) {
-                    }
-                });
+                var url = '/index.php?g=Query&m=Consume&a=assigntask';
+                url += '&id=' + record["ID"];
+                url += '&shop=' + record["门店"];
+                url += '&wxlb=蜡水洗车';
+                
+                if (assigntaskdialog) {
+                    assigntaskdialog.setUrl(url);
+                    assigntaskdialog.show();
+                }
+                else {
+                    assigntaskdialog = $.ligerDialog.open({
+                        height: 220,
+                        url: url,
+                        width: 300,
+                        showMax: false,
+                        showToggle: true,
+                        showMin: false,
+                        isResize: true,
+                        modal: true,
+                        title: '派工'
+                    });
+                }
             }
 
         });

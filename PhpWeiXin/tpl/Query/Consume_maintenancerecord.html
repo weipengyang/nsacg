@@ -41,7 +41,7 @@
             <div class="admin-content-body">
                 <div style="margin:0px;padding:0px;padding-left:10px">
                     <!--<button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="washcar();"><i class="iconfont icon-xiche"></i>洗车</button>-->
-                    <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="meirong();"><i class="iconfont icon-meirong"></i>美容</button>
+                    <!--<button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="meirong();"><i class="iconfont icon-meirong"></i>美容</button>-->
                     <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="weixiu();"><i class="iconfont icon-weixiu"></i>维修</button>
                     <button type="button" id="baojia" class="am-btn am-btn-default am-btn-sm">报价</button>
                     <button type="button" id="paigong" class="am-btn am-btn-primary am-btn-sm">派工</button>
@@ -61,7 +61,7 @@
                         <select id="lb">
                             <option value="">所有分类</option>
                             <!--<option value="蜡水洗车">蜡水洗车</option>-->
-                            <option value="汽车美容">汽车美容</option>
+                            <option value="钣金喷漆">汽车喷漆</option>
                             <option value="普通快修">普通快修</option>
                             <option value="常规保养">常规保养</option>
                             <option value="保险理赔">保险理赔</option>
@@ -97,18 +97,19 @@
                     </div>
                 </div>
                 <div id="maingrid4" style="margin:0; padding:0;"></div>
-                <div id="form1">
+                <div id="panel1">
+                    <div id="form1" style="margin:0px;padding:0px">
+                    </div>
                 </div>
                 </div>
             </div>
         </div>
         <!-- content end -->
-    </div>
     <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
-        var form, grid, project, product, append, opgrid, historygrid = null;
+        var panel1,form, grid, project, product, opgrid, historygrid = null;
         var washdialog, caldialog, mrdialog, wxdialog, pickdialog,
             cardialog, purchasedialog, addprojectdialog, editprojectdialog,
             memberdialog,editproductdialog, assigntaskdialog,backpickdialog;
@@ -270,7 +271,7 @@
                     width: 900,
                     showMax: true,
                     showToggle: true,
-                    showMin: true,
+                    showMin: false,
                     isResize: true,
                     modal: false,
                     title: '会员资料编辑'
@@ -350,36 +351,6 @@
                 });
             }
         }
-        function washcar() {
-            if (washdialog) washdialog.show();
-            else {
-                washdialog = $.ligerDialog.open({
-                    height: 310,
-                    url: '/index.php?g=Query&m=Consume&a=washcar',
-                    width: 600,
-                    showToggle: false,
-                    showMin: false,
-                    isResize: true,
-                    modal: true,
-                    title: '洗车录入'
-                });
-            }
-        }
-        function meirong() {
-            if (mrdialog) mrdialog.show();
-            else {
-                mrdialog = $.ligerDialog.open({
-                    height: 350,
-                    url: '/index.php?g=Query&m=Consume&a=meirong',
-                    width: 600,
-                    showToggle: false,
-                    showMin: false,
-                    isResize: true,
-                    modal: true,
-                    title: '美容录入'
-                });
-            }
-        }
         function weixiu() {
             if (wxdialog) wxdialog.show();
             else {
@@ -395,8 +366,28 @@
                 });
             }
         }
+        function submitcarkey(itemid) {
+            $.ligerDialog.prompt('输入钥匙扣编号', function (yes, value) {
+                if (yes) {
+                    if (value == null || value == "") {
+                        $.ligerDialog.alert('钥匙扣编号为空');
+                        return;
+                    }
+                    var data = {
+                        itemid: itemid,
+                        keynum: value
+
+                    };
+                    $.post('/index.php?g=Query&m=Consume&a=submitcarkey', data,
+                      function (msg) {
+                          $.ligerDialog.alert(msg);
+                          grid.reload();
+                      });
+                }
+            });
+        }
         function assigntask() {
-            var row =  project.getSelected();
+            var row = project.getSelected();
             if (row) {
                 var url = '/index.php?g=Query&m=Consume&a=assigntask';
                 url += '&id=' + record['ID'];
@@ -415,7 +406,7 @@
                         width: 280,
                         showMax: false,
                         showToggle: true,
-                        showMin: true,
+                        showMin: false,
                         isResize: true,
                         modal: true,
                         title: '派工'
@@ -448,12 +439,45 @@
                     width: 280,
                     showMax: false,
                     showToggle: true,
-                    showMin: true,
+                    showMin: false,
                     isResize: true,
                     modal: false,
                     title: '派工'
                 });
             }
+        }
+        function completework(itemid) {
+            var data = {
+                itemid: itemid,
+                type: 'weixiu'
+            };
+            $.post('/index.php?g=Query&m=Consume&a=completework', data,
+              function (msg) {
+                  $.ligerDialog.alert(msg);
+                  changeState('审核', '结算', 'jiesuan');
+              });
+        }
+        function cancelwash(itemid, flag) {
+            var data = {
+                itemid: itemid,
+            };
+            $.post('/index.php?g=Query&m=Consume&a=cancelwash', data,
+              function (msg) {
+                  if (flag) {
+                      $.ligerDialog.alert(msg);
+                      grid.reload();
+                  }
+              });
+        }
+        function outfactory(id) {
+            var data = {
+                id: id
+            };
+            $.post('/index.php?g=Query&m=Consume&a=outfactory', data,
+                function (msg) {
+                    $.ligerDialog.alert(msg);
+                    grid.reload();
+                });
         }
         function changeState(oldzt,zt, opt) {
             var row = grid.getSelectedRow();
@@ -461,60 +485,88 @@
                 var data = {
                     id: row['流水号'],
                     zt: zt,
-                    oldzt:oldzt,
-                    record:record
+                    oldzt: oldzt,
+                    record: record
                 };
                 if (oldzt == '领料' && zt == '审核') {
                     var rows = product.rows;
                     if (rows.length > 0) {
-                        for (var i = 0; i < rows.length; i++) {
-                            if (rows[i]['虚增类别'] == null||rows[i]['虚增类别'] == '') {
-                                var count = rows[i]['数量'] - rows[i]['已领料数量'];
-                                if (count > 0) {
-                                    $.ligerDialog.alert(rows[i]['名称'] + "未领料，不能转完工");
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (oldzt == '派工' && zt == '领料') {
-                    var rows = project.rows;
-                    if (rows.length > 0) {
+                        var flag = false, content='';
                         for (var i = 0; i < rows.length; i++) {
                             if (rows[i]['虚增类别'] == null || rows[i]['虚增类别'] == '') {
-                                if (rows[i]['主修人'] == null || rows[i]['主修人'] == '') {
-                                    $.ligerDialog.alert(rows[i]['项目名称'] + "没有派工");
-                                    return;
+                                var count = rows[i]['数量'] - rows[i]['已领料数量'];
+                                if (count > 0) {
+                                    flag = true;
+                                    content += rows[i]['名称'] + "配件数量(" + rows[i]['数量'] + ")与领料(" + rows[i]['已领料数量'] + ")不符<br\>";
                                 }
-                                if (rows[i]['开工时间'] == null || rows[i]['开工时间'] == '' || todate(rows[i]['开工时间']) == '1900-01-1')
-                                {
-                                    $.ligerDialog.alert(rows[i]['项目名称'] + "开工时间为空");
-                                    return;
-                                }
-                               
                             }
+
+                        }
+                        if (flag) {
+                            $.ligerDialog.confirm(content + '，确认转入审核？', function (yes) {
+                                if (yes) {
+                                    $.post('/index.php?g=Query&m=Consume&a=changestate', data,
+                                      function (msg) {
+                                          if (msg == '1') {
+                                              $('#' + opt).click();
+                                              setTimeout(function () {
+                                                  for (var i = 0; i < grid.data.Rows.length; i++) {
+                                                      if (grid.data.Rows[i]['流水号'] == row['流水号']) {
+                                                          grid.select(grid.data.Rows[i]);
+
+                                                      }
+                                                  }
+                                              }, 500);
+                                          }
+                                          else {
+                                              $.ligerDialog.alert(msg);
+                                          }
+                                      });
+                                } else {
+                                    return;
+                                }
+                            });
                         }
                     }
                 }
-                $.post('/index.php?g=Query&m=Consume&a=changestate', data,
-                  function (msg) {
-                      if (msg == '1') {
-                          $('#' + opt).click();
-                          setTimeout(function () {
-                              for (var i = 0; i < grid.data.Rows.length; i++) {
-                                  if (grid.data.Rows[i]['流水号'] == row['流水号']) {
-                                      grid.select(grid.data.Rows[i]);
+                else {
+                    if (oldzt == '派工' && zt == '领料') {
+                        var rows = project.rows;
+                        if (rows.length > 0) {
+                            for (var i = 0; i < rows.length; i++) {
+                                if (rows[i]['虚增类别'] == null || rows[i]['虚增类别'] == '') {
+                                    if (rows[i]['主修人'] == null || rows[i]['主修人'] == '') {
+                                        $.ligerDialog.alert(rows[i]['项目名称'] + "没有派工");
+                                        return;
+                                    }
+                                    if (rows[i]['开工时间'] == null || rows[i]['开工时间'] == '' || todate(rows[i]['开工时间']) == '1900-01-1') {
+                                        $.ligerDialog.alert(rows[i]['项目名称'] + "开工时间为空");
+                                        return;
+                                    }
 
+                                }
+                            }
+                        }
+                    }
+                    $.post('/index.php?g=Query&m=Consume&a=changestate', data,
+                      function (msg) {
+                          if (msg == '1') {
+                              $('#' + opt).click();
+                              setTimeout(function () {
+                                  for (var i = 0; i < grid.data.Rows.length; i++) {
+                                      if (grid.data.Rows[i]['流水号'] == row['流水号']) {
+                                          grid.select(grid.data.Rows[i]);
+
+                                      }
                                   }
-                              }
-                          }, 500);
-                      }
-                      else {
-                          $.ligerDialog.alert(msg);
-                      }
+                              }, 500);
+                          }
+                          else {
+                              $.ligerDialog.alert(msg);
+                          }
                       });
-                  
+
+                }
             }
         }
         function reload() {
@@ -523,8 +575,6 @@
             project.reload();
             product.setOptions({ urlParms: { id: record['ID'] } });
             product.reload();
-            append.setOptions({ urlParms: { id: record['ID'] } });
-            append.reload();
             opgrid.setOptions({ urlParms: { id: record['业务编号'] } });
             opgrid.reload();
             historygrid.set('parms', { carno: record['车牌号码'] });
@@ -575,46 +625,49 @@
                         }
 
                     });
-                }, 200);
+                    grid.setHeight('45%');
+                }, 400);
                 //reload();
             });
         }
         function inidata() {
             $("div[data-index='1']").html("<div id='projectgrid' style='margin:0;padding 0'><div>");
             $("div[data-index='2']").html("<div id='productgrid'style='margin:0;padding 0'><div>");
-            $("div[data-index='3']").html("<div id='appendgrid'style='margin:0;padding 0'><div>");
-            $("div[data-index='5']").html('<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=wxfileupload&wxno=' + record['流水号'] + '"></iframe></div>');
-            $("div[data-index='6']").html("<div id='opgrid'style='margin:0;padding 0'><div>");
-            $("div[data-index='7']").html("<div id='historygrid'style='margin:0;padding 0'><div>");
+            $("div[data-index='4']").html('<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=wxfileupload&wxno=' + record['流水号'] + '"></iframe></div>');
+            $("div[data-index='5']").html("<div id='opgrid'style='margin:0;padding 0'><div>");
+            $("div[data-index='6']").html("<div id='historygrid'style='margin:0;padding 0'><div>");
 
         }
         function setClickEvent() {
+            $("li[data-index='0']").live('click', function () {
+                $("div[ligeruiid='Button1046']").show();
+
+            });
             $("li[data-index='1']").live('click', function () {
-                project.setOptions({ urlParms: { ID: record['ID'] } });
+                $("div[ligeruiid='Button1046']").hide();
                 project.reload();
+
             });
             $("li[data-index='2']").live('click', function () {
-                product.setOptions({ urlParms: { id: record['ID'] } });
+                $("div[ligeruiid='Button1046']").hide();
                 product.reload();
+
             });
             $("li[data-index='3']").live('click', function () {
-                append.setOptions({ urlParms: { id: record['ID'] } });
-                append.reload();
+                $("div[ligeruiid='Button1046']").hide();
+
+
             });
             $("li[data-index='5']").live('click', function () {
-                $("div[data-index='5']").find('iframe').attr('src', '/index.php?g=Query&m=Consume&a=wxfileupload&wxno=' + record['流水号']);
+                $("div[ligeruiid='Button1046']").hide();
+                opgrid.reload();
+
             });
             $("li[data-index='6']").live('click', function () {
-                opgrid.setOptions({ urlParms: { id: record['业务编号'] } });
-                opgrid.reload();
-            });
-            $("li[data-index='7']").live('click', function () {
-                var parms = {
-                    carno: record['车牌号码']
-                };
-                historygrid.set('parms', parms);
+                $("div[ligeruiid='Button1046']").hide();
                 historygrid.reload();
             });
+
         }
         function setdisabled() {
             project.toolbarManager.setDisabled('assign');
@@ -652,35 +705,119 @@
                         $('#shop').append(option);
                     });
                 }
-            },'JSON');
+            }, 'JSON');
+            panel1=$("#panel1").ligerPanel({
+                title: '维修详情',
+                width:'98%',
+                height: '50%',
+                onToggle: function (flag) {
+                    if (flag) {
+                        grid.setHeight('90%');
+                    }
+                    else {
+                        grid.setHeight('45%');
+                    }
+                }
+            });
             grid = $("#maingrid4").ligerGrid({
                 columns: [
-                { display: '当前状态', name: '当前状态', align: 'left', width: 60 },
-                {
-                    display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
-                        return todate(value, false);
-                    }
-                },
-                {
-                    display: '已处理', name: '', minWidth: 80, render: function (rowdata, index, value) {
-                        if (rowdata.进厂时间 != "" && rowdata.进厂时间 != null && rowdata.进厂时间 != "null" && todate(rowdata.进厂时间, false) != '1900-01-1') {
-                            var start = new Date(Date.parse(todate(rowdata.进厂时间, true)));
-                            if (rowdata.实际完工 != null && rowdata.实际完工 != "" && rowdata.实际完工 != "null" && todate(rowdata.实际完工, false) != '1900-01-1') {
-                                end = new Date(Date.parse(todate(rowdata.实际完工, true)));
-                                return ((end - start) / 60000 / 60).toFixed(2) + '小时';
-                            }
-                            else {
-                                var end = new Date();
-                                return ((end - start) / 60000 / 60).toFixed(2) + '小时';
-                            }
-                        }
-                        return '';
-                    }
-                },
+                 {
+                     display: '操作', name: '操作', minWidth: 120, render: function (rowdata, index, value) {
+                         var strhtml = '';
+                         if (rowdata.当前状态 == '报价') {
+                             if (rowdata.开工时间 == "" || rowdata.开工时间 == null || rowdata.开工时间 == "null" || todate(rowdata.开工时间, false) == '1900-01-1') {
+                                 strhtml += '|<a href="javascript:void(0);" onclick="assignbatchtask(\'' + rowdata.ID + '\',\'' + rowdata.门店 + '\',\'' + rowdata.维修类别 + '\');"><strong>派工</strong></a>';
+                             }
 
-                { display: '主修人', name: '主修人', width: 60, align: 'left' },
+                         }
+                         if (rowdata.上交钥匙 == "" || rowdata.上交钥匙 == null || rowdata.上交钥匙 == "null" || todate(rowdata.上交钥匙, false) == '1900-01-1') {
+                             strhtml += '|<a href="javascript:void(0);" onclick="submitcarkey(\'' + rowdata.流水号 + '\');"><strong>钥匙上交</strong></a>';
+                         }
+                         if (rowdata.当前状态 == '派工') {
+                             if (rowdata.单据类别 == '快修单') {
+                                 if (rowdata.实际完工 == "" || rowdata.实际完工 == null || rowdata.实际完工 == "null" || todate(rowdata.实际完工, false) == '1900-01-1') {
+                                     strhtml += '|<a href="javascript:void(0);" onclick="completework(\'' + rowdata.流水号 + '\');"><strong>完工</strong></a>';
+                                 }
+                             }
+                         }
+                         if (rowdata.当前状态 == '审核') {
+                             if (rowdata.实际完工 == "" ||rowdata.实际完工 == null || rowdata.实际完工 == "null" || todate(rowdata.实际完工, false) == '1900-01-1') {
+                                 strhtml += '|<a href="javascript:void(0);" onclick="completework(\'' + rowdata.流水号 + '\');"><strong>完工</strong></a>';
+                             }
+                         }
+                         if (rowdata.当前状态 == '结算' && rowdata.标志 != '已结算')
+                             strhtml += '|<a href="javascript:void(0);" onclick="checkin(\'' + rowdata.流水号 + '\');"><strong>结算</strong></a>';
+                         if (rowdata.当前状态 == '出厂')
+                             strhtml += '|<a href="javascript:void(0);" onclick="outfactory(\'' + rowdata.流水号 + '\');"><strong>出厂</strong></a>';
+                         if (rowdata.当前状态 == '结束')
+                             strhtml += '|<a href="javascript:void(0);" onclick="printbill(\'' + rowdata.ID + '\');"><strong>打印</strong></a>';
+                         return strhtml;
+                     }
+                 },
+                  { display: '状态', name: '当前状态', align: 'left', width: 40 },
+                  {
+                      display: '车牌号码', name: '车牌号码', minWidth: 85, render: function (rowdata, index, value) {
+
+                          return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                      }
+                  },
+                 { display: '维修类别', name: '维修类别', minWidth: 80 },
+                 { display: '主修人', name: '主修人', width: 60, align: 'left' },
+                 { display: '接车人', name: '接车人', minWidth: 60 },
+                 { display: '钥匙编号', name: '钥匙编号', align: 'left', width: 60 },
+                 { display: '客户类别', name: '客户类别', minWidth: 100 },
                 {
-                    display: '客户确认', name: '确认维修', align: 'center', width: 50, render: function (rowdata, index, value) {
+                    display: '车主', name: '车主', minWidth: 130, render: function (rowdata, index, value) {
+
+                        return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                    }
+                },
+                { display: '联系人', name: '联系人', minWidth: 100 },
+                 {
+                     display: '已处理', name: '', minWidth: 175, render: function (rowdata, index, value) {
+                         if (rowdata.进厂时间 != "" && rowdata.进厂时间 != null && rowdata.进厂时间 != "null" && todate(rowdata.进厂时间, false) != '1900-01-1') {
+                             var start = new Date(Date.parse(todate(rowdata.进厂时间, true)));
+                             var pretime = new Date(Date.parse(todate(rowdata.预计完工, true)));
+                             var prehour = ((pretime - start) / 60000 / 60).toFixed(2);
+                             var usehour = 0;
+                             if (rowdata.实际完工 != null && rowdata.实际完工 != "" && rowdata.实际完工 != "null" && todate(rowdata.实际完工, false) != '1900-01-1') {
+                                 end = new Date(Date.parse(todate(rowdata.实际完工, true)));
+                                 usehour = ((end - start) / 60000 / 60).toFixed(2);
+                             }
+                             else {
+                                 var end = new Date();
+                                 usehour = ((end - start) / 60000 / 60).toFixed(2);
+                             }
+                             if (parseFloat(usehour) > parseFloat(prehour)) {
+                                 return "<span style='color:red'>预计" + prehour + '小时，实际' + usehour + "小时</span>";
+                             } else {
+                                 return "<span style='color:blue'>预计" + prehour + '小时，实际' + usehour + "小时</span>";
+                             }
+                         }
+                         return '';
+                     }
+                 },
+                 {
+                     display: '进厂时间', name: '进厂时间', minWidth: 130, render: function (rowdata, index, value) {
+                         return todate(value, true);
+                     }
+                 },
+                {
+                    display: '预计完工', name: '预计完工', minWidth: 130, render: function (rowdata, index, value) {
+                        return todate(value, true);
+                    }
+                },
+                {
+                    display: '完工时间', name: '实际完工', minWidth: 130, render: function (rowdata, index, value) {
+                        return todate(value, true);
+                    }
+                },
+                { display: '制单人', name: '制单人', width: 60, align: 'left' },
+                { display: '门店', name: '门店', minWidth: 80 },
+                {
+                    display: '客户确认', name: '确认维修', align: 'center', hide: true, width: 50, render: function (rowdata, index, value) {
                         if (value == null || value == '')
                             value = '<span style="color:red">否</span>';
                         else
@@ -689,62 +826,31 @@
                         return value;
                     }
                 },
-                { display: '制单人', name: '制单人', width: 60, align: 'left' },
-                { display: '接车人', name: '接车人', minWidth: 60 },
-                { display: '维修类别', name: '维修类别', minWidth: 80 },
+                { display: '轮胎规格', name: '轮胎规格', hide: true, minWidth: 60 },
+                { display: '机油格', name: '机油格', hide: true, minWidth: 60 },
+                { display: '空气格', name: '空气格', hide: true, minWidth: 60 },
+                { display: '冷气格', name: '冷气格', hide: true, minWidth: 60 },
                 {
-                    display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
-
-                        return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
-
-                    }
-                },
-                {
-                    display: '车主', name: '车主', minWidth: 140, render: function (rowdata, index, value) {
-
-                        return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
-
-                    }
-                },
-                { display: '客户类别', name: '客户类别', minWidth: 140 },
-                { display: '联系人', name: '联系人', minWidth: 100 },
-                { display: '轮胎规格', name: '轮胎规格', minWidth: 60 },
-                { display: '机油格', name: '机油格', minWidth: 60 },
-                { display: '空气格', name: '空气格', minWidth: 60 },
-                { display: '冷气格', name: '冷气格', minWidth: 60 },
-                {
-                    display: '保险到期', name: '商保到期', minWidth: 100, render: function (rowdata, index, value) {
+                    display: '保险到期', name: '商保到期', hide: true, minWidth: 100, render: function (rowdata, index, value) {
                         return todate(value, false);
-                    }
-                },
-                {
-                    display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
-                        if (rowdata['制单人'] == '系统录单' && rowdata['主修人'] == '')
-                            return '<a href="javascript:void(0);" onclick="assignbatchtask(\'' + rowdata.ID + '\',\'' + rowdata['门店'] + '\',\'' + rowdata['维修类别'] + '\');"><strong>派工</strong></a>';
-                        else
-                            return '';
                     }
                 }
                 ],
                 isScroll: true,
-                pageSize: 6,
-                pageSizeOptions: [5,8,10,20, 50],
-                url: '/index.php?g=Query&m=Consume&a=getwxinfo',
-                height: '55%',
+                pageSize: 15,
+                pageSizeOptions: [8,10,15,20, 50],
+                url: '/index.php?g=Query&m=Consume&a=getwxinfo&type=1',
+                height: 'auto',
                 onDblClickRow: function (data, rowindex, rowobj) {
                    // wxinfo(data['流水号']);
                 },
                 onSelectRow: function (data, rowindex,rowobj) {
                     record = data;
-                    setTimeout(function () { reload(); }, 100);
+                    reload();
                 },
                 onSuccess: function (data) {
                     if (data.Rows) {
                         record = data.Rows[0];
-                        $.getJSON('index.php?&g=Query&m=Consume&a=getdiscount&id=' + record['客户ID'], function (data) {
-                            discount = data;
-                        });
-                        //setdata(data.Rows[0]);
                     }
                 }
             });
@@ -753,21 +859,21 @@
                 validate: true,
                 height:'35%',
                 buttons: [
-                    { text: "更新", width: 60, click: submitForm }
+                    { text: "保存", width: 60, click: submitForm }
                 ],
                 tab: {
                     items: [
                         {
                             title: '基本信息',
                             fields: [
-                                { display: "流水号", name: "流水号", newline: true, type: "hidden" },
-                                { display: "客户ID", name: "客户ID", newline: true, type: "hidden" },
-                                { display: "结算客户ID", name: "结算客户ID", newline: true, type: "hidden" },
-                                { display: "业务编号 ", name: "业务编号", newline: true, type: "text", readonly: true },
+                                { display: "流水号", name: "流水号", newline: false, type: "hidden" },
+                                { display: "客户ID", name: "客户ID", newline: false, type: "hidden" },
+                                { display: "结算客户ID", name: "结算客户ID", newline: false, type: "hidden" },
+                                { display: "业务编号 ", name: "业务编号", newline: false, type: "text", readonly: true },
                                 { display: "制单日期 ", name: "制单日期", newline: false, type: "text", readonly: true },
                                 { display: "制单人 ", name: "制单人", newline: false, type: "text", readonly: true },
                                 {
-                                    display: "服务顾问", name: "接车人", newline: false, type: "text", type: "combobox",
+                                    display: "服务顾问", name: "接车人", newline: false, type: "combobox",
                                     options: {
                                         valueField: '姓名',
                                         textField: '姓名',
@@ -777,33 +883,35 @@
                                 },
                                 { display: "维修类别 ", name: "维修类别", newline: false, type: "text" },
                                 { display: "保修类别 ", name: "保修类别", newline: false, type: "text" },
-                                { display: "车牌号码", name: "车牌号码", newline: true, type: "text" },
+                                { display: "车牌号码", name: "车牌号码", newline: false, type: "text" },
                                 { display: "品牌", name: "品牌", newline: false, type: "text", readonly: true },
                                 { display: "车系", name: "车型", newline: false, type: "text", readonly: true },
                                 { display: "进厂里程", name: "进厂里程", newline: false, type: "text" },
                                 {
-                                    display: "进厂时间", name: "进厂时间", newline: false, type: "date", options: {
-                                        showTime: true
-                                    }
+                                    display: "进厂时间", name: "进厂时间", newline: false, type: "text", readonly: true
                                 },
+                                {
+                                    display: "上交钥匙", name: "上交钥匙", newline: false, type: "text", readonly: true
+                                },
+                                 {
+                                     display: "开工时间", name: "开工时间", newline: false, type: "text", readonly: true
+                                 },
                                 { display: "油表数", name: "油表数", newline: false, type: "text" },
                                 {
-                                    display: "预计完工", name: "预计完工", newline: true, type: "date", options: {
-                                        showTime: true
-                                    }
+                                    display: "预计完工", name: "预计完工", newline: false, type: "text", readonly: true
                                 },
                                 { display: "下次保养 ", name: "下次保养", newline: false, type: "date" },
                                 { display: "车辆类型", name: "车辆类别", newline: false, type: "text" },
                                 { display: "年份 ", name: "年份", newline: false, type: "text" },
                                 { display: "排量", name: "排量", newline: false, type: "text" },
                                 { display: "车架号", name: "车架号", newline: false, type: "text" },
-                                { display: "轮胎规格", name: "轮胎规格", newline: true, type: "text" },
+                                { display: "轮胎规格", name: "轮胎规格", newline: false, type: "text" },
                                 { display: "机油格", name: "机油格", newline: false, type: "text" },
                                 { display: "空气格", name: "空气格", newline: false, type: "text" },
                                 { display: "冷气格", name: "冷气格", newline: false, type: "text" },
                                 { display: "汽油格", name: "汽油格", newline: false, type: "text" },
                                 { display: "刹车皮", name: "刹车皮", newline: false, type: "text" },
-                                { display: "发动机号", name: "发动机号", newline: true, type: "text" },
+                                { display: "发动机号", name: "发动机号", newline: false, type: "text" },
                                 { display: "发动机型号", name: "发动机型号", newline: false, type: "text" },
                                 { display: "电池", name: "电池", newline: false, type: "text" },
                                 {
@@ -835,27 +943,23 @@
                                 },
                                 { display: "客户类别", name: "客户类别", newline: false, type: "text", readonly: true },
                                 { display: "联系人", name: "联系人", newline: false, type: "text" },
-                                { display: "联系电话", name: "联系电话", newline: true, type: "text" },
+                                { display: "联系电话", name: "联系电话", newline: false, type: "text" },
                                 { display: "手机号", name: "手机号码", newline: false, type: "text" },
                                 { display: "地址", name: "地址", newline: false, type: "text" },
                                 { display: "身份证号", name: "身份证号", newline: false, type: "text" },
                                 { display: "送修人", name: "送修人", newline: false, type: "text" },
                                 { display: "送修人电话", name: "送修人电话", newline: false, type: "text" },
-                                { display: "报价金额", name: "报价金额", newline: true, type: "text" },
+                                { display: "报价金额", name: "报价金额", newline: false, type: "text" },
                                 { display: "报价人", name: "报价人", newline: false, type: "text" },
                                 { display: "审核人", name: "审核人", newline: false, type: "text" },
                                 { display: "出厂里程", name: "出厂里程", newline: false, type: "text" },
                                 {
-                                    display: "出厂时间", name: "出厂时间", newline: false, type: "date", options: {
-                                        showTime: true
-                                    }
+                                    display: "出厂时间", name: "出厂时间", newline: false, type: "text", readonly:true
                                 },
                                 {
-                                    display: "实际完工", name: "实际完工", newline: false, type: "date", options: {
-                                        showTime: true
-                                    }
+                                    display: "实际完工", name: "实际完工", newline: false, type: "text", readonly: true
                                 },
-                                { display: "取消原因", name: "取消原因", newline: true, type: "text" },
+                                { display: "取消原因", name: "取消原因", newline: false, type: "text" },
                                 { display: "维修状态", name: "维修状态", newline: false, type: "text" },
                                 { display: "当前状态", name: "当前状态", newline: false, type: "text" },
                                 { display: "门店", name: "门店", newline: false, type: "text" },
@@ -883,31 +987,31 @@
                         {
                             title: '结算信息',
                             fields: [
-                                { display: '结算客户', name: '结算客户', newline: true, type: 'text' },
+                                { display: '结算客户', name: '结算客户', newline: false, type: 'text' },
                                 { display: '三包厂商', name: '三包厂商', newline: false, type: 'text' },
                                 { display: '保险公司', name: '保险公司', newline: false, type: 'text' },
                                 { display: '服务折扣', name: '整单服务折扣', newline: false, type: 'text' },
                                 { display: '销售折扣', name: '整单销售折扣', newline: false, type: 'text' },
                                 { display: '费用折扣', name: '整单费用折扣', newline: false, type: 'text' },
-                                { display: '服务税率', name: '整单服务税率', newline: true, type: 'text' },
+                                { display: '服务税率', name: '整单服务税率', newline: false, type: 'text' },
                                 { display: '销售税率', name: '整单销售税率', newline: false, type: 'text' },
                                 { display: '费用税率', name: '整单费用税率', newline: false, type: 'text' },
                                 { display: '计次金额', name: '计次金额', newline: false, type: 'text' },
                                 { display: '材料费', name: '材料费', newline: false, type: 'text' },
                                 { display: '管理费', name: '管理费', newline: false, type: 'text' },
-                                { display: '工时费', name: '工时费', newline: true, type: 'text' },
+                                { display: '工时费', name: '工时费', newline: false, type: 'text' },
                                 { display: '附加费', name: '附加费', newline: false, type: 'text' },
                                 { display: '款项总额', name: '款项总额', newline: false, type: 'text' },
                                 { display: '三包金额', name: '三包金额', newline: false, type: 'text' },
                                 { display: '保险金额', name: '保险金额', newline: false, type: 'text' },
                                 { display: '保险客付', name: '保险客付', newline: false, type: 'text' },
-                                { display: '客付金额', name: '客付金额', newline: true, type: 'text' },
+                                { display: '客付金额', name: '客付金额', newline: false, type: 'text' },
                                 { display: '客付税额', name: '客付税额', newline: false, type: 'text' },
                                 { display: '客付虚增', name: '客付虚增', newline: false, type: 'text' },
                                 { display: '优惠金额', name: '优惠金额', newline: false, type: 'text' },
                                 { display: '应收金额', name: '应收金额', newline: false, type: 'text' },
                                 { display: '现收金额', name: '现收金额', newline: false, type: 'text' },
-                                { display: '结算日期', name: '结算日期', newline: true, type: 'date' },
+                                { display: '结算日期', name: '结算日期', newline: false, type: 'date' },
                                 { display: '结算方式', name: '结算方式', newline: false , type: 'text',type: "combobox",
                                     options: {
                                         valueField: '名称',
@@ -935,10 +1039,11 @@
                 }
 
             });
+            panel1.collapse();
             setTimeout(function () {
                 inidata();
                 project = $("#projectgrid").ligerGrid({
-                    height: '45%',
+                    height: 'auto',
                     width: '100%',
                     columns: [
                     { display: '项目编号', name: '项目编号', minWidth: 80 },
@@ -1104,7 +1209,7 @@
                                     width: 900,
                                     showMax: true,
                                     showToggle: true,
-                                    showMin: true,
+                                    showMin: false,
                                     isResize: true,
                                     modal: true,
                                     title: '增加维修配件'
@@ -1218,6 +1323,7 @@
                     ],
                     url: '/index.php?g=Query&m=Consume&a=getlog',
                     pageSize: 10,
+                    delayLoad: true,
                     isScroll: true,
                 });
                 historygrid = $("#historygrid").ligerGrid({
@@ -1265,13 +1371,14 @@
                     ],
                     isScroll: true,
                     pageSize: 10,
+                    delayLoad:true,
                     url: '/index.php?g=Query&m=Consume&a=getwxinfo',
                     onDblClickRow: function (data, rowindex, rowobj) {
                         wxinfo(data['流水号']);
                     }
                 });
                 setdisabled();
-                //setClickEvent();
+                setClickEvent();
                 grid.select(grid.data.Rows[0]);
             }, 500);
             $("#lb").change(function () {
@@ -1303,9 +1410,13 @@
                         grid.select(grid.data.Rows[0]);
                     }
                     $("li[data-index='1']").click();
+                    panel1.expand();
+                    grid.setHeight('45%');
                 }, 800);
             });
             $('#paigong').click(function () {
+                panel1.expand();
+                grid.setHeight('45%');
                 $('#optdiv').find('div').each(function () {
                     $(this).hide();
                 });
@@ -1316,6 +1427,7 @@
                 grid.set('parms', parms);
                 grid.reload();
                 setdisabled();
+
                 project.toolbarManager.setEnabled('assign');
                 setTimeout(function () {
                     if (record) {
@@ -1329,11 +1441,16 @@
                         grid.select(grid.data.Rows[0]);
                     }
                     $("li[data-index='1']").click();
-                }, 400);
+                    panel1.expand();
+                    grid.setHeight('45%');
+
+                }, 800);
 
 
             });
             $('#lingliao').click(function () {
+                panel1.expand();
+                grid.setHeight('45%');
                 $('#optdiv').find('div').each(function () {
                     $(this).hide();
                 });
@@ -1359,7 +1476,10 @@
                         grid.select(grid.data.Rows[0]);
                     }
                     $("li[data-index='2']").click();
-                }, 400);
+                    panel1.expand();
+                    grid.setHeight('45%');
+
+                }, 800);
                 
 
             });
@@ -1389,7 +1509,10 @@
                         grid.select(grid.data.Rows[0]);
                     }
                     $("li[data-index='0']").click();
-                }, 400);
+                    panel1.expand();
+                    grid.setHeight('45%');
+
+                }, 800);
             });
             $('#jiesuan').click(function () {
                 $('#optdiv').find('div').each(function () {
@@ -1418,8 +1541,11 @@
                     } else {
                         grid.select(grid.data.Rows[0]);
                     }
-                    $("li[data-index='4']").click();
-                }, 400);
+                    $("li[data-index='3']").click();
+                    panel1.expand();
+                    grid.setHeight('45%');
+
+                }, 800);
             });
             $('#chuchang').click(function () {
                 $('#optdiv').find('div').each(function () {
@@ -1444,7 +1570,10 @@
                         grid.select(grid.data.Rows[0]);
                     }
                     $("li[data-index='0']").click();
-                }, 400);
+                    panel1.collapse();
+                    grid.setHeight('90%');
+
+                }, 800);
             });
             $('#all').click(function () {
                 var parms = {
@@ -1468,7 +1597,10 @@
                         grid.select(grid.data.Rows[0]);
                     }
                     $("li[data-index='0']").click();
-                }, 400);
+                    panel1.collapse();
+                    grid.setHeight('90%');
+
+                }, 800);
             });
             $('#search').click(function () {
                 grid.changePage('first');

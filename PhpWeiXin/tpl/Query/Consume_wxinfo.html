@@ -825,7 +825,7 @@
                          ],
                          isScroll: true,
                          pageSize: 10,
-                         url: '/index.php?g=Query&m=Consume&a=getwxinfo',
+                         url: '/index.php?g=Query&m=Consume&a=gethistoryinfo',
                          onDblClickRow: function (data, rowindex, rowobj) {
                              wxinfo(data['流水号']);
                          }
@@ -866,11 +866,12 @@
                 return todate(value);
             }
             function assigntask() {
+                var row = project.getSelectedRow();
                 var url = '/index.php?g=Query&m=Consume&a=assigntask';
                 url += '&id=' + record["ID"];
                 url += '&shop=' + record["门店"];
-                url += '&wxlb=蜡水洗车';
-                
+                url += '&wxlb=' + record["维修类别"]
+                url += '&code=' + row['流水号'];
                 if (assigntaskdialog) {
                     assigntaskdialog.setUrl(url);
                     assigntaskdialog.show();
@@ -896,34 +897,6 @@
 
 <body>
     <div id="form1">
-    </div>
-    <div class="am-modal am-modal-prompt" tabindex="-1" id="doc-modal-1">
-        <div class="am-modal-dialog">
-            <div class="am-modal-hd">
-                派工
-                <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close=data-am-modal-close>&times;</a>
-            </div>
-            <div class="am-modal-bd">
-                <div class="am-form">
-                    <div class="am-g am-margin-top">
-                        <div class="am-u-sm-4 am-u-md-4 am-text-right">
-                            <span class="red">*</span>主修人
-                        </div>
-                        <div class="am-u-sm-8 am-u-md-8">
-                            <select data-am-selected=data-am-selected name="zhuxiu" id="zhuxiu">
-                                <volist name="list" id="item">
-                                    <option value="{pigcms:$item.姓名}">{pigcms:$item.姓名}</option>
-                                </volist>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="am-modal-footer">
-                <span class="am-modal-btn" data-am-modal-cancel=data-am-modal-cancel>取消</span>
-                <span class="am-modal-btn" data-am-modal-confirm=data-am-modal-confirm>提交</span>
-            </div>
-        </div>
     </div>
     <link rel="stylesheet" href="/tpl/static/assets/js/amazeui.min.js" />
 </body>

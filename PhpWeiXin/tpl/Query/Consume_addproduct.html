@@ -186,7 +186,8 @@
                             };
                             $.post('index.php?g=Query&m=Consume&a=saveproduct', submitData,
                               function (data) {
-                                  parent.reflash();
+                                  if(parent.reflash)
+                                     parent.reflash();
                                   haveproduct.reload();
                                   $.ligerDialog.alert(data);
                               });

@@ -33,22 +33,19 @@
                     <div class="am-g">
                         <div class="am-u-sm-4 am-u-md-4">
                             <div class="am-form-group">
-                                部门
                                 <select id="bumen">
                                     <option value="">所有门店</option>
                                     <option value="区府店">区府店</option>
                                     <option value="塘坑店">塘坑店</option>
                                 </select>
-                                主修人
                                 <select  id="zhuxiu">
                                     <option value="">所有人</option>
                                 </select>
-                                类别
                                 <select  id="lb">
                                     <option value="">所有分类</option>
                                     <option value="蜡水洗车">蜡水洗车</option>
                                     <option value="汽车美容">汽车美容</option>
-                                    <option value="钣金喷漆">钣金喷漆</option>
+                                    <option value="汽车喷漆">汽车喷漆</option>
                                     <option value="普通快修">普通快修</option>
                                     <option value="常规保养">常规保养</option>
                                     <option value="保险理赔">保险理赔</option>
@@ -177,9 +174,20 @@
             // setdata(jyChart, '个人业绩');
             function f_totalRender(data, currentPageData) {
                 return " 服务车辆:" + data.sumdata.服务车辆
-                    + "  工时:" + data.sumdata.工时
-                    + "  产值:" + data.sumdata.产值
+                    + "  工时费:" + data.sumdata.工时
+                    + "  工时数:" + data.sumdata.工时数
             }
+            $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {
+                if (data) {
+                    $('#bumen').empty();
+                    $('#bumen').append("<option value=''>所有门店</option>");
+                    $(data).each(function () {
+                        var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                        $('#bumen').append(option);
+                    });
+                }
+            }, 'JSON');
+
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                     { display: '门店', name: '门店', align: 'left', width: 100 },
@@ -188,8 +196,9 @@
                     { display: '日期', name: '时间', width: 200 },
                     { display: '服务车辆数', name: '服务车辆数', width: 200 },
                     { display: '工时费', name: '工时费', width: 120 },
+                    { display: '工时数', name: '工时数', width: 80 },
                    {
-                     display: '产值', name: '产值', width: 200, align: 'left', render: function (rowdata, index, value) {
+                     display: '产值', name: '产值',hide:true, width: 200, align: 'left', render: function (rowdata, index, value) {
                             return value;
                     }
                 },

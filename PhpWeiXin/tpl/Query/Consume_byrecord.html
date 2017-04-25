@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>维修录入</title>
+    <title>保养录入</title>
     <meta name="description" content="爱养车" />
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
@@ -17,7 +17,7 @@
                 validate: true,
                 fields: [
                    {
-                       display: "车牌号码 ", name: "车牌号码", newline: true, type: "text",
+                       display: "车牌号码 ", name: "车牌号码", newline: false, type: "text",
                        options: {
                            onBlur: function (value) {
                                var carno = this.getValue();
@@ -29,6 +29,7 @@
                                     if (data) {
                                         licheng = data['里程'];
                                         $("input[ligeruiid='车主']").val(data['车主']);
+                                        $("input[ligeruiid='里程表']").val(data['里程']);
                                         $("input[ligeruiid='客户类别']").val(data['客户类别']);
                                         $("input[ligeruiid='联系人']").val(data['联系人']);
                                         $("input[ligeruiid='轮胎规格']").val(data['轮胎规格']);
@@ -49,38 +50,18 @@
                            }
                        }
                    },
-                   {
-                       display: "维修类别", name: "维修类别", newline: false, type: "combobox",comboboxName:'wxlx',
-                        options: {
-                            valueField: '类别',
-                            textField: '类别',
-                            autocomplete: true,
-                            url: '/index.php?g=Query&m=Consume&a=getwxlb&flag=1',
-                            onChangeValue: function () {
-                                var selected = this.selected;
-                                var mendian = liger.get('mendian');
-                                var zhuxiu = liger.get('zhuxiu');
-                                var wxlx = liger.get('wxlx');
-                                if (zhuxiu) {
-                                    zhuxiu.setParm('shop', mendian['name']);
-                                    zhuxiu.setParm('wxlx', this.getValue());
-                                    zhuxiu.reload();
-                                }
-                            }
-                        }
-                    },
                     {
                         display: "车主", name: "车主", newline: false, type: "text",readonly:true
                     },
                     {
                         display: "客户类别", name: "客户类别", newline: false, type: "text", readonly: true
                     },
-                    { display: "联系人 ", name: "联系人", newline: true, type: "text", validate: { required: true } },
+                    { display: "联系人 ", name: "联系人", newline: false, type: "text", validate: { required: true } },
                     { display: "联系电话 ", name: "联系电话", newline: false, type: "text", validate: { required: true } },
-                    { display: "轮胎规格", name: "轮胎规格", newline: true, type: "text"},
+                    { display: "轮胎规格", name: "轮胎规格", newline: false, type: "text" },
                     { display: "油位表", name: "油位表", newline: false, type: "text" },
                     {
-                        display: "里程表", name: "里程表", newline: true, type: "text" 
+                        display: "里程表", name: "里程表", newline: false, type: "text"
 
                     },
                      {
@@ -92,10 +73,9 @@
                              onChangeValue: function () {
                                  var selected = this.selected;
                                  var zhuxiu = liger.get('zhuxiu');
-                                 var wxlx = liger.get('wxlx');
                                  if (zhuxiu) {
-                                     zhuxiu.setParm('shop', selected['name']);
-                                     zhuxiu.setParm('wxlx', wxlx.getValue());
+                                     zhuxiu.setParm('shop', selected['名称']);
+                                     zhuxiu.setParm('wxlx','常规保养');
                                      zhuxiu.reload();
                                  }
                              }
@@ -103,7 +83,7 @@
 
                      },
                     {
-                        display: "接车人", name: "接车人", newline: true, type: "combobox",comboboxName:'fwgw',
+                        display: "接车人", name: "接车人", newline: false, type: "combobox", comboboxName: 'fwgw',
                         options: {
                             valueField: '姓名',
                             textField: '姓名',
@@ -121,11 +101,12 @@
                         },
                     },
                     { display: "预计完工", name: "预计完工", newline: false, type: "date", options: { showTime: true } },
-                    { display: "故障描述", name: "故障描述", newline: true, type: "textarea", width: 430, height: 100 }
+                    { display: "故障描述", name: "故障描述", newline: false, type: "textarea", width: 430, height: 100 }
                 ],
                 buttons: [                    { text: "取消", width: 60, click: null },                    {
                         text: "保存", width: 60, click: function () {
                             var data = form.getData();
+                            data['维修类别'] = '常规保养';
                             data['接车人'] = $("input[ligeruiid='fwgw']").val();
                             data['预计完工'] = $("input[ligeruiid='预计完工']").val();
                             
@@ -139,10 +120,6 @@
                             //}
                             if (data['接车人'] == '') {
                                 $.ligerDialog.alert('请选择接车人');
-                                return;
-                            }
-                            if (data['维修类别'] == '') {
-                                $.ligerDialog.alert('请选择维修类型');
                                 return;
                             }
                             if (data['故障描述'] == '') {
@@ -176,7 +153,7 @@
                                     return;
                                 }else{
                                     if (parseInt(data['里程表'])<parseInt(licheng)) {
-                                        $.ligerDialog.alert('里程数小于上次维修的里程[' + licheng + ']');
+                                        $.ligerDialog.alert('里程数小于上次维修的里程');
                                         return;
                                     }
                                 }
@@ -197,7 +174,7 @@
                                     if (data == 1) {
                                         $.ligerDialog.confirm('系统中已经存在同类型未结算维修单，确认继续录入？', function (yes) {
                                             if (yes) {
-                                                $.post('index.php?g=Query&m=Consume&a=wxrecord', submitData,
+                                                $.post('index.php?g=Query&m=Consume&a=byrecord', submitData,
                                                  function (data) {
                                                      $.ligerDialog.alert(data);
                                                      window.parent.liger.get('maingrid4').reload();
@@ -206,7 +183,7 @@
                                         });
                                     }
                                     else {
-                                        $.post('index.php?g=Query&m=Consume&a=wxrecord', submitData,
+                                        $.post('index.php?g=Query&m=Consume&a=byrecord', submitData,
                                           function (data) {
                                               $.ligerDialog.alert(data);
                                               window.parent.liger.get('maingrid4').reload();

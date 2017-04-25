@@ -127,9 +127,13 @@
                                             
                                         },
                                         onSelected: function (e) {
-                                            alert(e.value);
                                             var row = e.data[0];
                                             $("input[name='联系电话']").val(row['联系电话']);
+                                            $("input[name='联系人']").val(row['联系人']);
+                                            $("input[name='客户ID']").val(row['ID']);
+                                            $("input[ligeruiid='客户类别']").val(row['类别']);
+                                            $("input[name='手机号码']").val(row['手机号码']);
+                                            $("input[name='地址']").val(row['通讯地址']);
                                         },
                                         searchClick: function (e) {
                                             e.grid.set('parms', { 'searchkey': e.rules[0]['value'] });
@@ -152,6 +156,7 @@
 
                                 },
                                 { display: "联系人", name: "联系人", newline: false, type: "text", group: '车主信息' },
+                                { display: "客户ID", name: "客户ID", newline: false, type: "hidden", group: '车主信息' },
                                 { display: "联系电话", name: "联系电话", newline: false, type: "text", group: '车主信息' },
                                 { display: "手机号", name: "手机号码", newline: false, type: "text", group: '车主信息' },
                                 {
@@ -253,7 +258,7 @@
                 ],
                 isScroll: true,
                 pageSize: 15,
-                url: '/index.php?g=Query&m=Consume&a=getwxinfo&lb=all',
+                url: '/index.php?g=Query&m=Consume&a=gethistoryinfo',
                 height: '80%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     wxinfo(data['流水号']);
@@ -265,16 +270,23 @@
 
                 var form = liger.get("form1");
                 var data = form.getData();
+                data['客户类别'] = $("input[ligeruiid='客户类别']").val();
+
                 data = JSON2.stringify(data);
                 data = JSON2.parse(data);
-                $.post('/index.php?g=Query&m=Consume&a=carinfo', data,
+                var submitdata = {
+                    carinfo: data,
+                    type:frameElement.dialog.get('type')
+
+                }
+                $.post('/index.php?g=Query&m=Consume&a=carinfo', submitdata,
                   function (msg) {
                       $.ligerDialog.alert(msg);
                       parent.cargird.reload();
                   });
 
             }
-
+            
             function getGridOptions(checkbox) {
                 var options = {
                     columns: [
@@ -302,7 +314,7 @@
                     carinfo = JSON2.stringify(carinfo);
                     carinfo = JSON2.parse(carinfo);
                     form.setData(carinfo);
-                    historygrid.set('parms', { carno: carinfo['车牌号码'] });
+                    historygrid.set('parms', { carno:carinfo['车牌号码'] });
                     historygrid.reload();
                     $("input[ligeruiid='车主']").val(carinfo['车主']);
                     $("input[ligeruiid='车型']").val(carinfo['车型']);

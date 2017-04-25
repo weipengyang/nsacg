@@ -2,7 +2,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>洗车管理</title>
+    <title>保养管理</title>
     <meta name="description" content="爱养车">
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
@@ -73,7 +73,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.2/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
-        var grid, memberdialog, wxdialog, washdialog, caldialog, printdialog, assigntaskdialog;
+        var record,grid,addproductdialog,addprojectdialog, memberdialog, wxdialog, washdialog, caldialog, printdialog, assigntaskdialog;
         function wxinfo(xh) {
             if (wxdialog) {
                 wxdialog.setUrl('/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh);
@@ -148,14 +148,14 @@
             if (washdialog) washdialog.show();
             else {
                 washdialog = $.ligerDialog.open({
-                    height: 310,
-                    url: '/index.php?g=Query&m=Consume&a=washcar',
+                    height: 480,
+                    url: '/index.php?g=Query&m=Consume&a=byrecord',
                     width: 600,
                     showToggle: false,
                     showMin: false,
                     isResize: true,
                     modal: true,
-                    title: '洗车录入'
+                    title: '保养录入'
                 });
             }
         }
@@ -182,6 +182,7 @@
         function completework(itemid) {
             var data = {
                 itemid: itemid,
+                type:'baoyang'
             };
             $.post('/index.php?g=Query&m=Consume&a=completework', data,
               function (msg) {
@@ -189,6 +190,67 @@
                   grid.reload();
               });
         }
+        function addproduct(rowid) {
+            for (var i = 0; i < grid.data.Rows.length; i++) {
+                if (grid.data.Rows[i]['流水号'] == rowid) {
+                    record = grid.data.Rows[i];
+
+                }
+            }
+            if (record['当前状态'] == '结束') {
+                $.ligerDialog.alert('结束状态不能增加维修项目');
+                return;
+            }
+            var url = 'index.php?&g=Query&m=Consume&a=addproduct&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + record['整单销售折扣'] + "&shop=" + record['门店'];
+            if (addproductdialog) {
+                addproductdialog.setUrl(url);
+                addproductdialog.show();
+            } else {
+                addproductdialog = $.ligerDialog.open({
+                    height: 600,
+                    url: url,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: true,
+                    title: '增加维修配件'
+                });
+
+            }
+        }
+        function addproject(rowid) {
+            for (var i = 0; i < grid.data.Rows.length; i++) {
+                if (grid.data.Rows[i]['流水号'] == rowid) {
+                    record = grid.data.Rows[i];
+
+                }
+            }
+            if (record['当前状态'] == '结束') {
+                $.ligerDialog.alert('结束状态不能增加维修项目');
+                return;
+            }
+            var url = 'index.php?&g=Query&m=Consume&a=addproject&itemID=' + record['流水号'] + '&ID=' + record['ID'] + "&discount=" + record['整单服务折扣'] + "&zhuxiu=" + record['当前主修人'];
+            if (addprojectdialog) {
+                addprojectdialog.setUrl(url);
+                addprojectdialog.show();
+            } else {
+                addprojectdialog = $.ligerDialog.open({
+                    height: 600,
+                    url: url,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: true,
+                    title: '增加维修项目'
+                });
+
+            }
+        }
+
         function cancelwash(itemid,flag) {
             var data = {
                 itemid: itemid,
@@ -200,25 +262,6 @@
                       grid.reload();
                   }
               });
-        }
-        function stopBubble(e) {
-            //如果提供了事件对象，则这是一个非IE浏览器
-            if (e && e.stopPropagation)
-                //因此它支持W3C的stopPropagation()方法
-                e.stopPropagation();
-            else
-                //否则，我们需要使用IE的方式来取消事件冒泡
-                window.event.cancelBubble = true;
-        }
-        //阻止浏览器的默认行为
-        function stopDefault(e) {
-            //阻止默认浏览器动作(W3C)
-            if (e && e.preventDefault)
-                e.preventDefault();
-                //IE中阻止函数器默认动作的方式
-            else
-                window.event.returnValue = false;
-            return false;
         }
         function checkin(code) {
             if (caldialog) {
@@ -323,8 +366,12 @@
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                 {
-                    display: '操作', name: '操作', minWidth: 85, render: function (rowdata, index, value) {
+                    display: '操作', name: '操作', minWidth: 150, render: function (rowdata, index, value) {
                         var strhtml = '';
+                        if (rowdata.当前状态 == '报价') {
+                            strhtml += '|<a href="javascript:void(0);" onclick="addproject(\'' + rowdata.流水号 + '\');"><strong>项目</strong></a>';
+                            strhtml += '|<a href="javascript:void(0);" onclick="addproduct(\'' + rowdata.流水号 + '\');"><strong>配件</strong></a>';
+                        }
                         if (rowdata.上交钥匙 == "" || rowdata.上交钥匙 == null || rowdata.上交钥匙 == "null" || todate(rowdata.上交钥匙, false) == '1900-01-1') {
                             var start = new Date(Date.parse(todate(rowdata.进厂时间, true)));
                             var end = new Date();
@@ -332,23 +379,23 @@
                                 //cancelwash(rowdata.流水号,false);
                             } else {
                             }
-                            strhtml += '<a href="javascript:void(0);" onclick="submitcarkey(\'' + rowdata.流水号 + '\');"><strong>钥匙上交</strong></a>|';
+                            strhtml += '|<a href="javascript:void(0);" onclick="submitcarkey(\'' + rowdata.流水号 + '\');"><strong>钥匙上交</strong></a>';
                         }
                         if (rowdata.开工时间 == "" || rowdata.开工时间 == null || rowdata.开工时间 == "null" || todate(rowdata.开工时间, false) == '1900-01-1') {
                             if (rowdata.上交钥匙 != "" && rowdata.上交钥匙 != null && rowdata.上交钥匙 != "null" && todate(rowdata.上交钥匙, false) != '1900-01-1') {
-                                strhtml += '<a href="javascript:void(0);" onclick="assignbatchtask(\''+rowdata.ID+'\',\''+rowdata.门店+'\',\''+rowdata.维修类别+'\');"><strong>派工</strong></a>|';
+                                strhtml += '|<a href="javascript:void(0);" onclick="assignbatchtask(\''+rowdata.ID+'\',\''+rowdata.门店+'\',\''+rowdata.维修类别+'\');"><strong>派工</strong></a>';
                             }
                         }
                         if (rowdata.开工时间 != "" && rowdata.开工时间 != null && rowdata.开工时间 != "null" && todate(rowdata.开工时间, false) != '1900-01-1') {
                             if (rowdata.当前状态 == '派工')
-                               strhtml += '<a href="javascript:void(0);" onclick="completework(\'' + rowdata.流水号 + '\');"><strong>完工</strong></a>';
+                               strhtml += '|<a href="javascript:void(0);" onclick="completework(\'' + rowdata.流水号 + '\');"><strong>完工</strong></a>';
                         }
                         if (rowdata.当前状态 == '结算' && rowdata.当前状态.标志 !='已结算')
-                            strhtml += '<a href="javascript:void(0);" onclick="checkin(\'' + rowdata.流水号 + '\');"><strong>结算</strong></a>';
+                            strhtml += '|<a href="javascript:void(0);" onclick="checkin(\'' + rowdata.流水号 + '\');"><strong>结算</strong></a>';
                         if (rowdata.当前状态=='出厂')
-                            strhtml += '<a href="javascript:void(0);" onclick="changeState(\'' + rowdata.流水号 + '\');"><strong>出厂</strong></a>';
+                            strhtml += '|<a href="javascript:void(0);" onclick="changeState(\'' + rowdata.流水号 + '\');"><strong>出厂</strong></a>';
                         if (rowdata.当前状态 == '结束')
-                            strhtml += '<a href="javascript:void(0);" onclick="printbill(\'' + rowdata.ID + '\');"><strong>打印</strong></a>';
+                            strhtml += '|<a href="javascript:void(0);" onclick="printbill(\'' + rowdata.ID + '\');"><strong>打印</strong></a>';
                         return strhtml;
                     }
                 }
@@ -529,7 +576,7 @@
                 pageSize: 20,
                 totalRender: f_totalRender,
                 alternatingRow: false,
-                url: '/index.php?g=Query&m=Consume&a=getwxinfo&lb=常规保养',
+                url: '/index.php?g=Query&m=Consume&a=getwxinfo&type=2',
                 height: '97%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     wxinfo(data['流水号']);
@@ -579,8 +626,7 @@
                 //if (khlb != '')
                 //    parms.khlb = khlb;
                 var zt = $('#zt').val();
-                if (zt != '')
-                    parms.zt = zt;
+                parms.zt = zt;
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     parms.searchkey = searchkey;

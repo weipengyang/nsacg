@@ -7,39 +7,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
     <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/0.4.1/weui.min.css" />
+    <link href="//at.alicdn.com/t/font_qq842flzv337syvi.css" rel="stylesheet" type="text/css" />
     <title>评论</title>
-    <style>
-        .give_score {
-            padding-top: 0;
-             margin: 0;
-       }
-
-        .give_score div {
-            margin: 8px 0 20px;
-        }
-
-        .give_score div span {
-            cursor: pointer;
-        }
-
-        .grade {
-            display: inline-block;
-            background: url(/tpl/Wap/default/common/css/store/images/grade.png) no-repeat;
-            width: 14px;
-            height: 14px;
-            position: relative;
-            top: 1px;
-        }
-
-        .grade_off {
-            display: inline-block;
-            background: url(/tpl/Wap/default/common/css/store/images/grade.png) no-repeat -30px 0;
-            width: 14px;
-            height: 14px;
-            position: relative;
-            top: 1px;
-        }
-    </style>
 </head>
 <body>
     <div class="page">
@@ -61,41 +30,29 @@
                                         <span>{pigcms:$wxinfo.维修类别}</span><span style="float:right">{pigcms:$wxinfo.当前主修人}</span>
                                     </div>
                                 </div>
-                                <div class="give_score">
-                                    <div>
-                                        前台接待：
-                                        <span class="grade_off pngFix"></span>
-                                        <span class="grade_off pngFix"></span>
-                                        <span class="grade_off pngFix"></span>
-                                        <span class="grade_off pngFix"></span>
-                                        <span class="grade_off pngFix"></span>
-                                        <input type="hidden" name="score" class="store_score" id="qtscore" value="0" />
+                                <div >
+                                    <div class="row  no-gutter">
+                                        <div class="col-25" style="padding-top:10px"><span style="line-height:24px;height:24px;">服务：</span></div>
+                                        <div class="col-25 fuwu"><i class="icon iconfont icon-haoping1" attachvalue="5" style="font-size:1.5rem;width:100%"></i>
+                                        </div>
+                                        <div class="col-25 fuwu"><i class="icon iconfont icon-zhongping1" attachvalue="3" style="font-size:1.5rem;width:100%"></i></div>
+                                        <div class="col-25 fuwu"><i class="icon iconfont icon-chaping1" attachvalue="0" style="font-size:1.5rem;width:100%"></i></div>
+                                        <input type="hidden" name="score" class="store_score" id="tdscore" value="" />
                                     </div>
                                 </div>
-                                <div class="give_score">
-                                    <div>
-                                        服务态度：
-                                        <span class="grade_off pngFix"></span>
-                                        <span class="grade_off pngFix"></span>
-                                        <span class="grade_off pngFix"></span>
-                                        <span class="grade_off pngFix"></span>
-                                        <span class="grade_off pngFix"></span>
-                                        <input type="hidden" name="score" class="store_score" id="tdscore" value="0" />
-                                    </div>
+                                <div>
+                                    <div class="row  no-gutter">
+                                        <div class="col-25 " style="padding-top:10px">质量：</div>
+                                        <div class="col-25 zhiliang"><i class="icon iconfont icon-haoping1" attachvalue="5" style="font-size:1.5rem;width:100%"></i></div>
+                                        <div class="col-25 zhiliang"><i class="icon iconfont icon-zhongping1" attachvalue="3" style="font-size:1.5rem;width:100%"></i></div>
+                                        <div class="col-25 zhiliang"><i class="icon iconfont icon-chaping1" attachvalue="0" style="font-size:1.5rem;width:100%"></i></div>
+                                        <input type="hidden" name="score" class="store_score" id="zlscore" value="" />
+                                   </div>
                                 </div>
-                                <div class="give_score">
-                                    <div>
-                                        维修质量：
-                                        <span class="grade_off pngFix"></span>
-                                        <span class="grade_off pngFix"></span>
-                                        <span class="grade_off pngFix"></span>
-                                        <span class="grade_off pngFix"></span>
-                                        <span class="grade_off pngFix"></span>
-                                        <input type="hidden" name="score" class="store_score" id="zlscore" value="0" />
-                                    </div>
+                                <textarea cols="40" id="content" name="content" placeholder="请在此输入您的评论" rows="5" style="width: 100%;line-height: 20px;"></textarea>
+                                <div class="row  no-gutter">
+                                    <div class="col-100"><span style="color:crimson">说明：评价成功后将获得20个积分</span></div>
                                 </div>
-                                <textarea cols="40" id="content" name="content" placeholder="请在此输入您的评论" rows="7" style="width: 100%;line-height: 20px;"></textarea>
-                            </div>
                         <div class="row">
                             <div class="col-100">
                             <a href="#" id="turnin" class="button button-big button-fill button-success" style="color:#006AFF">发表评论</a>
@@ -108,23 +65,29 @@
     <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
     <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
     <script type="text/javascript">
-                    $(document).ready(function () {
+        $(document).ready(function () {
+                        $(".fuwu").click(function () {
+                            $('.fuwu').find('i').css('color', 'black');
+                            $(this).find('i').css('color', 'red');
+                            $("#tdscore").val($(this).find('i').attr('attachvalue'));
+                        });
+                        $(".zhiliang").click(function () {
+                            $('.zhiliang').find('i').css('color', 'black');
+                            $(this).find('i').css('color', 'red');
+                            $("#zlscore").val($(this).find('i').attr('attachvalue'));
+
+                        });
                         $(".button-success").click(function () {
                             var comment = {};
                             comment.fwtd = $("#tdscore").val();
                             comment.fwzl = $("#zlscore").val();
-                            comment.qtjd = $("#qtscore").val();
                             comment.content = $("#content").val();
-                            if (comment.qtjd < 1) {
-                                $.toast('请您对前台接待满意度打分');
+                            if (comment.fwtd =='') {
+                                $.toast('请您对服务服务态度评价');
                                 return false;
                             }
-                            if (comment.fwtd < 1) {
-                                $.toast('请您对服务顾问服务态度打分');
-                                return false;
-                            }
-                            if (comment.fwzl< 1) {
-                                $.toast('请您对维修质量打分');
+                            if (comment.fwzl=='') {
+                                $.toast('请您对维修质量评价');
                                 return false;
                             }                          
                             var submitData = {

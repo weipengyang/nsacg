@@ -4,17 +4,15 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>会员管理</title>
-    <meta name="description" content="爱养车">
-    <meta name="keywords" content="index">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="renderer" content="webkit">
-    <meta http-equiv="Cache-Control" content="no-siteapp" />
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.0/css/amazeui.min.css" />
     <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
-
+    <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <link href="//at.alicdn.com/t/font_1477193360_4766667.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <!--[if lte IE 9]>
@@ -25,10 +23,6 @@
         <!-- content start -->
         <div class="admin-content">
             <div class="admin-content-body">
-                <div class="am-cf am-padding am-padding-bottom-0">
-                    <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">会员卡列表</strong> </div>
-                </div>
-                <hr>
                 <div class="am-g">
                     <div class="am-u-sm-12 am-u-md-3">
                         <div class="am-input-group am-input-group-sm">
@@ -39,95 +33,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="am-g">
-                    <div class="am-u-sm-12">
-                        <form class="am-form">
-                            <table class="am-table am-table-striped am-table-hover table-main">
-                                <thead>
-                                    <TR>
-                                        <th width="110px" style='font-size:10px'>卡号</th>
-                                        <th width="80px" style='font-size:10px'>微信名</th>
-                                        <th width="70px" style='font-size:10px'>车牌号1</th>
-                                        <th width="70px" style='font-size:10px'>车牌号2</th>
-                                        <th width="70px" style='font-size:10px'>车牌号3</th>
-                                        <th width="100px" style='font-size:10px'>联系电话</th>
-                                        <th width="80px" style='font-size:10px'>领卡时间</th>
-                                        <th width="45px" style='font-size:10px'>积分</th>
-                                        <th width="80px" style='font-size:10px'>消费总额(元)</th>
-                                        <th width="50px" style='font-size:10px'>余额</th>
-                                        <TH width="230px" style='font-size:10px'>操作</TH>
-                                    </TR>
-
-                                </thead>
-                                <tbody>
-                                    <volist id="list" name="members">
-                                        <TR>
-                                            <TD style='font-size:10px'>
-                                                <a href="javascript:void(0);" onclick="memberinfo('{pigcms:$list.number}')">{pigcms:$list.number}</a>
-                                            </TD>
-                                            <TD style='font-size:10px'>{pigcms:$list.wechaname}</TD>
-                                            <TD style='font-size:10px'>
-                                             <a href="javascript:void(0);" onclick="carinfo('{pigcms:$list.carno}')">{pigcms:$list.carno}</a>
-                                            </TD>
-                                            <TD style='font-size:10px'>
-                                                <a href="javascript:void(0);" onclick="carinfo('{pigcms:$list.carno1}')">{pigcms:$list.carno1}</a>
-                                            </TD>
-                                            <TD style='font-size:10px'>
-                                                <a href="javascript:void(0);" onclick="carinfo('{pigcms:$list.carno2}')">{pigcms:$list.carno2}</a>
-                                            </TD>
-                                            <TD style='font-size:10px'>{pigcms:$list.tel}</TD>
-                                            <TD style='font-size:10px'>
-                                                <if condition="$list['getcardtime'] gt 0">
-                                                    {pigcms:$list.getcardtime|date='Y-m-d',###}
-                                                    <else />
-                                                    无时间记录
-                                                </if>
-                                            </TD>
-                                            <TD style='font-size:10px'>
-                                                {pigcms:$list.total_score}
-                                            </TD>
-                                            <TD style='font-size:10px'>
-                                                {pigcms:$list.expensetotal}
-                                            </TD>
-                                            <TD style='font-size:10px'>
-                                                {pigcms:$list.balance}
-                                            </TD>
-                                            <TD class="norightborder" style='font-size:12px'>
-                                                <a href="javascript:void(0);" onclick="memberCardRecharge('{pigcms:$list.wecha_id}')"><strong>充值</strong></a>
-                                                |
-                                                <a href="{pigcms::U('User/Member_card/member',array('token'=>$token,'wecha_id'=>$list['wecha_id'],'id'=>$thisCard['id']))}"><strong>消费记录</strong></a>
-                                                |
-                                                <a href="javascript:void(0);" onclick="RestPassWord('{pigcms:$list.wecha_id}');"><strong>密码重置</strong></a>
-                                                <if condition="$right eq '超级用户'">
-                                                    | <a href="javascript:void(0);" onclick="bingCard('{pigcms:$list.wecha_id}','{pigcms:$list.number}');"><strong>绑定车牌</strong></a>
-                                                </if>
-                                                <if condition="$right eq '超级用户'">
-                                                    | <a href="javascript:void(0);" onclick="delcar('{pigcms:$list.wecha_id}');"><strong>删除车牌</strong></a>
-                                                </if>
-                                                <if condition="$right eq '超级用户'">
-                                                    | <a href="javascript:void(0);" onclick="modifycar('{pigcms:$list.wecha_id}');"><strong>修改车牌</strong></a>
-                                                </if>
-                                                <if condition="$right eq '超级用户'">
-                                                    |<a href="javascript:void(0);" onclick="deletemember('{pigcms:$list.id}');"><strong>删除会员</strong></a>
-                                                </if></TD>
-                                        </TR>
-                                    </volist>
-                                </tbody>
-                            </table>
-                            <div class="am-cf">
-                                <div class="am-fr">
-                                    <div class="cLine">
-                                        <div class="pageNavigator right">
-                                            <div class="pages">{pigcms:$page}</div>
-                                        </div>
-                                        <div class="clr"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr />
-                        </form>
-                    </div>
-                </div>
+                <div id="maingrid4" style="margin:0; padding:0;"></div>
             </div>
             <div class="am-modal am-modal-prompt" tabindex="-1" id="doc-modal-1">
                 <div class="am-modal-dialog">
@@ -247,7 +153,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
         <!-- content end -->
     </div>
@@ -255,14 +160,90 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.0/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
+        var grid;
         $(document).ready(function () {
-            $('#search').click(function () {
-                location.href = '/index.php?g=Query&m=Consume&a=membercard&token=jifbjv1429543374&searchkey=' + $('#searchkey').val();
+            grid = $("#maingrid4").ligerGrid({
+                columns: [
+                        {
+                            display: '卡号', name: 'number', align: 'left', width: 110, render: function (rowdata, index, value) {
 
+                            return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                        } },
+                        { display: '微信名', name: 'wechaname', align: 'left', width: 110 },
+                        {
+                            display: '车牌号1', name: 'carno', width: 80, render: function (rowdata, index, value) {
+
+                                return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                            }
+                        },
+                      {
+                          display: '车牌号2', name: 'carno1', width: 80, render: function (rowdata, index, value) {
+                          return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                      }
+                   },
+                  {
+                      display: '车牌号3', name: 'carno2', width: 80, render: function (rowdata, index, value) {
+
+                          return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                      }
+                  },
+                  { display: '联系电话', name: 'tel', width: 100 },
+                  {
+                      display: '领卡时间', name: 'getcardtime', width: 90, render: function (rowdata, index, value) {
+                          if (value > 0)
+                              return formatdate('Y-m-d', value);
+                          return value;
+                      }
+                  },
+                  { display: '积分', name: 'total_score', width: 60 },
+                  { display: '消费总额(元)', name: 'expensetotal', align: 'left', width: 80 },
+                  { display: '余额', name: 'balance', width: 80 },
+                 {
+                    display: '操作', name: '操作', minWidth: 200, render: function (rowdata, index, value) {
+                        var html='<a href="javascript:void(0);" onclick="memberCardRecharge(\''+rowdata.wecha_id+'\')"><strong>充值</strong></a>';
+                        html+= '|<a href="javascript:void(0);" onclick="RestPassWord(\'' + rowdata.wecha_id + '\');"><strong>密码重置</strong></a>';
+                        html += '|<a href="javascript:void(0);" onclick="presetcoupon(\'' + rowdata.wecha_id + '\')"><strong>送券</strong></a>';
+                        html+='|<a href="javascript:void(0);" onclick="bingCard(\'' + rowdata.wecha_id + '\',\'' + rowdata.number + '\');"><strong>绑定车牌</strong></a>';
+                        html+='| <a href="javascript:void(0);" onclick="delcar(\''+rowdata.wecha_id+'\');"><strong>删除车牌</strong></a>';
+                        html+='| <a href="javascript:void(0);" onclick="modifycar(\''+rowdata.wecha_id+'\');"><strong>修改车牌</strong></a>';
+                        html+='|<a href="javascript:void(0);" onclick="deletemember(\''+rowdata.id+'\');"><strong>删除会员</strong></a>';
+                        return html;
+                    }
+                }
+                ],
+                isScroll: true,
+                pageSize: 15,
+                pageSizeOptions: [8, 10, 15, 20, 50],
+                url: '/index.php?g=Query&m=Consume&a=getmembers',
+                height: '98%',
+                totalRender: f_totalRender,
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    // wxinfo(data['流水号']);
+                }
+            });
+            function f_totalRender(data, currentPageData) {
+                return " 会员数:" + data.sumdata.count
+                    + "  平均消费:" + data.sumdata.avgexpence+'元'
+                    + "  剩余积分:" + data.sumdata.total_score+'分'
+                    + "  余额:" + data.sumdata.balance + '元';
+                  
+            }
+
+            $('#search').click(function () {
+                var parms = {};
+                var searchkey = $('#searchkey').val();
+                if (searchkey != '')
+                    parms.searchkey = searchkey;
+                grid.set('parms', parms);
+                grid.reload();
             });
         });
-        var cardialog, memberdialog;
-        function carinfo(carno) {
+        var cardialog, memberdialog,coupondialog;
+        function viewcarinfo(carno) {
             if (cardialog) {
                 cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
                 cardialog.show();
@@ -274,7 +255,7 @@
                     width: 900,
                     showMax: true,
                     showToggle: true,
-                    showMin: true,
+                    showMin: false,
                     isResize: true,
                     modal: false,
                     title: '车俩信息编辑'
@@ -293,7 +274,7 @@
                     width: 900,
                     showMax: true,
                     showToggle: true,
-                    showMin: true,
+                    showMin: false,
                     isResize: true,
                     modal: false,
                     title: '会员资料编辑'
@@ -450,14 +431,26 @@
                 });
             }
         }
+        function presetcoupon(wechaid) {
+            if (coupondialog) {
+                coupondialog.setUrl('/index.php?g=Query&m=Consume&a=presentcoupon&wecha_id=' + wechaid);
+                coupondialog.show();
+            }
+            else {
+                coupondialog = $.ligerDialog.open({
+                    height: 300,
+                    url: '/index.php?g=Query&m=Consume&a=presentcoupon&wecha_id=' + wechaid,
+                    width: 460,
+                    showMax: false,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    title: '优惠券赠送'
+                });
+            }
+        }
 
-        //reflash();
-        //function reflash() {
-
-        //    location.href = location.href;
-        //    setTimeout("reflash()", 100000);
-
-        //}
     </script>
 </body>
 </html>

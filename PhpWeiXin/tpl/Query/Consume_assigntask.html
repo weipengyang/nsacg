@@ -29,11 +29,13 @@
                             $.post('/index.php?g=Query&m=Consume&a=assigntask', data,
                               function (msg) {
                                   $.ligerDialog.alert(msg);
-                                  if (parent.grid) {
-                                      parent.grid.reload();
-                                  }
                                   if (parent.parent.grid) {
                                       parent.parent.grid.reload();
+                                  }
+                                  else {
+                                      if (parent.grid) {
+                                          parent.grid.reload();
+                                      }
                                   }
                                   if (parent.project) {
                                       parent.project.reload();

@@ -96,7 +96,6 @@
                             url: '/index.php?g=Query&m=Consume&a=getjsfs',
                         }
                     },
-                 { display: '代办单号', name: '代办单号', newline: false, type: "text", },
                  { display: '起始日期', name: '起始日期', newline: false, type: "date", },
                  { display: '截至日期', name: '截至日期', newline: false, type: "date", },
                  {
@@ -121,10 +120,6 @@
 
                 ],
                 buttons: [                    {
-                        text: "取消", width: 60, click: function () {
-                            frameElement.dialog.hide();
-                        }
-                    },                    {
                         text: "保存", width: 60, click: function () {
                             var data = form.getData();
                             if (data['车牌号码'] == '') {
@@ -142,6 +137,10 @@
                                   frameElement.dialog.hide();
 
                               });
+                        }
+                    },                {
+                        text: "取消", width: 60, click: function () {
+                            frameElement.dialog.hide();
                         }
                     }            ]            });
 

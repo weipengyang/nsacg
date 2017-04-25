@@ -23,13 +23,14 @@
                 <div class="am-g">
                     <div class="am-u-sm-10 am-u-md-9">
                         <div class="am-form-group am-form-select">
-                            门店
                             <select  id="shop">
                                 <option value="">所有门店</option>
                                 <option value="塘坑店">塘坑店</option>
                                 <option value="区府店">区府店</option>
                             </select>
-                            类别
+                            <select id="zhuxiu">
+                                <option value="">所有人</option>
+                            </select>
                             <select  id="lb">
                                 <option value="">所有分类</option>
                                 <option value="蜡水洗车">蜡水洗车</option>
@@ -38,14 +39,13 @@
                                 <option value="常规保养">常规保养</option>
                                 <option value="保险理赔">保险理赔</option>
                                 <option value="汽车维修">汽车维修</option>
+                                <option value="汽车喷漆">汽车喷漆</option>
                             </select>
-                            客户
                             <select id="khlb">
-                                <option value="">所有分类</option>
+                                <option value="">所有客户</option>
                             </select>
-                           当前状态
                             <select id="zt">
-                                <option value="">所有</option>
+                                <option value="">所有状态</option>
                                 <option value="报价">报价</option>
                                 <option value="派工">派工</option>
                                 <option value="领料">领料</option>
@@ -199,6 +199,17 @@
                     $('#search').click();
                 }
             );
+            $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {
+                if (data) {
+                    $('#shop').empty();
+                    $('#shop').append("<option value=''>所有门店</option>");
+                    $(data).each(function () {
+                        var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                        $('#shop').append(option);
+                    });
+                }
+            }, 'JSON');
+
             $.post('index.php?g=Query&m=Consume&a=getkhlb', null,
             function (data) {
                 if (data) {
@@ -212,25 +223,75 @@
             }, 'JSON');
             grid = $("#maingrid4").ligerGrid({
                 columns: [
-                { display: '当前状态', name: '当前状态', align: 'left', width: 60 },
-                {
-                    display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
-                       return todate(value,false);
-                    }
-                },
-                { display: '主修人', name: '主修人', width: 60, align: 'left' },
-                {
-                    display: '客户确认', name: '确认维修', align: 'center', width: 60, render:function (rowdata, index, value) {
-                        if (value==null||value == '')
-                            value = '<span style="color:red">否</span>';
-                        else
-                            value = '<span style="color:blue">是</span>';
+                  { display: '状态', name: '当前状态', align: 'left', width: 40 },
+                  {
+                      display: '车牌号码', name: '车牌号码', minWidth: 85, render: function (rowdata, index, value) {
 
-                        return value;
+                          return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                      }
+                  },
+                 { display: '维修类别', name: '维修类别', minWidth: 80 },
+                 { display: '主修人', name: '主修人', width: 60, align: 'left' },
+                 { display: '接车人', name: '接车人', minWidth: 60 },
+                 { display: '钥匙编号', name: '钥匙编号', align: 'left', width: 60 },
+                 { display: '客户类别', name: '客户类别', minWidth: 100 },
+                {
+                    display: '车主', name: '车主', minWidth: 130, render: function (rowdata, index, value) {
+
+                        return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                    }
+                },
+                { display: '联系人', name: '联系人', minWidth: 100 },
+                 {
+                     display: '已处理', name: '', minWidth: 100, render: function (rowdata, index, value) {
+                         if (rowdata.进厂时间 != "" && rowdata.进厂时间 != null && rowdata.进厂时间 != "null" && todate(rowdata.进厂时间, false) != '1900-01-1') {
+                             var start = new Date(Date.parse(todate(rowdata.进厂时间, true)));
+                             var pretime = new Date(Date.parse(todate(rowdata.预计完工, true)));
+                             var prehour =pretime - start;
+                             var usetime = 0;
+                             if (rowdata.实际完工 != null && rowdata.实际完工 != "" && rowdata.实际完工 != "null" && todate(rowdata.实际完工, false) != '1900-01-1') {
+                                 end = new Date(Date.parse(todate(rowdata.实际完工, true)));
+                                 usetime = end - start;
+                             }
+                             else {
+                                 var end = new Date();
+                                 usetime =end - start;
+                             }
+                             if (usetime > prehour) {
+                                 if(usetime>3600*1000)
+                                     return "<span style='color:red'>" + (usetime / 3600000).toFixed(2) + "小时</span>";
+                                 return "<span style='color:red'>" +usetime / 60000 + "分钟</span>";
+
+                             } else {
+                                 if (usetime > 3600 * 1000)
+                                     return "<span style='color:blue'>" + (usetime / 3600000).toFixed(2) + "小时</span>";
+                                 return "<span style='color:blue'>" + usetime / 60000 + "分钟</span>";
+                             }
+                         }
+                         return '';
+                     }
+                 },
+                 {
+                     display: '进厂时间', name: '进厂时间', minWidth: 130, render: function (rowdata, index, value) {
+                         return todate(value, true);
+                     }
+                 },
+                {
+                    display: '预计完工', name: '预计完工', minWidth: 130, render: function (rowdata, index, value) {
+                        return todate(value, true);
                     }
                 },
                 {
-                    display: '是否评论', name: '是否评论', align: 'center', width: 60, render: function (rowdata, index, value) {
+                    display: '完工时间', name: '实际完工', minWidth: 130, render: function (rowdata, index, value) {
+                        return todate(value, true);
+                    }
+                },
+                { display: '制单人', name: '制单人', width: 60, align: 'left' },
+                { display: '门店', name: '门店', minWidth: 80 },
+                {
+                    display: '客户确认', name: '确认维修', align: 'center', hide: true, width: 50, render: function (rowdata, index, value) {
                         if (value == null || value == '')
                             value = '<span style="color:red">否</span>';
                         else
@@ -239,75 +300,15 @@
                         return value;
                     }
                 },
-                { display: '制单人', name: '制单人', width: 60, align: 'left' },
-                { display: '接车人', name: '接车人', minWidth: 60 },
-                { display: '维修类别', name: '维修类别', minWidth: 80 },
-                {
-                    display: '车主', name: '车主', minWidth: 140, render: function (rowdata, index, value) {
-
-                        return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
-
-                    }
-                },
-                {
-                    display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
-
-                        return '<a href="javascript:void(0);" onclick="carinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
-
-                    }
-                },
-                {
-                    display: '客户类别', name: '客户类别', minWidth: 100, render: function (rowdata, index, value) {
-                        switch(value){
-                            case '1星客户':
-                                value = '<span style="color:#000933">' + value + '</span>';
-                                break;
-                            case '2星客户':
-                                value = '<span style="color:#000933">' + value + '</span>';
-                                break;
-                            case '3星客户':
-                                value = '<span style="color:red">' + value + '</span>';
-                                break;
-                            case '4星客户':
-                                value = '<span style="color:red">' + value + '</span>';
-                                break;
-                            case '5星客户':
-                                value = '<span style="color:red">' + value + '</span>';
-                                break;
-                            case '6星客户':
-                                value = '<span style="color:red">' + value + '</span>';
-                                break;
-                            case '7星客户':
-                                value = '<span style="color:red">' + value + '</span>';
-                                break;
-                            case '8星客户':
-                                value = '<span style="color:red">' + value + '</span>';
-                                break;
-                             
-                        }
-                       
-
-                        return value;
-                    }
-                },
-                { display: '联系人', name: '联系人', minWidth: 100 },
-                { display: '轮胎规格', name: '轮胎规格', minWidth: 60 },
-                { display: '机油格', name: '机油格', minWidth: 60,hide:true},
-                { display: '空气格', name: '空气格', minWidth: 60, hide: true },
-                { display: '冷气格', name: '冷气格', minWidth: 60, hide: true },
+                { display: '轮胎规格', name: '轮胎规格', hide: true, minWidth: 60 },
+                { display: '机油格', name: '机油格', hide: true, minWidth: 60 },
+                { display: '空气格', name: '空气格', hide: true, minWidth: 60 },
+                { display: '冷气格', name: '冷气格', hide: true, minWidth: 60 },
                 {
                     display: '保险到期', name: '商保到期', hide: true, minWidth: 100, render: function (rowdata, index, value) {
-                    return todate(value,false);
-                  }
-                },
-                //{
-                //    display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
-                //        if (rowdata['制单人'] == '系统录单' && rowdata['主修人'] =='')
-                //            return '<a href="javascript:void(0);" onclick="assigntask(\'' + rowdata.流水号 + '\');"><strong>派工</strong></a>';
-                //        else
-                //            return '';
-                //    }
-                //}
+                        return todate(value, false);
+                    }
+                }
                 ],
                 rowAttrRender: function (rowdata, rowid) {
                     if (rowdata.商保到期 != "" && todate(rowdata.商保到期, false) != '1900-01-1') {
@@ -349,12 +350,39 @@
                 pageSize: 20,
                 totalRender: f_totalRender,
                 alternatingRow: false,
-                url: '/index.php?g=Query&m=Consume&a=getwxinfo&lb=all',
+                url: '/index.php?g=Query&m=Consume&a=getwxinfo&type=4',
                 height: '97%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     wxinfo(data['流水号']);
                 }
             });
+            $('#shop').change(function () {
+                var submitData = {
+                    bumen: $('#shop').val()
+                };
+                if ($('#shop').val() != '') {
+                    $.post('index.php?g=Query&m=Consume&a=getpersonbydepart', submitData,
+                     function (data) {
+                         if (data) {
+                             $('#zhuxiu').empty();
+                             $('#zhuxiu').append("<option value=''>所有人</option>");
+
+                             $(data).each(function () {
+                                 var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
+                                 $('#zhuxiu').append(option);
+                             });
+                         }
+                     }, 'JSON');
+                } else {
+                    $('#zhuxiu').empty();
+                    $('#zhuxiu').append("<option value=''>所有人</option>");
+                }
+                $('#search').click();
+            });
+            $('#zhuxiu').change(function () {
+                $('#search').click();
+            });
+
             $("#zt").change(function () {
                 $('#search').click();
             });
@@ -392,12 +420,14 @@
                 var lb = $('#lb').val();
                 if (lb != '')
                     parms.lb = lb;
+                var zhuxiu = $('#zhuxiu').val();
+                if (zhuxiu != '')
+                    parms.zhuxiu = zhuxiu;
                 var khlb = $('#khlb').val();
                 if (khlb != '')
                     parms.khlb = khlb;
                 var zt = $('#zt').val();
-                if (zt != '')
-                    parms.zt = zt;
+                parms.zt = zt;
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     parms.searchkey = searchkey;

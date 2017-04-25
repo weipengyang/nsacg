@@ -37,6 +37,7 @@
                 关键字：<input id="searchkey" type="text" />
                 <input id="search" type="button" value="模糊查询"  />
                 <input id="highgrade" type="button" value="高级搜索" />
+                <input onclick="createcarinfo();" type="button" value="新建车辆" />
             </div>
 
             <div id="maingrid4" style="margin:0; padding:0"></div>
@@ -51,6 +52,7 @@
         var cardialog,picdialog,memberdialog;
         function carinfo(carno) {
             if (cardialog) {
+                cardialog.set('type', 'modify');
                 cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
                 cardialog.show();
             }
@@ -59,12 +61,34 @@
                     height: 500,
                     url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
                     width: 900,
+                    type:'modify',
                     showMax: true,
                     showToggle: true,
-                    showMin: true,
+                    showMin: false,
                     isResize: true,
                     modal: false,
                     title: '车俩信息编辑'
+                });
+            }
+        }
+        function createcarinfo() {
+            if (cardialog) {
+                cardialog.set('type', 'add');
+                cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo');
+                cardialog.show();
+            }
+            else {
+                cardialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=carinfo',
+                    width: 900,
+                    type:'add',
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    title: '新建车俩信息'
                 });
             }
         }
@@ -80,7 +104,7 @@
                     width: 900,
                     showMax: true,
                     showToggle: true,
-                    showMin: true,
+                    showMin: false,
                     isResize: true,
                     modal: false,
                     title: '会员资料编辑'
@@ -100,7 +124,7 @@
                     width: 900,
                     showMax: true,
                     showToggle: true,
-                    showMin: true,
+                    showMin: false,
                     isResize: true,
                     modal: false,
                     title: '车辆图片查看'

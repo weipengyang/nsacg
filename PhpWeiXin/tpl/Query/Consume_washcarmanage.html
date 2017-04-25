@@ -35,16 +35,15 @@
                                     <option value="{pigcms:$item.姓名}">{pigcms:$item.姓名}</option>
                                 </volist>
                             </select>
-                            <!--<select id="khlb">
+                            <select id="lb">
                                 <option value="">所有分类</option>
-                            </select>-->
-                           当前状态
+                                <option value="蜡水洗车">蜡水洗车</option>
+                                <option value="汽车美容">汽车美容</option>
+                            </select>
                             <select id="zt">
-                                <option value="">所有</option>
+                                <option value="">所有状态</option>
                                 <option value="报价">报价</option>
                                 <option value="派工">派工</option>
-                                <option value="领料">领料</option>
-                                <option value="审核">审核</option>
                                 <option value="结算">结算</option>
                                 <option value="出厂">出厂</option>
                                 <option value="结束">结束</option>
@@ -53,8 +52,8 @@
                             <button type="button" class="am-btn am-btn-default am-margin-right" id="my-start">开始日期</button><span id="my-startDate"></span>
                             <button type="button" class="am-btn am-btn-default am-margin-right" id="my-end">结束日期</button><span id="my-endDate"></span>
                             <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="washcar();">洗车录入</button>
-                            <!--<button type="button" class="am-btn am-btn-secondary  am-btn-sm" onclick="checkin();">结算</button>
-                            <button id="print" class="am-btn am-btn-warning" onclick="printbill();" type="button">打印结算单</button>-->
+                            <button type="button" class="am-btn am-btn-secondary  am-btn-sm" onclick="meirong();">美容录入</button>
+                            <!--<button id="print" class="am-btn am-btn-warning" onclick="printbill();" type="button">打印结算单</button>-->
                         </div>
                     </div>
                     <div class="am-u-sm-2 am-u-md-3">
@@ -75,7 +74,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.2/js/amazeui.min.js"></script>
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
-        var grid, memberdialog, wxdialog, washdialog, caldialog, printdialog, assigntaskdialog;
+        var grid, memberdialog, wxdialog,mrdialog, washdialog, caldialog, printdialog, assigntaskdialog;
         function wxinfo(xh) {
             if (wxdialog) {
                 wxdialog.setUrl('/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh);
@@ -172,6 +171,22 @@
                 });
             }
         }
+        function meirong() {
+            if (mrdialog) mrdialog.show();
+            else {
+                mrdialog = $.ligerDialog.open({
+                    height: 350,
+                    url: '/index.php?g=Query&m=Consume&a=meirong',
+                    width: 600,
+                    showToggle: false,
+                    showMin: false,
+                    isResize: true,
+                    modal: true,
+                    title: '美容录入'
+                });
+            }
+        }
+
         function submitcarkey(itemid) {
             $.ligerDialog.prompt('输入钥匙扣编号', function (yes, value) {
                 if (yes) {
@@ -195,6 +210,7 @@
         function completework(itemid) {
             var data = {
                 itemid: itemid,
+                type:'washcar'
             };
             $.post('/index.php?g=Query&m=Consume&a=completework', data,
               function (msg) {
@@ -213,25 +229,6 @@
                       grid.reload();
                   }
               });
-        }
-        function stopBubble(e) {
-            //如果提供了事件对象，则这是一个非IE浏览器 
-            if (e && e.stopPropagation)
-                //因此它支持W3C的stopPropagation()方法 
-                e.stopPropagation();
-            else
-                //否则，我们需要使用IE的方式来取消事件冒泡 
-                window.event.cancelBubble = true;
-        }
-        //阻止浏览器的默认行为 
-        function stopDefault(e) {
-            //阻止默认浏览器动作(W3C) 
-            if (e && e.preventDefault)
-                e.preventDefault();
-                //IE中阻止函数器默认动作的方式 
-            else
-                window.event.returnValue = false;
-            return false;
         }
         function checkin(code) {
             if (caldialog) {
@@ -332,6 +329,17 @@
                     });
                 }
             }, 'JSON');
+            $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {
+                if (data) {
+                    $('#shop').empty();
+                    $('#shop').append("<option value=''>所有门店</option>");
+                    $(data).each(function () {
+                        var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                        $('#shop').append(option);
+                    });
+                }
+            }, 'JSON');
+
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                 {
@@ -438,7 +446,7 @@
                 },
                 { display: '制单人', name: '制单人', minWidth: 60, align: 'left' },
                 { display: '接车人', name: '接车人', minWidth: 60 },
-                { display: '维修类别', name: '维修类别', minWidth: 80, hide: true },
+                { display: '维修类别', name: '维修类别', minWidth: 80 },
                 {
                     display: '车主', name: '车主', minWidth: 140, render: function (rowdata, index, value) {
 
@@ -541,7 +549,7 @@
                 pageSize: 20,
                 totalRender: f_totalRender,
                 alternatingRow: false,
-                url: '/index.php?g=Query&m=Consume&a=getwxinfo&lb=蜡水洗车',
+                url: '/index.php?g=Query&m=Consume&a=getwashcarinfo',
                 height: '97%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     wxinfo(data['流水号']);
@@ -591,8 +599,7 @@
                 //if (khlb != '')
                 //    parms.khlb = khlb;
                 var zt = $('#zt').val();
-                if (zt != '')
-                    parms.zt = zt;
+                parms.zt = zt;
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     parms.searchkey = searchkey;

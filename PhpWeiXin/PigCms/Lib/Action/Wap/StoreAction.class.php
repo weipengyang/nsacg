@@ -795,18 +795,21 @@ private function genbyrecord($carno,$shop='',$comment){
     if($shop=='')
         $shop=$this->getshopname();
     $data=M('维修','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
-    $data['流水号']=null;
-    unset( $data['流水号']);
+    unset($data['流水号']);
     unset($data['ROW_NUMBER']);
-    $code=M('编号单','dbo.','difo')->where(array('类别'=>'WX','日期'=>date('Y-m-d', time())))->max('队列');
-    $bianhao='WX-'.date('ymd', time()).'-'.str_pad(($code+1),3,'0',STR_PAD_LEFT);
-    M('编号单','dbo.','difo')->add(array('单据编号'=>$bianhao,'队列'=>($code+1),'类别'=>'WX','日期'=>date('Y-m-d', time())));
+    $bianhao=$this->getcodenum('WX');
     $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
     $data['车牌号码']=$carno;
     $data['送修人']=$carinfo['手机号码'];
     foreach($data as $key=>$value){
         $data[$key]=$carinfo[$key];
-    } 
+    }
+    $newcarinfo['最近保养']=date("Y-m-d",time()); 
+    $months=$carinfo['保养周期'];
+    if(!$months||$months!='0')
+        $months=6;
+    $newcarinfo['下次保养']=date("Y-m-d",strtotime("+$months month"));
+    M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->save($newcarinfo);
     $data['接车人']='系统自动';
     if(isset($carinfo['服务顾问'])&&$carinfo['服务顾问']!=''){
         $data['接车人']=$carinfo['服务顾问'];
@@ -822,9 +825,18 @@ private function genbyrecord($carno,$shop='',$comment){
     $data['结算客户ID']=$carinfo['客户ID'];
     $data['当前状态']='报价';
     $data['维修状态']='报价';
-    $data['进厂时间']=date('Y-m-d',time());
-    //$data['结算日期']=date('Y-m-d',time());
-    $data['下次保养']=null;
+    $data['进厂时间']=date('Y-m-d H:i',time());
+    unset($data['出厂时间']);
+    unset($data['开工时间']);
+    unset($data['实际完工']);
+    unset($data['购买日期']);
+    unset($data['结束日期']);
+    unset($data['预计完工']);
+    unset($data['结算日期']);
+    unset($data['上交钥匙']);
+    unset($data['完工时间']);
+    unset($data['评价时间']);
+    unset($data['下次保养']);
     $data['维修类别']='常规保养';
     $data['业务编号']=$bianhao;
     M('维修','dbo.','difo')->add($data);
@@ -843,8 +855,6 @@ private function genbyrecord($carno,$shop='',$comment){
     $row['折扣']=1;
     $row['提成工时']=1;
     $row['提成金额']=0;
-    $row['开工时间']=date('Y-m-d H:i',time());
-    //$row['完工时间']=date('Y-m-d H:i',time());
     $row['是否同意']=1;
     $row['已维修']='0小时'; 
     M('维修项目','dbo.','difo')->add($row);
@@ -870,8 +880,8 @@ private function genbyrecord($carno,$shop='',$comment){
             $this->addproduct($project,$data['ID'],$shop);
         }
     }
-    $project=M('配件目录','dbo.','difo')->where(array('名称'=>array('like','%嘉实多磁护/4L')))->find();
-        if($project){
+    $project=M('配件目录','dbo.','difo')->where(array('名称'=>array('like','%磁护/4L')))->find();
+    if($project){
             $this->addproduct($project,$data['ID'],$shop);
      }
     $this->MessageTip($carinfo,$shop,'常规保养');
@@ -1114,6 +1124,10 @@ private function genbyrecord($carno,$shop='',$comment){
            if($type==1)
            {
                $wx=M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->find();
+               if($wx['标志']=='已结算'){
+                   echo '该单已经结算';
+                   exit;
+               }
                $this->genbill($price,$wx['车主'],'维修收款('.$wx['业务编号'].')',$wx['客户ID'],'维修','维修收款',$wx['车牌号码'],$wx['门店']);
                $this->consumerecord($price,'汽车维修支付',$userinfo,$wx['车牌号码'],$wx['门店']);
                $data['出厂时间']=date('Y-m-d H:i',time());
@@ -1268,7 +1282,7 @@ private function genbyrecord($carno,$shop='',$comment){
                            if(doubleval($project['虚增金额'])>0){
                                $projectprice+=$project['虚增金额']*$project['折扣']+$project['税额'];
                            }else{
-                               if($project['券编码']){
+                               if($project['券编码']&&doubleval($project['折扣'])>0&&$wx['维修类别']!='保险理赔'){
                                    $coupon=M("member_card_coupon_record")
                                        ->where(array('token' => $this->token,
                                        'wecha_id'=>$this->wecha_id,
@@ -1296,7 +1310,7 @@ private function genbyrecord($carno,$shop='',$comment){
                                $productprice+=$product['虚增金额']*$product['折扣']+$product['税额'];
                            }
                            else{
-                               if($product['券编码']){
+                               if($product['券编码']&&doubleval($product['折扣'])>0&&$wx['维修类别']!='保险理赔'){
                                    $where['token']=$this->token;
                                    $where['wecha_id']=$this->wecha_id;
                                    $where['is_use']='0';
@@ -2659,7 +2673,9 @@ private function genbyrecord($carno,$shop='',$comment){
                             }
                             
                         }
-                        $this->sellbill($va['price'],$product['name']);
+                        if(!(strpos($product['name'], '蜡水洗车') !== false)){
+                            $this->sellbill($va['price'],$product['name']);
+                        }
                     }
                     else{
                         if(strpos($product['name'], '打蜡') !== false){
@@ -3074,7 +3090,7 @@ private function genbyrecord($carno,$shop='',$comment){
             $data['服务态度'] = $commnet['fwtd'];
             $data['服务质量'] = $commnet['fwzl'];
             $data['前台接待'] = $commnet['qtjd'];
-            if($data['服务态度']<4||$data['服务质量']<4||$data['前台接待']<4){
+            if($data['服务态度']<4||$data['服务质量']<4){
                 $content=$wx['联系人'].'车牌号为'.$wx['车牌号码'].'的车辆'.date('Y-m-d',strtotime($wx['制单日期'])).'日在'.$wx['门店'].$wx['维修类别'];
                 $content.='，客户对服务的评价低于3分，服务顾问:'.$wx['接车人'].'，服务技师:'.$wx['主修人'].',联系电话:'.$wx['联系电话'].'，请及时跟踪回访。';
                 $model=new templateNews();
@@ -3114,7 +3130,7 @@ private function genbyrecord($carno,$shop='',$comment){
             M('member_card_sign')->add($sign);
             M('userinfo')->where(array('wecha_id'=>$this->wecha_id,'token'=>$this->token))->setInc('total_score',$score);
         }
-	    echo U('Store/carinfo',array('carno' =>$wx['车牌号码'] ));
+	    echo U('Store/newcheck');
         exit;
 		
 	}

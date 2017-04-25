@@ -15,14 +15,11 @@
                 var sxf = parseFloat($("input[ligeruiid='手续费']").val() == "" ? 0 : $("input[ligeruiid='手续费']").val());
                 var jqbf = parseFloat($("input[ligeruiid='交强保费']").val() == "" ? 0 : $("input[ligeruiid='交强保费']").val());
                 var sybf = parseFloat($("input[ligeruiid='商业保费']").val() == "" ? 0 : $("input[ligeruiid='商业保费']").val());
-                var syfd = parseFloat($("input[ligeruiid='商业返点']").val() == "" ? 0 : $("input[ligeruiid='商业返点']").val());
-                var jqfd = parseFloat($("input[ligeruiid='交强返点']").val() == "" ? 0 : $("input[ligeruiid='交强返点']").val());
                 var cqs = parseFloat($("input[ligeruiid='车船税']").val() == "" ? 0 : $("input[ligeruiid='车船税']").val());
                 var yhje = parseFloat($("input[ligeruiid='优惠金额']").val() == "" ? 0 : $("input[ligeruiid='优惠金额']").val());
                 $("input[ligeruiid='总金额']").val(sxf + jqbf + sybf + cqs);
                 $("input[ligeruiid='应缴保费']").val(jqbf + sybf);
                 $("input[ligeruiid='应收金额']").val(sxf + jqbf + sybf + cqs - yhje);
-                $("input[ligeruiid='合计返点']").val(jqbf * jqfd + sybf * syfd);
             }
             var form = $("#form1").ligerForm({
                 inputWidth: 160, labelWidth: 85, space: 20,
@@ -82,19 +79,17 @@
                  { display: "驾驶员电话", name: "驾驶员电话", newline: false, type: "text" },
                  { display: "车型", name: "车型", newline: false, type: "text", readonly: true },
                  { display: "品牌", name: "品牌", newline: false, type: "text" },
-                 { display: "流水号", name: "流水号", newline: false, type: "text" ,hide:true},
+                 { display: "流水号", name: "流水号", newline: false,type: "hidden"},
                  { display: '座位数', name: '座位数', newline: false, type: "text", },
                  { display: '车架号', name: '车架号', newline: false, type: "text", },
                  { display: '发动机号', name: '发动机号', newline: false, type: "text", },
                  { display: "被保险人", name: "被保险人", newline: false, type: "text" },
                  { display: "证件号码", name: "证件号码", newline: false, type: "text" },
                  { display: "联系方式", name: "联系方式", newline: false, type: "text" },
-                 { display: '交强保单', name: '交强保单', newline: false, type: "text", },
                  {
                      display: '起始日期', name: '交强起始', newline: false, type: "date"
                  },
                  { display: '截至日期', name: '交强截至', newline: false, type: "date", },
-                 { display: '商业保单', name: '商业保单', newline: false, type: "text", },
                  { display: '起始日期', name: '商业起始', newline: false, type: "date", },
                  { display: '截至日期', name: '商业截至', newline: false, type: "date", },
                  {
@@ -130,20 +125,12 @@
                  },
                  { display: '缴费日期', name: '缴费日期', newline: false, type: "date", },
                  {
-                     display: '交强返点', name: '交强返点', newline: false, type: "float", options: {
+                     display: '返点', name: '合计返点', newline: false, type: "float", options: {
                          onBlur: function (value) {
                              calprice();
                          }
                      }
                  },
-                 {
-                     display: '商业返点', name: '商业返点', newline: false, type: "float", options: {
-                         onBlur: function (value) {
-                             calprice();
-                         }
-                     }
-                 },
-                 { display: '合计返点', name: '合计返点', newline: false, type: "text",readonly:true },
                  {
                      display: '手续费', name: '手续费', newline: false, type: "float", options: {
                          onBlur: function (value) {
@@ -164,10 +151,6 @@
 
                 ],
                 buttons: [                    {
-                        text: "取消", width: 60, click: function () {
-                            frameElement.dialog.hide();
-                        }
-                    },                    {
                         text: "保存", width: 60, click: function () {
                             var data = form.getData();
                             if (data['车牌号码'] == '') {
@@ -186,6 +169,10 @@
                                   frameElement.dialog.hide();
 
                               });
+                        }
+                    },                {
+                        text: "取消", width: 60, click: function () {
+                            frameElement.dialog.hide();
                         }
                     }            ]            });
             if (frameElement.dialog.get('type') == 'modify')

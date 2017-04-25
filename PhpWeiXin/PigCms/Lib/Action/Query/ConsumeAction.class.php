@@ -178,21 +178,21 @@ class ConsumeAction extends Action{
                    $data['出厂时间']=date('Y-m-d H:i',time());
                    $data['结束日期']=date('Y-m-d',time());
                }
-                if ($oldzt == '领料' && $zt == '审核') {
-                    $data['实际完工']=date('Y-m-d H:i');
-                    $products=M('维修配件','dbo.','difo')->where(array('ID'=>$wx['ID']))->select();
-                    if (count($products)> 0) {
-                        for ($i = 0; $i < count($products); $i++) {
-                            if ($products[$i]['虚增类别'] == null||$products[$i]['虚增类别'] == '') {
-                                $count = $products[$i]['数量'] - $products[$i]['已领料数量'];
-                                if ($count > 0) {
-                                    echo $products[$i]['名称']."未领料，不能转完工";
-                                    exit;
-                                }
-                            }
-                        }
-                    }
-                }
+                //if ($oldzt == '领料' && $zt == '审核') {
+                //    //$data['实际完工']=date('Y-m-d H:i');
+                //    $products=M('维修配件','dbo.','difo')->where(array('ID'=>$wx['ID']))->select();
+                //    if (count($products)> 0) {
+                //        for ($i = 0; $i < count($products); $i++) {
+                //            if ($products[$i]['虚增类别'] == null||$products[$i]['虚增类别'] == '') {
+                //                $count = $products[$i]['数量'] - $products[$i]['已领料数量'];
+                //                if ($count > 0) {
+                //                    echo $products[$i]['名称']."未领料，不能转完工";
+                //                    exit;
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
                 if ($oldzt == '派工' && $zt == '领料') {
                      $projects=M('维修项目','dbo.','difo')->where(array('ID'=>$wx['ID']))->select();
                     if (count($projects)> 0) {
@@ -398,6 +398,11 @@ class ConsumeAction extends Action{
             $where['维修类别']=trim($_POST['lb']);
             
         }
+        if($_POST['shop']&&trim($_POST['shop'])!='')
+        {
+            $where['门店']=trim($_POST['shop']);
+            
+        }
         if($_POST['startdate']&&trim($_POST['startdate'])!='')
         {
             $where['日期']=array('egt',trim($_POST['startdate']));
@@ -551,11 +556,11 @@ class ConsumeAction extends Action{
             $where['_complex']=$searchwhere;
 
         }
-        $count=M('个人业绩表','dbo.','difo')->join('员工目录 on 个人业绩表.主修人=员工目录.姓名')->where($where)->count();
-        $yelist=M('个人业绩表','dbo.','difo')->join('员工目录 on 个人业绩表.主修人=员工目录.姓名')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
-        $total=M('个人业绩表','dbo.','difo')->join('员工目录 on 个人业绩表.主修人=员工目录.姓名')
+        $count=M('个人业绩表','dbo.','difo')->where($where)->count();
+        $yelist=M('个人业绩表','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $total=M('个人业绩表','dbo.','difo')
             ->where($where)
-            ->field("sum(服务车辆数) 服务车辆,sum(工时费) 工时,sum(产值) 产值")
+            ->field("sum(服务车辆数) 服务车辆,sum(工时费) 工时,sum(工时数) 工时数")
             ->find();
         $data['Rows']=$yelist;
         $data['Total']=$count;
@@ -1842,24 +1847,189 @@ class ConsumeAction extends Action{
         echo json_encode($carinfo);
 
     }
-    public  function getwxinfo(){
-        $type=$_POST['type'];
+    public function getmembers(){
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
         $where['1']=1;
-        if($_GET['khID'])
-        {
-            $where['客户ID']=trim($_GET['khID']);
-        }
+		$card_create_db=M('Member_card_create');
+		$where['tp_member_card_create.wecha_id']=array('neq','');
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
-            $searchkey='%'.trim($_POST['searchkey']).'%';
+                $searchkey='%'.trim($_POST['searchkey']).'%';
+		}       
+        if($searchkey){       
+            $searchwhere['number']=array('like',$searchkey);
+            $searchwhere['tel']=array('like',$searchkey);
+            $searchwhere['carno']=array('like',$searchkey);
+            $searchwhere['carno1']=array('like',$searchkey);
+            $searchwhere['carno2']=array('like',$searchkey);
+            $searchwhere['truename']=array('like',$searchkey);
+            $searchwhere['wechaname']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
         }
-        if($_GET['lb']&&$_GET['lb']!=''){
-            if($_GET['lb']!='all')
-                $where['维修类别']=trim($_GET['lb']);
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $order='getcardtime desc';
         }
         else{
-            $where['维修类别']=array('neq','蜡水洗车');
+            $order=$sortname.' '.$sortorder;
+        }
+		$sumdata= $card_create_db->join('join tp_userinfo on tp_member_card_create.wecha_id=tp_userinfo.wecha_id')->where($where)
+            ->field('avg(expensetotal) avgexpence,sum(balance) balance,sum(total_score) total_score,count(1) count')->find(); 
+		$list= $card_create_db
+            ->join('join tp_userinfo on tp_member_card_create.wecha_id=tp_userinfo.wecha_id')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+		$data['Rows']=$list;
+        $data['Total']=$sumdata['count'];
+        $data['sumdata']=$sumdata;
+        echo json_encode($data);
+	}
+
+    public  function getcommentinfo(){
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $where['1']=1;
+        if($_POST['lb']&&trim($_POST['lb'])!='')
+        {
+            $where['维修类别']=trim($_POST['lb']);
+            
+        }
+        if($_POST['khlb']&&trim($_POST['khlb'])!='')
+        {
+            $where['客户类别']=trim($_POST['khlb']);
+            
+        }
+        if($_POST['zt']&&trim($_POST['zt'])!='')
+        {
+            $where['当前状态']=trim($_POST['zt']);
+            
+        }
+        if($_POST['shop']&&trim($_POST['shop'])!='')
+        {
+            $where['门店']=trim($_POST['shop']);
+            
+        }
+        if($_POST['startDate']&&trim($_POST['startDate'])!='')
+        {
+            $where['制单日期']=array('egt',trim($_POST['startDate']));
+            
+        }
+        else{
+            $where['制单日期']=array('egt',date('Y-m-d 00:00',time()));
+        }
+        if($_POST['endDate']&&trim($_POST['endDate'])!='')
+        {
+            $where['制单日期']=array('elt',trim($_POST['endDate']));
+            
+        }
+        if(trim($_POST['startDate'])!=''&&trim($_POST['endDate'])!='')
+        {
+            $where['制单日期']=array('BETWEEN',array(trim($_POST['startDate']),trim($_POST['endDate'])));
+            
+        } 
+        if($searchkey){       
+            $where['主修人|制单人|接车人|业务编号|车主|车牌号码|联系人|联系电话']=array('like',$searchkey);
+
+        }
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $order='流水号 desc';
+        }
+        else{
+            $order=$sortname.' '.$sortorder.',流水号 desc';
+        }
+        $wxCount=M('维修','dbo.','difo')->where($where)->count();
+        $where['车主']=array('like','%AYC%');
+        $hycount=M('维修','dbo.','difo')->where($where)->count();
+        $where['是否评论']='是';
+        $wxinfo=M('维修','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+        $count=M('维修','dbo.','difo')->where($where)->count();
+        $TotalData=M('维修','dbo.','difo')->where($where)->field('AVG(convert(float,服务质量)) 服务质量,AVG(convert(float,服务态度)) 服务态度,AVG(convert(float,前台接待)) 前台接待')->find();
+        $data['Rows']=$wxinfo;
+        $data['Total']=$count;
+        $data['hyCount']=$hycount;
+        $data['TotalData']=$TotalData;
+        $data['wxCount']=$wxCount;
+        echo json_encode($data);
+        
+    }
+    public  function gethistoryinfo(){
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $where['1']=1;
+        if($_POST['lb']&&trim($_POST['lb'])!='')
+        {
+            $where['维修类别']=trim($_POST['lb']);
+            
+        }
+        if($_POST['khID'])
+        {
+            $where['客户ID']=trim($_POST['khID']);
+        }
+        if($_POST['khlb']&&trim($_POST['khlb'])!='')
+        {
+            $where['客户类别']=trim($_POST['khlb']);
+            
+        }
+        if($_POST['carno']&&trim($_POST['carno'])!='')
+        {
+            $where['车牌号码']=trim($_POST['carno']);
+            
+        }
+        if($_POST['zt']&&trim($_POST['zt'])!='')
+        {
+            $where['当前状态']=trim($_POST['zt']);
+            
+        }
+        if($_POST['shop']&&trim($_POST['shop'])!='')
+        {
+            $where['门店']=trim($_POST['shop']);
+            
+        }
+        if($_POST['startDate']&&trim($_POST['startDate'])!='')
+        {
+            $where['制单日期']=array('egt',trim($_POST['startDate']));
+            
+        }
+        
+        if($_POST['endDate']&&trim($_POST['endDate'])!='')
+        {
+            $where['制单日期']=array('elt',trim($_POST['endDate']));
+            
+        }
+        if(trim($_POST['startDate'])!=''&&trim($_POST['endDate'])!='')
+        {
+            $where['制单日期']=array('BETWEEN',array(trim($_POST['startDate']),trim($_POST['endDate'])));
+            
+        } 
+        if($searchkey){       
+            $where['主修人|制单人|接车人|业务编号|车主|车牌号码|联系人|联系电话']=array('like',$searchkey);
+
+        }
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $order='流水号 desc';
+        }
+        else{
+            $order=$sortname.' '.$sortorder.',流水号 desc';
+        }
+        $wxCount=M('维修','dbo.','difo')->where($where)->count();
+        $wxinfo=M('维修','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+        $data['Rows']=$wxinfo;
+        $data['Total']=$wxCount;
+        echo json_encode($data);
+        
+    }
+    public  function getwashcarinfo(){
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $where['维修类别']=array('in',array('蜡水洗车','汽车美容'));
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
         }
         if($_POST['lb']&&trim($_POST['lb'])!='')
         {
@@ -1893,42 +2063,42 @@ class ConsumeAction extends Action{
         }
         if($_POST['startDate']&&trim($_POST['startDate'])!='')
         {
-            $where['制单日期']=array('egt',trim($_POST['startDate']));
+            $where1['制单日期']=array('egt',trim($_POST['startDate']));
             
         }
         else{
-            if($_GET['lb']&&$_GET['lb']!='')
-                if($_GET['lb']!='all'){
-                    $where['制单日期']=array('egt',date('Y-m-d 00:00',time()));
-                }
+            if($_GET['type']!='4'&&$_GET['type']!='1'){
+                $where1['制单日期']=array('egt',date('Y-m-d 00:00',time()));
+            }
         }
         if($_POST['endDate']&&trim($_POST['endDate'])!='')
         {
-            $where['制单日期']=array('elt',trim($_POST['endDate']));
+            $where1['制单日期']=array('elt',trim($_POST['endDate']));
             
         }
         if(trim($_POST['startDate'])!=''&&trim($_POST['endDate'])!='')
         {
-            $where['制单日期']=array('BETWEEN',array(trim($_POST['startDate']),trim($_POST['endDate'])));
+            $where1['制单日期']=array('BETWEEN',array(trim($_POST['startDate']),trim($_POST['endDate'])));
             
         }
-        if($searchkey){       
-            $searchwhere['制单人']=array('like',$searchkey);
-            $searchwhere['接车人']=array('like',$searchkey);
-            $searchwhere['维修类别']=array('like',$searchkey);
-            $searchwhere['业务编号']=array('like',$searchkey);
-            $searchwhere['车主']=array('like',$searchkey);
-            $searchwhere['车牌号码']=array('like',$searchkey);
-            $searchwhere['主修人']=array('like',$searchkey);
-            $searchwhere['客户类别']=array('like',$searchkey);
-            $searchwhere['联系人']=array('like',$searchkey);
-            $searchwhere['门店']=array('like',$searchkey);
-            $searchwhere['送修人']=array('like',$searchkey);
-            $searchwhere['联系电话']=array('like',$searchkey);
-            $searchwhere['当前状态']=array('like',$searchkey);
-            $searchwhere['_logic']='OR';  
-            $where['_complex']=$searchwhere;
+        if($_POST['zt']==''){
+            $where1['_string']="当前状态 not in ('结束','取消')";
+            $where1['_logic']='OR';  
+            $map['_complex']=$where1;
+            $map['_logic']='and';
+            if($searchkey){       
+                $map['主修人|制单人|接车人|业务编号|车主|车牌号码|联系人|联系电话']=array('like',$searchkey);
 
+            }
+            $where['_complex']=$map;
+
+        }
+        else{
+            if($where1['制单日期'])
+                $where['制单日期']=$where1['制单日期'];
+            if($searchkey){ 
+                $where['主修人|制单人|接车人|业务编号|车主|车牌号码|联系人|联系电话']=array('like',$searchkey);
+            }
         }
         $sortname=$_POST['sortname'];
         $sortorder=$_POST['sortorder'];
@@ -1938,45 +2108,134 @@ class ConsumeAction extends Action{
         else{
             $order=$sortname.' '.$sortorder.',流水号 desc';
         }
-        if(isset($type)&&$type=='1')
-        {
-            $where['_string']="当前状态 not in ('结束','取消')";
+        $wxinfo=M('维修档案','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+        $count=M('维修','dbo.','difo')->where($where)->count();
+        $where1=$where;
+        $where1['_string']=" 当前状态 !='取消' and isnull(已处理,0)>10 and isnull(已处理,0)<100";
+        $dealtime=M('维修','dbo.','difo')->where($where1)->field('sum(convert(int,isnull(已处理,0))) 已处理')->find();
+        $where['车主']=array('like','%AYC%');
+        $hycount=M('维修','dbo.','difo')->where($where)->count();
+        $where['是否评论']='是';
+        $TotalData=M('维修','dbo.','difo')->where($where)->field('count(1) commentcount,AVG(convert(float,服务质量)) 服务质量,AVG(convert(float,服务态度)) 服务态度,AVG(convert(float,前台接待)) 前台接待')->find();
+        $data['Rows']=$wxinfo;
+        $data['dealtime']=$dealtime['已处理'];
+        $data['Total']=$count;
+        $data['hyCount']=$hycount;
+        $data['TotalData']=$TotalData;
+      echo json_encode($data);
+        
+    }
 
+    public  function getwxinfo(){
+        $type=$_GET['type'];
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $where['1']=1;
+        if($_GET['lb'])
+            exit;
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
         }
-        if(isset($_GET['comment'])){
-            $wxCount=M('维修','dbo.','difo')->where($where)->count();
-            $where['车主']=array('like','%AYC%');
-            $hycount=M('维修','dbo.','difo')->where($where)->count();
-            $where['是否评论']='是';
-            $wxinfo=M('维修','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
-            $count=M('维修','dbo.','difo')->where($where)->count();
-            $TotalData=M('维修','dbo.','difo')->where($where)->field('AVG(convert(float,服务质量)) 服务质量,AVG(convert(float,服务态度)) 服务态度,AVG(convert(float,前台接待)) 前台接待')->find();
-            $data['Rows']=$wxinfo;
-            $data['Total']=$count;
-            $data['hyCount']=$hycount;
-            $data['TotalData']=$TotalData;
-            $data['wxCount']=$wxCount;
+        if($type=='1'){
+            $where['维修类别']=array('not in',array('蜡水洗车','汽车美容'));
+        }else{
+           
+        }
+        if($_POST['lb']&&trim($_POST['lb'])!='')
+        {
+            $where['维修类别']=trim($_POST['lb']);
+            
+        }
+        if($_POST['khlb']&&trim($_POST['khlb'])!='')
+        {
+            $where['客户类别']=trim($_POST['khlb']);
+            
+        }
+        if($_POST['zt']&&trim($_POST['zt'])!='')
+        {
+            $where['当前状态']=trim($_POST['zt']);
+            
+        }
+        if($_POST['shop']&&trim($_POST['shop'])!='')
+        {
+            $where['门店']=trim($_POST['shop']);
+            
+        }
+        if($_POST['zhuxiu']&&trim($_POST['zhuxiu'])!='')
+        {
+            $where['主修人']=trim($_POST['zhuxiu']);
+            
+        }
+        if($_POST['carno']&&trim($_POST['carno'])!='')
+        {
+            $where['车牌号码']=trim($_POST['carno']);
+            
+        }
+        if($_POST['startDate']&&trim($_POST['startDate'])!='')
+        {
+            $where1['制单日期']=array('egt',trim($_POST['startDate']));
+            
         }
         else{
-            if($_GET['lb']&&$_GET['lb']=='蜡水洗车'&&$_POST['zt']==null){
-                $where['当前状态']=array('neq','取消');
+            if($_GET['type']!='4'&&$_GET['type']!='1'){
+                $where1['制单日期']=array('egt',date('Y-m-d 00:00',time()));
             }
-            $wxinfo=M('维修档案','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
-            $count=M('维修档案','dbo.','difo')->where($where)->count();
-            $where1=$where;
-            $where1['_string']=" 当前状态 !='取消' and isnull(已处理,0)>10 and isnull(已处理,0)<100";
-            $dealtime=M('维修档案','dbo.','difo')->where($where1)->field('sum(convert(int,isnull(已处理,0))) 已处理')->find();
-            $where['车主']=array('like','%AYC%');
-            $hycount=M('维修档案','dbo.','difo')->where($where)->count();
-            $where['是否评论']='是';
-            $TotalData=M('维修','dbo.','difo')->where($where)->field('count(1) commentcount,AVG(convert(float,服务质量)) 服务质量,AVG(convert(float,服务态度)) 服务态度,AVG(convert(float,前台接待)) 前台接待')->find();
-            $data['Rows']=$wxinfo;
-            $data['dealtime']=$dealtime['已处理'];
-            $data['Total']=$count;
-            $data['hyCount']=$hycount;
-            $data['TotalData']=$TotalData;
         }
-        
+        if($_POST['endDate']&&trim($_POST['endDate'])!='')
+        {
+            $where1['制单日期']=array('elt',trim($_POST['endDate']));
+            
+        }
+        if(trim($_POST['startDate'])!=''&&trim($_POST['endDate'])!='')
+        {
+            $where1['制单日期']=array('BETWEEN',array(trim($_POST['startDate']),trim($_POST['endDate'])));
+            
+        }
+        if($type!=4&&$_POST['zt']==''){
+          $where1['_string']="当前状态 not in ('结束','取消')";
+          $where1['_logic']='OR';  
+          $map['_complex']=$where1;
+          $map['_logic']='and';
+          if($searchkey){       
+              $map['主修人|制单人|接车人|业务编号|车主|车牌号码|联系人|联系电话']=array('like',$searchkey);
+
+          }
+          $where['_complex']=$map;
+
+        }
+        else{
+            if($where1['制单日期'])
+               $where['制单日期']=$where1['制单日期'];
+            if($searchkey){ 
+                $where['主修人|制单人|接车人|业务编号|车主|车牌号码|联系人|联系电话']=array('like',$searchkey);
+            }
+        }
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $order='流水号 desc';
+        }
+        else{
+            $order=$sortname.' '.$sortorder.',流水号 desc';
+        }
+        $wxinfo=M('维修档案','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+        $count=M('维修','dbo.','difo')->where($where)->count();
+        $where1=$where;
+        if($_POST['lb']=='蜡水洗车'){
+            $where1['_string']=" 当前状态 !='取消' and isnull(已处理,0)>10 and isnull(已处理,0)<100";
+        }else{
+            $where1['_string']=" 当前状态 !='取消'";
+        }
+        $dealtime=M('维修','dbo.','difo')->where($where1)->field('sum(convert(int,isnull(已处理,0))) 已处理')->find();
+        $where['车主']=array('like','%AYC%');
+        $hycount=M('维修','dbo.','difo')->where($where)->count();
+        $where['是否评论']='是';
+        $TotalData=M('维修','dbo.','difo')->where($where)->field('count(1) commentcount,AVG(convert(float,服务质量)) 服务质量,AVG(convert(float,服务态度)) 服务态度,AVG(convert(float,前台接待)) 前台接待')->find();
+        $data['Rows']=$wxinfo;
+        $data['dealtime']=$dealtime['已处理'];
+        $data['Total']=$count;
+        $data['hyCount']=$hycount;
+        $data['TotalData']=$TotalData;
       echo json_encode($data);
         
     }
@@ -2388,7 +2647,13 @@ class ConsumeAction extends Action{
     }
 
     public  function getwxlb(){
-         
+        
+        if($_GET['flag']=='1'){
+         $wxlb=M('维修类别','dbo.','difo')
+             ->where(array('类别'=>array('like','%'.$_POST['key'].'%'),'类别'=>array('not in',array('蜡水洗车','汽车美容'))))
+             ->select();
+       }
+        else
         $wxlb=M('维修类别','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
         echo json_encode($wxlb);
     
@@ -2494,7 +2759,7 @@ class ConsumeAction extends Action{
        $data['Total']=$count;
        echo json_encode($data);
     }
-    public  function getproduct(){
+    public  function  getproduct(){
         $id=$_GET['id'];
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
@@ -3432,6 +3697,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
           {
             unset($project['__status']);
             unset($project['流水号']);
+            unset($project['开工时间']);
+            unset($project['完工时间']);
+
             if(isset($project['主修人'])&&$project['主修人']!=''){
                 $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>$project['主修人']))->field('班组')->find();
                 $project['班组']=$yg['班组'];
@@ -3444,6 +3712,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
           elseif($project['__status']=='update'){
               unset($project['__status']);
               unset($project['ROW_NUMBER']);
+              unset($project['开工时间']);
+              unset($project['完工时间']);
               $num=$project['流水号'];
               unset($project['流水号']);
               M('维修项目','dbo.','difo')->where(array('流水号'=>$num))->save($project);
@@ -3502,7 +3772,12 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
               M('维修配件','dbo.','difo')->where(array('流水号'=>$num))->save($product);
               $this->writeLog($product['ID'],$wxrecord['业务编号'],$wxrecord['维修类别'],'修改配件—'.$product['名称']);
 
-          }
+          }else{
+              M('维修配件','dbo.','difo')->where(array('流水号'=>$product['流水号']))->delete();
+              $this->writeLog($product['ID'],$wxrecord['业务编号'],$wxrecord['维修类别'],'删除配件—'.$product['名称']);
+
+
+           }
            $this->calprice($products[0]['ID']);
        }
        echo '保存成功';
@@ -3579,7 +3854,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $paybill['车牌号码']=$carno;
        M('应收应付单','dbo.','difo')->add($paybill);
    }
-
    public function dbcheck(){
        if(IS_POST){
            $dbinfo=$_POST['dbinfo'];
@@ -3870,7 +4144,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
       
 
    }
-  public function deletepurchase(){
+   public function deletepurchase(){
        if(IS_POST){
            $cgd=$_POST['cgd'];
            if($cgd['引用ID']!=''){
@@ -3897,183 +4171,39 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            echo '保存成功';
        }
    }
-   public function pickcheck(){
-     
-       if(IS_POST){
-           $crk=$_POST['crk'];
-           $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
-           if($crk['单据类别']=='出库'){
-               if($crkmx){
-                   foreach($crkmx as $item){
-                       $num=$item['数量'];
-                       $code=$item['编号'];
-                       $ck=$item['仓库'];
-                       if($crk['引用类别']=='维修领料'){
-                           $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
-                           $num=$pj['待审核数量'];
-                           $data['待审核数量']=0;
-                           $data['已领料数量']=$pj['已领料数量']+ $num;
-                           M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
-                       }
-                       M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num where 编号='$code'");
-                       M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓库='$ck'");
-                   }
-               }
-               $crkitem['当前状态']='已审核';
-               $crkitem['审核人']=cookie('username');
-               $crkitem['审核日期']=date('Y-m-d',time());
-               M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
-               $this->writeLog($crk['ID'],$crk['单据编号'],'出库审核',$crk['单据类别'].'出库审核');
-               echo '审核通过';
-               exit;
-           }
-           else{
-               foreach($crkmx as $item){
-                   $num=$item['数量'];
-                   $code=$item['编号'];
-                   $ck=$item['仓库'];
-                   $price=$item['单价'];
-                   if($crk['引用类别']=='维修退料'){
-                       $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
-                       $num=$pj['已退料数量'];
-                       $data['已领料数量']=$pj['已领料数量']-$num;
-                       M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
-                   }
-                   M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存+$num,最新进价=$price where 编号='$code'");
-                   M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存+$num where 编号='$code' and 仓库='$ck'");
-               }
-               $crkitem['当前状态']='已审核';
-               $crkitem['审核人']=cookie('username');
-               $crkitem['审核日期']=date('Y-m-d',time());
-               M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
-               $this->writeLog($crk['ID'],$crk['单据编号'],'入库审核','采购入库审核');
-               echo '审核通过';
-               exit;
-           }
-
-       }
-       else{
-           $this->display();
-       }
-
-   }
-   public function unpickcheck(){
-     
-       if(IS_POST){
-           $crk=$_POST['crk'];
-           $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
-           if($crk['单据类别']=='出库'){
-               if($crkmx){
-                   foreach($crkmx as $item){
-                       $num=$item['数量'];
-                       $code=$item['编号'];
-                       $ck=$item['仓库'];
-                       if($crk['引用类别']=='维修领料'){
-                           $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
-                           $data['待审核数量']=$num;
-                           $data['已领料数量']=$pj['已领料数量']-$num;
-                           M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
-                       }
-                       M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存+$num where 编号='$code'");
-                       M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存+$num where 编号='$code' and 仓库='$ck'");
-                   }
-               }
-               $crkitem['当前状态']='待审核';
-               $crkitem['审核人']=cookie('username');
-               $crkitem['审核日期']=date('Y-m-d',time());
-               M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
-               $this->writeLog($crk['ID'],$crk['单据编号'],'出库反审核',$crk['单据类别'].'出库反审核');
-               echo '反审核通过';
-               exit;
-           }
-           else{
-               foreach($crkmx as $item){
-                   $num=$item['数量'];
-                   $code=$item['编号'];
-                   $ck=$item['仓库'];
-                   $price=$item['单价'];
-                   if($crk['引用类别']=='维修退料'){
-                       $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
-                       $data['已退料数量']=$pj['已退料数量']-$num;
-                       $data['已领料数量']=$pj['已领料数量']+$num;
-                       M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
-                   }
-                   M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num,最新进价=$price where 编号='$code'");
-                   M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓库='$ck'");
-               }
-               $crkitem['当前状态']='待审核';
-               $crkitem['审核人']=cookie('username');
-               $crkitem['审核日期']=date('Y-m-d',time());
-               M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
-               $this->writeLog($crk['ID'],$crk['单据编号'],'入库反审核','采购入库反审核');
-               echo '反审核通过';
-               exit;
-           }
-
-       }
-       else{
-           $this->display();
-       }
-
-   }
-   public function deletepick(){
-       if(IS_POST){
-           $crk=$_POST['crk'];
-           if($crk['单据类别']=='出库'){
-               if($crk['引用类别']=='维修领料'){
-                   $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
-                   foreach($crkmx as $item){
-                       $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
-                       $data['待审核数量']=$pj['待审核数量']-$item['数量'];
-                       M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
-                   }
-               }
-           }else{
-               if($crk['引用类别']=='维修退料'){
-                   $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
-                   foreach($crkmx as $item){
-                       $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
-                       $data['已退料数量']=$pj['已退料数量']-$item['数量'];
-                       M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
-                   }
-               }
-           }
-           M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->delete(); 
-           M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->delete();
-           echo '删除成功';
-           exit;
-
-       }
-       else{
-           $this->display(); 
-       }
-
-   }
-   public function getpickdetail(){
-       $id=$_POST['id'];
-       $carinfo=M('出入库明细','dbo.','difo')->where(array('ID'=>$id))->select();
-       $data['Rows']=$carinfo;
-       $data['Total']=count($carinfo);
-       echo json_encode($data);
-   }
    public function carinfo()
     {
         if(IS_POST){
-            $carinfo=$_POST;
-            unset($carinfo['流水号']);
-            unset($carinfo['车辆图片']);
-            foreach($carinfo as $key=>$value){
-                if($carinfo[$key]==null||$carinfo[$key]=='null')
-                    unset($carinfo[$key]);
+            $carinfo=$_POST['carinfo'];
+            $type=$_POST['type'];
+            if($type=='add'){
+                unset($carinfo['流水号']);
+                unset($carinfo['车辆图片']);
+                foreach($carinfo as $key=>$value){
+                    if($carinfo[$key]==null||$carinfo[$key]=='null')
+                        unset($carinfo[$key]);
+                }
+                M('车辆档案','dbo.','difo')->add($carinfo);
+                echo '新增成功';
+                exit();               
+            }else{
+                $code=$carinfo['流水号'];
+                unset($carinfo['流水号']);
+                unset($carinfo['车辆图片']);
+                foreach($carinfo as $key=>$value){
+                    if($carinfo[$key]==null||$carinfo[$key]=='null')
+                        unset($carinfo[$key]);
+                }
+                if(M('车辆档案','dbo.','difo')->where(array('流水号'=>$code))->save($carinfo)){
+                    echo '保存成功';
+                    exit();
+                }else{
+                    echo '保存失败';
+                    exit();
+                    
+                } 
             }
-            if(M('车辆档案','dbo.','difo')->where(array('流水号'=>$_POST['流水号']))->save($carinfo)){
-                echo '保存成功';
-            }
-            else{
-                  echo '保存失败';
             
-            }
-            exit();
 
         }
         $carno=$_GET['carno'];
@@ -4134,7 +4264,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $this->assign('lblist',$lblist);
        $this->display();
    }
-
    public function userAnalyze()
     {
         $lblist=M('车辆档案','dbo.','difo')->Distinct(true)->field('客户类别')->order('客户类别')->select();
@@ -4319,7 +4448,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
 		}
 		$this->display();
 	}
-   public function acgmembercard(){
+  public function acgmembercard(){
         
         $user=M('用户管理','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();
         $this->assign('right',$user['权限']);
@@ -4363,7 +4492,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
 		$this->display();
 	}
    public function resetpass()
-    {
+  {
         if(IS_POST){
             $update['wecha_id']=$_GET['wecha_id'];
             $data['paypass'] = md5('123456');
@@ -4390,7 +4519,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>cookie('username')))->find();
 				M('Member_card_pay_record')->add(array('shop'=>$yg['部门'],'orderid' => $orderid , 'ordername' => '前台手动充值' ,'note'=>'操作人'.cookie('username'), 'createtime' => time() ,
                     'token' => $this->token , 'wecha_id' => $uinfo['wecha_id'] , 'price' => $_POST['price'] , 'type' => 1 , 'paid' => 1 , 'module' => 'qiantai' , 'paytime' => time() , 'paytype' =>$_POST['paytype']));
-                if(intval($_POST['price'])>=300){
+                if(intval($_POST['price'])>=500){
                     $cardnumber=$this->change($mycard['cardid'],$uinfo['wecha_id']);
                     if($cardnumber!='0'){
                        $this->changecarinfo($uinfo,$cardnumber);
@@ -4632,7 +4761,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         $this->display();
 		
     }
-
    public function consume()
     {
         if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
@@ -4750,7 +4878,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
              M('维修项目','dbo.','difo')->where(array('ID'=>$itemid))->save($item);
              $data['当前主修人']=$zhuxiu;
              $data['主修人']=$zhuxiu;
-             if(!isset($wxinfo['开工时间'])||date('Y-m-d',strtotime($wxinfo['开工时间']))=='1900-01-01'){
+             $wx=M('维修','dbo.','difo')->where(array('ID'=>$itemid))->find();
+             if(!isset($wx['开工时间'])||date('Y-m-d',strtotime($wx['开工时间']))=='1900-01-01'){
                  $data['当前状态']='派工';
                  $data['开工时间']=date('Y-m-d H:i',time());
              }
@@ -4885,6 +5014,165 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $this->display();
      }
    }
+   public function pickcheck(){      
+       if(IS_POST){
+           $crk=$_POST['crk'];
+           $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
+           if($crk['单据类别']=='出库'){
+               if($crkmx){
+                   foreach($crkmx as $item){
+                       if($item['编号']!=''){
+                           $num=$item['数量'];
+                           $code=$item['编号'];
+                           $ck=$item['仓库'];
+                           if($crk['引用类别']=='维修领料'){
+                               $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
+                               $num=$pj['待审核数量'];
+                               $data['待审核数量']=0;
+                               $data['已领料数量']=$pj['已领料数量']+ $num;
+                               M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
+                           }
+                           M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num where 编号='$code'");
+                           M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓库='$ck'");
+                       }
+                   }
+               }
+               $crkitem['当前状态']='已审核';
+               $crkitem['审核人']=cookie('username');
+               $crkitem['审核日期']=date('Y-m-d',time());
+               M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
+               $this->writeLog($crk['ID'],$crk['单据编号'],'出库审核',$crk['单据类别'].'出库审核');
+               echo '审核通过';
+               exit;
+           }
+           else{
+               foreach($crkmx as $item){
+                   $num=$item['数量'];
+                   $code=$item['编号'];
+                   $ck=$item['仓库'];
+                   $price=$item['单价'];
+                   if($crk['引用类别']=='维修退料'){
+                       $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
+                       $num=$pj['已退料数量'];
+                       $data['已领料数量']=$pj['已领料数量']-$num;
+                       M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
+                   }
+                   M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存+$num,最新进价=$price where 编号='$code'");
+                   M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存+$num where 编号='$code' and 仓库='$ck'");
+               }
+               $crkitem['当前状态']='已审核';
+               $crkitem['审核人']=cookie('username');
+               $crkitem['审核日期']=date('Y-m-d',time());
+               M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
+               $this->writeLog($crk['ID'],$crk['单据编号'],'入库审核','采购入库审核');
+               echo '审核通过';
+               exit;
+           }
+
+       }
+       else{
+           $this->display();
+       }
+
+   }
+   public function unpickcheck(){
+       if(IS_POST){
+           $crk=$_POST['crk'];
+           $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
+           if($crk['单据类别']=='出库'){
+               if($crkmx){
+                   foreach($crkmx as $item){
+                       $num=$item['数量'];
+                       $code=$item['编号'];
+                       $ck=$item['仓库'];
+                       if($crk['引用类别']=='维修领料'){
+                           $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
+                           $data['待审核数量']=$num;
+                           $data['已领料数量']=$pj['已领料数量']-$num;
+                           M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
+                       }
+                       M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存+$num where 编号='$code'");
+                       M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存+$num where 编号='$code' and 仓库='$ck'");
+                   }
+               }
+               $crkitem['当前状态']='待审核';
+               $crkitem['审核人']=cookie('username');
+               $crkitem['审核日期']=date('Y-m-d',time());
+               M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
+               $this->writeLog($crk['ID'],$crk['单据编号'],'出库反审核',$crk['单据类别'].'出库反审核');
+               echo '反审核通过';
+               exit;
+           }
+           else{
+               foreach($crkmx as $item){
+                   $num=$item['数量'];
+                   $code=$item['编号'];
+                   $ck=$item['仓库'];
+                   $price=$item['单价'];
+                   if($crk['引用类别']=='维修退料'){
+                       $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
+                       $data['已退料数量']=$pj['已退料数量']-$num;
+                       $data['已领料数量']=$pj['已领料数量']+$num;
+                       M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
+                   }
+                   M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num,最新进价=$price where 编号='$code'");
+                   M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓库='$ck'");
+               }
+               $crkitem['当前状态']='待审核';
+               $crkitem['审核人']=cookie('username');
+               $crkitem['审核日期']=date('Y-m-d',time());
+               M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
+               $this->writeLog($crk['ID'],$crk['单据编号'],'入库反审核','采购入库反审核');
+               echo '反审核通过';
+               exit;
+           }
+
+       }
+       else{
+           $this->display();
+       }
+
+   }
+   public function deletepick(){
+       if(IS_POST){
+           $crk=$_POST['crk'];
+           if($crk['单据类别']=='出库'){
+               if($crk['引用类别']=='维修领料'){
+                   $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
+                   foreach($crkmx as $item){
+                       $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
+                       $data['待审核数量']=$pj['待审核数量']-$item['数量'];
+                       M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
+                   }
+               }
+           }else{
+               if($crk['引用类别']=='维修退料'){
+                   $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
+                   foreach($crkmx as $item){
+                       $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
+                       $data['已退料数量']=$pj['已退料数量']-$item['数量'];
+                       M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
+                   }
+               }
+           }
+           M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->delete(); 
+           M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->delete();
+           echo '删除成功';
+           exit;
+
+       }
+       else{
+           $this->display(); 
+       }
+
+   }
+   public function getpickdetail(){
+       $id=$_POST['id'];
+       $carinfo=M('出入库明细','dbo.','difo')->where(array('ID'=>$id))->select();
+       $data['Rows']=$carinfo;
+       $data['Total']=count($carinfo);
+       echo json_encode($data);
+   }
    public function backpick(){
      if(IS_POST){
          $wxinfo=$_POST['wxinfo'];
@@ -4935,7 +5223,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $this->display();
      }
    }
-
    private function sumpurchaseprice($id){
        $products=M('采购明细','dbo.','difo')->where(array('ID'=>$id))->select();
        foreach($products as $product){
@@ -4983,7 +5270,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        }
        
    }
-
    public function deletepurchaseitem(){
        $ID=$_POST['ID'];
        $code=$_POST['code'];
@@ -5025,7 +5311,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $this->sumsaleprice($ID);
        echo '操作成功';
    }
-
    public function savepurchase(){
        $products=$_POST['products'];
        $ID=$_POST['ID'];
@@ -5380,21 +5665,65 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
     {  
        if(IS_POST){
            $itemid=$_POST['itemid'];
-           $wx=M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->find();
-           M('维修项目','dbo.','difo')->where(array('ID'=>$wx['ID']))->save(array('完工时间'=>date('Y-m-d H:i',time())));
-           $data['当前状态']='结算'; 
-           $data['实际完工']=date('Y-m-d H:i',time());
-           $data['已处理']=intval((time()-strtotime($wx['开工时间']))/60);
-           M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save($data);
-           $user=M('member_card_car')->where(array('carno'=>$wx['车牌号码']))->find();
+           $type=$_POST['type'];
+           $wxinfo=M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->find();
+           M('维修项目','dbo.','difo')->where(array('ID'=>$wxinfo['ID']))->save(array('完工时间'=>date('Y-m-d H:i',time())));
+           $wxdata['当前状态']='结算'; 
+           $wxdata['实际完工']=date('Y-m-d H:i',time());
+           $wxdata['已处理']=intval((time()-strtotime($wxinfo['开工时间']))/60);
+           M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save($wxdata);
+           if($type=='baoyang'){
+               $wxID=$wxinfo['ID'];
+               $data['ID']=$this->getcode(20,1,1);
+               $data['引用单号']=$wxinfo['业务编号'];
+               $data['引用ID']=$wxID;
+               $data['引用类别']='维修领料';
+               $data['单据编号']=$this->getcodenum('CK');
+               $data['制单日期']=date('Y-m-d',time());
+               $data['制单人']=cookie('username');
+               $data['车牌号码']=$wxinfo['车牌号码'];
+               $data['当前状态']='已审核';
+               $data['审核人']='系统自动';
+               $data['审核日期']=date('Y-m-d',time());
+               $data['原因']='维修领料';
+               $data['领料员']=$wxinfo['接车人'];
+               $data['单据类别']='出库';
+               $data['单据备注']='保养自动出库';
+               M('出入库单','dbo.','difo')->add($data);
+               $products=M('维修配件','dbo.','difo')->where(array('ID'=>$wxID))->select();
+               foreach($products as $product){
+                   $crk['ID']=$data['ID'];
+                   $crk['仓库']=$product['仓库'];
+                   $crk['编号']=$product['编号'];
+                   $crk['名称']=$product['名称'];
+                   $crk['规格']=$product['规格'];
+                   $crk['单位']=$product['单位'];
+                   $crk['数量']=$product['数量'];
+                   $crk['单价']=$product['单价'];
+                   $crk['金额']=$product['金额'];
+                   $crk['成本价']=$product['成本价'];
+                   $crk['适用车型']=$product['适用车型'];
+                   $crk['产地']=$product['产地'];
+                   $crk['备注']=$product['备注'];
+                   $num=$product['数量'];
+                   $code=$product['编号'];
+                   $ck=$product['仓库'];
+                   M('出入库明细','dbo.','difo')->add($crk);
+                   M('维修配件','dbo.','difo')->execute("UPDATE 维修配件 SET 已领料数量=$num WHERE ID='$wxID'and 编号='$code'");
+                   M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存-$num where 编号='$code'");
+                   M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存-$num where 编号='$code' and 仓库='$ck'");
+                   
+               }
+           }
+           $user=M('member_card_car')->where(array('carno'=>$wxinfo['车牌号码']))->find();
            $model  = new templateNews();
            $dataKey    = 'TM151213';
            $dataArr    = array(
                'first'         => '尊敬的车主，您的爱车已经维修完毕。',
-               'keyword1'      =>$wx['车牌号码'],//车牌号
+               'keyword1'      =>$wxinfo['车牌号码'],//车牌号
                'keyword2'      => date('Y-m-d H:i',time()),//完工时间
-               'keyword3'      => $wx['接车人'],//接车人与联系电话
-               'keyword4'      => $wx['应收金额'].'元',//维修费用
+               'keyword3'      => $wxinfo['接车人'],//接车人与联系电话
+               'keyword4'      => $wxinfo['应收金额'].'元',//维修费用
                'wecha_id'      => $user['wecha_id'],
                'remark'        => '请您安排时间到店取车，结算请点击详情。',
                'url'           => U('Wap/Store/newcheck',array('token'=>$this->token,'wecha_id'=>$user['wecha_id']),true,false,true),
@@ -6149,6 +6478,23 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $this->display();
        }
    }
+   public function byrecord()
+   {
+       if(IS_POST){
+           $wxinfo=$_POST['wxinfo'];
+           if(isset($wxinfo))
+           {
+               $result=$this->genwxrecord($wxinfo['车牌号码'],null,$wxinfo['维修类别'],$wxinfo['主修人'],
+               $wxinfo['接车人'],$wxinfo['里程表'],$wxinfo['油位表'],$wxinfo['联系人'],$wxinfo['联系电话'],$wxinfo['轮胎规格'],$wxinfo['故障描述'],$wxinfo['预计完工']);
+               echo $result;
+               exit;
+           }
+          
+       }
+       else{
+           $this->display();
+       }
+   }
    public function notices(){
        $this->display();
    }
@@ -6296,7 +6642,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
    private function genwxrecord($carno,$type='',$wxlb='',$person,$fwgw,$licheng=null,$youwei=null,$lxr=null,$phone=null,$luntai=null,$fault=null,$yjwg=null){
       
         $data=M('维修','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
-        $data['流水号']=null;
         unset($data['流水号']);
         unset($data['ROW_NUMBER']);
         $bianhao=$this->getcodenum('WX');
@@ -6304,11 +6649,13 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         if($type!=''){
             $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>$type))->find();
         }
+        if($wxlb=='常规保养'){
+            $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>'机油更换'))->find();
+        }
         $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>$fwgw))->find();
         if($carinfo)
         {
             $carinfo['最近维修']=date('Y-m-d',time());
-            //$carinfo['服务顾问']=$fwgw;
             $carinfo['维修次数']=intval($carinfo['维修次数'])+1;
             $carinfo['轮胎规格']=$luntai;
             if(isset($licheng)){
@@ -6372,7 +6719,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 $carinfo['客户ID']=$czinfo['ID'];
                 $carinfo['客户类别']='1星客户';
                 $carinfo['最近维修']=date('Y-m-d',time());
-                //$carinfo['服务顾问']=$fwgw;
                 $carinfo['维修次数']=1;
                 $carinfo['手机号码']=$phone;
                 $carinfo['联系电话']=$phone;
@@ -6433,12 +6779,10 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $data['进厂里程']=$licheng;
         }
         $data['单据类别']='快修单';
-        $data['当前状态']='结算';
-        $data['维修状态']='结算';
+        $data['当前状态']='报价';
+        $data['维修状态']='报价';
         if(!in_array($wxlb,array('蜡水洗车','汽车美容','普通快修'))){
             $data['单据类别']='普通单';
-            $data['当前状态']='报价';
-            $data['维修状态']='报价';
         }
         $data['当前主修人']=$person;
         $data['主修人']=$person;
@@ -6457,15 +6801,15 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         $data['整单服务折扣']=1;
         $data['整单销售折扣']=1;
         if($wxlb!='保险理赔'){
-            $memberinfo=M('会员详细信息','dbo.','difo')->where(array('ID'=>$$carinfo['客户ID']))->find();         
+            $memberinfo=M('会员详细信息','dbo.','difo')->where(array('ID'=>$carinfo['客户ID']))->find();         
             $data['整单服务折扣']=$memberinfo['服务折扣1'];
-            $data['整单销售折扣']=$memberinfo['服务折扣1'];;
+            $data['整单销售折扣']=$memberinfo['销售折扣1'];;
         }
         unset($data['结算日期']);
+        unset($data['开工时间']);
         unset($data['上交钥匙']);
         unset($data['评价时间']);
         $data['进厂时间']=date('Y-m-d H:i',time());
-        //$data['结算日期']=date('Y-m-d',time());
         $data['维修类别']=$wxlb;
         $data['报称故障']=$fault;
         if(isset($xm))
@@ -6476,7 +6820,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         $data['应收金额']=$price;
         $data['业务编号']=$bianhao;
         M('维修','dbo.','difo')->add($data);
-        if(in_array($wxlb,array('蜡水洗车','汽车美容'))){
+        if(in_array($wxlb,array('蜡水洗车','汽车美容','常规保养'))){
             $row=array();
             $row['ID']=$data['ID'];
             $row['项目编号']=$xm['项目编号'];
@@ -6488,17 +6832,40 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $row['单价']=$xm['标准金额'];
             $row['金额']=$xm['标准金额'];
             $row['虚增类别']='';
-            $row['折扣']=1;
+            $row['折扣']=$data['整单服务折扣'];
             $row['提成工时']=1;
             $row['提成金额']=1;
             $row['主修人']=$person;
             $row['班组']=$yg['班组'];
-            $row['开工时间']=date('Y-m-d H:i',time());
-            //$row['完工时间']=date('Y-m-d H:i',time());
             $row['是否同意']=1;
-            $row['已维修']='0小时'; 
-
             M('维修项目','dbo.','difo')->add($row);
+        }
+        if($wxlb=='常规保养'){
+            if(isset($carinfo['机油格'])&&$carinfo['机油格']!='')
+            {
+                $project=M('配件目录','dbo.','difo')->where(array('类别'=>array('like','%机油格'),'编码'=>$carinfo['机油格']))->find();
+                if($project){
+                    $this->addbyproduct($project,$data['ID'],$yg['部门'],$data['整单销售折扣']);
+                }
+            }
+            if(isset($carinfo['空气格'])&&$carinfo['空气格']!='')
+            {
+                $project=M('配件目录','dbo.','difo')->where(array('类别'=>array('like','%空气格'),'编码'=>$carinfo['空气格']))->find();
+                if($project){
+                    $this->addbyproduct($project,$data['ID'],$yg['部门'],$data['整单销售折扣']);
+                }
+            }
+            if(isset($carinfo['冷气格'])&&$carinfo['冷气格']!='')
+            {
+                $project=M('配件目录','dbo.','difo')->where(array('类别'=>array('like','%冷气格'),'编码'=>$carinfo['冷气格']))->find();
+                if($project){
+                    $this->addbyproduct($project,$data['ID'],$yg['部门'],$data['整单销售折扣']);
+                }
+            }
+            $project=M('配件目录','dbo.','difo')->where(array('名称'=>array('like','%磁护/4L')))->find();
+            if($project){
+                $this->addbyproduct($project,$data['ID'],$yg['部门'],$data['整单销售折扣']);
+            }
         }
         $this->writeLog($data['ID'],$bianhao,$wxlb,'维修录入');
         $this->calprice($data['ID']);
@@ -6506,6 +6873,29 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
 
        
    } 
+   private function addbyproduct($project,$wxid,$shop,$discount=1){
+       $row['ID'] = $wxid;
+       $row['编号'] = $project['编号'];
+       $row['仓库'] = '区府门店仓库';
+       if ($shop=='塘坑店')
+           $row['仓库'] = '塘坑门店仓库';;
+       $row['名称'] = $project['名称'];
+       $row['券编码'] = $project['券编码'];
+       $row['规格'] = $project['规格'];
+       $row['结算方式'] = '客付';
+       $row['单位'] = $project['库存单位'];
+       $row['虚增类别'] ='';
+       $row['单价'] = $project['参考售价'];
+       $row['折扣'] = $discount;
+       $row['数量'] = 1;
+       $row['金额'] = $row['数量'] * $row['单价'];
+       //row['金额'] = row['数量'] * row['单价'] * row['折扣'];
+       $row['税率'] = 0;
+       $row['成本价'] = $project['成本价'];
+       $row['税额'] = $row['金额'] * $row['税率'];
+       $row['备注'] = $project['备注'];
+       M('维修配件','dbo.','difo')->add($row);
+   }
    private function writeLog($id,$ywbh,$type,$content)
    {
        $username=cookie('username');

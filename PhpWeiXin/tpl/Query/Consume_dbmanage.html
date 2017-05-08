@@ -42,19 +42,17 @@
         <div class="admin-content">
             <div class="admin-content-body">
                 <div class="am-g">
-                    <div class="am-u-sm-4 am-u-md-4">
+                    <div class="am-u-sm-3 am-u-md-3">
                         <div class="am-form-group">
-                            业务员
                             <select id="fwgw">
                                 <option value="">所有人</option>
                             </select>
-                            车管单位
                             <select id="cgdw">
                                 <option value="">所有</option>
                             </select>
                         </div>
                     </div>
-                    <div class="am-u-sm-1 am-u-md-1">
+                    <div class="am-u-sm-2 am-u-md-2">
                         <div class="am-input-group am-datepicker-date" style="width:100px" data-am-datepicker="{format: 'yyyy-mm-dd'}">
                             <input type="text" class="am-form-field" id="startdate" style="width:100px" placeholder="开始日期" readonly>
                             <span class="am-input-group-btn am-datepicker-add-on">
@@ -62,7 +60,7 @@
                             </span>
                         </div>
                     </div>
-                    <div class="am-u-sm-1 am-u-md-1 am-u-md-offset-1 am-u-sm-offset-1">
+                    <div class="am-u-sm-2 am-u-md-2">
                         <div class="am-input-group am-datepicker-date" style="width:100px" data-am-datepicker="{format: 'yyyy-mm-dd'}">
                             <input type="text" class="am-form-field" id="enddate" style="width:100px" placeholder="结束日期" readonly>
                             <span class="am-input-group-btn am-datepicker-add-on">
@@ -70,7 +68,7 @@
                             </span>
                         </div>
                     </div>
-                    <div class="am-u-sm-2 am-u-md-2  am-u-end am-u-md-offset-1">
+                    <div class="am-u-sm-2 am-u-md-2">
                         <div class="am-input-group am-input-group-sm">
                             <input type="text" id="searchkey" class="am-form-field">
                             <span class="am-input-group-btn">
@@ -78,17 +76,16 @@
                             </span>
                         </div>
                     </div>
-                    <div class="am-u-sm-2 am-u-md-2">
+                    <div class="am-u-sm-3 am-u-md-3 am-u-end">
                         <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="record();">登记</button>
                         <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="check();">审核</button>
+                        <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="printbill();">打印</button>
                         <!--<button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="exportdata();">导出数据</button>-->
                     </div>
                 </div>
                 <div id="maingrid4" style="margin:0; padding:0;"></div>
                 </div>
             </div>
-        </div>
-    </div>
     <!-- content end -->
     </div>
     <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
@@ -96,8 +93,33 @@
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         var  grid;
-        var cardialog, dbdialog, caldialog,memberdialog;
+        var cardialog, dbdialog, modifydialog, caldialog, memberdialog,printdialog;
         var record;
+        function printbill() {
+            var row = grid.getSelectedRow();
+            if (row) {
+                if (printdialog) {
+                    printdialog.setUrl('/index.php?g=Query&m=Consume&a=printdbbill&ID=' + row['ID']);
+                    printdialog.show();
+                } else {
+                    printdialog = $.ligerDialog.open({
+                        height: 600,
+                        url: '/index.php?g=Query&m=Consume&a=printdbbill&ID=' + row['ID'],
+                        width: 950,
+                        showMax: true,
+                        showToggle: true,
+                        showMin: false,
+                        isResize: true,
+                        modal: false,
+                        title: '打印销售单'
+                    });
+                }
+            }
+            else {
+                $.ligerDialog.alert('请选择要打印的单');
+            }
+        }
+
         function memberinfo(carno) {
             if (memberdialog) {
                 memberdialog.setUrl('/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno);
@@ -139,6 +161,7 @@
         }
         function record() {
             if (dbdialog) {
+                dbdialog.set('opttype', 'add');
                 dbdialog.setUrl('/index.php?g=Query&m=Consume&a=dbrecord');
                 dbdialog.show();
             }
@@ -147,15 +170,43 @@
                     height: 500,
                     url: '/index.php?g=Query&m=Consume&a=dbrecord',
                     width: 900,
+                    opttype:'add',
                     showMax: true,
                     showToggle: true,
-                    showMin: true,
+                    showMin: false,
                     isResize: true,
                     modal: false,
                     title: '代办登记'
                 });
             }
+            dbdialog.max();
+
         }
+        function modifyinfo(data) {
+            if (modifydialog) {
+                modifydialog.set('opttype', 'modify');
+                modifydialog.set('data', data);
+                modifydialog.setUrl('/index.php?g=Query&m=Consume&a=dbrecord');
+                modifydialog.show();
+            }
+            else {
+                modifydialog = $.ligerDialog.open({
+                    height: 620,
+                    url: '/index.php?g=Query&m=Consume&a=dbrecord',
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    opttype: 'modify',
+                    data: data,
+                    title: '保险登记'
+                });
+            }
+            modifydialog.max();
+        }
+
         function check() {
             var row = grid.getSelectedRow();
             if (row) {
@@ -200,7 +251,7 @@
            function (data) {
                if (data) {
                    $('#fwgw').empty();
-                   $('#fwgw').append("<option value=''>所有人</option>");
+                   $('#fwgw').append("<option value=''>所有业务员</option>");
                    $(data).each(function () {
                        var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
                        $('#fwgw').append(option);
@@ -211,7 +262,7 @@
               function (data) {
                   if (data) {
                       $('#cgdw').empty();
-                      $('#cgdw').append("<option value=''>所有</option>");
+                      $('#cgdw').append("<option value=''>所有车管单位</option>");
                       $(data).each(function () {
                           var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
                           $('#cgdw').append(option);
@@ -228,14 +279,14 @@
                         }
                     },
                  {
-                    display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
+                    display: '制单日期', name: '制单日期', minWidth: 90, render: function (rowdata, index, value) {
                         return todate(value, false);
                     }
                  },
-                { display: '制单人', name: '制单人', width: 100, align: 'left' },
-                { display: '业务员', name: '业务员', minWidth: 100 },
+                { display: '制单人', name: '制单人', width: 80, align: 'left' },
+                { display: '业务员', name: '业务员', minWidth: 80 },
                 { display: '车管单位', name: '车管单位', minWidth: 120 },
-                { display: '代办类别', name: '代办类别', minWidth: 120 },
+                { display: '代办类别', name: '代办类别', minWidth: 80 },
                 {
                     display: '车主', name: '车主', minWidth: 140, render: function (rowdata, index, value) {
 
@@ -250,11 +301,11 @@
 
                     }
                 },
-                { display: '驾驶员', name: '驾驶员', minWidth: 140 },
+                { display: '驾驶员', name: '驾驶员', minWidth: 100 },
                 { display: '驾驶证号', name: '驾驶证号', minWidth: 100 },
                 { display: '驾驶员电话', name: '驾驶员电话', minWidth: 80 },
                 { display: '结算方式', name: '结算方式', minWidth: 80 },
-                { display: '代办单号', name: '代办单号', minWidth: 80 },
+                { display: '代办单号', name: '代办单号', minWidth: 80,hide:true },
                 { display: '代办费用', name: '代办费用', minWidth: 80 },
                 { display: '优惠金额', name: '优惠金额', minWidth: 100 },
                 {
@@ -265,14 +316,22 @@
                 { display: '手续费', name: '手续费', minWidth: 80 },
                 { display: '总金额', name: '总金额', minWidth: 80 },
                 { display: '审核人', name: '审核人', minWidth: 80 },
-                { display: '审核日期', name: '审核日期', minWidth: 80 },
-                { display: '备注', name: '备注', minWidth:100 },
+                {
+                    display: '审核日期', name: '审核日期', minWidth: 80, render: function (rowdata, index, value) {
+                        return todate(value, false);
+                    }
+                },
+                { display: '备注', name: '备注', minWidth:140 },
                 ],
                 isScroll: true,
                 pageSize: 20,
+                fixedCellHeight:false,
                 totalRender: f_totalRender,
                 url: '/index.php?g=Query&m=Consume&a=getdbdata',
                 height: '95%',
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    modifyinfo(data);
+                }
             });
             $("#fwgw").change(function () {
                 $('#search').click();

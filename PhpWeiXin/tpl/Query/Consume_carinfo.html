@@ -119,6 +119,22 @@
                                         url: '/index.php?g=Query&m=Consume&a=getgw',
                                     }, group: '车辆信息'
                                 },
+                                { display: "座位数", name: "座位数", newline: false, type: "text", group: '车辆信息' },
+                                {
+                                    display: "是否在用", name: "是否在用", newline: false, type: "combobox", options: {
+                                        valueField: 'name',
+                                        textField: 'name',
+                                        data: data
+                                    }, group: '车辆信息'
+                                },
+                                {
+                                    display: "是否免检", name: "是否免检", newline: false, type: "combobox", options: {
+                                        valueField: 'name',
+                                        textField: 'name',
+                                        data: data
+                                    }, group: '车辆信息'
+                                },
+
                                {
                                    display: "车主", name: "车主", newline: false, type: "popup", options: {
                                         condition: {
@@ -324,6 +340,7 @@
                     $("input[ligeruiid='车辆类别']").val(carinfo['车辆类别']);
                     $("input[ligeruiid='保险公司']").val(carinfo['保险公司']);
                     $("input[ligeruiid='服务顾问']").val(carinfo['服务顾问']);
+                    $("input[ligeruiid='是否在用']").val(carinfo['是否在用']);
                     $("div[data-index='1']").html(
                       '<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=fileupload&carno='+ carinfo['流水号']+ '"></iframe></div>'
                      );

@@ -262,12 +262,12 @@
                              if (usetime > prehour) {
                                  if(usetime>3600*1000)
                                      return "<span style='color:red'>" + (usetime / 3600000).toFixed(2) + "小时</span>";
-                                 return "<span style='color:red'>" +usetime / 60000 + "分钟</span>";
+                                 return "<span style='color:red'>" + (usetime / 60000).toFixed(2) + "分钟</span>";
 
                              } else {
                                  if (usetime > 3600 * 1000)
                                      return "<span style='color:blue'>" + (usetime / 3600000).toFixed(2) + "小时</span>";
-                                 return "<span style='color:blue'>" + usetime / 60000 + "分钟</span>";
+                                 return "<span style='color:blue'>" + (usetime / 60000).toFixed(2) + "分钟</span>";
                              }
                          }
                          return '';

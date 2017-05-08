@@ -50,7 +50,7 @@
                         }
                     },
                     {
-                        display: "车牌号码 ", name: "车牌号码", newline: true, type: "text",
+                        display: "车牌号码 ", name: "车牌号码", newline: false, type: "text",
                         options: {
                         onBlur: function (value) {
                         var carno = this.getValue();
@@ -77,6 +77,7 @@
             },
                     { display: "车主", name: "车主", newline: false, type: "text" },
                     { display: "客户ID", name: "客户ID", newline: false, type: "hidden" },
+                    { display: "流水号", name: "流水号", newline: false, type: "hidden" },
                     { display: "驾驶员", name: "驾驶员", newline: false, type: "text" },
                     {
                         display: "驾驶证号", name: "驾驶证号", newline: false, type: "text"
@@ -126,8 +127,11 @@
                                 $.ligerDialog.alert('请输入车牌号码');
                                 return;
                             }
+                            data = JSON2.parse(JSON2.stringify(data));
+                            data['备注'] = $("#备注").val();
+                            var type = frameElement.dialog.get('opttype');
                             var submitData = {
-                                type:'add',
+                                type:type,
                                 dbinfo: data
                             };
                             $.post('index.php?g=Query&m=Consume&a=savedbinfo', submitData,
@@ -143,7 +147,16 @@
                             frameElement.dialog.hide();
                         }
                     }            ]            });
+            if (frameElement.dialog.get('opttype') == 'modify'){
+                setTimeout(function () {
+                    var record = frameElement.dialog.get('data');  
+                    form.setData(record);
+                    $("input[ligeruiid='起始日期']").val(todate(record['起始日期']));
+                    $("input[ligeruiid='截至日期']").val(todate(record['截至日期']));
+                    $("input[ligeruiid='缴费日期']").val(todate(record['缴费日期']));
+                }, 400);
 
+            }
             $("input[ligeruiid='起始日期']").blur(function () {
                 var strdate = this.value;
                 var myDate = new Date();

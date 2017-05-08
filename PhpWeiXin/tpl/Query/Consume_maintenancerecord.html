@@ -375,7 +375,7 @@
                     }
                     var data = {
                         itemid: itemid,
-                        keynum: value
+                        keynum: value,
 
                     };
                     $.post('/index.php?g=Query&m=Consume&a=submitcarkey', data,
@@ -490,8 +490,8 @@
                 };
                 if (oldzt == '领料' && zt == '审核') {
                     var rows = product.rows;
+                    var flag = false, content = '';
                     if (rows.length > 0) {
-                        var flag = false, content='';
                         for (var i = 0; i < rows.length; i++) {
                             if (rows[i]['虚增类别'] == null || rows[i]['虚增类别'] == '') {
                                 var count = rows[i]['数量'] - rows[i]['已领料数量'];
@@ -502,31 +502,49 @@
                             }
 
                         }
-                        if (flag) {
-                            $.ligerDialog.confirm(content + '，确认转入审核？', function (yes) {
-                                if (yes) {
-                                    $.post('/index.php?g=Query&m=Consume&a=changestate', data,
-                                      function (msg) {
-                                          if (msg == '1') {
-                                              $('#' + opt).click();
-                                              setTimeout(function () {
-                                                  for (var i = 0; i < grid.data.Rows.length; i++) {
-                                                      if (grid.data.Rows[i]['流水号'] == row['流水号']) {
-                                                          grid.select(grid.data.Rows[i]);
+                    }
+                    if (flag) {
+                        $.ligerDialog.confirm(content + '，确认转入审核？', function (yes) {
+                            if (yes) {
+                                $.post('/index.php?g=Query&m=Consume&a=changestate', data,
+                                  function (msg) {
+                                      if (msg == '1') {
+                                          $('#' + opt).click();
+                                          setTimeout(function () {
+                                              for (var i = 0; i < grid.data.Rows.length; i++) {
+                                                  if (grid.data.Rows[i]['流水号'] == row['流水号']) {
+                                                      grid.select(grid.data.Rows[i]);
 
-                                                      }
                                                   }
-                                              }, 500);
-                                          }
-                                          else {
-                                              $.ligerDialog.alert(msg);
-                                          }
-                                      });
-                                } else {
-                                    return;
-                                }
-                            });
-                        }
+                                              }
+                                          }, 500);
+                                      }
+                                      else {
+                                          $.ligerDialog.alert(msg);
+                                      }
+                                  });
+                            } else {
+                                return;
+                            }
+                        });
+                    } else {
+                        $.post('/index.php?g=Query&m=Consume&a=changestate', data,
+                                 function (msg) {
+                                     if (msg == '1') {
+                                         $('#' + opt).click();
+                                         setTimeout(function () {
+                                             for (var i = 0; i < grid.data.Rows.length; i++) {
+                                                 if (grid.data.Rows[i]['流水号'] == row['流水号']) {
+                                                     grid.select(grid.data.Rows[i]);
+
+                                                 }
+                                             }
+                                         }, 500);
+                                     }
+                                     else {
+                                         $.ligerDialog.alert(msg);
+                                     }
+                                 });
                     }
                 }
                 else {
@@ -731,7 +749,13 @@
 
                          }
                          if (rowdata.上交钥匙 == "" || rowdata.上交钥匙 == null || rowdata.上交钥匙 == "null" || todate(rowdata.上交钥匙, false) == '1900-01-1') {
-                             strhtml += '|<a href="javascript:void(0);" onclick="submitcarkey(\'' + rowdata.流水号 + '\');"><strong>钥匙上交</strong></a>';
+                             var start = new Date(Date.parse(todate(rowdata.进厂时间, true)));
+                             var end = new Date();
+                             if (parseInt((end - start) / 60000) > 60 && rowdata.当前状态 != '结束' && rowdata.当前状态 != '取消') {
+                                 cancelwash(rowdata.流水号, false);
+                             } else {
+                                 strhtml += '|<a href="javascript:void(0);" onclick="submitcarkey(\'' + rowdata.流水号 + '\');"><strong>钥匙上交</strong></a>';
+                             }
                          }
                          if (rowdata.当前状态 == '派工') {
                              if (rowdata.单据类别 == '快修单') {
@@ -777,8 +801,8 @@
                 { display: '联系人', name: '联系人', minWidth: 100 },
                  {
                      display: '已处理', name: '', minWidth: 175, render: function (rowdata, index, value) {
-                         if (rowdata.进厂时间 != "" && rowdata.进厂时间 != null && rowdata.进厂时间 != "null" && todate(rowdata.进厂时间, false) != '1900-01-1') {
-                             var start = new Date(Date.parse(todate(rowdata.进厂时间, true)));
+                         if (rowdata.上交钥匙 != "" && rowdata.上交钥匙 != null && rowdata.上交钥匙 != "null" && todate(rowdata.上交钥匙, false) != '1900-01-1') {
+                             var start = new Date(Date.parse(todate(rowdata.上交钥匙, true)));
                              var pretime = new Date(Date.parse(todate(rowdata.预计完工, true)));
                              var prehour = ((pretime - start) / 60000 / 60).toFixed(2);
                              var usehour = 0;
@@ -960,7 +984,7 @@
                                     display: "实际完工", name: "实际完工", newline: false, type: "text", readonly: true
                                 },
                                 { display: "取消原因", name: "取消原因", newline: false, type: "text" },
-                                { display: "维修状态", name: "维修状态", newline: false, type: "text" },
+                                { display: "钥匙编号", name: "钥匙编号", newline: false, type: "text" },
                                 { display: "当前状态", name: "当前状态", newline: false, type: "text" },
                                 { display: "门店", name: "门店", newline: false, type: "text" },
                                 //{

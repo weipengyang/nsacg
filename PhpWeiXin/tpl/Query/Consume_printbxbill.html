@@ -1,0 +1,189 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>打印保险结算单</title>
+    <meta name="description" content="爱养车" />
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        // 打印页面设置
+        function printsetup() {
+            wb.execwb(8, 1);
+        }
+        // 打印页面预览
+        function printpreview() { wb.execwb(7, 1); }
+        function printit() { if (confirm('确定打印吗？')) { wb.execwb(6, 6) } }
+
+
+        function printpage() {
+            document.getElementById("noprint").style.display = "none"; //打印整个页面包括标题，在调用打印方法之前隐藏不需要打印的页面标签。无标题将不打印标题
+            print();
+        }
+
+        function printsetup() {
+            try {
+                document.all.WebBrowser.ExecWB(8, 1);
+            }
+            catch (e) {
+            }
+            printpage();
+        }
+        function getQueryString(name) {
+            var now_url = document.location.search.slice(1), q_array = now_url.split('&');
+            for (var i = 0; i < q_array.length; i++) {
+                var v_array = q_array[i].split('=');
+                if (v_array[0] == name) {
+                    return v_array[1];
+                }
+            }
+            return false;
+        }
+
+    </script>
+</head>
+
+<body style="padding:10px">
+    <div style="text-align: center">
+        <input type="button" value="打印" id="noprint" class="btnnm btnSearch" onmouseover="this.className='btnon btnSearch'"
+               onmouseout="this.className='btnnm btnSearch'" onclick="printsetup();" />
+    </div>
+    <br />
+    <div id="form1">
+        <table cellpadding="0" cellspacing="0" width="100%"  align="center">
+        <tr>
+            <td colspan="4" style="height: 30px; font-weight: bold; font-size: 18px; text-align: center;color:#000000">
+                广州市爱卡汽车服务有限公司保险代办结算单
+            </td>
+        </tr>
+        <tr style="height: 30px;"><td style="font-size: 13px;color:#000000">
+                业务编号:{pigcms:$xsrecord['单据编号']}
+            </td>
+            <td style="font-size: 13px;color:#000000">
+                制单日期:{pigcms:$xsrecord['制单日期']|strtotime|date="Y-m-d",###}
+            </td>
+            <td style="font-size: 13px;color:#000000">
+                制单人:{pigcms:$xsrecord['制单人']}
+            </td>
+            <td style="font-size: 13px;color:#000000">
+                业务员:{pigcms:$xsrecord['业务员']}
+            </td>
+            <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;"></td>
+        </tr>
+    </table>
+        <table cellpadding="0" cellspacing="0" width="100%" border="0" style="border:1px #000000 solid;border-bottom:0px;">
+            <tr style="height: 30px;">
+                <td style="font-size: 13px; padding-left:5px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                  客户名称：{pigcms:$xsrecord['车主']}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                    车牌号码:{pigcms:$xsrecord['车牌号码']}
+                </td>
+                <td style="font-size: 13px; padding-left:5px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                  联系人:{pigcms:$userinfo['联系人']}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                 联系电话:{pigcms:$userinfo['联系电话']}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;"></td>
+            </tr>
+            <tr style="height: 30px;">
+                <td style="font-size: 13px; padding-left:5px;color:#000000;border-style:solid;border-width: 0 0 1px 0;"> 
+                    车辆类别：{pigcms:$xsrecord['车辆类别']}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                    车架号：{pigcms:$xsrecord['车架号']}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                    发动机号：{pigcms:$xsrecord['发动机号']}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                </td>
+                <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;"></td>
+            </tr>
+            <tr style="height: 30px;">
+                <td style="font-size: 13px; padding-left:5px;color:#000000;border-style:solid;border-width: 0 0 1px 0;" colspan="2">
+                    被保险人：{pigcms:$xsrecord['被保险人']}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;" colspan="2">
+                    证件号码：{pigcms:$xsrecord['证件号码']}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                </td>
+            </tr>
+            <tr style="height: 30px;">
+                <td style="font-size: 13px; padding-left:5px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                    交强保单：{pigcms:$xsrecord['交强保单']}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;" colspan="2">
+                    起始日期：{pigcms:$xsrecord['交强起始']|strtotime|date="Y-m-d",###}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;" colspan="2">
+                    截至日期：{pigcms:$xsrecord['交强截至']|strtotime|date="Y-m-d",###}
+                </td>
+            </tr>
+            <tr style="height: 30px;">
+                <td style="font-size: 13px; padding-left:5px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                    商业保单：{pigcms:$xsrecord['商业保单']}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;" colspan="2">
+                    起始日期：{pigcms:$xsrecord['商业起始']|strtotime|date="Y-m-d",###}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;" colspan="2">
+                    截至日期：{pigcms:$xsrecord['商业截至']|strtotime|date="Y-m-d",###}
+                </td>
+            </tr>
+        </table>
+        <table cellpadding="0" cellspacing="0" width="100%" style="border:1px #000000 solid;border-top:0px;">
+            <tr style="height: 25px;">
+                <td style="font-size: 13px; width: 20%; padding-left:5px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                    总金额:￥{pigcms:$xsrecord['总金额']}
+                </td>
+                <td style="font-size: 13px; width: 19%;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                    交强保费:￥{pigcms:$xsrecord['交强保费']}
+                </td>
+                <td style="font-size: 13px; width: 19%;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                    商业保费:￥{pigcms:$xsrecord['商业保费']}
+                </td>
+                <td style="font-size: 13px; width: 20%;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                    车船税:￥{pigcms:$xsrecord['车船税']}
+                </td>
+                <td style="font-size: 13px; width: 22%;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                    优惠金额:￥{pigcms:$xsrecord['优惠金额']}
+                </td>
+            </tr>
+            <tr style="height: 32px;">
+                <td style="font-size: 13px; width: 20%; padding-left:5px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                    应收金额:￥{pigcms:$xsrecord['应收金额']}
+                </td>
+                <td style="font-size: 13px; width: 19%; padding-left:5px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                    现收金额:￥{pigcms:$xsrecord['现收金额']}
+                </td>
+                <td style="font-size: 13px; width: 19%;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                    挂账金额:{pigcms:$xsrecord['挂账金额']}
+                </td>
+                <td style="font-size: 13px; width: 20%;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                    结算方式:{pigcms:$xsrecord['结算方式']}
+                </td>
+                <td style="font-size: 13px; width: 22%;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                    收款日期:{pigcms:$xsrecord['审核日期']|strtotime|date="Y-m-d",###}
+                </td>
+            </tr>
+            <tr style="height: 32px;">
+                <td colspan="5" style="padding-left:5px; font-size: 13px; color:#000000">
+                    备　　注：{pigcms:$xsrecord['备注']}
+                </td>
+
+            </tr>
+            <tr style="height: 32px;">
+                <td colspan="5" style="font-weight: bold; font-size: 13px;color:#000000;text-align:right">
+                    客户签字：____________________
+                </td>
+            </tr>
+        </table>
+
+    </div>
+</body>
+</html>

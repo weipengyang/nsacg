@@ -46,7 +46,15 @@
                                     <div class="item-content">
                                         <div class="item-media"><i class="icon icon-form-name"></i></div>
                                         <div class="item-inner">
-                                            <div class="item-title label" style="width:100%">您共需支付:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b id="totalmoney" style="color:orangered">{pigcms:$totalFee}</b>元</div>
+                                            <div class="item-title label" style="width:100%">会员折扣: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="color:orangered">{pigcms:$_GET['discount']}</b></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="item-content">
+                                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title label" style="width:100%">您共需支付:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b id="totalmoney" style="color:orangered">{pigcms:$totalFee*$_GET['discount']}</b>元</div>
                                         </div>
                                     </div>
                                 </li>
@@ -150,9 +158,9 @@
                 $.showPreloader('正在提交，请稍候');
                 $("#sub_order").hide();
                 var iscoupon={pigcms:$product['iscoupon']};
-                var url = "{pigcms::U('Store/ordersave',array('orid'=>$orid,'id'=>$_GET['id'],'count'=>$_GET['count'],'did'=>$_GET['did'],'token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid,'cid' => $cid))}";
+                var url = "{pigcms::U('Store/ordersave',array('discount'=>$_GET['discount'],'orid'=>$orid,'id'=>$_GET['id'],'count'=>$_GET['count'],'did'=>$_GET['did'],'token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid,'cid' => $cid))}";
                 url+='&password='+$('#pass').val();
-                url+='&price={pigcms:$totalFee}';
+                url+='&price={pigcms:$totalFee*$_GET["discount"]}';
                 if(iscoupon==0){
                     if($('#carno').val()=='')
                     {

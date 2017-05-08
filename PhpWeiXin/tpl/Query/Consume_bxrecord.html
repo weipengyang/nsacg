@@ -157,9 +157,10 @@
                                 $.ligerDialog.alert('请输入车牌号码');
                                 return;
                             }
-                            data=JSON2.parse(JSON2.stringify(data));
+                            data = JSON2.parse(JSON2.stringify(data));
+                            var type = frameElement.dialog.get('opttype');
                             var submitData = {
-                                type: frameElement.dialog.get('type'),
+                                type: type,
                                 bxinfo: data
                             };
                             $.post('index.php?g=Query&m=Consume&a=savebxinfo', submitData,
@@ -175,7 +176,7 @@
                             frameElement.dialog.hide();
                         }
                     }            ]            });
-            if (frameElement.dialog.get('type') == 'modify')
+            if (frameElement.dialog.get('opttype') == 'modify')
             {
                 setTimeout(function () {
                     var record = JSON2.stringify(frameElement.dialog.get('data'));

@@ -635,20 +635,10 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
         $wxrecord=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno,'维修类别'=>$wxlb,'_string'=>"当前状态 not in ('结束','取消')"))->find();
         if($wxrecord){
             $row=array();
-            //$row['ID']=$wxrecord['ID'];
-            if($price==0){
-                $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>array('like','%会员券消费%')))->find();
-                $row['项目编号']=$xm['项目编号'];
-                $row['项目名称']=$xm['项目名称'];
-                $row['券编码']=$xm['券编码'];
-
-            }
-            else{
-                $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>$type))->find();
-                $row['项目编号']=$xm['项目编号'];
-                $row['项目名称']=$xm['项目名称'];
-                $row['券编码']=$xm['券编码'];
-            }
+            $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>$type))->find();
+            $row['项目编号']=$xm['项目编号'];
+            $row['项目名称']=$xm['项目名称'];
+            $row['券编码']=$xm['券编码'];
             $row['维修工艺']='';
             $row['结算方式']='客付';
             $row['工时']=1;
@@ -664,13 +654,9 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
         
         }else{
             $data=M('维修','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
-            $data['流水号']=null;
-            unset( $data['流水号']);
+            unset($data['流水号']);
             unset($data['ROW_NUMBER']);
-
-            $code=M('编号单','dbo.','difo')->where(array('类别'=>'WX','日期'=>date('Y-m-d', time())))->max('队列');
-            $bianhao='WX-'.date('ymd', time()).'-'.str_pad(($code+1),3,'0',STR_PAD_LEFT);
-            M('编号单','dbo.','difo')->add(array('单据编号'=>$bianhao,'队列'=>($code+1),'类别'=>'WX','日期'=>date('Y-m-d', time())));
+            $bianhao=$this->getcodenum('WX');
             $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
             $data['车牌号码']=$carno;
             $data['送修人']=$carinfo['手机号码'];
@@ -690,8 +676,8 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
             $data['门店']=$shop;
             $data['结算客户']=$carinfo['车主'];;
             $data['结算客户ID']=$carinfo['客户ID'];
-            $data['当前状态']='派工';
-            $data['维修状态']='派工';
+            $data['当前状态']='报价';
+            $data['维修状态']='报价';
             $data['进厂时间']=date('Y-m-d H:i',time());
             unset($data['出厂时间']);
             unset($data['开工时间']);
@@ -711,18 +697,24 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
             $data['业务编号']=$bianhao;
             $row=array();
             $row['ID']=$data['ID'];
-            if($price==0)
-            {
-                $xm=M('项目目录','dbo.','difo')->where(array('项目名称'=>array('like','%会员券消费%')))->find();
-                $row['项目编号']=$xm['项目编号'];
-                $row['项目名称']=$xm['项目名称'];
-                
+            if($wxlb=='蜡水洗车'){
+                $seatnum=intval($carinfo['座位数']);
+                if($carinfo['客户类别']=='VIP客户'){
+                    $price=0;
+                }
+                if($seatnum<7){
+                    $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC10009'))->find();
+                }elseif($seatnum>=7&&$seatnum<11){
+                    $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC10003'))->find();
+                }else{
+                    $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC10004'))->find();
+                }
             }else{
-                $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>$type))->find();
-                $row['项目编号']=$xm['项目编号'];
-                $row['项目名称']=$xm['项目名称'];
-                $row['券编码']=$xm['券编码'];
+               $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>$type))->find();
             }
+            $row['项目编号']=$xm['项目编号'];
+            $row['项目名称']=$xm['项目名称'];
+            $row['券编码']=$xm['券编码'];
             M('维修','dbo.','difo')->add($data);
             $row['维修工艺']='';
             $row['备注']=$comment;
@@ -736,11 +728,10 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
             $row['是否同意']=1;
             $row['已维修']='0小时'; 
             M('维修项目','dbo.','difo')->add($row);
-
             $this->MessageTip($carinfo,$shop,$wxlb);
     }
 } 
-private function calprice($id){
+    private function calprice($id){
     $projectprice=0;
     $totalproject=0;
     $projects=M('维修项目','dbo.','difo')->where(array('ID'=>$id))->select();
@@ -791,7 +782,7 @@ private function calprice($id){
     M('维修','dbo.','difo')->where(array('ID'=>$id))->save($data);
 }
 
-private function genbyrecord($carno,$shop='',$comment){
+    private function genbyrecord($carno,$shop='',$comment){
     if($shop=='')
         $shop=$this->getshopname();
     $data=M('维修','dbo.','difo')->where(array('车牌号码'=>'0000'))->find();
@@ -888,7 +879,7 @@ private function genbyrecord($carno,$shop='',$comment){
     $this->calprice($data['ID']);
     
 } 
-  private function addproduct($project,$wxid,$shop){
+    private function addproduct($project,$wxid,$shop){
     $row['ID'] = $wxid;
     $row['编号'] = $project['编号'];
     $row['仓库'] = '区府门店仓库';
@@ -911,7 +902,7 @@ private function genbyrecord($carno,$shop='',$comment){
     $row['备注'] = $project['备注'];
     M('维修配件','dbo.','difo')->add($row);
   }
-  public function check(){
+    public function check(){
         $card=M('member_card_create')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
         $user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
         $wxlist=M('维修','dbo.','difo')->where(array('制单人'=>array('neq','系统录单'),'客户ID'=>$user['ID'],'当前状态'=>'结算','维修类别'=>array('neq','蜡水洗车')))->order('流水号 desc')->select();
@@ -937,7 +928,7 @@ private function genbyrecord($carno,$shop='',$comment){
         $this->assign('dblist',$dblist);
         $this->display();
     }
-  public function weixiu()
+    public function weixiu()
     {
        if(IS_POST)
        {
@@ -968,7 +959,7 @@ private function genbyrecord($carno,$shop='',$comment){
         $this->display();
     }
 
-   public function pay(){
+    public function pay(){
      if(IS_POST){
          $itemid=$_POST['id'];
          $price=doubleval($_POST['price']);
@@ -1283,13 +1274,16 @@ private function genbyrecord($carno,$shop='',$comment){
                                $projectprice+=$project['虚增金额']*$project['折扣']+$project['税额'];
                            }else{
                                if($project['券编码']&&doubleval($project['折扣'])>0&&$wx['维修类别']!='保险理赔'){
+                                   $where['token']=$this->token;
+                                   $where['wecha_id']=$this->wecha_id;
+                                   $where['is_use']='0';
+                                   $where['over_time']=array('egt',strtotime(date('Y-m-d',time())));
+                                   $where['coupon_id']=$project['券编码'];
+                                   if(count($couponlist)>0){
+                                       $where['coupon_num']=array('not in',array_column($couponlist,'coupon_num'));
+                                   }
                                    $coupon=M("member_card_coupon_record")
-                                       ->where(array('token' => $this->token,
-                                       'wecha_id'=>$this->wecha_id,
-                                       'is_use'=>'0',
-                                       'over_time'=>array('egt',strtotime(date('Y-m-d',time()))),
-                                       'coupon_id'=>$project['券编码']
-                                       ))->order('over_time')->find();
+                                       ->where($where)->order('over_time')->find();
                                    if(!$coupon){
                                        $projectprice+=$project['金额']*$project['折扣']+$project['税额'];
                                    }else{
@@ -2145,7 +2139,7 @@ private function genbyrecord($carno,$shop='',$comment){
         }
 		$colorDetail = $normsDeatail = $productDetail = array();
 		$attributeData = M("Product_attribute")->where(array('pid' => $product['id']))->select();
-		
+		$cardinfo=M('member_card_create')->where(array('wecha_id'=>$this->wecha_id))->find();
 		$productDetailData = M("Product_detail")->where(array('pid' => $product['id']))->select();
 		foreach ($productDetailData as $p) {
 			$p['formatName'] = $normsList[$p['format']];
@@ -2157,8 +2151,10 @@ private function genbyrecord($carno,$shop='',$comment){
 			$normsDetail[$p['format']][] = $p;
 		}
 		$productimage = M("Product_image")->where(array('pid' => $product['id']))->select();
-		
+        $memberinfo=M('会员详细信息','dbo.','difo')->where(array('名称'=>$cardinfo['number']))->find();         
+
 		$this->assign('imageList', $productimage);
+		$this->assign('discount', $memberinfo['服务折扣1']);
 		$this->assign('productDetail', $productDetail);
 		$this->assign('attributeData', $attributeData);
 		$this->assign('normsDetail', $normsDetail);
@@ -2465,7 +2461,7 @@ private function genbyrecord($carno,$shop='',$comment){
                 $carts[$id] = $count;
             }
 			$calCartInfo = $this->calCartInfo($carts);
-            $saveprice = $totalprice = $calCartInfo[1] + $calCartInfo[2];
+            $saveprice = $totalprice;
 
 			foreach ($carts as $pid => $rowset) {
 				$total = 0;
@@ -3092,7 +3088,7 @@ private function genbyrecord($carno,$shop='',$comment){
             $data['前台接待'] = $commnet['qtjd'];
             if($data['服务态度']<4||$data['服务质量']<4){
                 $content=$wx['联系人'].'车牌号为'.$wx['车牌号码'].'的车辆'.date('Y-m-d',strtotime($wx['制单日期'])).'日在'.$wx['门店'].$wx['维修类别'];
-                $content.='，客户对服务的评价低于3分，服务顾问:'.$wx['接车人'].'，服务技师:'.$wx['主修人'].',联系电话:'.$wx['联系电话'].'，请及时跟踪回访。';
+                $content.='，客户对服务的评价低于3分，服务顾问:'.$wx['接车人'].'，服务技师:'.$wx['主修人'].'，请及时跟踪回访。';
                 $model=new templateNews();
                 $booturl='https://oapi.dingtalk.com/robot/send?access_token=e148663d51dddb27d8e2a586420f5a8cbcf629f111a34736f50cfa64a3f21853';
                 $msgdata='{

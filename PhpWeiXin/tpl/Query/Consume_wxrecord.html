@@ -17,7 +17,7 @@
                 validate: true,
                 fields: [
                    {
-                       display: "车牌号码 ", name: "车牌号码", newline: true, type: "text",
+                       display: "车牌号码 ", name: "车牌号码", newline: true, type: "text", validate: { required: true },
                        options: {
                            onBlur: function (value) {
                                var carno = this.getValue();
@@ -56,18 +56,7 @@
                             textField: '类别',
                             autocomplete: true,
                             url: '/index.php?g=Query&m=Consume&a=getwxlb&flag=1',
-                            onChangeValue: function () {
-                                var selected = this.selected;
-                                var mendian = liger.get('mendian');
-                                var zhuxiu = liger.get('zhuxiu');
-                                var wxlx = liger.get('wxlx');
-                                if (zhuxiu) {
-                                    zhuxiu.setParm('shop', mendian['name']);
-                                    zhuxiu.setParm('wxlx', this.getValue());
-                                    zhuxiu.reload();
-                                }
-                            }
-                        }
+                        }, validate: { required: true }
                     },
                     {
                         display: "车主", name: "车主", newline: false, type: "text",readonly:true
@@ -75,12 +64,12 @@
                     {
                         display: "客户类别", name: "客户类别", newline: false, type: "text", readonly: true
                     },
-                    { display: "联系人 ", name: "联系人", newline: true, type: "text", validate: { required: true } },
-                    { display: "联系电话 ", name: "联系电话", newline: false, type: "text", validate: { required: true } },
-                    { display: "轮胎规格", name: "轮胎规格", newline: true, type: "text"},
-                    { display: "油位表", name: "油位表", newline: false, type: "text" },
+                    { display: "联系人 ", name: "联系人", newline: true, type: "text" },
+                    { display: "联系电话 ", name: "联系电话", newline: false, type: "text" },
+                    { display: "轮胎规格", name: "轮胎规格", newline: true, type: "text", validate: { required: true } },
+                    { display: "油位表", name: "油位表", newline: false, type: "text", validate: { required: true } },
                     {
-                        display: "里程表", name: "里程表", newline: true, type: "text" 
+                        display: "里程表", name: "里程表", newline: true, type: "text", validate: { required: true }
 
                     },
                      {
@@ -89,17 +78,7 @@
                              textField: '名称',
                              autocomplete: true,
                              url: '/index.php?g=Query&m=Consume&a=getshoplist',
-                             onChangeValue: function () {
-                                 var selected = this.selected;
-                                 var zhuxiu = liger.get('zhuxiu');
-                                 var wxlx = liger.get('wxlx');
-                                 if (zhuxiu) {
-                                     zhuxiu.setParm('shop', selected['name']);
-                                     zhuxiu.setParm('wxlx', wxlx.getValue());
-                                     zhuxiu.reload();
-                                 }
-                             }
-                         }
+                         }, validate: { required: true }
 
                      },
                     {
@@ -109,19 +88,10 @@
                             textField: '姓名',
                             autocomplete: true,
                             url: '/index.php?g=Query&m=Consume&a=getfwgw',
-                        }
+                        }, validate: { required: true }
                     },
-                    {
-                        display: "维修师傅", name: "主修人", newline: false, type: "combobox", comboboxName: 'zhuxiu',
-                        options: {
-                            valueField: '姓名',
-                            textField: '姓名',
-                            autocomplete: true,
-                            url: '/index.php?g=Query&m=Consume&a=getzhuxiu',
-                        },
-                    },
-                    { display: "预计完工", name: "预计完工", newline: false, type: "date", options: { showTime: true } },
-                    { display: "故障描述", name: "故障描述", newline: true, type: "textarea", width: 430, height: 100 }
+                    { display: "预计完工", name: "预计完工", newline: false, type: "date", options: { showTime: true }, validate: { required: true } },
+                    { display: "故障描述", name: "故障描述", newline: true, type: "textarea", width: 430, height: 100, validate: { required: true } }
                 ],
                 buttons: [                    { text: "取消", width: 60, click: null },                    {
                         text: "保存", width: 60, click: function () {

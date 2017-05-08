@@ -34,6 +34,12 @@
                         <option value="{pigcms:$item.客户类别}">{pigcms:$item.客户类别}</option>
                     </volist>
                 </select>
+                是否在用
+                <select name="sfzy" id="sfzy">
+                    <option value="">所有</option>
+                    <option value="是">是</option>
+                    <option value="否">否</option>
+                </select>
                 关键字：<input id="searchkey" type="text" />
                 <input id="search" type="button" value="模糊查询"  />
                 <input id="highgrade" type="button" value="高级搜索" />
@@ -165,6 +171,10 @@
             $('#search').click();
 
         });
+        $('#sfzy').change(function () {
+            $('#search').click();
+
+        });
         var cargird;
         $(document).ready(function () {
            $.ligerDefaults.Filter.operators['string'] =
@@ -256,7 +266,10 @@
                 var parms = {};
                 var khlb = $('#khlb').val();
                 if (khlb != '')
-                    parms.khlb =khlb;
+                    parms.khlb = khlb;
+                var sfzy = $('#sfzy').val();
+                if (sfzy != '')
+                    parms.sfzy = sfzy;
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     parms.searchkey = searchkey;

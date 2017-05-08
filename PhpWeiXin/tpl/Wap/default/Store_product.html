@@ -58,7 +58,7 @@
                         <div class="item-title" style="color:#FF0000;font-size:12px;"><del>原价:￥{pigcms:$product.oprice}元</del></div>
                         <div class="item-title" style="color:#0055CC;font-size:12px;"><span>积分卡会员价：<em id="vprice">￥{pigcms:$product.discount1}</em></span></div>
                         <div class="item-title" style="color:#0055CC;font-size:12px;"> <span>白金卡会员价：<em id="vprice">￥{pigcms:$product.discount2}</em></span></div>
-                        <div class="item-title" style="color:#0055CC;font-size:12px;"> <span>钻石卡会员价：<em id="vprice">￥{pigcms:$product.discount3}</em></span></div>
+                        <div class="item-title" style="color:#0055CC;font-size:12px;"> <span>会 员 折 扣：<em id="vprice">{pigcms:$discount}</em></span></div>
                         </div>
                         </div>
                         <div class="item-title" style="padding-top:10px">
@@ -298,7 +298,7 @@
             if (count > parseInt($("#stock").text())) {
                 return $.toast('抱歉，您的购买量超过了库存了');
             }
-            var url="{pigcms::U('Store/orderCart',array('token'=>$token,'id'=>$product['id'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid,'cid' => $cid))}" + '&count=1&did=' + did;
+            var url="{pigcms::U('Store/orderCart',array('discount'=>$discount,'token'=>$token,'id'=>$product['id'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid,'cid' => $cid))}" + '&count=1&did=' + did;
             location.href =url;
           
         }

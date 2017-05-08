@@ -9,15 +9,12 @@
     <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
     <script type="text/javascript">
-        function getQueryString(name) {
-            var now_url = document.location.search.slice(1), q_array = now_url.split('&');
-            for (var i = 0; i < q_array.length; i++) {
-                var v_array = q_array[i].split('=');
-                if (v_array[0] == name) {
-                    return v_array[1];
-                }
-            }
-            return false;
+        function calprice() {
+            var yh = $("input[ligeruiid='优惠金额']").val();
+            var sum = $("input[ligeruiid='总金额']").val();
+            var xj = $("input[ligeruiid='现收金额']").val();
+            $("input[ligeruiid='应收金额']").val((sum - yh).toFixed(2));
+            $("input[ligeruiid='挂账金额']").val((sum - yh - xj).toFixed(2));
         }
         $(function ()
         {
@@ -36,11 +33,7 @@
                     {
                         display: "优惠金额", name: "优惠金额", newline: false, type: "text", options: {
                             onBlur:function () {
-                                var yh = $("input[ligeruiid='优惠金额']").val();
-                                var sum = $("input[ligeruiid='总金额']").val();
-                                var xj = $("input[ligeruiid='现收金额']").val();
-                                $("input[ligeruiid='应收金额']").val(sum - yh);
-                                $("input[ligeruiid='挂账金额']").val(sum - yh - xj);
+                                calprice();
                             }
 
                         }
@@ -53,11 +46,7 @@
                     {
                         display: "现收金额", name: "现收金额", newline: true, type: "text", options: {
                             onBlur:function () {
-                                var yh = $("input[ligeruiid='优惠金额']").val();
-                                var sum = $("input[ligeruiid='总金额']").val();
-                                var xj = $("input[ligeruiid='现收金额']").val();
-                                $("input[ligeruiid='应收金额']").val(sum - yh);
-                                $("input[ligeruiid='挂账金额']").val(sum - yh - xj);
+                                calprice();
                             }
                         }
                     },

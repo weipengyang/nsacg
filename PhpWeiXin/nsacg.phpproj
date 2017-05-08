@@ -14657,7 +14657,11 @@
     <Content Include="tpl\Other\default\style\js\registerSSO.js" />
     <Content Include="tpl\Other\index.html" />
     <Content Include="tpl\Query\Consume_addproductlist.html" />
+    <Content Include="tpl\Query\Consume_bxmanage - Copy.html" />
+    <Content Include="tpl\Query\Consume_byrecord.html" />
     <Content Include="tpl\Query\Consume_inbound.html" />
+    <Content Include="tpl\Query\Consume_printbxbill.html" />
+    <Content Include="tpl\Query\Consume_printdbbill.html" />
     <Content Include="tpl\Query\Consume_repaircarmanage.html" />
     <Content Include="tpl\Query\Consume_newpay.html" />
     <Content Include="tpl\Query\Consume_maintainmanage.html" />

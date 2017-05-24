@@ -18,12 +18,13 @@
               <thead>
                 <tr>
 					<th class="select">选择</th>
-					<th class="answer">标题</th>
+					<th class="time">标题</th>
+                    <th class="time">需要积分</th>
 					<th class="time" style="width:80px;">总数</th>
-                    <th class="time" style="width:80px;">已购领数</th>
-                    <th class="time" style="width:80px;">已使用数</th>
+                    <th class="time" style="width:80px;">已兑换数</th>
 					<th class="time">创建时间</th>
 					<th class="time">过期时间</th>
+                    <th class="time">状态</th>
 					<th class="edit norightborder">操作</th>
                 </tr>
               </thead>
@@ -32,11 +33,12 @@
                 <tr>
 					  <td><input type="checkbox" name="del_id[]" value="" class="checkitem"></td>
 					  <td><div class="answer_text">{pigcms:$data_vip.title}</div></td>
+                      <td>{pigcms:$data_vip.integral}</td>
                       <td>{pigcms:$data_vip.people}</td>
-                      <td>{pigcms:$data_vip.count}</td>  
-                      <td>{pigcms:$data_vip.usetime}</td>
+                      <td>{pigcms:$data_vip.num}</td>  
 					  <td><if condition="$data_vip['type'] eq 1">无时间限制<else/>{pigcms:$data_vip.statdate|date='Y-m-d',###}</if></td>
 					  <td><if condition="$data_vip['type'] eq 1">无时间限制<else/>{pigcms:$data_vip.enddate|date='Y-m-d',###}</if></td>
+                      <td><if condition="$data_vip['ispublic'] eq 1">启用<else />未启用</if></td>
 					  <td class="norightborder">
 						<a href="{pigcms::U('Member_card/useRecords',array('id'=>$thisCard['id'],'type'=>'integral','itemid'=>$data_vip['id']))}">使用统计</a> 
 						<a href="{pigcms::U('Member_card/integral_edit',array('id'=>$thisCard['id'],'itemid'=>$data_vip['id']))}">编辑</a> <a href="{pigcms::U('Member_card/integral_del',array('itemid'=>$data_vip['id'],'id'=>$thisCard['id']))}">删除</a>

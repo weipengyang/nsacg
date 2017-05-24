@@ -2655,7 +2655,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
                             $data['wecha_id']	= $this->wecha_id;
                             $data['coupon_id']	= $c['cid'];
                             $data['is_use']		= '0';
-                            $data['coupon_type']		= '1';
+                            $data['coupon_type'] = '1';
                             $data['cardid']		= $card['cardid'];
                             $data['add_time']	= time(); 
                             $data['coupon_name']=$mycoupon['title'];
@@ -3837,23 +3837,22 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
     	$now 	= time();
         $user=M('userinfo')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
     	$integral 	= M('Member_card_integral')->where(array('token'=>$this->token,'id'=>$this->_post('id','intval'),'ispublic'=>'1'))->find();
-        $count1=M('Member_card_coupon_record')->where(array('token'=>$this->token,'itemid'=>$integral['id'],'coupon_type'=>$data['coupon_type']))->count();
         if($user['total_score']<$integral['integral']){
     		echo  '你的积分不足'.$integral['integral'];
     		exit;
     	}
-        if($count1>=($integral['people']-intval($integral['basenum'])))
+        if($integral['people']-intval($integral['basenum'])-$integral['num']<=0)
         {
     		echo  '礼品券已经兑换完了';
     		exit;
         }
-        //$count=M('Member_card_coupon_record')->where(array('token'=>$this->token,'coupon_id'=>$integral['id'],'wecha_id'=>$data['wecha_id'],'coupon_type'=>$data['coupon_type']))->count();
-        //$total=$integral['total'];
-        //if($count>=$total)
-        //{
-        //    echo  '该礼品券每人最多能兑换'.$total.'张，你已超出兑换数量限制';
-        //    exit;
-        //}
+        $count=M('Member_card_use_record')->where(array('token'=>$this->token,'itemid'=>$integral['id'],'wecha_id'=>$data['wecha_id']))->count();
+        $total=$integral['total'];
+        if($count>=$total)
+        {
+            echo  '该礼品券每人最多能兑换'.$total.'张，你已超出兑换数量限制';
+            exit;
+        }
         $days=$integral['days'];
         //$num=$integral['num'];
         $coupons=M("member_card_coupon_integral")->where(array('iid'=>$integral['id'],'token'=>$this->token))->select();
@@ -3870,7 +3869,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
         }
        
         $arr= array();
-        $arr['itemid']	= 0; //暂取记录id
+        $arr['itemid']	= $integral['id']; //暂取记录id
         $arr['wecha_id']= $this->wecha_id;
         $arr['expense']	= 0;
         $arr['time']	= $now;
@@ -3886,7 +3885,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
         $sign['expense'] =intval($integral['integral']);
         M('Member_card_sign')->add($sign);
         M('Member_card_use_record')->add($arr);//积分记录中增加一条记录
-        M('Member_card_integral')->where(array('token'=>$this->token,'id'=>$this->_post('id','intval'),'ispublic'=>'1'))->setInc('getnum');//已兑换数量
+        M('Member_card_integral')->where(array('token'=>$this->token,'id'=>$this->_post('id','intval'),'ispublic'=>'1'))->setInc('num');//已兑换数量
         M('Userinfo')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->setDec('total_score',$integral['integral']);// 修改用户信息表中积分数据
         echo  '兑换成功';
         exit;
@@ -3960,7 +3959,6 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
     	$this->assign('infoType','coupon');
     	$thisCard=$this->_thisCard();
     	$this->assign('thisCard',$thisCard);
-    	$type=3;
     	$now	= time();
     	$data 	= array();
         $now 		= time();
@@ -3968,12 +3966,8 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
     	$data	= M('Member_card_integral')->where($where)->order('create_time desc')->select();
         foreach ($data as $k=>$n){
     		$data[$k]['info']	= html_entity_decode($n['info']);
-    		$cwhere = array('token'=>$this->token,'coupon_type'=>$type,'coupon_id'=>$n['id']);
-    		$count 	= M('Member_card_coupon_record')->where($cwhere)->count();
-            $leftcount=($n['people']-$count)/$n['num']-$data[$k]['basenum'];
-            $data[$k]['get_count'] 	= $leftcount>0?$leftcount:0;//剩余多少张
-    		$data[$k]['count'] 	= $n['people'];//总共多少张
-            $data[$k]['count1'] = $count/$n['num']+$data[$k]['basenum'];//
+            $leftcount=$n['people']-$n['basenum']-$n['num'];
+            $data[$k]['leftcount'] 	= $leftcount>0?$leftcount:0;//剩余多少张
 
     	}
     	$this->assign('list',$data);
@@ -3984,14 +3978,11 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
     	$where 	= array('token'=>$this->token,'id'=>$_GET['id']);
     	$data= M('Member_card_integral')->where($where)->find();
     	$data['info']	= html_entity_decode($data['info']);
-    	$cwhere = array('token'=>$this->token,'coupon_type'=>3,'coupon_id'=>$data['id']);
-    	$count 	= M('Member_card_coupon_record')->where($cwhere)->count();
-        $leftcount=($data['people']-$count)/$data['num']-$data['basenum'];
-        $data['people']=$data['people']/$data['num'];
-        $data['get_count'] 	= $leftcount>0?$leftcount:0;//剩余多少张
+        $leftcount=$data['people']-$data['basenum']-$data['num'];
+        $data['leftcount'] 	= $leftcount>0?$leftcount:0;//剩余多少张
         $remainSeconds=$data['enddate']-time();
     	$this->assign('remainSeconds',$remainSeconds);
-    	$this->assign('metaTitle',$data['distitle']);
+    	$this->assign('metaTitle',$data['title']);
     	$this->assign('coupon',$data);
     	$this->display();
     } 

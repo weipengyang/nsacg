@@ -292,7 +292,7 @@
                 data = JSON2.parse(data);
                 var submitdata = {
                     carinfo: data,
-                    type:frameElement.dialog.get('type')
+                    type:frameElement.dialog.get('opttype')
 
                 }
                 $.post('/index.php?g=Query&m=Consume&a=carinfo', submitdata,

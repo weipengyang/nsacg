@@ -14657,7 +14657,9 @@
     <Content Include="tpl\Other\default\style\js\registerSSO.js" />
     <Content Include="tpl\Other\index.html" />
     <Content Include="tpl\Query\Consume_addproductlist.html" />
-    <Content Include="tpl\Query\Consume_bxmanage - Copy.html" />
+    <Content Include="tpl\Query\Consume_selfpicksum.html" />
+    <Content Include="tpl\Query\Consume_receiveandpay.html" />
+    <Content Include="tpl\Query\Consume_balance.html" />
     <Content Include="tpl\Query\Consume_byrecord.html" />
     <Content Include="tpl\Query\Consume_inbound.html" />
     <Content Include="tpl\Query\Consume_printbxbill.html" />

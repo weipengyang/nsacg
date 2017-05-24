@@ -26,25 +26,27 @@
         <!-- content start -->
         <div class="admin-content">
         <div class="admin-content-body">
-            <div id="searchbar">
-                客户类别:
-                <select name="khlb" id="khlb">
-                    <option value="">所有分类</option>
-                   <volist name="lblist" id="item">
-                        <option value="{pigcms:$item.客户类别}">{pigcms:$item.客户类别}</option>
-                    </volist>
-                </select>
-                是否在用
-                <select name="sfzy" id="sfzy">
-                    <option value="">所有</option>
-                    <option value="是">是</option>
-                    <option value="否">否</option>
-                </select>
-                关键字：<input id="searchkey" type="text" />
-                <input id="search" type="button" value="模糊查询"  />
-                <input id="highgrade" type="button" value="高级搜索" />
-                <input onclick="createcarinfo();" type="button" value="新建车辆" />
+            <div class="am-g">
+                <div class="am-u-sm-2 am-u-md-2">
+                    <input type="text" id="khlb">
+                    
+                </div>
+                <div class="am-u-sm-2 am-u-md-2">
+                    是否在用
+                    <select name="sfzy" id="sfzy">
+                        <option value="">所有</option>
+                        <option value="是">是</option>
+                        <option value="否">否</option>
+                    </select>
+                </div>
+                <div class="am-u-sm-6 am-u-md-6">
+                    关键字：<input id="searchkey" type="text" />
+                    <input id="search" type="button" value="模糊查询" />
+                    <input id="highgrade" type="button" value="高级搜索" />
+                    <input onclick="createcarinfo();" type="button" value="新建车辆" />
+                </div>
             </div>
+
 
             <div id="maingrid4" style="margin:0; padding:0"></div>
             </div>
@@ -58,7 +60,7 @@
         var cardialog,picdialog,memberdialog;
         function carinfo(carno) {
             if (cardialog) {
-                cardialog.set('type', 'modify');
+                cardialog.set('opttype', 'modify');
                 cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
                 cardialog.show();
             }
@@ -67,7 +69,7 @@
                     height: 500,
                     url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
                     width: 900,
-                    type:'modify',
+                    opttype:'modify',
                     showMax: true,
                     showToggle: true,
                     showMin: false,
@@ -79,7 +81,7 @@
         }
         function createcarinfo() {
             if (cardialog) {
-                cardialog.set('type', 'add');
+                cardialog.set('opttype', 'add');
                 cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo');
                 cardialog.show();
             }
@@ -88,7 +90,7 @@
                     height: 500,
                     url: '/index.php?g=Query&m=Consume&a=carinfo',
                     width: 900,
-                    type:'add',
+                    opttype:'add',
                     showMax: true,
                     showToggle: true,
                     showMin: false,
@@ -167,11 +169,15 @@
             }
             return num;
         }
-        $('#khlb').change(function () {
-            $('#search').click();
-
-        });
-        $('#sfzy').change(function () {
+        $('#khlb').ligerComboBox({
+            isShowCheckBox: true,
+            isMultiSelect: true,
+            selectBoxHeight:'300px',
+            valueFieldID: '类别',
+            valueField: '类别',
+            textField: '类别',
+            url: '/index.php?g=Query&m=Consume&a=getkhlb',
+        });                   $('#sfzy').change(function () {
             $('#search').click();
 
         });
@@ -180,7 +186,11 @@
            $.ligerDefaults.Filter.operators['string'] =
            $.ligerDefaults.Filter.operators['text'] =
            ["like", "equal", "notequal"];
-
+           $(document).keydown(function (event) {
+               if (event.keyCode == 13)
+                   $('#search').click();
+           }
+          );
             $('#highgrade').click(function () {
                 cargird.showFilter();
             });
@@ -214,9 +224,9 @@
                         },
                         { display: '年份排量', name: '排量', minWidth: 120,hide:true},
                         { display: '车架号', name: '车架号', width: 150, hide: true },
-                        { display: '发动机型号', name: '发动机型号', minWidth: 60, hide: true },
-                        { display: '轮胎规格', name: '轮胎规格', width: 85 },
-                        { display: '品牌花纹', name: '品牌花纹', minWidth: 60, hide: true },
+                        //{ display: '发动机型号', name: '发动机型号', minWidth: 60, hide: true },
+                        //{ display: '轮胎规格', name: '轮胎规格', width: 85 },
+                        //{ display: '品牌花纹', name: '品牌花纹', minWidth: 60, hide: true },
                         { display: '服务顾问', name: '服务顾问', minWidth: 80 },
                         { display: '机油格', name: '机油格', width: 50, hide: true },
                         { display: '空气格', name: '空气格', width: 50, hide: true },

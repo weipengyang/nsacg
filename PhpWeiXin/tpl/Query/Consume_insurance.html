@@ -109,7 +109,7 @@
         function addtrace(data) {
             if (adddialog) {
                 adddialog.set('data', data);
-                adddialog.set('type', 'add');
+                adddialog.set('opttype', 'add');
                 adddialog.setUrl('/index.php?g=Query&m=Consume&a=insurancetrace');
                 adddialog.show(); 
             }
@@ -123,7 +123,7 @@
                     isResize: true,
                     modal: false,
                     data: data,
-                    type:'add',
+                    opttype:'add',
                     title: '保险跟踪'
                 });
             }
@@ -144,7 +144,7 @@
         function modify(data) {
             if (adddialog) {
                 adddialog.set('data', data);
-                adddialog.set('type', 'modify');
+                adddialog.set('opttype', 'modify');
                 adddialog.setUrl('/index.php?g=Query&m=Consume&a=insurancetrace');
                 adddialog.show();
             }
@@ -158,7 +158,7 @@
                     isResize: true,
                     modal: false,
                     data: data,
-                    type: 'modify',
+                    opttype: 'modify',
                     title: '保险跟踪'
                 });
             }
@@ -342,7 +342,7 @@
                         },
                         {
                             display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
-                                if (rowdata.车主.indexOf('AYC') == 0) {
+                                if (rowdata.车主&&rowdata.车主.indexOf('AYC') == 0) {
                                     return '<a href="javascript:void(0);" onclick="sendmessage(\'' + rowdata.车牌号码 + '\',\'' + rowdata.车主 + '\');"><strong>发送模板消息</strong></a>';
                                 }
                      }

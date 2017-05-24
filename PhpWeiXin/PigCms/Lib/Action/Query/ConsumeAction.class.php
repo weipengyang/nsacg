@@ -905,7 +905,7 @@ class ConsumeAction extends Action{
             $sortorder='desc';
         }
         if (isset($_POST['khlb'])&&trim($_POST['khlb'])!=''){
-            $where['客户类别']=$_POST['khlb'];
+            $where['客户类别']=array('in',explode(';',$_POST['khlb']));
         }
         if (isset($_POST['sfzy'])&&trim($_POST['sfzy'])!=''){
             $where['是否在用']=$_POST['sfzy'];
@@ -967,6 +967,143 @@ class ConsumeAction extends Action{
         echo json_encode($data);
         
     }
+    public  function getbalance()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        if (isset($_POST['szxm'])&&trim($_POST['szxm'])!=''){
+            $where['收支项目']=$_POST['szxm'];
+        }
+        if (isset($_POST['jsfs'])&&trim($_POST['jsfs'])!=''){
+            $where['结算方式']=$_POST['jsfs'];
+        } 
+        if (isset($_POST['zklb'])&&trim($_POST['zklb'])!=''){
+            $where['账款类别']=$_POST['zklb'];
+        } 
+        if (isset($_POST['shop'])&&trim($_POST['shop'])!=''){
+            $where['发票类别']=$_POST['shop'];
+        } 
+        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        {
+            $where['制单日期']=array('egt',trim($_POST['startdate']));
+            
+        }
+        else{
+            $where['制单日期']=array('egt',date('Y-m-01 00:00',time()));
+        }
+        if($_POST['enddate']&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('elt',trim($_POST['enddate']));
+            
+        }
+        if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('BETWEEN',array(trim($_POST['startdate']),trim($_POST['enddate'])));
+            
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){       
+            $searchwhere['收支项目']=array('like',$searchkey);
+            $searchwhere['账款类别']=array('like',$searchkey);
+            $searchwhere['结算方式']=array('like',$searchkey);
+            $searchwhere['发票类别']=array('like',$searchkey);
+            $searchwhere['发票号']=array('like',$searchkey);
+            $searchwhere['单位名称']=array('like',$searchkey);
+            $searchwhere['单据编号']=array('like',$searchkey);
+            $searchwhere['摘要']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $count=M('日常收支','dbo.','difo')
+            ->where($where)->count();
+        $sumdata=M('日常收支','dbo.','difo')
+           ->where($where)->field('sum(实付金额) 实付金额 ,sum(实收金额) 实收金额')->find();;
+        $yelist=M('日常收支','dbo.','difo')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        $data['sumdata']=$sumdata;
+        echo json_encode($data);
+        
+    }
+    public  function getrecevieandpay()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        if (isset($_POST['szxm'])&&trim($_POST['szxm'])!=''){
+            $where['收支项目']=$_POST['szxm'];
+        }
+        if (isset($_POST['jsfs'])&&trim($_POST['jsfs'])!=''){
+            $where['结算方式']=$_POST['jsfs'];
+        } 
+        if (isset($_POST['zklb'])&&trim($_POST['zklb'])!=''){
+            $where['账款类别']=$_POST['zklb'];
+        } 
+        if (isset($_POST['shop'])&&trim($_POST['shop'])!=''){
+            $where['发票类别']=$_POST['shop'];
+        } 
+        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        {
+            $where['制单日期']=array('egt',trim($_POST['startdate']));
+            
+        }
+        else{
+            $where['制单日期']=array('egt',date('Y-m-01 00:00',time()));
+        }
+        if($_POST['enddate']&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('elt',trim($_POST['enddate']));
+            
+        }
+        if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('BETWEEN',array(trim($_POST['startdate']),trim($_POST['enddate'])));
+            
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){       
+            $searchwhere['收支项目']=array('like',$searchkey);
+            $searchwhere['账款类别']=array('like',$searchkey);
+            $searchwhere['结算方式']=array('like',$searchkey);
+            $searchwhere['发票类别']=array('like',$searchkey);
+            $searchwhere['发票号']=array('like',$searchkey);
+            $searchwhere['单位名称']=array('like',$searchkey);
+            $searchwhere['单据编号']=array('like',$searchkey);
+            $searchwhere['摘要']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $count=M('应收应付单','dbo.','difo')
+            ->where($where)->count();
+        $sumdata=M('应收应付单','dbo.','difo')
+           ->where($where)->field('sum(总金额) 总金额')->find();
+           $yelist=M('应收应付单','dbo.','difo')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        $data['sumdata']=$sumdata;
+        echo json_encode($data);
+        
+    }
+
     public  function gettracemessage()
     {   
         $page=$_POST['page'];
@@ -2698,7 +2835,13 @@ class ConsumeAction extends Action{
         echo json_encode($wxlb);
     
 } 
-    public  function getkhgrade(){
+   public  function getszxm(){
+         
+        $wxlb=M('收支项目','dbo.','difo')->where(array('名称'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($wxlb);
+    
+} 
+   public  function getkhgrade(){
         $wxlb=M('客户等级','dbo.','difo')->select();
         echo json_encode($wxlb);
     
@@ -2823,7 +2966,47 @@ class ConsumeAction extends Action{
             $searchwhere['制单人']=array('like',$searchkey);
             $searchwhere['领料员']=array('like',$searchkey);
             $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['原因']=array('like',$searchkey);
             $searchwhere['引用单号']=array('like',$searchkey);
+            $searchwhere['引用类别']=array('like',$searchkey);
+            $searchwhere['单据备注']=array('like',$searchkey);
+            $searchwhere['单据类别']=array('like',$searchkey);
+            $searchwhere['单据编号']=array('like',$searchkey);
+            $searchwhere['领料员']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $count=M('出入库单','dbo.','difo')->where($where)->count();
+        $yelist=M('出入库单','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
+    public  function getselfpick()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        $where['单据类别']='出库';
+        $where['当前状态']=array('neq','取消');
+        $where['引用类别']='自用出库';
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){       
+            $searchwhere['制单人']=array('like',$searchkey);
+            $searchwhere['领料员']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['原因']=array('like',$searchkey);
+            $searchwhere['引用单号']=array('like',$searchkey);
+            $searchwhere['引用类别']=array('like',$searchkey);
             $searchwhere['单据备注']=array('like',$searchkey);
             $searchwhere['单据类别']=array('like',$searchkey);
             $searchwhere['单据编号']=array('like',$searchkey);
@@ -4078,8 +4261,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                     $inout['摘要']='采购进货付款('.$cgd['单据编号'].')';
                     $inout['收支项目']='采购进货';
                     $inout['当前状态']='待审核';
-                    $inout['发票类别']=$cgd['发票类别'];
-                    $inout['发票号']=$cgd['发票号码'];
+                    $inout['发票类别']=$cgd['门店'];
+                    $inout['发票号']=$cgd['车牌号码'];
                     $inout['ID']=$this->getcode(18,1,1);
                     $inout['单位编号']=$cgd['供应商ID'];
                     $inout['本次冲账']=$cgd['现结金额'];
@@ -4193,6 +4376,18 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $carinfo=$_POST['carinfo'];
             $type=$_POST['type'];
             if($type=='add'){
+                if(!isset($carinfo['客户ID'])||$carinfo['客户ID']==''){
+                    $czinfo['名称']=$carinfo['车牌号码'];
+                    $czinfo['客户']=1;
+                    $czinfo['ID']=$this->getcode(18,0,0);
+                    $carinfo['客户ID']=$czinfo['ID'];
+                    $czinfo['会员']=0;
+                    $czinfo['联系人']=$carinfo['联系人'];
+                    $czinfo['联系电话']=$user['tel'];
+                    $czinfo['手机号码']=$user['tel'];
+                    $czinfo['类别']=$carinfo['客户类别'];
+                    M('往来单位','dbo.','difo')->add($czinfo);
+                }
                 unset($carinfo['流水号']);
                 unset($carinfo['车辆图片']);
                 foreach($carinfo as $key=>$value){
@@ -4334,7 +4529,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                             $data['token'] 			= $this->token;
                             $data['is_use'] 			= 0;
                             $data['wecha_id'] 		= $_GET['wecha_id'];
-                            $data['coupon_type'] 	=  $item['type'];
+                            $data['coupon_type'] 	= 2;
                             $data['coupon_name']=$item['title'];
                             $coupon_num=date('YmdHis',time()).mt_rand(1000,9999);
                             $data['coupon_num'] 	=  $coupon_num;
@@ -5035,7 +5230,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $crk=$_POST['crk'];
            $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
            if($crk['单据类别']=='出库'){
-               if($crkmx){
+               if(count($crkmx)>0){
                    foreach($crkmx as $item){
                        if($item['编号']!=''){
                            $num=$item['数量'];
@@ -5586,8 +5781,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                    $inout['摘要']='销售出库收款('.$xsd['单据编号'].')';
                    $inout['收支项目']='销售出库';
                    $inout['当前状态']='待审核';
-                   $inout['发票类别']=$xsd['发票类别'];
-                   $inout['发票号']=$xsd['发票号'];
+                   $inout['发票类别']=$xsd['门店'];
+                   $inout['发票号']=$xsd['车牌号码'];
                    $inout['ID']=$this->getcode(18,1,1);
                    $inout['单位编号']=$xsd['客户ID'];
                    $inout['本次冲账']=$xsd['现结金额'];
@@ -6727,8 +6922,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             if($wxlb!='普通快修'){
                 $czinfo['名称']=$carno;
                 $czinfo['客户']=1;
-                $czinfo['类别']='1星客户';
-                $czinfo['等级']='★';
+                $czinfo['类别']='临时客户';
+                //$czinfo['等级']='★';
                 $czinfo['手机号码']=$phone;
                 $czinfo['联系电话']=$phone;
                 $czinfo['联系人']=$lxr;
@@ -6738,7 +6933,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 $carinfo['车牌号码']=$carno;
                 $carinfo['轮胎规格']=$_POST['luntai'];
                 $carinfo['客户ID']=$czinfo['ID'];
-                $carinfo['客户类别']='1星客户';
+                $carinfo['客户类别']='临时客户';
                 $carinfo['最近维修']=date('Y-m-d',time());
                 $carinfo['维修次数']=1;
                 $carinfo['是否在用']='是';

@@ -50,14 +50,14 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-header">{pigcms:$coupon.distitle}<span style="font-size:0.6rem">(总共<span id="stock" style="color:orange">{pigcms:$coupon.people}<if condition="$coupon['num'] gt 1">份<else />张</if></span>)</span></div>
+                <div class="card-header">{pigcms:$coupon.title}<span style="font-size:0.6rem">(总共<span id="stock" style="color:orange">{pigcms:$coupon.people}份</span>)</span></div>
                 <div class="card-content">
                     <div class="card-content-inner">
                         <div class="item-title">需要积分:<span style="color:orange">{pigcms:$coupon.integral}</span>分</div>
-                        <div class="item-title"><if condition="$coupon['num'] gt 1">包含{pigcms:$coupon.title}<span style="color:red">{pigcms:$coupon.num}</span>张</if></div>
                         <div class="item-title">
-                            <span>剩余<span style="color:red">{pigcms:$coupon.get_count}</span><if condition="$coupon['num'] gt 1">份<else />张</if></span>
+                            <span>剩余<span style="color:red">{pigcms:$coupon.leftcount}</span>份</span>
                         </div>
+                        <div class="item-title" style="color:#0055CC;"><span>每人限兑换{pigcms:$coupon.total}份</span></div>
                         <div class="item-title">
                             <span id="remainTime" style=""></span>
                         </div>
@@ -66,7 +66,7 @@
                             <div class="row">
                                 <div class="col-50"></div>
                                 <div class="col-50">
-                                    <if condition="$coupon['get_count'] neq 0">
+                                    <if condition="$coupon['leftcount'] neq 0">
                                         <a href="#" id="exchange" class="button button-big button-fill" >立即兑换</a>
                                         <else/>
                                         <a href="#"  class="button button-big button-fill" style="background-color:#B2B2B2">已兑换完</a>
@@ -135,7 +135,7 @@
                     $.post('/index.php?g=Wap&m=Store&a=action_myCoupon&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData, function (data) {
                         $.alert(data);
                         $.hideIndicator();
-                        location.href = '/index.php?g=Wap&m=Store&a=cats&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}';
+                        location.href = '/index.php?g=Wap&m=Store&a=mycoupon&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}';
                     });
                 });
             });

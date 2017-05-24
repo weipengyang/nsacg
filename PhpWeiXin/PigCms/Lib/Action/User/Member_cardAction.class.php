@@ -674,7 +674,7 @@ class Member_cardAction extends UserAction{
 	}	
 
 	public function integral_del(){
-		$this->_isUseRecordExist(2,$_GET['itemid']);
+		//$this->_isUseRecordExist(2,$_GET['itemid']);
 			$data=M('Member_card_integral')->where(array('token'=>session('token'),'id'=>$this->_get('itemid')))->delete();
 			if($data==false){
 				$this->error('服务器繁忙请稍后再试');

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>保险管理</title>
+    <title>应收应付管理</title>
     <meta name="description" content="爱养车">
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
@@ -42,13 +42,21 @@
         <div class="admin-content">
             <div class="admin-content-body">
                 <div class="am-g">
-                    <div class="am-u-sm-3 am-u-md-3">
+                    <div class="am-u-sm-4 am-u-md-4">
                         <div class="am-form-group">
-                            <select id="fwgw">
-                                <option value="">所有人</option>
+                            <select id="shop">
+                                <option value="">所有门店</option>
                             </select>
-                            <select id="bxgs">
-                                <option value="">所有</option>
+                            <select id="zklb">
+                                <option value="">账款类别</option>
+                                <option value="应收款">应收款</option>
+                                <option value="应付款">应付款</option>
+                            </select>
+                            <select id="szxm">
+                                <option value="">收支项目</option>
+                            </select>
+                            <select id="jsfs">
+                                <option value="">结算方式</option>
                             </select>
                         </div>
                     </div>
@@ -76,8 +84,7 @@
                             </span>
                         </div>
                     </div>
-                    <div class="am-u-sm-3 am-u-md-3 am-u-end">
-                        <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="record();">登记</button>
+                    <div class="am-u-sm-2 am-u-md-2">
                         <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="check();">审核</button>
                         <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="printbill();">打印</button>
                         <!--<button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="exportdata();">导出数据</button>-->
@@ -242,30 +249,40 @@
             return todate(value);
         }
         function f_totalRender(data, currentPageData) {
-            return " 总金额:" + data.TotalData.总金额
-                  + "  商业保费:" + data.TotalData.商业保费
-                  + "  交强保费:" + data.TotalData.交强保费;
+            return  "  实收金额:" + data.sumdata.实收金额
+                  + "  实付金额:" + data.sumdata.实付金额
+                  + "  利润:" + (data.sumdata.实收金额-data.sumdata.实付金额);
         }
         $(function () {
-            $.post('index.php?g=Query&m=Consume&a=getywy', null,
+            $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {
+                if (data) {
+                    $('#shop').empty();
+                    $('#shop').append("<option value=''>所有门店</option>");
+                    $(data).each(function () {
+                        var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                        $('#shop').append(option);
+                    });
+                }
+            }, 'JSON');
+            $.post('index.php?g=Query&m=Consume&a=getszxm', null,
            function (data) {
                if (data) {
-                   $('#fwgw').empty();
-                   $('#fwgw').append("<option value=''>所有业务员</option>");
+                   $('#szxm').empty();
+                   $('#szxm').append("<option value=''>收支项目</option>");
                    $(data).each(function () {
-                       var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
-                       $('#fwgw').append(option);
+                       var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                       $('#szxm').append(option);
                    });
                }
            }, 'JSON');
-            $.post('index.php?g=Query&m=Consume&a=baoxian', null,
+            $.post('index.php?g=Query&m=Consume&a=getjsfs', null,
            function (data) {
                if (data) {
-                   $('#bxgs').empty();
-                   $('#bxgs').append("<option value=''>所有保险公司</option>");
+                   $('#jsfs').empty();
+                   $('#jsfs').append("<option value=''>结算方式</option>");
                    $(data).each(function () {
                        var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
-                       $('#bxgs').append(option);
+                       $('#jsfs').append(option);
                    });
                }
            }, 'JSON');
@@ -273,94 +290,71 @@
                 columns: [
                     {
                         display: '当前状态', name: '当前状态', align: 'left', width: 60, render: function (rowdata, index, value) {
+                            if (value == '待审核')
+                                value = '<span style="color:red">' + value + '</span>';
+                            return value;
+                        }
+                    },
+                    {
+                        display: '账款类别', name: '账款类别', align: 'left', width: 60, render: function (rowdata, index, value) {
                             if (value == '审核')
                                 value = '<span style="color:red">' + value + '</span>';
                             return value;
                         }
                     },
+                { display: '单据编号', name: '单据编号', width: 100, align: 'left' },
                 {
                     display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
                         return todate(value, false);
                     }
                 },
                 { display: '制单人', name: '制单人', width: 100, align: 'left' },
-                { display: '业务员', name: '业务员', minWidth: 100 },
-                { display: '保险公司', name: '保险公司', minWidth: 120 },
                 {
-                    display: '车主', name: '车主', minWidth: 140, render: function (rowdata, index, value) {
+                    display: '单位名称', name: '单位名称', minWidth: 140, render: function (rowdata, index, value) {
 
                         return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
 
                     }
                 },
+                { display: '实付金额', name: '实付金额', minWidth: 120 },
+                { display: '实收金额', name: '实收金额', minWidth: 100 },
                 {
-                    display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
+                    display: '取用预存', name: '取用预存', minWidth: 100
+                },
+                { display: '结算方式', name: '结算方式', minWidth: 100 },
+                { display: '结算账户', name: '结算账户', minWidth: 100 },
+                { display: '门店', name: '发票类别', minWidth: 80 },
+                {
+                    display: '车牌号码', name: '发票号', minWidth: 100, render: function (rowdata, index, value) {
 
                         return '<a href="javascript:void(0);" onclick="carinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
 
                     }
                 },
-                { display: '驾驶员', name: '驾驶员', minWidth: 140 },
-                { display: '驾驶证号', name: '驾驶证号', minWidth: 100 },
-                { display: '驾驶员电话', name: '驾驶员电话', minWidth: 80 },
-                { display: '被保险人', name: '被保险人', minWidth: 80 },
-                { display: '证件号码', name: '证件号码', minWidth: 80 },
-                {
-                    display: '交强起始', name: '交强起始', minWidth: 100, render: function (rowdata, index, value) {
-                        return todate(value, false);
-                    }
-                },
-                {
-                    display: '交强截至', name: '交强截至', minWidth: 100, render: function (rowdata, index, value) {
-                        return todate(value, false);
-                    }
-                },
-                {
-                    display: '商业起始', name: '商业起始', minWidth: 100, render: function (rowdata, index, value) {
-                        return todate(value, false);
-                    }
-                },
-                {
-                    display: '商业截至', name: '商业截至', minWidth: 100, render: function (rowdata, index, value) {
-                        return todate(value, false);
-                    }
-                },
-                { display: '交强保费', name: '交强保费', minWidth: 80 },
-                { display: '商业保费', name: '商业保费', minWidth: 80 },
-                { display: '应缴保费', name: '应缴保费', minWidth: 80 },
-                { display: '优惠金额', name: '优惠金额', minWidth: 80 },
-                { display: '结算方式', name: '结算方式', minWidth: 80 },
-                { display: '车船税', name: '车船税', minWidth: 80 },
-                { display: '手续费', name: '手续费', minWidth: 80 },
-                { display: '总金额', name: '总金额', minWidth: 80 },
-               {
-                    display: '缴费日期', name: '缴费日期', minWidth: 100, render: function (rowdata, index, value) {
-                        return todate(value, false);
-                    }
-                },
-                { display: '审核人', name: '审核人', minWidth: 80 },
-                {
-                    display: '审核日期', name: '审核日期', minWidth: 80, render: function (rowdata, index, value) {
-                        return todate(value, false);
-                    }
-                },
-                { display: '备注', name: '备注', minWidth:100 },
+                { display: '收支项目', name: '收支项目', minWidth: 140 },
+                { display: '摘要', name: '摘要', minWidth: 100 },
                 ],
                 isScroll: true,
                 pageSize: 20,
                 totalRender: f_totalRender,
                 fixedCellHeight: false,
-                url: '/index.php?g=Query&m=Consume&a=getbxdata',
+                url: '/index.php?g=Query&m=Consume&a=getrecevieandpay',
                 height: '95%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     modifyinfo(data);
                 }
             });
            
-            $("#fwgw").change(function () {
+            $("#jsfs").change(function () {
                 $('#search').click();
             });
-            $("#bxgs").change(function () {
+            $("#shop").change(function () {
+                $('#search').click();
+            });
+            $("#zklb").change(function () {
+                $('#search').click();
+            });
+            $("#szxm").change(function () {
                 $('#search').click();
             });
             $('#search').click(function () {
@@ -372,12 +366,15 @@
                 var startdate = $('#startdate').val();
                 if (startdate != '')
                     parms['startdate'] = startdate;
-                var fwgw = $('#fwgw').val();
-                if (fwgw != '')
-                    parms['ywy'] = fwgw;
-                var bxgs = $('#bxgs').val();
-                if (bxgs != '')
-                    parms['bxgs'] = bxgs;
+                var zklb = $('#zklb').val();
+                if (zklb != '')
+                    parms['zklb'] = zklb;
+                var szxm = $('#szxm').val();
+                if (szxm != '')
+                    parms['szxm'] = szxm;
+                var jsfs = $('#jsfs').val();
+                if (jsfs != '')
+                    parms['jsfs'] = jsfs;
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     parms.searchkey = searchkey;

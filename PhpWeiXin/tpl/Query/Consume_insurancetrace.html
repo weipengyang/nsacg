@@ -65,10 +65,10 @@
                     {
                         text: "保存", width: 60, click: function () {
                             var data = form.getData();
-                            if (dialog.get('type') == 'modify')
+                            if (dialog.get('opttype') == 'modify')
                                 data['流水号'] = codenum;
                             var submitData = {
-                                type: dialog.get('type'),
+                                type: dialog.get('opttype'),
                                 tracedata: data
                             };
                             
@@ -86,7 +86,7 @@
 
             dialog = frameElement.dialog;
             var data = dialog.get('data');
-            var type = dialog.get('type');
+            var type = dialog.get('opttype');
             if (type == 'add') {
                 $("input[ligeruiid='车牌号码']").val(data['车牌号码']);
                 $("input[ligeruiid='车主']").val(data['车主']);

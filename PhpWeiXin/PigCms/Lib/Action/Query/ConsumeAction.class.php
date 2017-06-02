@@ -967,6 +967,7 @@ class ConsumeAction extends Action{
         echo json_encode($data);
         
     }
+
     public  function getbalance()
     {   
         $page=$_POST['page'];
@@ -980,6 +981,8 @@ class ConsumeAction extends Action{
         if (isset($_POST['szxm'])&&trim($_POST['szxm'])!=''){
             $where['收支项目']=$_POST['szxm'];
         }
+        $where['当前状态']='待审核';
+
         if (isset($_POST['jsfs'])&&trim($_POST['jsfs'])!=''){
             $where['结算方式']=$_POST['jsfs'];
         } 
@@ -1035,6 +1038,74 @@ class ConsumeAction extends Action{
         echo json_encode($data);
         
     }
+    public function balancecheck(){      
+        if(IS_POST){
+            $ids=$_POST['ids'];
+            $crkitem['当前状态']='已审核';
+            $crkitem['审核人']=cookie('username');
+            $crkitem['审核日期']=date('Y-m-d',time());
+            M('日常收支','dbo.','difo')->where(array('ID'=>array('in',$ids)))->save($crkitem);
+            //$this->writeLog($crk['ID'],$crk['单据编号'],'出库审核',$crk['单据类别'].'出库审核');
+            echo '审核通过';
+            exit;
+        }
+
+    }
+    public  function balancecheckall()
+    {   
+        if (isset($_POST['szxm'])&&trim($_POST['szxm'])!=''){
+            $where['收支项目']=$_POST['szxm'];
+        }
+        $where['当前状态']='待审核';
+        if (isset($_POST['jsfs'])&&trim($_POST['jsfs'])!=''){
+            $where['结算方式']=$_POST['jsfs'];
+        } 
+        if (isset($_POST['zklb'])&&trim($_POST['zklb'])!=''){
+            $where['账款类别']=$_POST['zklb'];
+        } 
+        if (isset($_POST['shop'])&&trim($_POST['shop'])!=''){
+            $where['发票类别']=$_POST['shop'];
+        } 
+        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        {
+            $where['制单日期']=array('egt',trim($_POST['startdate']));
+            
+        }
+        if($_POST['enddate']&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('elt',trim($_POST['enddate']));
+            
+        }
+        if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('BETWEEN',array(trim($_POST['startdate']),trim($_POST['enddate'])));
+            
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){       
+            $searchwhere['收支项目']=array('like',$searchkey);
+            $searchwhere['账款类别']=array('like',$searchkey);
+            $searchwhere['结算方式']=array('like',$searchkey);
+            $searchwhere['发票类别']=array('like',$searchkey);
+            $searchwhere['发票号']=array('like',$searchkey);
+            $searchwhere['单位名称']=array('like',$searchkey);
+            $searchwhere['单据编号']=array('like',$searchkey);
+            $searchwhere['摘要']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $crkitem['当前状态']='已审核';
+        $crkitem['审核人']=cookie('username');
+        $crkitem['审核日期']=date('Y-m-d',time());
+        M('日常收支','dbo.','difo')->where($where)->save($crkitem);
+        //$this->writeLog($crk['ID'],$crk['单据编号'],'出库审核',$crk['单据类别'].'出库审核');
+        echo '审核通过';
+        exit;;
+        
+    }
     public  function getrecevieandpay()
     {   
         $page=$_POST['page'];
@@ -1045,17 +1116,12 @@ class ConsumeAction extends Action{
             $sortname='流水号';
             $sortorder='desc';
         }
-        if (isset($_POST['szxm'])&&trim($_POST['szxm'])!=''){
-            $where['收支项目']=$_POST['szxm'];
-        }
-        if (isset($_POST['jsfs'])&&trim($_POST['jsfs'])!=''){
-            $where['结算方式']=$_POST['jsfs'];
-        } 
-        if (isset($_POST['zklb'])&&trim($_POST['zklb'])!=''){
+       $where['当前状态']='待审核';
+       if (isset($_POST['zklb'])&&trim($_POST['zklb'])!=''){
             $where['账款类别']=$_POST['zklb'];
         } 
         if (isset($_POST['shop'])&&trim($_POST['shop'])!=''){
-            $where['发票类别']=$_POST['shop'];
+            $where['门店']=$_POST['shop'];
         } 
         if($_POST['startdate']&&trim($_POST['startdate'])!='')
         {
@@ -1079,11 +1145,9 @@ class ConsumeAction extends Action{
             $searchkey='%'.trim($_POST['searchkey']).'%';
         }
         if($searchkey){       
-            $searchwhere['收支项目']=array('like',$searchkey);
             $searchwhere['账款类别']=array('like',$searchkey);
-            $searchwhere['结算方式']=array('like',$searchkey);
-            $searchwhere['发票类别']=array('like',$searchkey);
-            $searchwhere['发票号']=array('like',$searchkey);
+            $searchwhere['门店']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
             $searchwhere['单位名称']=array('like',$searchkey);
             $searchwhere['单据编号']=array('like',$searchkey);
             $searchwhere['摘要']=array('like',$searchkey);
@@ -4051,6 +4115,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $paybill['虚增价税']=0;
        $paybill['挂账金额']=$price; 
        $paybill['车牌号码']=$carno;
+       $paybill['门店']='爱养车';
        M('应收应付单','dbo.','difo')->add($paybill);
    }
    public function dbcheck(){
@@ -4095,6 +4160,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $paybill['虚增价税']=0;
            $paybill['挂账金额']=$dbinfo['挂账金额'];
            $paybill['车牌号码']=$dbinfo['车牌号码'];
+           $paybill['门店']='爱养车';
            M('应收应付单','dbo.','difo')->add($paybill);
            if($dbinfo['挂账金额']==0){
                $inout['单据编号']=$this->getcodenum('BI');
@@ -4173,6 +4239,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $paybill['虚增价税']=0;
            $paybill['挂账金额']=$bxinfo['挂账金额'];
            $paybill['车牌号码']=$bxinfo['车牌号码'];
+           $paybill['门店']='爱养车';
            M('应收应付单','dbo.','difo')->add($paybill);
            if($bxinfo['挂账金额']==0){
                $inout['单据编号']=$this->getcodenum('BI');
@@ -4248,6 +4315,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 $paybill['虚增价税']=0;
                 $paybill['挂账金额']=$cgd['挂账金额'];
                 $paybill['车牌号码']=$cgd['车牌号码'];
+                $paybill['门店']=$cgd['门店'];
                 M('应收应付单','dbo.','difo')->add($paybill);
                 if($cgd['挂账金额']==0){
                     $inout['单据编号']=$this->getcodenum('BE');
@@ -4378,14 +4446,15 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             if($type=='add'){
                 if(!isset($carinfo['客户ID'])||$carinfo['客户ID']==''){
                     $czinfo['名称']=$carinfo['车牌号码'];
+                    $carinfo['车主']=$carinfo['车牌号码'];
                     $czinfo['客户']=1;
                     $czinfo['ID']=$this->getcode(18,0,0);
                     $carinfo['客户ID']=$czinfo['ID'];
                     $czinfo['会员']=0;
                     $czinfo['联系人']=$carinfo['联系人'];
-                    $czinfo['联系电话']=$user['tel'];
-                    $czinfo['手机号码']=$user['tel'];
-                    $czinfo['类别']=$carinfo['客户类别'];
+                    $czinfo['联系电话']=$carinfo['联系电话'];
+                    $czinfo['手机号码']=$carinfo['联系电话'];
+                    $czinfo['类别']='临时客户';
                     M('往来单位','dbo.','difo')->add($czinfo);
                 }
                 unset($carinfo['流水号']);
@@ -5691,7 +5760,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          //$data['急件']=$form['急件'];
          $data['应结金额']=$form['总金额'];
          $data['现结金额']=0;
-         $data['挂账金额']=$form['总金额'];
+         $data['挂账金额']=0;
          //$data['车牌号码']=$wxinfo['车牌号码'];
          //$data['原因']='维修领料';
          $data['备注']=$form['备注'];
@@ -5767,6 +5836,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $paybill['虚增价税']=0;
                $paybill['挂账金额']=$xsd['挂账金额'];
                $paybill['车牌号码']=$xsd['车牌号码'];
+               $paybill['门店']=$xsd['门店'];
                M('应收应付单','dbo.','difo')->add($paybill);
 
                if(doubleval($xsd['现结金额'])>0||$xsd['结算方式']=='会员卡支付'){
@@ -7234,6 +7304,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $paybill['虚增价税']=0;
        $paybill['挂账金额']=$wx['挂账金额'];
        $paybill['车牌号码']=$wx['车牌号码'];
+       $paybill['门店']=$wx['门店'];
        M('应收应付单','dbo.','difo')->add($paybill);
        if(doubleval($wx['现收金额'])>0||$wx['结算方式']=='会员卡支付'){
            $bianhao=$this->getcodenum("BI");

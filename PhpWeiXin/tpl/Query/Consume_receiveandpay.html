@@ -42,7 +42,7 @@
         <div class="admin-content">
             <div class="admin-content-body">
                 <div class="am-g">
-                    <div class="am-u-sm-4 am-u-md-4">
+                    <div class="am-u-sm-3 am-u-md-3">
                         <div class="am-form-group">
                             <select id="shop">
                                 <option value="">所有门店</option>
@@ -51,12 +51,6 @@
                                 <option value="">账款类别</option>
                                 <option value="应收款">应收款</option>
                                 <option value="应付款">应付款</option>
-                            </select>
-                            <select id="szxm">
-                                <option value="">收支项目</option>
-                            </select>
-                            <select id="jsfs">
-                                <option value="">结算方式</option>
                             </select>
                         </div>
                     </div>
@@ -249,9 +243,7 @@
             return todate(value);
         }
         function f_totalRender(data, currentPageData) {
-            return  "  实收金额:" + data.sumdata.实收金额
-                  + "  实付金额:" + data.sumdata.实付金额
-                  + "  利润:" + (data.sumdata.实收金额-data.sumdata.实付金额);
+            return "  总金额:" + data.sumdata.总金额;
         }
         $(function () {
             $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {
@@ -289,50 +281,36 @@
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                     {
-                        display: '当前状态', name: '当前状态', align: 'left', width: 60, render: function (rowdata, index, value) {
+                        display: '当前状态', name: '当前状态', align: 'left', width: 80, render: function (rowdata, index, value) {
                             if (value == '待审核')
                                 value = '<span style="color:red">' + value + '</span>';
                             return value;
                         }
                     },
                     {
-                        display: '账款类别', name: '账款类别', align: 'left', width: 60, render: function (rowdata, index, value) {
+                        display: '账款类别', name: '账款类别', align: 'left', width: 80, render: function (rowdata, index, value) {
                             if (value == '审核')
                                 value = '<span style="color:red">' + value + '</span>';
                             return value;
                         }
                     },
-                { display: '单据编号', name: '单据编号', width: 100, align: 'left' },
+                { display: '单据编号', name: '单据编号', width: 120, align: 'left' },
                 {
-                    display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
+                    display: '制单日期', name: '制单日期', minWidth: 120, render: function (rowdata, index, value) {
                         return todate(value, false);
                     }
                 },
-                { display: '制单人', name: '制单人', width: 100, align: 'left' },
+                { display: '制单人', name: '制单人', width: 120, align: 'left' },
                 {
-                    display: '单位名称', name: '单位名称', minWidth: 140, render: function (rowdata, index, value) {
+                    display: '单位名称', name: '单位名称', minWidth: 150, render: function (rowdata, index, value) {
 
                         return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
 
                     }
                 },
-                { display: '实付金额', name: '实付金额', minWidth: 120 },
-                { display: '实收金额', name: '实收金额', minWidth: 100 },
-                {
-                    display: '取用预存', name: '取用预存', minWidth: 100
-                },
-                { display: '结算方式', name: '结算方式', minWidth: 100 },
-                { display: '结算账户', name: '结算账户', minWidth: 100 },
-                { display: '门店', name: '发票类别', minWidth: 80 },
-                {
-                    display: '车牌号码', name: '发票号', minWidth: 100, render: function (rowdata, index, value) {
-
-                        return '<a href="javascript:void(0);" onclick="carinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
-
-                    }
-                },
-                { display: '收支项目', name: '收支项目', minWidth: 140 },
-                { display: '摘要', name: '摘要', minWidth: 100 },
+                { display: '总金额', name: '总金额', minWidth: 120 },
+                { display: '门店', name: '门店', minWidth: 80 },
+                { display: '摘要', name: '摘要', minWidth: 200 },
                 ],
                 isScroll: true,
                 pageSize: 20,
@@ -345,16 +323,10 @@
                 }
             });
            
-            $("#jsfs").change(function () {
-                $('#search').click();
-            });
             $("#shop").change(function () {
                 $('#search').click();
             });
             $("#zklb").change(function () {
-                $('#search').click();
-            });
-            $("#szxm").change(function () {
                 $('#search').click();
             });
             $('#search').click(function () {
@@ -369,12 +341,6 @@
                 var zklb = $('#zklb').val();
                 if (zklb != '')
                     parms['zklb'] = zklb;
-                var szxm = $('#szxm').val();
-                if (szxm != '')
-                    parms['szxm'] = szxm;
-                var jsfs = $('#jsfs').val();
-                if (jsfs != '')
-                    parms['jsfs'] = jsfs;
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     parms.searchkey = searchkey;

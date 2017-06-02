@@ -104,13 +104,69 @@
         var menu = $.ligerMenu({
             width: 100, items:
                 [
-                { text: '通过', click: printbill },
+                { text: '通过', click: check },
                 { line: true },
                 { text: '作废', click: cancelrecord },
                 { line: true },
                 { text: '打印', click: printbill },
                 ]
-        });        function cancelrecord() {
+        });        function check(obj) {
+            var ids=[];
+            if (!obj) {
+                var rows = grid.getSelectedRows();
+                for (var i = 0; i < rows.length; i++) {
+                    ids.push(rows[i]['ID']);
+                }
+
+            } else {
+                ids.push(selectrow['ID']);
+            }
+            $.ligerDialog.confirm('确认通过？', function (yes) {
+                if (yes) {
+                    $.post('/index.php?g=Query&m=Consume&a=balancecheck', { ids: ids },
+                              function (msg) {
+                                  $.ligerDialog.alert(msg);
+                                  grid.reload();
+                              });
+                }
+                else {
+                    return false;
+                }
+            });        }        function checkall() {
+            var parms = {};
+            var enddate = $('#enddate').val();
+            if (enddate != '')
+                parms['enddate'] = enddate;
+            var startdate = $('#startdate').val();
+            if (startdate != '')
+                parms['startdate'] = startdate;
+            var zklb = $('#zklb').val();
+            if (zklb != '')
+                parms['zklb'] = zklb;
+            var shop = $('#shop').val();
+            if (shop != '')
+                parms['shop'] = shop;
+            var szxm = $('#szxm').val();
+            if (szxm != '')
+                parms['szxm'] = szxm;
+            var jsfs = $('#jsfs').val();
+            if (jsfs != '')
+                parms['jsfs'] = jsfs;
+            var searchkey = $('#searchkey').val();
+            if (searchkey != '')
+                parms.searchkey = searchkey;
+            $.ligerDialog.confirm('确认要通过吗？', function (yes) {
+                if (yes) {
+                    $.post('/index.php?g=Query&m=Consume&a=balancecheckall', parms,
+                              function (msg) {
+                                  $.ligerDialog.alert(msg);
+                                  grid.reload();
+                              });
+                }
+                else {
+                    return false;
+                }
+            });        }        function cancelrecord() {
             $.ligerDialog.confirm('你确认要作废吗？', function (yes) {
                 if (yes) {
                     $.post('/index.php?g=Query&m=Consume&a=cancelbill', {record:selectrow},
@@ -237,36 +293,6 @@
             modifydialog.max();
         }
 
-        function check() {
-            var row = grid.getSelectedRows();
-            if (row) {
-                if (row['当前状态'] == '结束') {
-                    $.ligerDialog.alert('请不要重复审核');
-                    return;
-                }
-                if (caldialog) {
-                    caldialog.setUrl('/index.php?g=Query&m=Consume&a=bxcheck');
-                    caldialog.show();
-                }
-                else {
-                    caldialog = $.ligerDialog.open({
-                        height: 320,
-                        url: '/index.php?g=Query&m=Consume&a=bxcheck',
-                        width: 600,
-                        showMax: false,
-                        showToggle: true,
-                        showMin: true,
-                        isResize: true,
-                        modal: false,
-                        title: '结算信息'
-                    });
-                }
-
-            }
-            else {
-                alert('选择审核记录');
-            }
-        }
 
         function format(rowdata, index, value) {
             return todate(value);

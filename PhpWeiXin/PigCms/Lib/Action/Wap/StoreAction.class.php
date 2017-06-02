@@ -1340,7 +1340,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
          $this->display();
        }
    }
-   private function gendbbill($price,$chezhu,$zhaiyao,$daiwen,$bianhao,$type,$yyid,$carno){
+   private function gendbbill($price,$chezhu,$zhaiyao,$daiwen,$bianhao,$type,$yyid,$carno,$shop=''){
        $paybill['ID']=$this->getcode(18,1,1);
        $paybill['单位编号']=$daiwen;
        $paybill['单位名称']=$chezhu;
@@ -1362,6 +1362,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
        $paybill['虚增价税']=0;
        $paybill['挂账金额']=$price; 
        $paybill['车牌号码']=$carno;
+       $paybill['门店']=$shop;
        M('应收应付单','dbo.','difo')->add($paybill);
    }
    private function genbill($price,$chezhu,$zhaiyao,$daiwen,$type='维修',$billtype='维修收款',$carno='',$shop=''){
@@ -1419,6 +1420,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
        $paybill['虚增价税']=0;
        $paybill['挂账金额']=0;
        $paybill['车牌号码']=$carno;
+       $paybill['门店']=$shop;
        M('应收应付单','dbo.','difo')->add($paybill);
 
        $dj['挂账ID']=$paybill['ID'];
@@ -3224,6 +3226,8 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
     public function washcar(){
         if(IS_POST){
             $shop=$_POST['shop'];
+            if($shop=='')
+                $shop=$this->getshopname();
             $carno=$_POST['carno'];
             $this->genwxrecord('40',$carno,'AYC10009','蜡水洗车',$shop);
             $wxcount=M('维修','dbo.','difo')->where(array('维修类别'=>'蜡水洗车','门店'=>$shop,'_string'=>"当前状态  in ('报价','派工')"))->count();

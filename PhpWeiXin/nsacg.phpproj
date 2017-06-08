@@ -14657,6 +14657,11 @@
     <Content Include="tpl\Other\default\style\js\registerSSO.js" />
     <Content Include="tpl\Other\index.html" />
     <Content Include="tpl\Query\Consume_addproductlist.html" />
+    <Content Include="tpl\Query\Consume_balancesum.html" />
+    <Content Include="tpl\Query\Consume_balancequery.html" />
+    <Content Include="tpl\Query\Consume_balancesumdetail.html" />
+    <Content Include="tpl\Query\Consume_productselect.html" />
+    <Content Include="tpl\Query\Consume_receiveandpayquery.html" />
     <Content Include="tpl\Query\Consume_selfpicksum.html" />
     <Content Include="tpl\Query\Consume_receiveandpay.html" />
     <Content Include="tpl\Query\Consume_balance.html" />
@@ -14693,6 +14698,7 @@
     <Content Include="tpl\Query\Consume_insurance.html" />
     <Content Include="tpl\Query\Consume_personstat.html" />
     <Content Include="tpl\Query\Consume_modifysaling.html" />
+    <Content Include="tpl\Query\Consume_payrecord.html" />
     <Content Include="tpl\Query\Consume_wxtrace.html" />
     <Content Include="tpl\Query\Consume_insurancetrace.html" />
     <Content Include="tpl\Query\Consume_backpick.html" />

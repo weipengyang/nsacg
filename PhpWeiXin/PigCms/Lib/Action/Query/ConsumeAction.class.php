@@ -997,9 +997,6 @@ class ConsumeAction extends Action{
             $where['制单日期']=array('egt',trim($_POST['startdate']));
             
         }
-        else{
-            $where['制单日期']=array('egt',date('Y-m-01 00:00',time()));
-        }
         if($_POST['enddate']&&trim($_POST['enddate'])!='')
         {
             $where['制单日期']=array('elt',trim($_POST['enddate']));
@@ -1038,7 +1035,129 @@ class ConsumeAction extends Action{
         echo json_encode($data);
         
     }
-    public function balancecheck(){      
+    public  function getbalancesum()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+
+        if (isset($_POST['szxm'])&&trim($_POST['szxm'])!=''){
+            $where['收支项目']=$_POST['szxm'];
+        }
+        if (isset($_POST['jsfs'])&&trim($_POST['jsfs'])!=''){
+            $where['结算方式']=$_POST['jsfs'];
+        } 
+        if (isset($_POST['zklb'])&&trim($_POST['zklb'])!=''){
+            $where['账款类别']=$_POST['zklb'];
+        } 
+        if (isset($_POST['shop'])&&trim($_POST['shop'])!=''){
+            $where['发票类别']=$_POST['shop'];
+        } 
+       
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){       
+            $searchwhere['收支项目']=array('like',$searchkey);
+            $searchwhere['账款类别']=array('like',$searchkey);
+            $searchwhere['结算方式']=array('like',$searchkey);
+            $searchwhere['发票类别']=array('like',$searchkey);
+            $searchwhere['发票号']=array('like',$searchkey);
+            $searchwhere['单位名称']=array('like',$searchkey);
+            $searchwhere['单据编号']=array('like',$searchkey);
+            $searchwhere['摘要']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $where['_string']=' 应收款<>0 or 应付款<>0 or 往来余款<>0';
+        $count=M('往来单位','dbo.','difo')
+            ->where($where)->count();
+        $sumdata=M('往来单位','dbo.','difo')
+           ->where($where)->field('sum(应收款) 应收款 ,sum(应付款) 应付款,sum(往来余款) 往来余款')->find();;
+        $yelist=M('往来单位','dbo.','difo')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        $data['sumdata']=$sumdata;
+        echo json_encode($data);
+        
+    }
+    public  function getbalancequery()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        if (isset($_POST['szxm'])&&trim($_POST['szxm'])!=''){
+            $where['收支项目']=$_POST['szxm'];
+        }
+        $where['当前状态']='已审核';
+        if (isset($_POST['jsfs'])&&trim($_POST['jsfs'])!=''){
+            $where['结算方式']=$_POST['jsfs'];
+        } 
+        if (isset($_POST['zklb'])&&trim($_POST['zklb'])!=''){
+            $where['账款类别']=$_POST['zklb'];
+        } 
+        if (isset($_POST['shop'])&&trim($_POST['shop'])!=''){
+            $where['发票类别']=$_POST['shop'];
+        } 
+        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        {
+            $where['制单日期']=array('egt',trim($_POST['startdate']));
+            
+        }
+        else{
+            $where['制单日期']=array('egt',date('Y-m-01 00:00',time()));
+        }
+        if($_POST['enddate']&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('elt',trim($_POST['enddate']));
+            
+        }
+        if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('BETWEEN',array(trim($_POST['startdate']),trim($_POST['enddate'])));
+            
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){       
+            $searchwhere['收支项目']=array('like',$searchkey);
+            $searchwhere['账款类别']=array('like',$searchkey);
+            $searchwhere['结算方式']=array('like',$searchkey);
+            $searchwhere['发票类别']=array('like',$searchkey);
+            $searchwhere['发票号']=array('like',$searchkey);
+            $searchwhere['单位名称']=array('like',$searchkey);
+            $searchwhere['单据编号']=array('like',$searchkey);
+            $searchwhere['摘要']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $count=M('日常收支','dbo.','difo')
+            ->where($where)->count();
+        $sumdata=M('日常收支','dbo.','difo')
+           ->where($where)->field('sum(实付金额) 实付金额 ,sum(实收金额) 实收金额')->find();;      
+        $yelist=M('日常收支','dbo.','difo')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        $data['sumdata']=$sumdata;
+        echo json_encode($data);
+        
+    }
+    public function  balancecheck(){      
         if(IS_POST){
             $ids=$_POST['ids'];
             $crkitem['当前状态']='已审核';
@@ -1051,7 +1170,36 @@ class ConsumeAction extends Action{
         }
 
     }
-    public  function balancecheckall()
+    public function  balanceuncheck(){      
+        if(IS_POST){
+            $record=$_POST['record'];
+            $crkitem['当前状态']='待审核';
+            $crkitem['审核人']=cookie('username');
+            $crkitem['审核日期']=date('Y-m-d',time());
+            M('日常收支','dbo.','difo')->where(array('ID'=>$record['ID']))->save($crkitem);
+            //$this->writeLog($crk['ID'],$crk['单据编号'],'出库审核',$crk['单据类别'].'出库审核');
+            echo '反审核成功';
+            exit;
+        }
+
+    }
+   public function receivedpaycheck(){      
+        if(IS_POST){
+            $record=$_POST['record'];
+            $crkitem['当前状态']='已审核';
+            $crkitem['审核人']=cookie('username');
+            $crkitem['审核日期']=date('Y-m-d',time());
+            M('应收应付单','dbo.','difo')->where(array('ID'=>$record['ID']))->save($crkitem);
+            $dwid=$record['单位编号'];
+            $je=$record['总金额'];
+            M('应收应付单','dbo.','difo')->execute("UPDATE 往来单位 SET 应收款=应收款+$je,往来余款=往来余款+$je WHERE ID='$dwid'");
+            //$this->writeLog($crk['ID'],$crk['单据编号'],'出库审核',$crk['单据类别'].'出库审核');
+            echo '审核通过';
+            exit;
+        }
+
+    }
+   public  function balancecheckall()
     {   
         if (isset($_POST['szxm'])&&trim($_POST['szxm'])!=''){
             $where['收支项目']=$_POST['szxm'];
@@ -1116,7 +1264,14 @@ class ConsumeAction extends Action{
             $sortname='流水号';
             $sortorder='desc';
         }
-       $where['当前状态']='待审核';
+        if($_GET['khID']){
+            $where['当前状态']='已审核';
+            $where['单位编号']=$_GET['khID'];
+            $where['未结算金额']=array('gt',0);
+
+        }else{
+            $where['当前状态']='待审核';
+        }
        if (isset($_POST['zklb'])&&trim($_POST['zklb'])!=''){
             $where['账款类别']=$_POST['zklb'];
         } 
@@ -1127,9 +1282,6 @@ class ConsumeAction extends Action{
         {
             $where['制单日期']=array('egt',trim($_POST['startdate']));
             
-        }
-        else{
-            $where['制单日期']=array('egt',date('Y-m-01 00:00',time()));
         }
         if($_POST['enddate']&&trim($_POST['enddate'])!='')
         {
@@ -1168,7 +1320,72 @@ class ConsumeAction extends Action{
         
     }
 
-    public  function gettracemessage()
+    public  function getrecevieandpayquery()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        if($_GET['khID']){
+            $where['当前状态']='已审核';
+            $where['单位编号']=$_GET['khID'];
+            $where['未结算金额']=array('gt',0);
+
+        }else{
+            $where['当前状态']=array('neq','待审核');
+        }
+       if (isset($_POST['zklb'])&&trim($_POST['zklb'])!=''){
+            $where['账款类别']=$_POST['zklb'];
+        } 
+        if (isset($_POST['shop'])&&trim($_POST['shop'])!=''){
+            $where['门店']=$_POST['shop'];
+        } 
+        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        {
+            $where['制单日期']=array('egt',trim($_POST['startdate']));
+            
+        }
+        if($_POST['enddate']&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('elt',trim($_POST['enddate']));
+            
+        }
+        if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('BETWEEN',array(trim($_POST['startdate']),trim($_POST['enddate'])));
+            
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){       
+            $searchwhere['账款类别']=array('like',$searchkey);
+            $searchwhere['门店']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['单位名称']=array('like',$searchkey);
+            $searchwhere['单据编号']=array('like',$searchkey);
+            $searchwhere['摘要']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $count=M('应收应付单','dbo.','difo')
+            ->where($where)->count();
+        $sumdata=M('应收应付单','dbo.','difo')
+           ->where($where)->field('sum(总金额) 总金额')->find();
+           $yelist=M('应收应付单','dbo.','difo')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        $data['sumdata']=$sumdata;
+        echo json_encode($data);
+        
+    }
+   public  function gettracemessage()
     {   
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
@@ -2479,6 +2696,53 @@ class ConsumeAction extends Action{
             echo '保存成功';
         }
     }
+    public function savepayrecord(){
+        $record=$_POST['record'];
+        if($record['账款类别']=='收款单'){
+            $bianhao=$this->getcodenum("BI");
+            $data['本次应付']=0;
+            $data['本次应收']=$record['金额'];
+            $data['实付金额']=0;
+            $data['实收金额']=$record['金额'];
+            $data['单据类别']='应收款';
+
+        }
+        else{
+            $bianhao=$this->getcodenum("BE");
+            $data['本次应付']=$record['金额'];
+            $data['本次应收']=0;
+            $data['实付金额']=$record['金额'];
+            $data['实收金额']=0;
+            $data['单据类别']='应付款';
+
+        }
+        $data['单据编号']=$bianhao;
+        $data['ID']=$this->getcode(20,1,1);
+        $data['制单日期']=date('Y-m-d',time());
+        $data['制单人']=cookie('username');
+        $data['单位名称']=$record['单位名称'];
+        $data['单位编号']=$record['单位编号'];
+        $data['账款类别']=$record['账款类别'];
+        $data['开户银行']='';
+        $data['银行账号']='';
+        $data['整单折扣']=1; 
+        $data['折扣金额']=0;
+        $data['结算方式']=$record['结算方式'];
+        $data['结算账户']=$record['结算账户'];
+        $data['支票号']=0;
+        $data['凭证号']=0;
+        $data['摘要']=$record['备注'];
+        $data['收支项目']=$record['收支项目'];
+        $data['当前状态']='待审核';
+        $data['发票类别']=$record['门店'];
+        $data['发票号']='';
+        $data['取用预付']=0;
+        $data['取用预收']=0;
+        $data['取用预存']=0;
+        $data['本次冲账']=$record['金额'];
+        M('日常收支','dbo.','difo')->add($data);
+    
+    }
     public  function savestock()
     {
         if(IS_POST){
@@ -2896,6 +3160,12 @@ class ConsumeAction extends Action{
    public  function getjsfs(){
          
         $wxlb=M('结算方式','dbo.','difo')->where(array('名称'=>array('like','%'.$_POST['key'].'%')))->select();
+        echo json_encode($wxlb);
+    
+} 
+   public  function getjszh(){
+         
+        $wxlb=M('收支账户','dbo.','difo')->where(array('名称'=>array('like','%'.$_POST['key'].'%')))->select();
         echo json_encode($wxlb);
     
 } 
@@ -4174,7 +4444,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $inout['摘要']='车辆代办收款('.$dbinfo['业务编号'].')';
                $inout['收支项目']=$dbinfo['代办类别'];
                $inout['当前状态']='待审核';
-                //$inout['发票类别']=$wx['门店'];
+               $inout['发票类别']='爱养车';
                $inout['发票号']=$dbinfo['车牌号码'];
                $inout['单位编号']=$dbinfo['客户ID'];
                $inout['ID']=$this->getcode(18,1,1);
@@ -4253,7 +4523,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $inout['摘要']='车辆代办收款('.$bxinfo['业务编号'].')';
                $inout['收支项目']='车辆保险';
                $inout['当前状态']='待审核';
-                //$inout['发票类别']=$wx['门店'];
+               $inout['发票类别']='爱养车';
                $inout['发票号']=$bxinfo['车牌号码'];
                $inout['单位编号']=$bxinfo['客户ID'];
                $inout['ID']=$this->getcode(18,1,1);
@@ -4443,7 +4713,12 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         if(IS_POST){
             $carinfo=$_POST['carinfo'];
             $type=$_POST['type'];
-            if($type=='add'){
+            if($type&&$type=='add'){
+                if(M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码']))->find())
+                {
+                    echo '系统中已存在该车牌号码';
+                    exit();  
+                }
                 if(!isset($carinfo['客户ID'])||$carinfo['客户ID']==''){
                     $czinfo['名称']=$carinfo['车牌号码'];
                     $carinfo['车主']=$carinfo['车牌号码'];
@@ -7255,7 +7530,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $data['银行账号']='';
        $data['本次应付']=0;
        $data['本次应收']=0;
-       $data['整单折扣']=1;
+       $data['整单折扣']=1; 
        $data['实付金额']=0;
        $data['实收金额']=$price;
        $data['折扣金额']=0;

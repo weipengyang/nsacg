@@ -711,7 +711,7 @@
             }
         }
         function format(rowdata, index, value) {
-            return todate(value);
+            return todate(value,true);
         }
         $(function () {
             $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>收支审核</title>
+    <title>收支流水</title>
     <meta name="description" content="爱养车">
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
@@ -85,9 +85,7 @@
                         </div>
                     </div>
                     <div class="am-u-sm-2 am-u-md-2">
-                        <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="record();">收支录入</button>
-                        <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="check();">审核</button>
-                        <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="checkall();">一键审核</button>
+                        <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="uncheck();">反审核</button>
                     </div>
                 </div>
                 <div id="maingrid4" style="margin:0; padding:0;"></div>
@@ -102,87 +100,25 @@
         var  grid;
         var cardialog, modifydialog,bxdialog, caldialog,printdialog, memberdialog;
         var selectrow;
-        var menu = $.ligerMenu({
-            width: 100, items:
-                [
-                { text: '通过', click: check },
-                { line: true },
-                { text: '作废', click: cancelrecord },
-                { line: true },
-                { text: '打印', click: printbill },
-                ]
-        });        function check(obj) {
-            var ids=[];
-            if (!obj) {
-                var rows = grid.getSelectedRows();
-                for (var i = 0; i < rows.length; i++) {
-                    ids.push(rows[i]['ID']);
-                }
-
+        function uncheck() {
+            var row = grid.getSelectedRow();
+            if (row) {
+                $.ligerDialog.confirm('确认反审核？', function (yes) {
+                    if (yes) {
+                        $.post('/index.php?g=Query&m=Consume&a=balanceuncheck', { record: row },
+                                  function (msg) {
+                                      $.ligerDialog.alert(msg);
+                                      grid.reload();
+                                  });
+                    }
+                    else {
+                        return false;
+                    }
+                });
             } else {
-                ids.push(selectrow['ID']);
+                $.ligerDialog.alert('请选择要反审核的记录');
             }
-            $.ligerDialog.confirm('确认通过？', function (yes) {
-                if (yes) {
-                    $.post('/index.php?g=Query&m=Consume&a=balancecheck', { ids: ids },
-                              function (msg) {
-                                  $.ligerDialog.alert(msg);
-                                  grid.reload();
-                              });
-                }
-                else {
-                    return false;
-                }
-            });        }        function checkall() {
-            var parms = {};
-            var enddate = $('#enddate').val();
-            if (enddate != '')
-                parms['enddate'] = enddate;
-            var startdate = $('#startdate').val();
-            if (startdate != '')
-                parms['startdate'] = startdate;
-            var zklb = $('#zklb').val();
-            if (zklb != '')
-                parms['zklb'] = zklb;
-            var shop = $('#shop').val();
-            if (shop != '')
-                parms['shop'] = shop;
-            var szxm = $('#szxm').val();
-            if (szxm != '')
-                parms['szxm'] = szxm;
-            var jsfs = $('#jsfs').val();
-            if (jsfs != '')
-                parms['jsfs'] = jsfs;
-            var searchkey = $('#searchkey').val();
-            if (searchkey != '')
-                parms.searchkey = searchkey;
-            $.ligerDialog.confirm('确认要通过吗？', function (yes) {
-                if (yes) {
-                    $.post('/index.php?g=Query&m=Consume&a=balancecheckall', parms,
-                              function (msg) {
-                                  $.ligerDialog.alert(msg);
-                                  grid.reload();
-                              });
-                }
-                else {
-                    return false;
-                }
-            });        }        function cancelrecord() {
-            $.ligerDialog.confirm('你确认要作废吗？', function (yes) {
-                if (yes) {
-                    $.post('/index.php?g=Query&m=Consume&a=cancelbill', {record:selectrow},
-                              function (msg) {
-                                  $.ligerDialog.alert(msg);
-                                  grid.reload();
-                     });
-                }
-                else {
-                    return false;
-                }
-            });
-
-        }
-        function printbill() {
+        }        function printbill() {
             var row = grid.getSelectedRow();
             if (row) {
                 if (printdialog) {
@@ -246,53 +182,6 @@
                 });
             }
         }
-        function record() {
-            if (bxdialog) {
-                bxdialog.set('opttype', 'add');
-                bxdialog.setUrl('/index.php?g=Query&m=Consume&a=payrecord');
-                bxdialog.show();
-                
-            }
-            else {
-                bxdialog = $.ligerDialog.open({
-                    height: 420,
-                    url: '/index.php?g=Query&m=Consume&a=payrecord',
-                    width: 680,
-                    opttype: 'add',
-                    showMax: true,
-                    showToggle: true,
-                    showMin: false,
-                    isResize: true,
-                    modal: false,
-                    title: '收支录入'
-                });
-            }
-        }
-        function modifyinfo(data) {
-            if (modifydialog) {
-                modifydialog.set('opttype', 'modify');
-                modifydialog.set('data', data);
-                modifydialog.setUrl('/index.php?g=Query&m=Consume&a=bxrecord');
-                modifydialog.show();
-            }
-            else {
-                modifydialog = $.ligerDialog.open({
-                    height: 420,
-                    url: '/index.php?g=Query&m=Consume&a=bxrecord',
-                    width: 680,
-                    showMax: true,
-                    showToggle: true,
-                    showMin: false,
-                    isResize: true,
-                    modal: false,
-                    opttype: 'modify',
-                    data: data,
-                    title: '收支编辑'
-                });
-            }
-        }
-
-
         function format(rowdata, index, value) {
             return todate(value);
         }
@@ -381,19 +270,13 @@
                 ],
                 isScroll: true,
                 pageSize: 20,
-                checkbox: true,
                 totalRender: f_totalRender,
                 fixedCellHeight: false,
-                url: '/index.php?g=Query&m=Consume&a=getbalance',
+                url: '/index.php?g=Query&m=Consume&a=getbalancequery',
                 height: '95%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     modifyinfo(data);
-                },
-                onContextmenu: function (parm, e) {
-                    selectrow = parm.data;
-                    menu.show({ top: e.pageY, left: e.pageX });
-                    return false;
-                }
+                }
             });
            
             $("#jsfs").change(function () {

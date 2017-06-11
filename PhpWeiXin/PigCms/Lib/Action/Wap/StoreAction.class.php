@@ -3090,7 +3090,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
             $data['前台接待'] = $commnet['qtjd'];
             if($data['服务态度']<4||$data['服务质量']<4){
                 $content=$wx['联系人'].'车牌号为'.$wx['车牌号码'].'的车辆'.date('Y-m-d',strtotime($wx['制单日期'])).'日在'.$wx['门店'].$wx['维修类别'];
-                $content.='，客户对服务的评价低于3分，服务顾问:'.$wx['接车人'].'，服务技师:'.$wx['主修人'].'，请及时跟踪回访。';
+                $content.='，客户对服务的评价低于3分，接车人:'.$wx['接车人'].'，服务技师:'.$wx['主修人'].'，请及时跟踪回访。';
                 $model=new templateNews();
                 $booturl='https://oapi.dingtalk.com/robot/send?access_token=e148663d51dddb27d8e2a586420f5a8cbcf629f111a34736f50cfa64a3f21853';
                 $msgdata='{

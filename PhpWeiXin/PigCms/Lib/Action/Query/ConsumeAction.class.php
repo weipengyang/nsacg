@@ -3357,6 +3357,63 @@ class ConsumeAction extends Action{
         
     }
 
+    public  function getpurchasequery()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        $where['当前状态']='已审核';
+        if(isset($_POST['shop'])&&$_POST['shop']!='all'){
+            $where['门店']=$_POST['shop'];
+
+        }
+        if(isset($_POST['fwgw'])){
+            $where['制单人']=$_POST['fwgw'];
+
+        }
+        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        {
+            $where['制单日期']=array('egt',trim($_POST['startdate']));
+            
+        }
+        if($_POST['endDate']&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('elt',trim($_POST['endDate']));
+            
+        }
+        if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('BETWEEN',array(trim($_POST['startdate']),trim($_POST['enddate'])));
+            
+        }
+        if($searchkey){       
+            $searchwhere['制单人']=array('like',$searchkey);
+            $searchwhere['业务员']=array('like',$searchkey);
+            $searchwhere['单据编号']=array('like',$searchkey);
+            $searchwhere['发票号码']=array('like',$searchkey);
+            $searchwhere['发票类别']=array('like',$searchkey);
+            $searchwhere['供应商']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['备注']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $count=M('采购单','dbo.','difo')->where($where)->count();
+        $yelist=M('采购单','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
     public  function getpurchase()
     {   
         $page=$_POST['page'];

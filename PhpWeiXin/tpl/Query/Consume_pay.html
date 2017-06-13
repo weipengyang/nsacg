@@ -9,16 +9,6 @@
     <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
     <script type="text/javascript">
-        function getQueryString(name) {
-            var now_url = document.location.search.slice(1), q_array = now_url.split('&');
-            for (var i = 0; i < q_array.length; i++) {
-                var v_array = q_array[i].split('=');
-                if (v_array[0] == name) {
-                    return v_array[1];
-                }
-            }
-            return false;
-        }
         function calprice() {
             var yh = $("input[ligeruiid='优惠金额']").val();
             var sum = $("input[ligeruiid='客付金额']").val();
@@ -112,6 +102,7 @@
             var data = parent.grid.getSelectedRow();
             if (data) {
                 form.setData(data);
+                $("input[name='结算账户']").val(data['门店']);
                 calprice();
             }
         });

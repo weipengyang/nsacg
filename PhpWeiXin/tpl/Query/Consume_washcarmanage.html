@@ -105,7 +105,7 @@
                     width: 950,
                     showMax: true,
                     showToggle: true,
-                    showMin: true,
+                    showMin: false,
                     isResize: true,
                     modal: false,
                     title: '打印结算单'
@@ -130,7 +130,7 @@
                 width: 900,
                 showMax: true,
                 showToggle: true,
-                showMin: true,
+                showMin: false,
                 isResize: true,
                 modal: false,
                 title: '车辆信息编辑'
@@ -149,7 +149,7 @@
                     width: 900,
                     showMax: true,
                     showToggle: true,
-                    showMin: true,
+                    showMin: false,
                     isResize: true,
                     modal: false,
                     title: '会员资料编辑'
@@ -187,7 +187,7 @@
             }
         }
 
-        function submitcarkey(itemid) {
+        function submitcarkey(itemid,lb) {
             $.ligerDialog.prompt('输入钥匙扣编号', function (yes, value) {
                 if (yes) {
                     if (value == null || value == "") {
@@ -196,7 +196,8 @@
                     }
                     var data = {
                         itemid: itemid,
-                        keynum:value
+                        keynum: value,
+                        lb:lb
                         
                     };
                     $.post('/index.php?g=Query&m=Consume&a=submitcarkey', data,
@@ -361,7 +362,7 @@
                         }
                         if (rowdata.开工时间 != "" && rowdata.开工时间 != null && rowdata.开工时间 != "null" && todate(rowdata.开工时间, false) != '1900-01-1') {
                             if (rowdata.当前状态 == '派工')
-                               strhtml += '<a href="javascript:void(0);" onclick="completework(\'' + rowdata.流水号 + '\');"><strong>完工</strong></a>';
+                                strhtml += '<a href="javascript:void(0);" onclick="completework(\'' + rowdata.流水号 + '\',\'' + rowdata.流水号 + '\');"><strong>完工</strong></a>';
                         }
                         if (rowdata.当前状态 == '结算' && rowdata.当前状态.标志 !='已结算')
                             strhtml += '<a href="javascript:void(0);" onclick="checkin(\'' + rowdata.流水号 + '\');"><strong>结算</strong></a>';

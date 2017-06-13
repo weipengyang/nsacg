@@ -52,7 +52,7 @@
                     width: 900,
                     showMax: true,
                     showToggle: true,
-                    showMin: true,
+                    showMin: false,
                     isResize: true,
                     modal: true,
                     title: '增加商品'
@@ -99,7 +99,8 @@
                     checkbox: checkbox
                 };
                 return options;
-            }            function editproduct() {
+            }
+            function editproduct() {
                 if (editproductdialog) {
                     editproductdialog.setUrl('/index.php?g=Query&m=Consume&a=modifyproduct');
                     editproductdialog.show();
@@ -135,7 +136,8 @@
                              condition: {
                                  prefixID: 'condtion_',
                                  fields: [{ name: 'searchkey', type: 'text', width: 120, label: '供应商', labelWidth: 90 }]
-
+
+
                              },
                              onSelected:function (e) {
                                  var row = e.data[0];
@@ -215,7 +217,8 @@
                     },
                    
                 ],
-                buttons: [                    {
+                buttons: [
+                    {
                         text: "确定", width: 60, click: function () {
                             var data = form.getData();
                             data['供应商ID'] = data['供应商'];
@@ -252,7 +255,9 @@
 
                               });
                         }
-                    }            ]            });
+                    }
+            ]
+            });
              product = $("#productgrid").ligerGrid({
                 height:'100%',
                 columns: [

@@ -22340,7 +22340,7 @@
         showClose: true,
         showMax: true,
         showToggle: true,
-        showMin: true,
+        showMin: false,
         title: 'window',
         load: false,
         onLoaded: null,

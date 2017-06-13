@@ -366,7 +366,7 @@
                 });
             }
         }
-        function submitcarkey(itemid) {
+        function submitcarkey(itemid,lb) {
             $.ligerDialog.prompt('输入钥匙扣编号', function (yes, value) {
                 if (yes) {
                     if (value == null || value == "") {
@@ -376,6 +376,7 @@
                     var data = {
                         itemid: itemid,
                         keynum: value,
+                        lb:lb
 
                     };
                     $.post('/index.php?g=Query&m=Consume&a=submitcarkey', data,
@@ -604,8 +605,7 @@
 
             var form = liger.get("form1");
             var data = form.getData();
-            data = JSON.stringify(data);
-            data = JSON2.parse(data);
+            data['预计完工'] =$("input[ligeruiid='预计完工']").val();
             $.post('/index.php?g=Query&m=Consume&a=savewxinfo', data,
               function (msg) {
                   $.ligerDialog.alert(msg);
@@ -695,8 +695,9 @@
         }
         function setdata(record) {
             if (record && record != '') {
-                record = JSON2.stringify(record);
-                record = JSON2.parse(record);
+
+                //record = JSON2.stringify(record);
+                //record = JSON2.parse(record);
                 form.setData(record);
                 $("input[ligeruiid='车主']").val(record['车主']);
                 $("input[ligeruiid='车型']").val(record['车型']);
@@ -705,6 +706,12 @@
                 $("input[ligeruiid='车辆类别']").val(record['车辆类别']);
                 $("input[ligeruiid='保险公司']").val(record['保险公司']);
                 $("input[ligeruiid='服务顾问']").val(record['服务顾问']);
+                $("input[ligeruiid='预计完工']").val(todate(record['预计完工'], true));
+                $("input[ligeruiid='开工时间']").val(todate(record['开工时间'], true));
+                $("input[ligeruiid='进厂时间']").val(todate(record['进厂时间'], true));
+                $("input[ligeruiid='上交钥匙']").val(todate(record['上交钥匙'], true));
+                $("input[ligeruiid='下次保养']").val(todate(record['下次保养']));
+
                 $.getJSON('index.php?&g=Query&m=Consume&a=getdiscount&id=' + record['客户ID'], function (data) {
                     discount = data;
                 });
@@ -754,7 +761,7 @@
                              if (parseInt((end - start) / 60000) > 60 && rowdata.当前状态 != '结束' && rowdata.当前状态 != '取消') {
                                  cancelwash(rowdata.流水号, false);
                              } else {
-                                 strhtml += '|<a href="javascript:void(0);" onclick="submitcarkey(\'' + rowdata.流水号 + '\');"><strong>钥匙上交</strong></a>';
+                                 strhtml += '|<a href="javascript:void(0);" onclick="submitcarkey(\'' + rowdata.流水号 + '\',\''+rowdata.维修类别+'\');"><strong>钥匙上交</strong></a>';
                              }
                          }
                          if (rowdata.当前状态 == '派工') {
@@ -922,7 +929,9 @@
                                  },
                                 { display: "油表数", name: "油表数", newline: false, type: "text" },
                                 {
-                                    display: "预计完工", name: "预计完工", newline: false, type: "text", readonly: true
+                                    display: "预计完工", name: "预计完工", newline: false, type: "date", options: {
+                                        showTime: true
+                                    }
                                 },
                                 { display: "下次保养 ", name: "下次保养", newline: false, type: "date" },
                                 { display: "车辆类型", name: "车辆类别", newline: false, type: "text" },

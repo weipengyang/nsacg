@@ -72,6 +72,37 @@ class ConsumeAction extends Action{
             $this->display();
         }
     }
+    public function getroles(){
+     
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $where['1']=1;
+        $searchkey=$_POST['searchkey'];
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
+            $searchkey='%'.trim($searchkey).'%';
+        }
+        if($searchkey){       
+            $searchwhere['RoleName']=array('like',$searchkey);
+            $searchwhere['RoleDscrip']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $order='RoleID desc';
+        }
+        else{
+            $order=$sortname.' '.$sortorder;
+        }
+        $ds=M('sys_role','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+        $count=M('sys_role','dbo.','difo')->where($where)->count();
+        $data['Rows']=$ds;
+        $data['Total']=$count;
+        echo json_encode($data);
+
+    }
     public  function getmainmenu()
     {
             $ds=M('sys_app','dbo.','difo')->order('App_order')->select();
@@ -2570,9 +2601,19 @@ class ConsumeAction extends Action{
         }else{
            
         }
+       
         if($_POST['lb']&&trim($_POST['lb'])!='')
         {
             $where['维修类别']=trim($_POST['lb']);
+            if($_POST['overtime']=='1'){
+                if($_POST['lb']=='蜡水洗车'){
+                    $where['已处理']=array('gt',60);
+                }else if($_POST['lb']=='汽车美容'){
+                
+                }else{
+                    $where['_string']="实际完工>预计完工";
+                }
+            }
             
         }
         if($_POST['khlb']&&trim($_POST['khlb'])!='')
@@ -4377,7 +4418,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
       $xh=$_POST['流水号'];
       unset($wxinfo['流水号']);
       unset($wxinfo['进厂时间']);
-      unset($wxinfo['预计完工']);
+      //unset($wxinfo['预计完工']);
       unset($wxinfo['上交钥匙']);
       unset($wxinfo['开工时间']);
       unset($wxinfo['实际完工']);
@@ -4498,6 +4539,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $inout['实收金额']=$dbinfo['现收金额'];
                $inout['折扣金额']=0;
                $inout['结算方式']=$dbinfo['结算方式'];
+               $inout['结算账户']='爱养车';
                $inout['摘要']='车辆代办收款('.$dbinfo['业务编号'].')';
                $inout['收支项目']=$dbinfo['代办类别'];
                $inout['当前状态']='待审核';
@@ -4577,6 +4619,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $inout['实收金额']=$bxinfo['现收金额'];
                $inout['折扣金额']=0;
                $inout['结算方式']=$bxinfo['结算方式'];
+               $inout['结算账户']='爱养车';
                $inout['摘要']='车辆代办收款('.$bxinfo['业务编号'].')';
                $inout['收支项目']='车辆保险';
                $inout['当前状态']='待审核';
@@ -4653,6 +4696,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                     $inout['实付金额']=$cgd['现结金额'];
                     $inout['折扣金额']=0;
                     $inout['结算方式']='支出';
+                    $inout['结算账户']=$cgd['门店'];
                     $inout['摘要']='采购进货付款('.$cgd['单据编号'].')';
                     $inout['收支项目']='采购进货';
                     $inout['当前状态']='待审核';
@@ -6180,6 +6224,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                    $inout['实收金额']=$xsd['现结金额'];
                    $inout['折扣金额']=0;
                    $inout['结算方式']=$xsd['结算方式'];
+                   $inout['结算账户']=$xsd['门店'];
                    $inout['摘要']='销售出库收款('.$xsd['单据编号'].')';
                    $inout['收支项目']='销售出库';
                    $inout['当前状态']='待审核';
@@ -6350,8 +6395,16 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
     {  
        if(IS_POST){
            $itemid=$_POST['itemid'];
+           $lb=$_POST['lb'];
            $data['钥匙编号']=$_POST['keynum']; 
            $data['上交钥匙']=date('Y-m-d H:i',time());
+           if($lb=='蜡水洗车'){
+             $data['预计完工']=date('Y-m-d H:i',time()+60*60);
+           }elseif($lb=='汽车美容'){
+             $data['预计完工']=date('Y-m-d H:i',time()+3*60*60);
+           }elseif($lb=='普通快修'){
+             $data['预计完工']=date('Y-m-d H:i',time()+2*60*60);
+           }
            M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save($data);
            echo '更新完成';
            exit;

@@ -55,6 +55,10 @@
                                 <option value="结束">结束</option>
                                 <option value="取消">取消</option>
                             </select>
+                            <select id="overtime">
+                                <option value="0">所有</option>
+                                <option value="1">超期</option>
+                            </select>
                             <button type="button" class="am-btn am-btn-default am-margin-right" id="my-start">开始日期</button><span id="my-startDate"></span>
                             <button type="button" class="am-btn am-btn-default am-margin-right" id="my-end">结束日期</button><span id="my-endDate"></span>
                             <button id="print" class="am-btn am-btn-warning" onclick="printbill();" type="button">打印结算单</button>
@@ -90,7 +94,7 @@
                         width: 950,
                         showMax: true,
                         showToggle: true,
-                        showMin: true,
+                        showMin: false,
                         isResize: true,
                         modal: false,
                         title: '车辆维修详细信息'
@@ -111,7 +115,7 @@
                         width: 950,
                         showMax: true,
                         showToggle: true,
-                        showMin: true,
+                        showMin: false,
                         isResize: true,
                         modal: false,
                         title: '打印结算单'
@@ -140,7 +144,7 @@
                 width: 900,
                 showMax: true,
                 showToggle: true,
-                showMin: true,
+                showMin: false,
                 isResize: true,
                 modal: false,
                 title: '车辆信息编辑'
@@ -159,7 +163,7 @@
                     width: 900,
                     showMax: true,
                     showToggle: true,
-                    showMin: true,
+                    showMin: false,
                     isResize: true,
                     modal: false,
                     title: '会员资料编辑'
@@ -190,8 +194,7 @@
                  + "  评价台次:" + data.TotalData.commentcount
                  + "  会员评价比:" + (data.TotalData.commentcount / data.hyCount * 100).toFixed(2) + "%"
                  + "  服务态度平均分:" + (parseFloat(data.TotalData.服务态度)).toFixed(2)
-                 + "  服务质量平均分:" + (parseFloat(data.TotalData.服务质量)).toFixed(2)
-                 + "  前台接待平均分:" + (parseFloat(data.TotalData.前台接待)).toFixed(2);
+                 + "  服务质量平均分:" + (parseFloat(data.TotalData.服务质量)).toFixed(2);
         }
         $(document).ready(function () {
             $(document).keydown(function (event) {
@@ -246,8 +249,8 @@
                 { display: '联系人', name: '联系人', minWidth: 100 },
                  {
                      display: '已处理', name: '', minWidth: 100, render: function (rowdata, index, value) {
-                         if (rowdata.进厂时间 != "" && rowdata.进厂时间 != null && rowdata.进厂时间 != "null" && todate(rowdata.进厂时间, false) != '1900-01-1') {
-                             var start = new Date(Date.parse(todate(rowdata.进厂时间, true)));
+                         if (rowdata.上交钥匙 != "" && rowdata.上交钥匙 != null && rowdata.上交钥匙 != "null" && todate(rowdata.上交钥匙, false) != '1900-01-1') {
+                             var start = new Date(Date.parse(todate(rowdata.上交钥匙, true)));
                              var pretime = new Date(Date.parse(todate(rowdata.预计完工, true)));
                              var prehour =pretime - start;
                              var usetime = 0;
@@ -382,6 +385,9 @@
             $('#zhuxiu').change(function () {
                 $('#search').click();
             });
+            $('#overtime').change(function () {
+                $('#search').click();
+            });
 
             $("#zt").change(function () {
                 $('#search').click();
@@ -420,6 +426,9 @@
                 var lb = $('#lb').val();
                 if (lb != '')
                     parms.lb = lb;
+                var overtime = $('#overtime').val();
+                if (overtime != '')
+                    parms.overtime = overtime;
                 var zhuxiu = $('#zhuxiu').val();
                 if (zhuxiu != '')
                     parms.zhuxiu = zhuxiu;

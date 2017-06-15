@@ -352,7 +352,7 @@
                             if (parseInt((end - start) / 60000) > 30 && rowdata.当前状态 != '结束' && rowdata.当前状态 != '取消') {
                                 cancelwash(rowdata.流水号,false);
                             } else {
-                                strhtml += '<a href="javascript:void(0);" onclick="submitcarkey(\'' + rowdata.流水号 + '\');"><strong>钥匙上交</strong></a>|';
+                                strhtml += '<a href="javascript:void(0);" onclick="submitcarkey(\'' + rowdata.流水号 + '\',\'' + rowdata.维修类别 + '\');"><strong>钥匙上交</strong></a>|';
                             }
                         }
                         if (rowdata.开工时间 == "" || rowdata.开工时间 == null || rowdata.开工时间 == "null" || todate(rowdata.开工时间, false) == '1900-01-1') {
@@ -362,7 +362,7 @@
                         }
                         if (rowdata.开工时间 != "" && rowdata.开工时间 != null && rowdata.开工时间 != "null" && todate(rowdata.开工时间, false) != '1900-01-1') {
                             if (rowdata.当前状态 == '派工')
-                                strhtml += '<a href="javascript:void(0);" onclick="completework(\'' + rowdata.流水号 + '\',\'' + rowdata.流水号 + '\');"><strong>完工</strong></a>';
+                                strhtml += '<a href="javascript:void(0);" onclick="completework(\'' + rowdata.流水号 + '\');"><strong>完工</strong></a>';
                         }
                         if (rowdata.当前状态 == '结算' && rowdata.当前状态.标志 !='已结算')
                             strhtml += '<a href="javascript:void(0);" onclick="checkin(\'' + rowdata.流水号 + '\');"><strong>结算</strong></a>';

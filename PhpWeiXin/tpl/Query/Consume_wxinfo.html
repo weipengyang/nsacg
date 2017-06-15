@@ -247,8 +247,7 @@
 
             var form = liger.get("form1");
             var data = form.getData();
-            data = JSON.stringify(data);
-            data = JSON2.parse(data);
+            data['预计完工'] = $("input[ligeruiid='预计完工']").val();
             $.post('/index.php?g=Query&m=Consume&a=savewxinfo', data,
               function (msg) {
                   $.ligerDialog.alert(msg);
@@ -497,8 +496,6 @@
             function setdata()
             {
                 if (record && record != '') {
-                    record = JSON2.stringify(record);
-                    record = JSON2.parse(record);
                     form.setData(record);
                     $("input[ligeruiid='车主']").val(record['车主']);
                     $("input[ligeruiid='车型']").val(record['车型']);
@@ -507,6 +504,15 @@
                     $("input[ligeruiid='车辆类别']").val(record['车辆类别']);
                     $("input[ligeruiid='保险公司']").val(record['保险公司']);
                     $("input[ligeruiid='服务顾问']").val(record['服务顾问']);
+                    $("input[ligeruiid='预计完工']").val(todate(record['预计完工'], true));
+                    $("input[ligeruiid='开工时间']").val(todate(record['开工时间'], true));
+                    $("input[ligeruiid='进厂时间']").val(todate(record['进厂时间'], true));
+                    $("input[ligeruiid='出厂时间']").val(todate(record['出厂时间'], true));
+                    $("input[ligeruiid='完工时间']").val(todate(record['完工时间'], true));
+                    $("input[ligeruiid='结算时间']").val(todate(record['结算时间'], true));
+                    $("input[ligeruiid='上交钥匙']").val(todate(record['上交钥匙'], true));
+                    $("input[ligeruiid='下次保养']").val(todate(record['下次保养']));
+                    $("input[ligeruiid='制单日期']").val(todate(record['制单日期']));
 
                     $("div[data-index='1']").html("<div id='projectgrid' style='margin:0;padding 0'><div>");
                     $("div[data-index='2']").html("<div id='productgrid'style='margin:0;padding 0'><div>");

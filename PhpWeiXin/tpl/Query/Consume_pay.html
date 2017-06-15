@@ -60,8 +60,8 @@
                             url: '/index.php?g=Query&m=Consume&a=getjsfs',
                             onChangeValue: function () {
                                 var selected = this.selected;
-                                if (selected)
-                                   $("input[name='结算账户']").val(selected['默认账户']);
+                                //if (selected)
+                                  // $("input[name='结算账户']").val(selected['默认账户']);
                             }
                         }
                     },
@@ -86,7 +86,7 @@
                             parent.grid.updateRow(row, data);
                             if(parent.form)
                             parent.form.setData(data);
-                            row['结算账户'] = data['结算账户'];
+                            row['结算账户'] = $("input[name='结算账户']").val();
                             var data = {
                                 record: row
                             };

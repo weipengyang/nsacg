@@ -16,7 +16,7 @@
         var data = [
                { id: '塘坑店', name: '塘坑店' },
                { id: '区府店', name: '区府店' },
-               { id: '主仓库', name: '主仓库' },
+               { id: '爱养车', name: '爱养车' },
 
         ];
         function reflash() {
@@ -40,6 +40,9 @@
             if (shop == '') {
                 $.ligerDialog.alert('请先选择门店');
                 return;
+            }
+            if (shop == '爱养车') {
+                shop = '主仓库';
             }
             if (addproductdialog) {
                 addproductdialog.setUrl('index.php?&g=Query&m=Consume&a=addsaleproduct&type=1&shop=' + shop);

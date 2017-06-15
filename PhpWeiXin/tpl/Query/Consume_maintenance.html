@@ -263,9 +263,11 @@
                                  usetime =end - start;
                              }
                              if (usetime > prehour) {
-                                 if(usetime>3600*1000)
+                                 if (usetime > 3600 * 1000) {
                                      return "<span style='color:red'>" + (usetime / 3600000).toFixed(2) + "小时</span>";
-                                 return "<span style='color:red'>" + (usetime / 60000).toFixed(2) + "分钟</span>";
+                                 } else {
+                                     return "<span style='color:red'>" + (usetime / 60000).toFixed(2) + "分钟</span>";
+                                 }
 
                              } else {
                                  if (usetime > 3600 * 1000)
@@ -278,6 +280,11 @@
                  },
                  {
                      display: '进厂时间', name: '进厂时间', minWidth: 130, render: function (rowdata, index, value) {
+                         return todate(value, true);
+                     }
+                 },
+                 {
+                     display: '上交钥匙', name: '上交钥匙', minWidth: 130, render: function (rowdata, index, value) {
                          return todate(value, true);
                      }
                  },

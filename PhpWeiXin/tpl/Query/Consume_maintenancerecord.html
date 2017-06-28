@@ -651,7 +651,9 @@
         function inidata() {
             $("div[data-index='1']").html("<div id='projectgrid' style='margin:0;padding 0'><div>");
             $("div[data-index='2']").html("<div id='productgrid'style='margin:0;padding 0'><div>");
-            $("div[data-index='4']").html('<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=wxfileupload&wxno=' + record['流水号'] + '"></iframe></div>');
+            setTimeout(function () {
+                $("div[data-index='4']").html('<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=wxfileupload&wxno=' + record['流水号'] + '"></iframe></div>');
+            }, 400);
             $("div[data-index='5']").html("<div id='opgrid'style='margin:0;padding 0'><div>");
             $("div[data-index='6']").html("<div id='historygrid'style='margin:0;padding 0'><div>");
 
@@ -881,7 +883,8 @@
                 },
                 onSelectRow: function (data, rowindex,rowobj) {
                     record = data;
-                    reload();
+                    setTimeout(function () { reload(); }, 400);
+                    
                 },
                 onSuccess: function (data) {
                     if (data.Rows) {

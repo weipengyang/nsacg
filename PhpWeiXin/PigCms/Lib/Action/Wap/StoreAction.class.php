@@ -517,13 +517,13 @@ private function MessageTip($carinfo,$mendian,$wxlb){
     $data['年份']=date('Y');
     $model=new templateNews();
     //$booturl='https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7';
-    $booturl='https://oapi.dingtalk.com/robot/send?access_token=e148663d51dddb27d8e2a586420f5a8cbcf629f111a34736f50cfa64a3f21853';
+    $booturl='https://oapi.dingtalk.com/robot/send?access_token=4ed5a797b4c6378df07b1e2b4f9eecfcb5e52e719a74aa38b3e67952fca1f445';
     if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
         if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
             $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
             $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已到'.$mendian.$wxlb;
             $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
-            $this->weixinmessage($content,$carinfo['服务顾问']);
+            //$this->weixinmessage($content,$carinfo['服务顾问']);
             $msgdata='{
                 "msgtype": "text", 
                 "text": {
@@ -554,7 +554,7 @@ private function MessageTip($carinfo,$mendian,$wxlb){
                         }
                         }';
                     $model->postMessage($booturl,$msgdata);
-                    $this->weixinmessage($project['内容'],$carinfo['服务顾问']);
+                    //$this->weixinmessage($project['内容'],$carinfo['服务顾问']);
                     $data['类别']='推广信息';
                     $data['内容']=$project['内容'];
                     M('客户跟踪','dbo.','difo')->add($data);
@@ -567,7 +567,7 @@ private function MessageTip($carinfo,$mendian,$wxlb){
             $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
             $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
             $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
-            $this->weixinmessage($content,$carinfo['服务顾问']);
+            //$this->weixinmessage($content,$carinfo['服务顾问']);
             $msgdata='{
                 "msgtype": "text", 
                 "text": {
@@ -588,7 +588,7 @@ private function MessageTip($carinfo,$mendian,$wxlb){
                     if($membercar){
                         $this->weixin->send($project['内容'],$membercar['wecha_id']);
                     }
-                    $this->weixinmessage($project['内容'],$carinfo['服务顾问']);
+                    //$this->weixinmessage($project['内容'],$carinfo['服务顾问']);
                     $msgdata='{
                         "msgtype": "text", 
                         "text": {
@@ -611,7 +611,7 @@ private function MessageTip($carinfo,$mendian,$wxlb){
             $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
             $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
             $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
-            $this->weixinmessage($content,$carinfo['服务顾问']);
+            //$this->weixinmessage($content,$carinfo['服务顾问']);
             $msgdata='{
                 "msgtype": "text", 
                 "text": {
@@ -3092,7 +3092,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
                 $content=$wx['联系人'].'车牌号为'.$wx['车牌号码'].'的车辆'.date('Y-m-d',strtotime($wx['制单日期'])).'日在'.$wx['门店'].$wx['维修类别'];
                 $content.='，客户对服务的评价低于3分，接车人:'.$wx['接车人'].'，服务技师:'.$wx['主修人'].'，请及时跟踪回访。';
                 $model=new templateNews();
-                $booturl='https://oapi.dingtalk.com/robot/send?access_token=e148663d51dddb27d8e2a586420f5a8cbcf629f111a34736f50cfa64a3f21853';
+                $booturl='https://oapi.dingtalk.com/robot/send?access_token=9683b45fb6966c4244cd5f8d8046d8d0b8796e563ab2b802ea6e2a918cbd8655';
                 $msgdata='{
                 "msgtype": "text", 
                 "text": {

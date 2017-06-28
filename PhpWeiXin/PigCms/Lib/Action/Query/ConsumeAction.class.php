@@ -1214,6 +1214,19 @@ class ConsumeAction extends Action{
         }
 
     }
+    public function cancelbill()
+    {  
+        if(IS_POST){
+            $record=$_POST['record'];
+            $data['当前状态']='已作废'; 
+            $data['审核人']=cookie('username');
+            $data['审核日期']=date('Y-m-d',time());
+            M('日常收支','dbo.','difo')->where(array('流水号'=>$record['流水号']))->save($data);
+            echo '单据已作废';
+            exit;
+        }
+    }
+
    public function receivedpaycheck(){      
         if(IS_POST){
             $record=$_POST['record'];
@@ -5181,6 +5194,67 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                        $this->changecarinfo($uinfo,$cardnumber);
                     }
                 }
+           $paybill['ID']=$this->getcode(18,1,1);
+           //$paybill['单位编号']=$wx['客户ID'];
+           $paybill['单位名称']=$mycard['number'];
+           $paybill['单据类别']='会员充值';
+           $paybill['单据编号']=$orderid;
+           $paybill['制单日期']=date('Y-m-d',time());
+           $paybill['制单人']=cookie('username');
+           $paybill['总金额']=$_POST['price'];
+           //$paybill['引用ID']=$wx['ID'];
+           $paybill['已结算金额']=$_POST['price'];
+           $paybill['未结算金额']=0;
+           $paybill['本次结算']=$_POST['price'];
+           $paybill['提醒日期']=date('Y-m-d',time());
+           $paybill['账款类别']='应收款';
+           $paybill['当前状态']='待审核';
+           $paybill['摘要']=$mycard['number'].'会员充值';
+           $paybill['当前状态']='已审核';
+           $paybill['审核人']=cookie('username');
+           $paybill['审核日期']=date('Y-m-d',time());
+           $paybill['虚增价税']=0;
+           $paybill['挂账金额']=0;
+           //$paybill['车牌号码']=$wx['车牌号码'];
+           $paybill['门店']=$yg['部门'];
+           M('应收应付单','dbo.','difo')->add($paybill);
+      
+           $bianhao=$this->getcodenum("BI");
+           $data['单据编号']=$bianhao;
+           $data['ID']=$this->getcode(20,1,1);
+           $data['制单日期']=date('Y-m-d',time());
+           $data['制单人']=cookie('username');
+           $data['单位名称']=$mycard['number'];
+           $data['账款类别']='收款单';
+           $data['开户银行']='';
+           $data['银行账号']='';
+           $data['本次应付']=0;
+           $data['本次应收']==$_POST['price'];
+           $data['整单折扣']=1;
+           $data['实付金额']=0;
+           $data['实收金额']=$_POST['price'];
+           $data['折扣金额']=0;
+           $data['结算方式']=$_POST['paytype'];
+           $data['结算账户']=$yg['部门'];
+           $data['支票号']=0;
+           $data['凭证号']=0;
+           $data['摘要']=$mycard['number'].'会员充值';
+           $data['收支项目']='会员充值';
+           $data['当前状态']='待审核';
+           $data['发票类别']=$yg['部门'];
+           //$data['发票号']=$wx['车牌号码'];
+           //$data['单位编号']=$wx['客户ID'];
+           $data['取用预付']=0;
+           $data['取用预收']=0;
+           $data['本次冲账']=$_POST['price'];
+           $data['单据类别']='应收款';
+           $data['取用预存']=0;
+           M('日常收支','dbo.','difo')->add($data);
+
+           $dj['挂账ID']=$paybill['ID'];
+           $dj['收支ID']=$data['ID'];
+           $dj['金额']=$_POST['price'];
+           M('引用单据','dbo.','difo')->add($dj);
                 /*模板消息*/
                 $model  = new templateNews();
                 $dataKey    = 'TM151125';
@@ -5204,6 +5278,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
 
 		}
 	}
+
    public function bindcar(){
     
         $carno = isset($_POST['carno']) ? htmlspecialchars($_POST['carno']) : '';
@@ -7199,13 +7274,13 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $data['年份']=date('Y');
        $model=new templateNews();
        //$booturl='https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7';
-       $booturl='https://oapi.dingtalk.com/robot/send?access_token=e148663d51dddb27d8e2a586420f5a8cbcf629f111a34736f50cfa64a3f21853';
+       $booturl='https://oapi.dingtalk.com/robot/send?access_token=4ed5a797b4c6378df07b1e2b4f9eecfcb5e52e719a74aa38b3e67952fca1f445';
        if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
            if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
                $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
                $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已到'.$mendian.$wxlb;
                $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
-               $this->weixinmessage($content,$carinfo['服务顾问']);
+               //$this->weixinmessage($content,$carinfo['服务顾问']);
                $msgdata='{
                 "msgtype": "text", 
                 "text": {
@@ -7236,7 +7311,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                         }
                         }';
                        $model->postMessage($booturl,$msgdata);
-                       $this->weixinmessage($project['内容'],$carinfo['服务顾问']);
+                       //$this->weixinmessage($project['内容'],$carinfo['服务顾问']);
                        $data['类别']='推广信息';
                        $data['内容']=$project['内容'];
                        M('客户跟踪','dbo.','difo')->add($data);
@@ -7249,7 +7324,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
                $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
                $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
-               $this->weixinmessage($content,$carinfo['服务顾问']);
+               //$this->weixinmessage($content,$carinfo['服务顾问']);
                $msgdata='{
                 "msgtype": "text", 
                 "text": {
@@ -7270,7 +7345,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                        if($membercar){
                            $this->weixin->send($project['内容'],$membercar['wecha_id']);
                        }
-                       $this->weixinmessage($project['内容'],$carinfo['服务顾问']);
+                       //$this->weixinmessage($project['内容'],$carinfo['服务顾问']);
                        $msgdata='{
                         "msgtype": "text", 
                         "text": {
@@ -7293,7 +7368,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
                $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
                $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
-               $this->weixinmessage($content,$carinfo['服务顾问']);
+               //$this->weixinmessage($content,$carinfo['服务顾问']);
                $msgdata='{
                 "msgtype": "text", 
                 "text": {
@@ -7337,7 +7412,19 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                         $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码']."车辆已超过$baoyang 公里未进行保养，本次里程$licheng 公里，上次保养里程$bylc 公里";
                         $content.='现车辆已进厂'.$shop.$wxlb;
                         $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
-                        $this->weixinmessage($content,$shop);
+                        //$this->weixinmessage($content,$shop);
+                        $msgdata='{
+                            "msgtype": "text", 
+                            "text": {
+                                "content": "'.$content.'"
+                            }, 
+                            "at": {
+                                "isAtAll": true
+                            }
+                            }';
+                        $model=new templateNews();
+                        $booturl='https://oapi.dingtalk.com/robot/send?access_token=4ed5a797b4c6378df07b1e2b4f9eecfcb5e52e719a74aa38b3e67952fca1f445';
+                        $model->postMessage($booturl,$msgdata);
                         $tracedata['车主']=$carinfo['车主'];
                         $tracedata['车牌号码']=$carinfo['车牌号码'];
                         $tracedata['跟踪时间']=date('Y-m-d H:i',time());

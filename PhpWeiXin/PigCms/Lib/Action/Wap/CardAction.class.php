@@ -1645,6 +1645,31 @@ class CardAction extends WapAction{
         }
 		
 	}
+    private function getcodenum($type)
+    {
+        $code=M('编号单','dbo.','difo')->where(array('类别'=>"$type",'日期'=>date('Y-m-d', time())))->max('队列');
+        $bianhao="$type-".date('ymd', time()).'-'.str_pad(($code+1),3,'0',STR_PAD_LEFT);
+        M('编号单','dbo.','difo')->add(array('单据编号'=>$bianhao,'队列'=>($code+1),'类别'=>"$type",'日期'=>date('Y-m-d', time())));
+        return $bianhao;
+    }
+
+    private function getcode($randLength=6,$attatime=1,$includenumber=0){
+        if ($includenumber){
+            $chars='abcdefghijklmnopqrstuvwxyzABCDEFGHJKLMNPQEST123456789';
+        }else {
+            $chars='abcdefghijklmnopqrstuvwxyz';
+        }
+        $len=strlen($chars);
+        $randStr='';
+        for ($i=0;$i<$randLength;$i++){
+            $randStr.=$chars[rand(0,$len-1)];
+        }
+        $tokenvalue=$randStr;
+        if ($attatime){
+            $tokenvalue=$randStr.time();
+        }
+        return $tokenvalue;
+    }
 
 	//充值处理
 	public function payAction(){
@@ -1667,7 +1692,6 @@ class CardAction extends WapAction{
 			}
 		}
         
-		
 		$_POST['wecha_id'] = $wecha_id;
 		$_POST['token'] = $token;
 		$_POST['shop'] = $this->getshopname();
@@ -1675,6 +1699,8 @@ class CardAction extends WapAction{
 		$_POST['orderid'] = date('YmdHis',time()).mt_rand(1000,9999);
 		$_POST['ordername'] = $_POST['number'].' 充值';
 		
+       
+
 		if($record->create($_POST)){
 			if($record->add($_POST)){
 				$this->success('提交成功，正在跳转支付页面..',U('Alipay/pay',array('from'=>'Card','orderName'=>$_POST['ordername'],'single_orderid'=>$_POST['orderid'],'token'=>$_POST['token'],'wecha_id'=>$_POST['wecha_id'],'price'=>$price)));
@@ -1795,10 +1821,10 @@ class CardAction extends WapAction{
                 M('Member_card_create')->where(array('id'=>$card['id']))->save(array('wecha_id'=>$wecha_id));
                 return $card['number'];
             }else{
-                return 0;
+                return $thisCard['number'];
             }
         }
-        return 0;
+        return $thisCard['number'];
         
     }
 
@@ -1818,12 +1844,74 @@ class CardAction extends WapAction{
                     if($order['price']>=500||$wecha_id=='ohD3dviFloHSvcl9ieoXFibqPFJM')
                     {   
                         $cardnumber=$this->change();
+                        $cardinfo['number']=$cardnumber;
                         if($cardnumber!='0'){
                             $uinfo=M('Userinfo')->where("wecha_id = '$wecha_id' AND token = '$token'")->find();
                             $this->changecarinfo($uinfo,$cardnumber);
                         }
 
                     }
+                    $paybill['ID']=$this->getcode(18,1,1);
+                    //$paybill['单位编号']=$wx['客户ID'];
+                    $paybill['单位名称']=$cardinfo['number'];
+                    $paybill['单据类别']='会员充值';
+                    $paybill['单据编号']=$orderid;
+                    $paybill['制单日期']=date('Y-m-d',time());
+                    $paybill['制单人']='系统自动';
+                    $paybill['总金额']=$order['price'];
+                    //$paybill['引用ID']=$wx['ID'];
+                    $paybill['已结算金额']=$order['price'];
+                    $paybill['未结算金额']=0;
+                    $paybill['本次结算']=$order['price'];
+                    $paybill['提醒日期']=date('Y-m-d',time());
+                    $paybill['账款类别']='应收款';
+                    $paybill['当前状态']='待审核';
+                    $paybill['摘要']=$cardinfo['number'].'会员充值';
+                    $paybill['当前状态']='已审核';
+                    $paybill['审核人']='系统自动';
+                    $paybill['审核日期']=date('Y-m-d',time());
+                    $paybill['虚增价税']=0;
+                    $paybill['挂账金额']=0;
+                    //$paybill['车牌号码']=$wx['车牌号码'];
+                    $paybill['门店']= $this->getshopname();
+                    M('应收应付单','dbo.','difo')->add($paybill);
+                    
+                    $bianhao=$this->getcodenum("BI");
+                    $data['单据编号']=$bianhao;
+                    $data['ID']=$this->getcode(20,1,1);
+                    $data['制单日期']=date('Y-m-d',time());
+                    $data['制单人']='系统自动';
+                    $data['单位名称']=$cardinfo['number'];
+                    $data['账款类别']='收款单';
+                    $data['开户银行']='';
+                    $data['银行账号']='';
+                    $data['本次应付']=0;
+                    $data['本次应收']==$order['price'];
+                    $data['整单折扣']=1;
+                    $data['实付金额']=0;
+                    $data['实收金额']=$order['price'];
+                    $data['折扣金额']=0;
+                    $data['结算方式']='转账';
+                    $data['结算账户']= $this->getshopname();
+                    $data['支票号']=0;
+                    $data['凭证号']=0;
+                    $data['摘要']=$cardinfo['number'].'会员充值';
+                    $data['收支项目']='会员充值';
+                    $data['当前状态']='待审核';
+                    $data['发票类别']= $this->getshopname();
+                    //$data['发票号']=$wx['车牌号码'];
+                    //$data['单位编号']=$wx['客户ID'];
+                    $data['取用预付']=0;
+                    $data['取用预收']=0;
+                    $data['本次冲账']=$order['price'];
+                    $data['单据类别']='应收款';
+                    $data['取用预存']=0;
+                    M('日常收支','dbo.','difo')->add($data);
+
+                    $dj['挂账ID']=$paybill['ID'];
+                    $dj['收支ID']=$data['ID'];
+                    $dj['金额']=$order['price'];
+                    M('引用单据','dbo.','difo')->add($dj);
                     /*模板消息*/
                     $model  = new templateNews();
                     $dataKey    = 'TM151125';

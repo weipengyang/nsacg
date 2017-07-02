@@ -14770,7 +14770,6 @@
     <Content Include="tpl\Query\Consume_qcode.html" />
     <Content Include="tpl\Query\Consume_newindex.html" />
     <Content Include="tpl\Query\Consume_list.html" />
-    <Content Include="tpl\Query\Consume_quick.html" />
     <Content Include="tpl\Query\Consume_setprice.html" />
     <Content Include="tpl\Query\Consume_index.html" />
     <Content Include="tpl\Query\Store_yangchebao.html" />
@@ -29086,6 +29085,7 @@
     <Content Include="tpl\Wap\default\Custom_maps.html" />
     <Content Include="tpl\Wap\default\Custom_spoor.html" />
     <Content Include="tpl\Wap\default\Czz_index.html" />
+    <Content Include="tpl\Wap\default\Dingding_history.html" />
     <Content Include="tpl\Wap\default\Dingding_index.html" />
     <Content Include="tpl\Wap\default\Dining_Ajax.html" />
     <Content Include="tpl\Wap\default\Dining_header.html" />
@@ -29170,6 +29170,7 @@
     <Content Include="tpl\Wap\default\Hotels_selectdate.html" />
     <Content Include="tpl\Wap\default\index.html" />
     <Content Include="tpl\Wap\default\Store_baoyang.html" />
+    <Content Include="tpl\Wap\default\Dingding_record.html" />
     <Content Include="tpl\Wap\default\Store_washcar.html" />
     <Content Include="tpl\Wap\default\Store_newcheck.html" />
     <Content Include="tpl\Wap\default\Store_notices.html" />

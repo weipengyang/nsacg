@@ -524,19 +524,30 @@ private function MessageTip($carinfo,$mendian,$wxlb){
             $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已到'.$mendian.$wxlb;
             $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
             //$this->weixinmessage($content,$carinfo['服务顾问']);
-            $msgdata='{
-                "msgtype": "text", 
-                "text": {
-                    "content": "'.$content.'"
-                }, 
-                "at": {
-                    "isAtAll": true
-                }
-                }';
-            $model->postMessage($booturl,$msgdata);
             $data['类别']='保险';
             $data['内容']=$content;
-            M('客户跟踪','dbo.','difo')->add($data);
+            $id=M('客户跟踪','dbo.','difo')->add($data);
+            $msgdata='{
+                "actionCard": {
+                    "title": "保险跟踪信息", 
+                    "text": "'.$content.'", 
+                    "hideAvatar": "0", 
+                    "btnOrientation": "1", 
+                    "btns": [
+                            {
+                                "title": "反馈信息", 
+                                "actionURL": "http://www.nsayc.com/index.php?g=Wap&m=Dingding&a=record&lb=1&id='.$id.'&number='.$carinfo['车主'].'" 
+                            },
+                           {
+                                "title": "历史信息", 
+                                "actionURL": "http://www.nsayc.com/index.php?g=Wap&m=Dingding&a=history&lb=1&carno='.$carinfo['车牌号码'].'&number='.$carinfo['车主'].'"  
+                            }
+                           ]
+                }, 
+               "msgtype": "actionCard",
+                }';
+            $model->postMessage($booturl,$msgdata);
+
             $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'推广方案'))->select();
             if(count($projects)>0){
                 $membercar=M('member_card_car')->where(array('carno'=>$carinfo['车牌号码']))->find();
@@ -568,19 +579,31 @@ private function MessageTip($carinfo,$mendian,$wxlb){
             $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
             $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
             //$this->weixinmessage($content,$carinfo['服务顾问']);
-            $msgdata='{
-                "msgtype": "text", 
-                "text": {
-                    "content": "'.$content.'"
-                }, 
-                "at": {
-                    "isAtAll": true
-                }
-                }';
-            $model->postMessage($booturl,$msgdata);
+           
             $data['类别']='年审';
             $data['内容']=$content;
-            M('客户跟踪','dbo.','difo')->add($data);
+            $id=M('客户跟踪','dbo.','difo')->add($data);
+            $msgdata='{
+                "actionCard": {
+                    "title": "年审跟踪信息", 
+                    "text": "'.$content.'", 
+                    "hideAvatar": "0", 
+                    "btnOrientation": "1", 
+                    "btns": [
+                            {
+                                "title": "反馈信息", 
+                                "actionURL": "http://www.nsayc.com/index.php?g=Wap&m=Dingding&a=record&lb=2&id='.$id.'&number='.$carinfo['车主'].'" 
+                            },
+                           {
+                                "title": "历史信息", 
+                                "actionURL": "http://www.nsayc.com/index.php?g=Wap&m=Dingding&a=history&lb=2&carno='.$carinfo['车牌号码'].'&number='.$carinfo['车主'].'"  
+                            }
+                           ]
+                }, 
+               "msgtype": "actionCard",
+                }';
+            $model->postMessage($booturl,$msgdata);
+
             $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'年审','跟踪类型'=>'推广方案'))->select();
             if(count($projects)>0){
                 $membercar=M('member_card_car')->where(array('carno'=>$carinfo['车牌号码']))->find();
@@ -624,7 +647,28 @@ private function MessageTip($carinfo,$mendian,$wxlb){
             $model->postMessage($booturl,$msgdata);
             $data['类别']='保养';
             $data['内容']=$content;
-            M('客户跟踪','dbo.','difo')->add($data);
+            $id=M('客户跟踪','dbo.','difo')->add($data);
+            $msgdata='{
+                "actionCard": {
+                    "title": "保养跟踪信息", 
+                    "text": "'.$content.'", 
+                    "hideAvatar": "0", 
+                    "btnOrientation": "1", 
+                    "btns": [
+                            {
+                                "title": "反馈信息", 
+                                "actionURL": "http://www.nsayc.com/index.php?g=Wap&m=Dingding&a=record&lb=3&id='.$id.'&number='.$carinfo['车主'].'" 
+                            },
+                           {
+                                "title": "历史信息", 
+                                "actionURL": "http://www.nsayc.com/index.php?g=Wap&m=Dingding&a=history&lb=3&carno='.$carinfo['车牌号码'].'&number='.$carinfo['车主'].'"  
+                            }
+                           ]
+                }, 
+               "msgtype": "actionCard",
+                }';
+            $model->postMessage($booturl,$msgdata);
+
         }
     }
 }
@@ -3665,13 +3709,18 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
                 $carinfo=M('member_card_car')->where(array('token' =>$this->token,'carno'=>$carno))->find();
                 if(!isset($carinfo))
                 {   
-                    $user=M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->find();
-                    if($user['carno1']==""){
-                        M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno1'=>$carno));
-                    }elseif($user['carno2']==""){
-                        M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno2'=>$carno));
+                    $count=M('member_card_car')->where(array('token' =>$this->token,'wecha_id'=>$wecha_id))->count();
+                    if($count<2){
+                        $user=M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->find();
+                        if($user['carno']==""){
+                            M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno'=>$carno));
+                        }elseif($user['carno2']==""){
+                            M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno1'=>$carno));
+                        }else{
+                            M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno2'=>$carno));
+                        }
                     }else{
-                        echo '最多绑定三辆车';
+                        echo '一个微信最多绑定两辆车';
                         exit();
                     }
                     M('member_card_car')->add(array('token' => $this->token,'wecha_id'=>$wecha_id,'carno'=>$carno,'optuser'=>$user['truename'],'bindtime'=>time()));

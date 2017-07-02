@@ -1,12 +1,11 @@
-<?php
+ï»¿<?php
 class DingdingAction extends BaseAction {
     public function _initialize(){
 		 
 		$url='https://oapi.dingtalk.com/gettoken?corpid='.C('CORPID').'&corpsecret='.C('CORPSECRET');
 		$result=$this->dingtalkcurl($url);
-        Log::write(json_encode($result));
 		if($result['errcode']!==0){
-			$this->error('»ñÈ¡tokenÊ§°Ü'.$result['errmsg']);
+			$this->error('è·å–tokenå¤±è´¥'.$result['errmsg']);
 		}else{
 			$this->token=$result['access_token'];
 		}
@@ -23,23 +22,83 @@ class DingdingAction extends BaseAction {
 		$this->display();
 	  
 	}
+	public function record(){
+        if(IS_POST){
+            $comment=$_POST['comment'];              
+            $id=$_POST['id'];
+            $membernum=$_POST['membernum'];
+            $lb=$_POST['lb'];
+            $user=$_POST['user'];
+            $tracedata['è·Ÿè¸ªæ—¶é—´']=date('Y-m-d H:i',time());
+            if($lb==1){
+                $type='ä¿é™©';
+            }elseif($lb==2){
+                $type='å¹´å®¡';
+            }else{
+                $type='ä¿å…»';
+            }
+            $traceinfo=M('å®¢æˆ·è·Ÿè¸ª','dbo.','difo')->where(array('æµæ°´å·'=>$id))->find();
+            $tracedata['ç±»åˆ«']=$type;
+            $tracedata['å†…å®¹']=$comment;
+            $tracedata['å¹´ä»½']=date('Y',time());;
+            $tracedata['è·Ÿè¸ªç±»å‹']='ç°åœºäº¤æµ';
+            $tracedata['è·Ÿè¸ªäºº']=$user;
+            $tracedata['è½¦ç‰Œå·ç ']=$traceinfo['è½¦ç‰Œå·ç '];
+            $tracedata['è½¦ä¸»']=$membernum;
+            $tracedata['ç™»è®°äºº']=$user;
+            M('å®¢æˆ·è·Ÿè¸ª','dbo.','difo')->add($tracedata);
+            M('å®¢æˆ·è·Ÿè¸ª','dbo.','difo')->where(array('æµæ°´å·'=>$id))->save(array('æ˜¯å¦åé¦ˆ'=>'æ˜¯','åé¦ˆå†…å®¹'=>$comment));
+            echo 'carno='.$traceinfo['è½¦ç‰Œå·ç '].'&lb='.$type;
+
+        }
+        else{
+            $jsapi=$this->getConfig('29443806');
+            $this->getuser();
+            $this->assign('jsapi',$jsapi);
+            $this->assign('corpId',C('CORPID'));
+            $this->assign('second',C('SECOND')); 
+            $this->display();
+        }
+	  
+	}
+	public function history(){
+
+        $lb=$_GET['lb'];
+        $carno=$_GET['carno'];
+        if($lb==1){
+            $type='ä¿é™©';
+        }elseif($lb==2){
+            $type='å¹´å®¡';
+        }else{
+            $type='ä¿å…»';
+        }
+        $traceinfo=M('å®¢æˆ·è·Ÿè¸ª','dbo.','difo')->where(array('è½¦ç‰Œå·ç '=>$carno,'ç±»åˆ«'=>$type))->order('è·Ÿè¸ªæ—¶é—´ desc')->select();
+        $jsapi=$this->getConfig('29443806');
+        $this->assign('traceinfo',$traceinfo);
+        $this->assign('jsapi',$jsapi);
+        $this->assign('corpId',C('CORPID'));
+        $this->assign('second',C('SECOND')); 
+        $this->display();
+        
+        
+    }
 	
 	public function dingtalk(){
 		
 		if(session('?userid')){
 			
 		}else{
-			//»»È¡ÓÃ»§×ÊÁÏ
+			//æ¢å–ç”¨æˆ·èµ„æ–™
 			$url="https://oapi.dingtalk.com/user/getuserinfo?access_token=".$this->token."&code=".$_GET['code'];
 			$result=$this->dingtalkcurl($url);
-            Log::write(json_encode('ÓÃ»§ĞÅÏ¢'.$result));
+            Log::write(json_encode('ç”¨æˆ·ä¿¡æ¯'.$result));
 
 			if($result['errcode']!==0){
-			  $this->error('»ñÈ¡¸öÈË×ÊÁÏÊ§°Ü'.$result['errmsg']);
+			  $this->error('è·å–ä¸ªäººèµ„æ–™å¤±è´¥'.$result['errmsg']);
 			  exit();
 			}
 		
-			session('userid',$result['userid']);//ÒÔuseridÉú³Ésession£¬´Ëid¶ÔÓë¸ÃÆóÒµÊÇÎ¨Ò»µÄ£¬¿ÉÒÔĞ´½øÊı¾İ¿â£¬ÓÃ»§ÃâÃÜÂëµÇÂ¼
+			session('userid',$result['userid']);//ä»¥useridç”Ÿæˆsessionï¼Œæ­¤idå¯¹ä¸è¯¥ä¼ä¸šæ˜¯å”¯ä¸€çš„ï¼Œå¯ä»¥å†™è¿›æ•°æ®åº“ï¼Œç”¨æˆ·å…å¯†ç ç™»å½•
 		}
 		
 		$jsapi=$this->getConfig(C('AGENTID'));
@@ -54,7 +113,7 @@ class DingdingAction extends BaseAction {
     {
         $url='https://oapi.dingtalk.com/user/get_by_mobile?access_token='.$this->token.'&mobile=18824160215';
         $result=$this->dingtalkcurl($url);
-        Log::write(json_encode('ÊÖ»úºÅÂë'.json_encode($result)));
+        Log::write(json_encode('æ‰‹æœºå·ç '.json_encode($result)));
 
     }
 	public function getConfig($agen)
@@ -64,11 +123,11 @@ class DingdingAction extends BaseAction {
         $nonceStr = '123456';
         $timeStamp = (String)time();
         
-        //»ñÈ¡jsapi
+        //è·å–jsapi
 		$url='https://oapi.dingtalk.com/get_jsapi_ticket?access_token='.$this->token;
 		$result=$this->dingtalkcurl($url);
 		if($result['errcode']!=0){
-		    $this->error('»ñÈ¡jsapiÊ§°Ü£¬Ô­Òò£º'.$result['errmsg']);
+		    $this->error('è·å–jsapiå¤±è´¥ï¼ŒåŸå› ï¼š'.$result['errmsg']);
 		   exit();
 		}
 		$ticket=$result['ticket'];
@@ -105,7 +164,7 @@ class DingdingAction extends BaseAction {
         return $config;
     }
 	
-	//·â×°¶¤¶¤·¢ËÍÇëÇócurl·½·¨
+	//å°è£…é’‰é’‰å‘é€è¯·æ±‚curlæ–¹æ³•
 	public function dingtalkcurl($url,$data=null){
 		$curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
@@ -124,13 +183,13 @@ class DingdingAction extends BaseAction {
 	
 	public function sendoa(){
 		$url='https://oapi.dingtalk.com/message/send?access_token='.$this->token;
-		//$data['touser']=session('userid');//ÊÕ¼şÈË
-		$data['agentid']='29443806';//Î¢Ó¦ÓÃid
+		$data['touser']='@all';//æ”¶ä»¶äºº
+		$data['agentid']='29443806';//å¾®åº”ç”¨id
 		$data['msgtype']="text";		
-		$datasb['content']='²âÊÔÏûÏ¢';
+		$datasb['content']='æµ‹è¯•æ¶ˆæ¯';
 		$data['text']=$datasb;
 		$send=$this->dingtalkcurl($url,json_encode($data));
-        Log::write(json_encode('·¢ËÍÏûÏ¢'.json_encode($send)));
+        Log::write(json_encode('å‘é€æ¶ˆæ¯'.json_encode($send)));
 
 	}
 

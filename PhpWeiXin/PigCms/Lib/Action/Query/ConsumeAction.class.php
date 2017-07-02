@@ -2975,6 +2975,27 @@ class ConsumeAction extends Action{
        $data['Total']=count($traceinfo);
        echo json_encode($data);
     }
+   public function saverole(){
+       if(IS_POST){
+           $data=$_POST['row'];
+           $type=$_POST['type'];
+           if($type=='add'){
+               M('Sys_role','dbo.','difo')->add($data);
+               echo '添加成功';
+           }elseif($type=='del'){
+               $code=$data['RoleID'];
+               M('Sys_role','dbo.','difo')->where(array('RoleID'=>$code))->delete();
+               echo '删除成功';
+           }
+           else{
+               $code=$data['RoleID'];
+               unset($data['RoleID']);
+               M('Sys_role','dbo.','difo')->where(array('RoleID'=>$code))->save($data);
+                echo '修改成功';
+             
+           }
+       }
+   }
    public  function getprojectbyname(){
         $page=$_POST['page']; 
         $pagesize=$_POST['pagesize'];

@@ -13,16 +13,12 @@
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
     <link href="//at.alicdn.com/t/font_1474792210_8989851.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript">
+        var adddialog, editdialog,grid;
         $(function () {
 
-            $("#maingrid4").ligerGrid({
+            grid=$("#maingrid4").ligerGrid({
                 columns: [
                     //{ display: 'ID', name: 'RoleID', type: 'int', width: 50 },
-                    {
-                        display: '序号', width: 50,
-                        render: function (rowData, rowindex, value, column, rowid, page, pagesize)
-                        { return (page - 1) * pagesize + rowindex + 1; }
-                    },
                     { display: '角色名', name: 'RoleName' },
                     { display: '角色描述', name: 'RoleDscript', width: 450 },
                     { display: '排序', name: 'RoleSort', width: 50 }
@@ -30,17 +26,17 @@
                 dataAction: 'server',
                 pageSize: 20,
                 pageSizeOptions: [20, 30, 50, 100],
-                enabledEdit: true,
+                rownumbers: true,
                 url: "/index.php?g=Query&m=Consume&a=getroles",
                 height: '98%',
-                heightDiff: -1,
-                toolbar: { items: [
-                { text: '增加', click: add, icon: 'add' },
-                { line: true },
-                { text: '修改', click: edit, icon: 'modify' },
-                { line: true },
-                { text: '删除', click: del, icon:'delete' }
-                ]
+                toolbar: {
+                    items: [
+                        { text: '增加', click: add, icon: 'add' },
+                        { line: true },
+                        { text: '修改', click: edit, icon: 'modify' },
+                        { line: true },
+                        { text: '删除', click: del, icon:'delete' }
+                        ]
                 },                onRClickToSelect: true,
                 onContextmenu: function (parm, e) {
                     actionCustomerID = parm.data.id;
@@ -49,65 +45,7 @@
                 }
             });
 
-
-
-            initLayout();
-            $(window).resize(function () {
-                initLayout();
-            });
-            toolbar();
         });
-        function toolbar() {
-            $.getJSON("../data/toolbar.ashx?Action=GetSys&mid=31&rnd=" + Math.random(), function (data, textStatus) {
-                //alert(data);
-                var items = [];
-                var arr = data.Items;
-                for (var i = 0; i < arr.length; i++) {
-                    arr[i].icon = "../" + arr[i].icon;
-                    items.push(arr[i]);
-                }
-                $("#toolbar").ligerToolBar({
-                    items: items
-
-                });
-                menu = $.ligerMenu({
-                    width: 120, items: getMenuItems(data)
-                });
-                $("#maingrid4").ligerGetGridManager().onResize();
-            });
-        }
-        function f_reload() {
-            var manager = $("#maingrid4").ligerGetGridManager();
-            manager.showData({ Rows: [], Total: 0 });
-            var url = "../data/Sys_role.ashx?Action=grid";
-            manager.GetDataByURL(url);
-        };
-        function authorized() {
-            var manager = $("#maingrid4").ligerGetGridManager();
-            var row = manager.getSelectedRow();
-            if (row) {
-                top.$.ligerDialog.open({
-                    width: 800, height: 500, url: 'System/Sys_Role_authorized.aspx?Role_id=' + row.RoleID, title: "授权", buttons: [
-                        {
-                            text: '保存', onclick: function (item, dialog) {
-                                dialog.frame.f_save();
-                            }
-                        },
-                        {
-                            text: '关闭', onclick: function (item, dialog) {
-                                dialog.close();
-                            }
-                        }
-                    ]
-                });
-            }
-            else {
-                $.ligerDialog.warn("请选择行");
-            }
-
-        }
-
-        var activeDialog = null;
         function f_openWindow(url, title, width, height) {
             var dialogOptions = {
                 width: width, height: height, title: title, url: url, buttons: [
@@ -125,33 +63,71 @@
             };
             activeDialog = parent.jQuery.ligerDialog.open(dialogOptions);
         }
-
-        function add() {
-            f_openWindow("/index.php?g=Query&m=Consume&a=addrole", "新增角色", 500, 300);
+        function add(data) {
+            if (adddialog) {
+                adddialog.set('data', data);
+                adddialog.set('opttype', 'add');
+                adddialog.setUrl('/index.php?g=Query&m=Consume&a=addrole');
+                adddialog.show();
+            }
+            else {
+                adddialog = $.ligerDialog.open({
+                    height: 350,
+                    url: '/index.php?g=Query&m=Consume&a=addrole',
+                    width: 400,
+                    showToggle: false,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    data: data,
+                    opttype: 'add',
+                    title: '新增角色'
+                });
+            }
         }
 
         function edit() {
-            var manager = $("#maingrid4").ligerGetGridManager();
-            var row = manager.getSelectedRow();
-            if (row) {
-                f_openWindow('System/Sys_Role_add.aspx?id=' + row.RoleID, "修改角色", 500, 300);
+            var data = grid.getSelectedRow;
+            if (data) {
+                if (editdialog) {
+                    editdialog.set('data', data);
+                    editdialog.set('opttype', 'edit');
+                    editdialog.setUrl('/index.php?g=Query&m=Consume&a=addrole');
+                    editdialog.show();
+                }
+                else {
+                    editdialog = $.ligerDialog.open({
+                        height: 350,
+                        url: '/index.php?g=Query&m=Consume&a=addrole',
+                        width: 400,
+                        showToggle: false,
+                        showMin: false,
+                        isResize: true,
+                        modal: false,
+                        data: data,
+                        opttype: 'edit',
+                        title: '修改角色'
+                    });
+                }
             } else {
-                $.ligerDialog.warn("请选择行");
+                $.ligerDialog.alert('请选择要修改的记录');
             }
         }
 
         function del() {
-            var manager = $("#maingrid4").ligerGetGridManager();
-            var row = manager.getSelectedRow();
+            var row = grid.getSelectedRow();
             if (row) {
                 $.ligerDialog.confirm("角色删除后不能恢复，\n您确定要移除？", function (yes) {
                     if (yes) {
                         $.ajax({
                             type: "POST",
-                            url: "../data/Sys_role.ashx", /* 注意后面的名字对应CS的方法名称 */
-                            data: { Action: "del", id: row.RoleID }, /* 注意参数的格式和名称 */
+                            url: "/index.php?g=Query&m=Consume&a=saverole", /* 注意后面的名字对应CS的方法名称 */
+                            data: { type: "del",row: row }, /* 注意参数的格式和名称 */
                             success: function (result) {
-                                f_reload();
+                                $.ligerDialog.alert(result);
+                                setTimeout(function () {
+                                    grid.reload();
+                                }, 2000);
                             }
                         });
                     }

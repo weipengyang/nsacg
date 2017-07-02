@@ -14660,6 +14660,7 @@
     <Content Include="tpl\Query\Consume_balancesum.html" />
     <Content Include="tpl\Query\Consume_balancequery.html" />
     <Content Include="tpl\Query\Consume_balancesumdetail.html" />
+    <Content Include="tpl\Query\Consume_addrole.html" />
     <Content Include="tpl\Query\Consume_productselect.html" />
     <Content Include="tpl\Query\Consume_purchasequery.html" />
     <Content Include="tpl\Query\Consume_receiveandpayquery.html" />

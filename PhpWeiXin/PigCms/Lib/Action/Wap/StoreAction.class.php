@@ -3156,7 +3156,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
                 $tracedata['内容']=$content;
                 M('客户跟踪','dbo.','difo')->add($tracedata);
                 $model->postMessage($booturl,$msgdata);
-                $this->weixinmessage($content,$wx['门店'],'评价');
+                //$this->weixinmessage($content,$wx['门店'],'评价');
             }
             $data['评价时间'] =date('Y-m-d H:i',time());
             $data['评论内容'] = htmlspecialchars($commnet['content']);

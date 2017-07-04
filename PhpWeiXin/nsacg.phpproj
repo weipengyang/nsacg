@@ -14657,6 +14657,8 @@
     <Content Include="tpl\Other\default\style\js\registerSSO.js" />
     <Content Include="tpl\Other\index.html" />
     <Content Include="tpl\Query\Consume_addproductlist.html" />
+    <Content Include="tpl\Query\Consume_roleauthorized.html" />
+    <Content Include="tpl\Query\Consume_useredit.html" />
     <Content Include="tpl\Query\Consume_balancesum.html" />
     <Content Include="tpl\Query\Consume_balancequery.html" />
     <Content Include="tpl\Query\Consume_balancesumdetail.html" />

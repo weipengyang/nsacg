@@ -1821,10 +1821,10 @@ class CardAction extends WapAction{
                 M('Member_card_create')->where(array('id'=>$card['id']))->save(array('wecha_id'=>$wecha_id));
                 return $card['number'];
             }else{
-                return $thisCard['number'];
+                return 0;
             }
         }
-        return $thisCard['number'];
+        return 0;
         
     }
 
@@ -1844,8 +1844,8 @@ class CardAction extends WapAction{
                     if($order['price']>=500||$wecha_id=='ohD3dviFloHSvcl9ieoXFibqPFJM')
                     {   
                         $cardnumber=$this->change();
-                        $cardinfo['number']=$cardnumber;
                         if($cardnumber!='0'){
+                            $cardinfo['number']=$cardnumber;
                             $uinfo=M('Userinfo')->where("wecha_id = '$wecha_id' AND token = '$token'")->find();
                             $this->changecarinfo($uinfo,$cardnumber);
                         }

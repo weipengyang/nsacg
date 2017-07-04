@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>用户编辑</title>
+    <meta name="description" content="爱养车" />
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var adddialog,form = null;
+        $(function ()
+        {
+            form = $("#form1").ligerForm({
+                inputWidth: 220, labelWidth: 80, space: 20,
+                validate: true,
+                fields: [
+                    {
+                        display: "流水号", name: "流水号", newline: true, type: "hidden"
+                    },
+                   {
+                       display: "用户名", name: "姓名", newline: true, type: "text", options: {
+                          
+                       }
+                   },
+                   {
+                       display: "密码", name: "密码", newline: true, type: "text", options: {
+
+                       }
+                   },
+                   {
+                       display: "门店权限", name: "门店权限", newline: true, type: "checkboxlist", options: {
+                           url: '/index.php?g=Query&m=Consume&a=getshoplist',
+                           textField: '名称',                           valueField: '名称',                           split:','
+                       }
+                   },
+                   {
+                       display: "角色权限", name: "角色权限", newline: true, type: "combobox", options: {
+                           textField: 'RoleName',
+                           valueField: 'RoleName',                           url: '/index.php?g=Query&m=Consume&a=getrolelist'
+                       }
+                   },
+                   {
+                       display: "是否禁用", name: "禁用", newline: true, type: "radiolist", options: {
+                           data: [
+                               {
+                                name:'是',value:'1'
+                               },
+                               {
+                                name:'否',value:'0'
+                               }
+                           ],
+                           textField: 'name',                           valueField: 'value'
+                       }
+                   },
+                ],
+                buttons: [                    {
+                        text: "取消", width: 60, click: function () {
+                            frameElement.dialog.hide();
+                        }
+                    },                    {
+                        text: "保存", width: 60, click: function () {
+                            var data = form.getData();
+                            
+                            var submitdata = {
+                                row: data,
+                                type: frameElement.dialog.get('opttype')
+                            };
+                            alert(JSON2.stringify(form.getData()));
+                            $.post('/index.php?g=Query&m=Consume&a=saveuser', submitdata,
+                              function (msg) { 
+                                  $.ligerDialog.alert(msg);
+                                  window.parent.grid.reload();
+                                  frameElement.dialog.hide(); 
+                              });
+                        }
+                    }            ]            });
+            var data = parent.grid.getSelectedRow();
+            if (data) {
+                form.setData(data);
+            }
+        });
+
+
+    </script>
+</head>
+
+<body style="padding:10px">
+    <div id="form1">
+    </div>
+</body>
+</html>

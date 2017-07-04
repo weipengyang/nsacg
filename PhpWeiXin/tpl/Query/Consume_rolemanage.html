@@ -12,6 +12,7 @@
     <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
     <link href="//at.alicdn.com/t/font_1474792210_8989851.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.0/css/amazeui.min.css" />
     <script type="text/javascript">
         var adddialog, editdialog,grid;
         $(function () {
@@ -19,8 +20,8 @@
             grid=$("#maingrid4").ligerGrid({
                 columns: [
                     //{ display: 'ID', name: 'RoleID', type: 'int', width: 50 },
-                    { display: '角色名', name: 'RoleName' },
-                    { display: '角色描述', name: 'RoleDscript', width: 450 },
+                    { display: '角色名', name: 'RoleName',minWidth:120},
+                    { display: '角色描述', name: 'RoleDscript', minWidth: 200 },
                     { display: '排序', name: 'RoleSort', width: 50 }
                 ],
                 dataAction: 'server',
@@ -175,38 +176,18 @@
             dialog.close();
         }
 
-        function f_save(item, dialog) {
-            var issave = dialog.frame.f_save();
-            if (issave) {
-                dialog.close();
-                top.$.ligerDialog.waitting('数据保存中,请稍候...');
-                $.ajax({
-                    url: "../data/Sys_role.ashx", type: "POST",
-                    data: issave,
-                    success: function (responseText) {
-                        top.$.ligerDialog.closeWaitting();
-                        //top.$.ligerDialog.success('操作成功！');
-                        f_reload();
-
-                    },
-                    error: function () {
-                        top.$.ligerDialog.closeWaitting();
-                        top.$.ligerDialog.error('操作失败！');
-                    }
-                });
-
-            }
-        }
-
-
     </script>
     </head>
     <body style="margin:0;padding:0">
-        <form id="mainform">
-            <div>
-                <div id="toolbar"></div>
-                <div id="maingrid4"></div>
+        <div class="am-cf admin-main" style="padding:0;margin:0">
+            <!-- content start -->
+            <div class="admin-content">
+                <div class="admin-content-body">
+                    <div id="toolbar"></div>
+                    <div id="maingrid4" style="margin:0; padding:0;"></div>
+                </div>
             </div>
-        </form>
+            <!-- content end -->
+        </div>
 </body>
 </html>

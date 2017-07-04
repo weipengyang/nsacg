@@ -103,6 +103,45 @@ class ConsumeAction extends Action{
         echo json_encode($data);
 
     }
+    public function getusers(){
+     
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $where['1']=1;
+        $searchkey=$_POST['searchkey'];
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
+            $searchkey='%'.trim($searchkey).'%';
+        }
+        if($searchkey){       
+            $searchwhere['姓名']=array('like',$searchkey);
+            $searchwhere['门店权限']=array('like',$searchkey);
+            $searchwhere['部门权限']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $order='姓名 desc';
+        }
+        else{
+            $order=$sortname.' '.$sortorder;
+        }
+        $ds=M('用户管理','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+        $count=M('用户管理','dbo.','difo')->where($where)->count();
+        $data['Rows']=$ds;
+        $data['Total']=$count;
+        echo json_encode($data);
+
+    }
+     public  function getsysapplist()
+    {
+            $ds=M('sys_app','dbo.','difo')->order('App_order')->select();
+            echo json_encode($ds);
+            exit;
+     }
+    
     public  function getmainmenu()
     {
             $ds=M('sys_app','dbo.','difo')->order('App_order')->select();
@@ -2980,6 +3019,7 @@ class ConsumeAction extends Action{
            $data=$_POST['row'];
            $type=$_POST['type'];
            if($type=='add'){
+               unset($data['RoleID']);
                M('Sys_role','dbo.','difo')->add($data);
                echo '添加成功';
            }elseif($type=='del'){
@@ -2991,6 +3031,28 @@ class ConsumeAction extends Action{
                $code=$data['RoleID'];
                unset($data['RoleID']);
                M('Sys_role','dbo.','difo')->where(array('RoleID'=>$code))->save($data);
+                echo '修改成功';
+             
+           }
+       }
+   }
+   public function saveuser(){
+       if(IS_POST){
+           $data=$_POST['row'];
+           $type=$_POST['type'];
+           if($type=='add'){
+               unset($data['流水号']);
+               M('用户管理','dbo.','difo')->add($data);
+               echo '添加成功';
+           }elseif($type=='del'){
+               $code=$data['流水号'];
+               M('用户管理','dbo.','difo')->where(array('流水号'=>$code))->delete();
+               echo '删除成功';
+           }
+           else{
+               $code=$data['流水号'];
+               unset($data['流水号']);
+               M('用户管理','dbo.','difo')->where(array('流水号'=>$code))->save($data);
                 echo '修改成功';
              
            }
@@ -3260,7 +3322,12 @@ class ConsumeAction extends Action{
         echo json_encode($wxlb);
     
 } 
-    public  function getstorelist(){
+     public  function getrolelist(){
+        $wxlb=M('sys_role','dbo.','difo')->select();
+        echo json_encode($wxlb);
+    
+} 
+   public  function getstorelist(){
         $wxlb=M('仓库目录','dbo.','difo')->select();
         echo json_encode($wxlb);
     
@@ -5212,6 +5279,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 if(intval($_POST['price'])>=500){
                     $cardnumber=$this->change($mycard['cardid'],$uinfo['wecha_id']);
                     if($cardnumber!='0'){
+                       $mycard['number']=$cardnumber;
                        $this->changecarinfo($uinfo,$cardnumber);
                     }
                 }

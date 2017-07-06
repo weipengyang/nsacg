@@ -30,6 +30,12 @@
                        }
                    },
                    {
+                       display: "所属部门", name: "所属门店", newline: true, type: "combobox", options: {
+                           textField: '名称',
+                           valueField: '名称',                           url: '/index.php?g=Query&m=Consume&a=getshoplist'
+                       }
+                   },
+                   {
                        display: "门店权限", name: "门店权限", newline: true, type: "checkboxlist", options: {
                            url: '/index.php?g=Query&m=Consume&a=getshoplist',
                            textField: '名称',                           valueField: '名称',                           split:','
@@ -67,7 +73,6 @@
                                 row: data,
                                 type: frameElement.dialog.get('opttype')
                             };
-                            alert(JSON2.stringify(form.getData()));
                             $.post('/index.php?g=Query&m=Consume&a=saveuser', submitdata,
                               function (msg) { 
                                   $.ligerDialog.alert(msg);

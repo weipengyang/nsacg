@@ -12,9 +12,8 @@
     <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
     <link href="//at.alicdn.com/t/font_1474792210_8989851.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.0/css/amazeui.min.css" />
     <script type="text/javascript">
-        var adddialog, editdialog,grid;
+        var adddialog, editdialog,grid,authorizeddialog;
         $(function () {
 
             grid=$("#maingrid4").ligerGrid({
@@ -22,7 +21,7 @@
                     //{ display: 'ID', name: 'RoleID', type: 'int', width: 50 },
                     { display: '角色名', name: 'RoleName',minWidth:120},
                     { display: '角色描述', name: 'RoleDscript', minWidth: 200 },
-                    { display: '排序', name: 'RoleSort', width: 50 }
+                    { display: '排序', name: 'RoleSort', minWidth: 50 }
                 ],
                 dataAction: 'server',
                 pageSize: 20,
@@ -36,7 +35,9 @@
                         { line: true },
                         { text: '修改', click: edit, icon: 'modify' },
                         { line: true },
-                        { text: '删除', click: del, icon:'delete' }
+                        { text: '授权', click: authorize, icon: 'modify' },
+                        { line: true },
+                        { text: '删除', click: del, icon: 'delete' }
                         ]
                 },                onRClickToSelect: true,
                 onContextmenu: function (parm, e) {
@@ -47,26 +48,9 @@
             });
 
         });
-        function f_openWindow(url, title, width, height) {
-            var dialogOptions = {
-                width: width, height: height, title: title, url: url, buttons: [
-                    {
-                        text: '保存', onclick: function (item, dialog) {
-                            f_save(item, dialog);
-                        }
-                    },
-                    {
-                        text: '关闭', onclick: function (item, dialog) {
-                            dialog.close();
-                        }
-                    }
-                ], isResize: true, timeParmName: 'a'
-            };
-            activeDialog = parent.jQuery.ligerDialog.open(dialogOptions);
-        }
         function add(data) {
             if (adddialog) {
-                adddialog.set('data', data);
+                adddialog.set('roledata', data);
                 adddialog.set('opttype', 'add');
                 adddialog.setUrl('/index.php?g=Query&m=Consume&a=addrole');
                 adddialog.show();
@@ -88,10 +72,10 @@
         }
 
         function edit() {
-            var data = grid.getSelectedRow;
+            var data = grid.getSelectedRow();
             if (data) {
                 if (editdialog) {
-                    editdialog.set('data', data);
+                    editdialog.set('roledata', data);
                     editdialog.set('opttype', 'edit');
                     editdialog.setUrl('/index.php?g=Query&m=Consume&a=addrole');
                     editdialog.show();
@@ -105,7 +89,7 @@
                         showMin: false,
                         isResize: true,
                         modal: false,
-                        data: data,
+                        roledata: data,
                         opttype: 'edit',
                         title: '修改角色'
                     });
@@ -114,7 +98,44 @@
                 $.ligerDialog.alert('请选择要修改的记录');
             }
         }
-
+        function authorize() {
+            var data = grid.getSelectedRow();
+            if (data) {
+                if (authorizeddialog) {
+                    authorizeddialog.set('roledata', data);
+                    authorizeddialog.setUrl('/index.php?g=Query&m=Consume&a=roleauthorized');
+                    authorizeddialog.show();
+                }
+                else {
+                    authorizeddialog = $.ligerDialog.open({
+                        height: 650,
+                        url: '/index.php?g=Query&m=Consume&a=roleauthorized',
+                        width: 650,
+                        showToggle: false,
+                        showMin: false,
+                        showMax: true,
+                        isResize: true,
+                        modal: false,
+                        roledata: data,
+                        title: '菜单权限',
+                        buttons: [
+                        {
+                            text: '保存', onclick: function (item, dialog) {
+                                dialog.frame.f_save();
+                            }
+                        },
+                        {
+                            text: '关闭', onclick: function (item, dialog) {
+                                dialog.hide();
+                            }
+                        }
+                        ]
+                    });
+                }
+            } else {
+                $.ligerDialog.alert('请选择授权的角色');
+            }
+        }
         function del() {
             var row = grid.getSelectedRow();
             if (row) {

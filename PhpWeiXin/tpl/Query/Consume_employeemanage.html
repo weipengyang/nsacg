@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>角色管理</title>
+    <title>员工管理</title>
     <meta name="description" content="爱养车">
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
@@ -20,11 +20,55 @@
             grid=$("#maingrid4").ligerGrid({
                 columns: [
                     //{ display: 'ID', name: 'RoleID', type: 'int', width: 50 },
-                    { display: '用户名', name: '姓名',minWidth:120},
-                    { display: '用户密码', name: '密码', minWidth: 100 },
-                    { display: '所属部门', name: '所属门店', minWidth: 100 },
-                    { display: '角色权限', name: '角色权限', minWidth: 100 },
-                    { display: '门店权限', name: '门店权限', minWidth: 200 },
+                    { display: '门店', name: '单位',minWidth:120},
+                    { display: '部门', name: '部门',minWidth:120},
+                    { display: '班组', name: '班组',minWidth:120},
+                    { display: '工号', name: '工号',minWidth:120},
+                    { display: '姓名', name: '姓名', minWidth: 100 },
+                    { display: '性别', name: '性别', minWidth: 100 },
+                    { display: '籍贯', name: '籍贯', minWidth: 100 },
+                    { display: '职务', name: '职务', minWidth: 100 },
+                    { display: '学历', name: '学历', minWidth: 100 },
+                    { display: '联系电话', name: '联系电话', minWidth: 100 },
+                    { display: '手机号码', name: '手机号码', minWidth: 100 },
+                    { display: '身份证号', name: '身份证号', minWidth: 100 },
+                    { display: '住址', name: '住址', minWidth: 100 },
+                    { display: '入职日期', name: '入职日期', minWidth: 100,render:function (rowdata, index, value) {
+                        return todate(value);
+                    }
+                    },
+                    { display: '技术员', name: '技术员', minWidth: 100,render:function (rowdata, index, value) {
+                        if (value == '1')
+                            return '是';
+                        return '否';
+                    } },
+                    { display: '业务员', name: '业务员', minWidth: 100,render:function (rowdata, index, value) {
+                        if (value == '1')
+                            return '是';
+                        return '否';
+                    } },
+                    { display: '回访员', name: '回访员', minWidth: 100,render:function (rowdata, index, value) {
+                        if (value == '1')
+                            return '是';
+                        return '否';
+                    } },
+                    { display: '接车员', name: '接车员', minWidth: 100,render:function (rowdata, index, value) {
+                        if (value == '1')
+                            return '是';
+                        return '否';
+                    } },
+                    { display: '领料员', name: '领料员', minWidth: 100,render:function (rowdata, index, value) {
+                        if (value == '1')
+                            return '是';
+                        return '否';
+                    } },
+                    { display: '报价员', name: '报价员', minWidth: 100,render:function (rowdata, index, value) {
+                        if (value == '1')
+                            return '是';
+                        return '否';
+                    } },
+                    { display: '联系电话', name: '联系电话', minWidth: 100 },
+
                     {
                         display: '是否禁用', name: '禁用', minWidth: 80,render:function (rowdata, index, value) {
                             if (value == '1')
@@ -32,12 +76,11 @@
                             return '否';
                         }
                     }
-        ],
-                dataAction: 'server',
+                ],
                 pageSize: 20,
-                pageSizeOptions: [20, 30, 50, 100],
+                pageSizeOptions: [15,20, 30, 50, 100],
                 rownumbers: true,
-                url: "/index.php?g=Query&m=Consume&a=getusers",
+                url: "/index.php?g=Query&m=Consume&a=getemployees",
                 height: '98%',
                 toolbar: {
                     items: [

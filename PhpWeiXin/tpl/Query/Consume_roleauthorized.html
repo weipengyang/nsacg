@@ -8,322 +8,104 @@
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.0/css/amazeui.min.css" />
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
     <link href="//at.alicdn.com/t/font_1474792210_8989851.css" rel="stylesheet" type="text/css" />
-    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.0/css/amazeui.min.css" />-->
     <script type="text/javascript">
-        var manager = "";
-        var treemanager;
-        $(function () {
-            $("#layout1").ligerLayout({ leftWidth: 150, allowLeftResize: false, allowLeftCollapse: true, space: 2 });
-            $("#tree1").ligerTree({
-                //url: '../data/Sys_Menu.ashx?Action=GetSysApp&rnd=' + Math.random(),
-                url: '/index.php?&g=Query&m=Consume&a=getsysapplist&rnd=' + Math.random(),
-                onSelect: onSelect,
-                idFieldName: 'id',
-                usericon: 'App_icon',
-                textFieldName: 'App_name',
-                checkbox: false,
-                itemopen: false,
-                onSuccess: function () {
-                    $(".l-first").click();
-                }
-            });
-            treemanager = $("#tree1").ligerGetTreeManager();
-            $("#maingrid4").ligerGrid({
-                columns: [
-                    { display: '序号', width: 50, render: function (rowData, rowindex, value, column, rowid, page, pagesize) { return rowid + 1; } },
-                    { display: '菜单名称', name: 'Menu_name', align: 'left',width:190 },
-                    {
-                        display: '按钮权限', name: 'Menu_icon', align: 'left', width: 550, render: function (item) {
-                            //var html = "<div style='vertical-align:middle;color: #FF0000;background:yellow'>";
-                            var html = "<div style='vertical-align:middle;'>";
-                            var returntxt = item.Sysroler;
-
-                            var arrstr = new Array();
-                            var arrstr1 = new Array();
-                            var arrid = new Array();
-                            var arrname = new Array();
-                            arrstr = returntxt.split(",");
-
-                            for (var j = 0; j < arrstr.length - 1; j++) {
-                                arrstr1 = arrstr[j].split("|");
-                                arrid = arrstr1[0];
-                                arrname = arrstr1[1];
-                                html += "<input type='checkbox' ";
-                                html += "value='" + arrid + "' ";
-                                html += " id='b" + arrid + "'";
-                                html += ">";
-                                html += arrname;
-                                html += "&nbsp;&nbsp;";
-                            }
-                            html += "</div>";
-                            return html;
-                        }
-                    }
-
-                ],
-                rowid: "Menu_id",
-                onLoaded:f_setbtn,
-                onCheckRow: f_onCheckRow,
-                onCheckAllRow: f_onCheckAllRow,
-                dataAction: 'local',
-                pageSize: 30,
-                pageSizeOptions: [20, 30, 50, 100],
-                enabledEdit: true,
-                checkbox: true,
-                url: "../data/System_role_data.ashx?action=treegrid",
-                width: '100%', height: '100%',
-                usePager: false,
-                tree: { columnName: 'Menu_name' },
-                heightDiff: -3
-            });
-            var manager = $("#maingrid4").ligerGetGridManager();
-            $("tbody> :checkbox").attr("checked", false);
-        });
-
-        function onSelect(note) {
-            //加载数据
-            var url = "../data/Sys_role.ashx?Action=treegrid&appid=" + note.data.id + '&rdm=' + Math.random();
-            //执行操作
-            alert(url);
+        var tree;
+        function checkall(btn) {
+            if (btn.checked) {
+                $('input:checkbox').prop("checked", true);
+            } else {
+                $('input:checkbox').prop("checked", false);
+            }
         }
-        function f_setbtn()
-        {
-
-            var manager = $("#maingrid4").ligerGetGridManager();
-            manager.gridloading.hide();
-            var note = treemanager.getSelected();
-            if (!note) return;
-
-            //获取权限
-            var roleid = getparastr("Role_id");
-            var savetext = "{role_id:'" + roleid + "',";
-            savetext += "app:'" + note.data.id + "'}";
-
-            $.ajax({
-                type: 'post',
-                url: "../data/Sys_role.ashx?Action=getauth&postdata=" + savetext + '&rdm=' + Math.random(),
-                success: function (data) {
-                    //alert(data);
-                    var arrstr = new Array();
-                    var arrmenu = new Array();
-                    var arrbtn = new Array();
-                    arrstr = data.split("|");
-
-                    arrmenu = arrstr[0].split(",");
-                    for (var i = 0; i < arrmenu.length; i++) {
-                        if (arrmenu[i].length > 0) {
-                            manager.setCheck(arrmenu[i].replace("m", ""));
-                        }
-                    }
-
-                    if (arrstr[1])
-                        arrbtn = arrstr[1].split(",");
-                    for (var j = 0; j < arrbtn.length; j++) {
-                        if (arrbtn[j].length > 0) {
-                            $("#" + arrbtn[j]).attr("checked", true);
-                        }
-                    }
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    //f_error("角色还未授权！");
-                }
-            });
-        }
-
         function f_save() {
-            var notes = treemanager.getSelected();
-            if (notes != null && notes != undefined) {
-                var app = notes.data.id;
+            var menudata = [];
+            $(':checked').each(function () {
+                menudata.push(this.value);
 
-                var manager = $("#maingrid4").ligerGetGridManager();
-                var rows = manager.getCheckedRows();
-                var menu = "";
-                $(rows).each(function () {
-                    menu += "m" + this.Menu_id + ",";
-                });
-
-                var btn = "";
-                $("input[type='checkbox']").each(function (i) {
-                    if ($(this).attr("checked")) {
-                        btn += $(this).attr("id") + ",";
-                    }
-                })
-
-
-                var roleid = getparastr("Role_id");
-                var savetext = "{role_id:'" + roleid + "',";
-                savetext += "app:'a" + app + ",',";
-                savetext += "menu:'" + menu + "',";
-                savetext += "btn:'" + btn + "'}";
-
-                //alert(savetext);
-
-                f_saving();
-                $.ajax({
-                    type: 'post',
-                    url: "../data/Sys_role.ashx?Action=saveauth&postdata=" + savetext + '&rdm=' + Math.random(),
-                    success: function (data) {
-                        //alert(data);
-                        setTimeout(function () {
-                            f_success();
-                        }, 10);
-
-                    },
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        f_error("授权失败！");
-                    }
-                });
-            }
-            else {
-                f_error("请选择模块！");
-            }
-
-        }
-        function EditMenu() {
-            $(":checkbox").attr("checked", true);
-        }
-        function DeleteMenu() {
-            $(":checkbox").attr("checked", false);
-            $("#_38").attr("checked", true);
-        }
-        function gridreload(Appid) {
-            var manager = $("#maingrid4").ligerGetGridManager();
-            manager.showData({ Rows: [], Total: 0 });
-            //alert('onSelect:' + note.data.id);
-            var url = "../data/Sys_Menu_data.aspx?action=treegrid&appid=" + Appid;
-            manager.GetDataByURL(url);
-        };
-
-        function f_onCheckRow(checked, data) {
-            var returntxt = data.Sysroler;
-            var arrstr = new Array();
-            var arrstr1 = new Array();
-            var arrid = new Array();
-            var arrname = new Array();
-            arrstr = returntxt.split(",");
-
-            if (checked) {
-                for (var j = 0; j < arrstr.length; j++) {
-                    arrstr1 = arrstr[j].split("|");
-                    arrid = arrstr1[0];
-                    $("#b" + arrid).attr("checked", true);
-                }
-                //parent
-                var manager = $("#maingrid4").ligerGetGridManager();
-                if (manager.isLeaf(data)) {
-                    var row = manager.getParent(data);
-                    if(row) manager.setCheck(row.Menu_id);
-                }
-                else
-                {
-                    var rows = data.children;
-                    if (!rows) return;
-                    $(rows).each(function (i,item) {
-                        manager.setCheck(rows[i].Menu_id);
-                        var returntxt = item.Sysroler;
-                        var arrstr = new Array();
-                        var arrstr1 = new Array();
-                        var arrid = new Array();
-                        var arrname = new Array();
-                        arrstr = returntxt.split(",");
-
-
-                        for (var j = 0; j < arrstr.length; j++) {
-                            arrstr1 = arrstr[j].split("|");
-                            arrid = arrstr1[0];
-                            if (checked) {
-                                $("#b" + arrid).attr("checked", true);
-                            }
-                            else {
-                                $("#b" + arrid).attr("checked", false);
-                            }
-                        }
-                    })
-                }
-            }
-            else {
-                for (var j = 0; j < arrstr.length; j++) {
-                    arrstr1 = arrstr[j].split("|");
-                    arrid = arrstr1[0];
-                    $("#b" + arrid).attr("checked", false);
-                }
-                //children
-                var manager = $("#maingrid4").ligerGetGridManager();
-                if (!manager.isLeaf(data)) {
-                    var rows = data.children;
-                    $(rows).each(function (i) {
-                        manager.setUnCheck(rows[i].Menu_id);
-                    })
-                }
-            }
-
-
-        }
-        function f_onCheckAllRow(checked, grid) {
-            var manager = $("#maingrid4").ligerGetGridManager();
-            var rows = manager.getAllRows();
-            if (rows.length > 0) {
-                $(rows).each(function (i, item) {
-                    //alert(i+";"+item.Sysroler)
-                    var returntxt = item.Sysroler;
-                    var arrstr = new Array();
-                    var arrstr1 = new Array();
-                    var arrid = new Array();
-                    var arrname = new Array();
-                    arrstr = returntxt.split(",");
-
-
-                    for (var j = 0; j < arrstr.length; j++) {
-                        arrstr1 = arrstr[j].split("|");
-                        arrid = arrstr1[0];
-                        if (checked) {
-                            $("#b" + arrid).attr("checked", true);
-                        }
-                        else {
-                            $("#b" + arrid).attr("checked", false);
-                        }
-                    }
-
-                })
-            }
-        }
-        function f_success() {
-            setTimeout(function () {
-                $.ligerDialog.confirm("是否继续编辑", "保存成功", function (ok) {
-                    $.ligerDialog.closeWaitting();
-                    if (!ok) {
-                        parent.$.ligerDialog.close();
-                    }
-                });
-            }, 200);
-        }
-        function f_error(message) {
-            $(document).ready(function () {
-                $.ligerDialog.error(message);
+            });
+            //alert(data.join(';'));
+            var submitdata = {
+                row: frameElement.dialog.get('roledata'),
+                menudata:menudata
+            };
+            $.post('/index.php?&g=Query&m=Consume&a=savemenu&rnd=' + Math.random(), submitdata, function (result) {
+                $.ligerDialog.alert(result);
+                setTimeout(function () {
+                    frameElement.dialog.hide();
+                }, 1000);
             });
         }
-        function f_saving() {
-            $.ligerDialog.waitting("正在保存中...");
-        }
+        $(function () {
+            //tree=$('#tree1').ligerTree({
+            //    url:'/index.php?&g=Query&m=Consume&a=getallmenus&rnd='+ Math.random(),
+            //    idFieldName: 'Menu_id',
+            //    textFieldName: 'Menu_name',
+            //    checkbox: true,
+            //    itemopen: false,
+            //    parentIDField: '无',
+            //    parentIDFieldName: 'parentid',
+            //    onSuccess: function () {
+            //        $(".l-first").click();
+            //    }
+            //});
+            var roledata=frameElement.dialog.get('roledata');
+
+            $.post('/index.php?&g=Query&m=Consume&a=getallmenus&rnd=' + Math.random(), null, function (result) {
+                var table = document.createElement('div');
+                $(table).addClass('am-g');
+                var html = ' <div class="am-u-sm-3 am-u-sm-centered" ><input type="checkbox" onclick="checkall(this);" name="' + result[0]['Menu_id'] + '" value="' + result[0]['Menu_id'] + '" id="' + result[0]['Menu_id'] + '">';
+                html += '<label for="' + result[0]['Menu_id'] + '">' + result[0]['Menu_name'] + '</label></div>';
+                $(table).append(html);
+                $('#from1').append(table);
+                $(result[0].children).each(function () {
+                    table = document.createElement('div');
+                    $(table).addClass('am-g');
+                    html = ' <div class="am-u-sm-3 sysapp"><input type="checkbox" name="' + this['Menu_id'] + '" value="' + this['Menu_id'] + '" id="' + this['Menu_id'] + '">';
+                    html += '<label for="' + this['Menu_id'] + '">' + this['Menu_name'] + '</label></div>';
+                    $(table).append(html);
+                    $('#from1').append(table);
+                    var row = document.createElement('div');
+                    $(row).addClass('am-g');
+                    $(row).css('font-size:10px');
+                    $(row).addClass('class'+this['Menu_id']);
+                    $('#from1').append(row);
+                    $(row).ligerCheckBoxList({
+                        data: this.children,
+                        rowSize: 6,
+                        textField: 'Menu_name',
+                        valueField: 'Menu_id',
+
+                    });
+                });
+
+                $.post('/index.php?&g=Query&m=Consume&a=getrolemenus&roleid=' + roledata['RoleID'], null, function (result) {
+                    $(result).each(function () {
+                        var search = ":checkbox[value='"+this.menuid+"']";
+                        $(search).prop("checked", true);
+                    });
+
+                }, 'json');
+                $('.sysapp :checkbox').click(function () {
+                    if (this.checked) {
+                        $('.class' + this.value+' :checkbox').prop("checked", true);
+                    } else {
+                        $('.class' + this.value + ' :checkbox').prop("checked", false);
+                    }
+                });
+            },'json');
+        });
 
     </script>
 
 </head>
-<body style="padding: 0px;overflow:hidden;">
-    <div id="layout1" style="margin: -1px;">
-        <div position="left" title="系统目录">
-            <div id="treediv1" style="width: 250px; height: 100%; margin: -1px; float: left; border: 1px solid #ccc; overflow: auto;">
-                <ul id="tree1"></ul>
-            </div>
-        </div>
-        <div position="center">
-            <div class="title">按键</div>
-
-            <div id="maingrid4" style="margin: -1px;"></div>
+<body style="padding:0px;">
+    <div position="center">
+        <div id="from1" >
         </div>
     </div>
 </body>

@@ -14657,6 +14657,7 @@
     <Content Include="tpl\Other\default\style\js\registerSSO.js" />
     <Content Include="tpl\Other\index.html" />
     <Content Include="tpl\Query\Consume_addproductlist.html" />
+    <Content Include="tpl\Query\Consume_employeeedit.html" />
     <Content Include="tpl\Query\Consume_roleauthorized.html" />
     <Content Include="tpl\Query\Consume_useredit.html" />
     <Content Include="tpl\Query\Consume_balancesum.html" />
@@ -14677,6 +14678,7 @@
     <Content Include="tpl\Query\Consume_repaircarmanage.html" />
     <Content Include="tpl\Query\Consume_newpay.html" />
     <Content Include="tpl\Query\Consume_maintainmanage.html" />
+    <Content Include="tpl\Query\Consume_employeemanage.html" />
     <Content Include="tpl\Query\Consume_washcarmanage.html" />
     <Content Include="tpl\Query\Consume_projectedit.html" />
     <Content Include="tpl\Query\Consume_projectmanage.html" />

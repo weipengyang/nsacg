@@ -3132,7 +3132,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
             $data['服务态度'] = $commnet['fwtd'];
             $data['服务质量'] = $commnet['fwzl'];
             $data['前台接待'] = $commnet['qtjd'];
-            if($data['服务态度']<4||$data['服务质量']<4){
+            if($data['服务态度']<3||$data['服务质量']<3){
                 $content=$wx['联系人'].'车牌号为'.$wx['车牌号码'].'的车辆'.date('Y-m-d',strtotime($wx['制单日期'])).'日在'.$wx['门店'].$wx['维修类别'];
                 $content.='，客户对服务的评价低于3分，接车人:'.$wx['接车人'].'，服务技师:'.$wx['主修人'].'，请及时跟踪回访。';
                 $model=new templateNews();
@@ -3146,15 +3146,16 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
                     "isAtAll": true
                 }
                 }';
-                $tracedata['车主']=$wx['车主'];
+                $tracedata['车主']=$wx['车主']; 
                 $tracedata['车牌号码']=$wx['车牌号码'];
-                $tracedata['跟踪时间']=date('Y-m-d H:i',time());
+                $tracedata['跟踪时间']=date('Y-m-d H:i',time( ));
                 $tracedata['跟踪人']='系统';
                 $tracedata['跟踪类型']='到店消费';
                 $tracedata['年份']=date('Y');
                 $tracedata['类别']='投诉';
                 $tracedata['内容']=$content;
                 M('客户跟踪','dbo.','difo')->add($tracedata);
+
                 $model->postMessage($booturl,$msgdata);
                 //$this->weixinmessage($content,$wx['门店'],'评价');
             }

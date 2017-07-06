@@ -135,13 +135,64 @@ class ConsumeAction extends Action{
         echo json_encode($data);
 
     }
-     public  function getsysapplist()
+    public function getemployees(){
+     
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $where['1']=1;
+        $searchkey=$_POST['searchkey'];
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])){
+            $searchkey='%'.trim($searchkey).'%';
+        }
+        if($searchkey){       
+            $searchwhere['姓名']=array('like',$searchkey);
+            $searchwhere['单位']=array('like',$searchkey);
+            $searchwhere['部门']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $order='姓名 desc';
+        }
+        else{
+            $order=$sortname.' '.$sortorder;
+        }
+        $ds=M('员工目录','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+        $count=M('员工目录','dbo.','difo')->where($where)->count();
+        $data['Rows']=$ds;
+        $data['Total']=$count;
+        echo json_encode($data);
+
+    }
+    public  function getsysapplist()
     {
             $ds=M('sys_app','dbo.','difo')->order('App_order')->select();
             echo json_encode($ds);
             exit;
      }
-    
+    public function savemenu(){
+      if(IS_POST){
+          $role=$_POST['row'];
+          M('Sys_authority','dbo.','difo')->where(array('roleID'=>$role['RoleID']))->delete();
+          $roleID=$role['RoleID'];
+          if($_POST['menudata']!=''){
+              $menus=$_POST['menudata'];
+              foreach($menus as $menuid){
+                  if($menuid!='0'){
+                      $item['roleID']=$roleID;
+                      $item['menuid']=$menuid;
+                      $item['menutype']=2;
+                      M('Sys_authority','dbo.','difo')->add($item);
+                  }
+
+              }
+          }
+          echo '保存成功';
+      }
+    }
     public  function getmainmenu()
     {
             $ds=M('sys_app','dbo.','difo')->order('App_order')->select();
@@ -178,7 +229,30 @@ class ConsumeAction extends Action{
         }
         echo json_encode($ds);
      }
-    public  function stat()
+    public  function getrolemenus()
+    {
+        $ds=M('Sys_authority','dbo.','difo')->where(array('roleID'=>$_GET['roleid']))->select();
+        echo json_encode($ds);
+     }
+    public  function getallmenus()
+    {
+        //$ds=M('sys_menu','dbo.','difo')->order('app_id')->select();
+        $treenodes=array();
+        $treedata['App_id']=0;
+        $treedata['Menu_id']=0;
+        $treedata['Menu_name']='爱养车';
+        $treedata['parentid']='无';
+
+        $ds=M('sys_menu','dbo.','difo')->where(array('parentid'=>0))->order('app_id')->select();
+        foreach($ds as $key=>$item){
+           $children=M('sys_menu','dbo.','difo')->where(array('parentid'=>$item['Menu_id']))->order('menu_order')->select();
+           $ds[$key]['children']=$children;
+        }
+        $treedata['children']=$ds;
+        $treenodes[0]=$treedata;
+        echo json_encode($treenodes);
+     }
+   public  function stat()
     {
         $jy=M('车辆档案','dbo.','difo')->query("select  机油格,count(1) 数量 from  车辆档案 where 机油格 is not null group by 机油格 ");
         $keys=array_column($jy,'机油格');
@@ -7538,18 +7612,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                         $content.='现车辆已进厂'.$shop.$wxlb;
                         $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
                         //$this->weixinmessage($content,$shop);
-                        $msgdata='{
-                            "msgtype": "text", 
-                            "text": {
-                                "content": "'.$content.'"
-                            }, 
-                            "at": {
-                                "isAtAll": true
-                            }
-                            }';
-                        $model=new templateNews();
-                        $booturl='https://oapi.dingtalk.com/robot/send?access_token=4ed5a797b4c6378df07b1e2b4f9eecfcb5e52e719a74aa38b3e67952fca1f445';
-                        $model->postMessage($booturl,$msgdata);
                         $tracedata['车主']=$carinfo['车主'];
                         $tracedata['车牌号码']=$carinfo['车牌号码'];
                         $tracedata['跟踪时间']=date('Y-m-d H:i',time());
@@ -7558,7 +7620,30 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                         $tracedata['年份']=date('Y');
                         $tracedata['类别']='保养';
                         $tracedata['内容']=$content;
-                        M('客户跟踪','dbo.','difo')->add($tracedata);
+                        $id=M('客户跟踪','dbo.','difo')->add($tracedata);
+                        $msgdata='{
+                            "title": "保养跟踪信息", 
+                            "actionCard": {
+                                "title": "保养跟踪信息", 
+                                "text": "'.$content.'", 
+                                "hideAvatar": "0", 
+                                "btnOrientation": "1", 
+                                "btns": [
+                                        {
+                                            "title": "反馈信息", 
+                                            "actionURL": "http://www.nsayc.com/index.php?g=Wap&m=Dingding&a=record&lb=3&id='.$id.'&number='.$carinfo['车主'].'" 
+                                        },
+                                       {
+                                            "title": "历史信息", 
+                                            "actionURL": "http://www.nsayc.com/index.php?g=Wap&m=Dingding&a=history&lb=3&carno='.$carinfo['车牌号码'].'&number='.$carinfo['车主'].'"  
+                                        }
+                                       ]
+                            }, 
+                           "msgtype": "actionCard",
+                            }';
+                        $model=new templateNews();
+                        $booturl='https://oapi.dingtalk.com/robot/send?access_token=4ed5a797b4c6378df07b1e2b4f9eecfcb5e52e719a74aa38b3e67952fca1f445';
+                        $model->postMessage($booturl,$msgdata);
                     }
                 }
                 $carinfo['里程']=$licheng;

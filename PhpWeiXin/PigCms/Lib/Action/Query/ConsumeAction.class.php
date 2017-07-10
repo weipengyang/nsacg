@@ -29,6 +29,25 @@ class ConsumeAction extends Action{
             else{
                 $username=cookie('username');
                 cookie('username',$username,3600*24);
+                if($this->isAjax()){
+                    Log::write('url1:'. $_SERVER['PHP_SELF']);
+                    Log::write('url2:'. '/index.php?g=Query&m=Consume&a='.ACTION_NAME);
+                
+                //if(!in_array(ACTION_NAME, array('main', 'getmainmenu','getmenus'))){
+                //    //$url=$_SERVER['PHP_SELF'];
+                //    $url='/index.php?g=Query&m=Consume&a='.ACTION_NAME;
+                //    $right=M('sys_app','dbo.','difo')
+                //    ->query("select * from Sys_Menu where Menu_id in(
+                //    select menuid from  Sys_authority where roleID=(
+                //    select RoleID from Sys_role where Sys_role.RoleName =(select 角色权限 from 用户管理 where 姓名='$username')  
+                //    )
+                //    ) and Menu_url='$url'");
+                //    if(!$right){
+                //        echo '你无权访问该页面，请联系管理员';
+                //        exit;
+                //    }
+                //}
+                }
                 $this->assign('username',$username);
             }
         }
@@ -43,7 +62,7 @@ class ConsumeAction extends Action{
             if($user&&$user['密码']==$password)
             {
                 cookie('username',$username,3600*24);
-                $this->redirect(U('Consume/main', array('token' => $this->token)));
+                $this->redirect(U('Consume/main'));
                 exit();
             }
             else{
@@ -195,7 +214,16 @@ class ConsumeAction extends Action{
     }
     public  function getmainmenu()
     {
-            $ds=M('sys_app','dbo.','difo')->order('App_order')->select();
+        $username=cookie('username');
+        $ds=M('sys_app','dbo.','difo')
+            ->query("
+                select * from sys_app where id in(
+                select app_id from Sys_Menu where Menu_id in(
+                select menuid from  Sys_authority where roleID=(
+                select RoleID from Sys_role where Sys_role.RoleName =(select 角色权限 from 用户管理 where 姓名='$username') and parentid=0
+                )
+                ) ) order by app_order");
+
             $toolbarscript = "{Items:[";
 
            foreach($ds as $row)
@@ -222,9 +250,16 @@ class ConsumeAction extends Action{
      }
     public  function getmenus()
     {
+        $username=cookie('username');
+        $appid=$_GET['appid'];
         $ds=M('sys_menu','dbo.','difo')->where(array('app_id'=>$_GET['appid'],'parentid'=>0))->order('menu_order')->select();
         foreach($ds as $key=>$item){
-           $children=M('sys_menu','dbo.','difo')->where(array('app_id'=>$_GET['appid'],'parentid'=>$item['Menu_id']))->order('menu_order')->select();
+            $children=M('sys_app','dbo.','difo')
+            ->query("select * from Sys_Menu where Menu_id in(
+                select menuid from  Sys_authority where roleID=(
+                select RoleID from Sys_role where Sys_role.RoleName =(select 角色权限 from 用户管理 where 姓名='$username') and app_id=$appid and parentid!=0 
+                )
+                )  order by menu_order");
            $ds[$key]['children']=$children;
         }
         echo json_encode($ds);
@@ -3374,6 +3409,14 @@ class ConsumeAction extends Action{
         echo json_encode($wxlb);
     
 } 
+   public  function getdepartments(){
+       $data=M('部门列表','dbo.','difo')->where(array('部门'=>array('like','%'.$_POST['key'].'%')))->select();
+       echo json_encode($data);
+   }
+   public  function getdgrouplist(){
+       $data=M('班组目录','dbo.','difo')->where(array('名称'=>array('like','%'.$_POST['key'].'%')))->select();
+       echo json_encode($data);
+   }
    public  function getjszh(){
          
         $wxlb=M('收支账户','dbo.','difo')->where(array('名称'=>array('like','%'.$_POST['key'].'%')))->select();
@@ -3552,7 +3595,7 @@ class ConsumeAction extends Action{
         }
         if($searchkey){       
             $searchwhere['制单人']=array('like',$searchkey);
-            $searchwhere['领料员']=array('like',$searchkey);
+            $searchwhere['领料员']=array('like',$searchkey); 
             $searchwhere['车牌号码']=array('like',$searchkey);
             $searchwhere['原因']=array('like',$searchkey);
             $searchwhere['引用单号']=array('like',$searchkey);

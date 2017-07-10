@@ -163,6 +163,9 @@ if (!this.JSON2)
 {
     this.JSON = this.JSON2 = {};
 }
+if (gettopQueryString('a')!== 'main' && gettopQueryString('a') != 'login') {
+    top.location.href = '/index.php?&g=Query&m=Consume&a=main';
+}
 function formatdate(format, timestamp) {
     var a, jsdate = ((timestamp) ? new Date(timestamp * 1000) : new Date());
     var pad = function (n, c) {
@@ -290,7 +293,16 @@ function getQueryString(name) {
     }
     return false;
 }
-
+function gettopQueryString(name) {
+    var now_url = top.location.search.slice(1), q_array = now_url.split('&');
+    for (var i = 0; i < q_array.length; i++) {
+        var v_array = q_array[i].split('=');
+        if (v_array[0] == name) {
+            return decodeURI(v_array[1]);
+        }
+    }
+    return false;
+}
 function todate(num, istime) {
     if (num && num.length > 8) {
         num = num + "";

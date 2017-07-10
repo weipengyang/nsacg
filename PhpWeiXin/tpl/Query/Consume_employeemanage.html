@@ -67,15 +67,6 @@
                             return '是';
                         return '否';
                     } },
-                    { display: '联系电话', name: '联系电话', minWidth: 100 },
-
-                    {
-                        display: '是否禁用', name: '禁用', minWidth: 80,render:function (rowdata, index, value) {
-                            if (value == '1')
-                                return '是';
-                            return '否';
-                        }
-                    }
                 ],
                 pageSize: 20,
                 pageSizeOptions: [15,20, 30, 50, 100],
@@ -104,46 +95,46 @@
             if (adddialog) {
                 adddialog.set('data', data);
                 adddialog.set('opttype', 'add');
-                adddialog.setUrl('/index.php?g=Query&m=Consume&a=useredit');
+                adddialog.setUrl('/index.php?g=Query&m=Consume&a=employeeedit');
                 adddialog.show();
             }
             else {
                 adddialog = $.ligerDialog.open({
-                    height: 350,
-                    url: '/index.php?g=Query&m=Consume&a=useredit',
-                    width: 400,
+                    height: 600,
+                    url: '/index.php?g=Query&m=Consume&a=employeeedit',
+                    width: 900,
                     showToggle: false,
                     showMin: false,
                     isResize: true,
                     modal: false,
                     data: data,
                     opttype: 'add',
-                    title: '用户增加'
+                    title: '新建员工档案'
                 });
             }
         }
 
         function edit() {
-            var data = grid.getSelectedRow;
+            var data = grid.getSelectedRow();
             if (data) {
                 if (editdialog) {
                     editdialog.set('data', data);
                     editdialog.set('opttype', 'edit');
-                    editdialog.setUrl('/index.php?g=Query&m=Consume&a=useredit');
+                    editdialog.setUrl('/index.php?g=Query&m=Consume&a=employeeedit');
                     editdialog.show();
                 }
                 else {
                     editdialog = $.ligerDialog.open({
-                        height: 350,
-                        url: '/index.php?g=Query&m=Consume&a=useredit',
-                        width: 400,
+                        height: 600,
+                        url: '/index.php?g=Query&m=Consume&a=employeeedit',
+                        width: 900,
                         showToggle: false,
                         showMin: false,
                         isResize: true,
                         modal: false,
                         data: data,
                         opttype: 'edit',
-                        title: '修改用户'
+                        title: '修改员工信息'
                     });
                 }
             } else {
@@ -154,7 +145,7 @@
         function del() {
             var row = grid.getSelectedRow();
             if (row) {
-                $.ligerDialog.confirm("用户删除后不能恢复，\n您确定要移除？", function (yes) {
+                $.ligerDialog.confirm("员工删除后不能恢复，\n您确定要移除？", function (yes) {
                     if (yes) {
                         $.ajax({
                             type: "POST",

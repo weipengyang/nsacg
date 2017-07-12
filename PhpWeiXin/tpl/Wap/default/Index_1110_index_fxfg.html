@@ -179,6 +179,22 @@
         .flag {
           position: absolute;
           top: .7rem;
+          left: 50%;
+          z-index: 100;
+          height: .8rem;
+          min-width: .8rem;
+          padding: 0 .2rem;
+          font-size: .6rem;
+          line-height: .8rem;
+          color: white;
+          vertical-align: top;
+          background: red;
+          border-radius: .5rem;
+          margin-left: 1.8rem;
+        }
+        .flag1 {
+          position: absolute;
+          top: .7rem;
           right: 12%;
           z-index: 100;
           height: .8rem;
@@ -336,7 +352,7 @@
                             <a class="index-nav-item-link" external href="{pigcms::U('Store/coupon',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cardid' => 5, 'type' => 1))}">
                                 <i class="icon iconfont icon-wofabude"></i>
                                 <if condition="$couponCount neq 0">
-                                    <span class="flag" style="top:0.2rem;margin-left:0.2rem">{pigcms:$couponCount}</span>
+                                    <span class="flag1" style="top:0.2rem;margin-left:0.2rem">{pigcms:$couponCount}</span>
                                 </if>
                                 <span class="tab-label" style="font-size:0.625rem">服务券</span>
                             </a>

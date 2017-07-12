@@ -24,7 +24,11 @@
         <div class="admin-content">
             <div class="admin-content-body">
                 <div class="am-g">
-                    <div class="am-u-sm-12 am-u-md-3">
+                    <div class="am-u-sm-6 am-u-md-6">
+                        <button type="button" class="am-btn am-btn-default am-margin-right" id="my-start">开始日期</button><span id="my-startDate"></span>
+                        <button type="button" class="am-btn am-btn-default am-margin-right" id="my-end">结束日期</button><span id="my-endDate"></span>
+                    </div>
+                    <div class="am-u-sm-6 am-u-md-6">
                         <div class="am-input-group am-input-group-sm">
                             <input type="text" id="searchkey" class="am-form-field">
                             <span class="am-input-group-btn">
@@ -162,6 +166,16 @@
     <script>
         var grid;
         $(document).ready(function () {
+            $('#my-start').datepicker().on('changeDate.datepicker.amui', function (event) {
+                startDate = new Date(event.date);
+                $('#my-startDate').text($('#my-start').data('date'));
+                $(this).datepicker('close');
+            });
+            $('#my-end').datepicker().on('changeDate.datepicker.amui', function (event) {
+                endDate = new Date(event.date);
+                $('#my-endDate').text($('#my-end').data('date'));
+                $(this).datepicker('close');
+            });
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                         {
@@ -235,6 +249,12 @@
 
             $('#search').click(function () {
                 var parms = {};
+                var endDate = $('#my-endDate').text();
+                if (endDate != '')
+                    parms.enddate = endDate;
+                var startDate = $('#my-startDate').text();
+                if (startDate != '')
+                    parms.startdate = startDate;
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     parms.searchkey = searchkey;

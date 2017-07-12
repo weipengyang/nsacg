@@ -14777,7 +14777,6 @@
     <Content Include="tpl\Query\Consume_list.html" />
     <Content Include="tpl\Query\Consume_setprice.html" />
     <Content Include="tpl\Query\Consume_index.html" />
-    <Content Include="tpl\Query\Store_yangchebao.html" />
     <Content Include="tpl\static\alert.js" />
     <Content Include="tpl\static\applegame\2000.png" />
     <Content Include="tpl\static\applegame\640.png" />

@@ -45,27 +45,42 @@
         <div class="admin-content">
         <div class="admin-content-body">
             <div class="am-g">
-                <div class="am-u-sm-2 am-u-md-2">
-                    <div class="am-form-group">
-                        是否反馈:
-                        <select name="khlb" id="khlb">
-                            <option value="">所有</option>
-                            <option value="是">是</option>
-                            <option value="否">否</option>                          
-                        </select>
-                    </div>
+                <div class="am-u-sm-4 am-u-md-4">
+                    <select name="shop" id="shop">
+                        <option value="">所有门店</option>
+                    </select>
+                    <select name="lb" id="lb">
+                        <option value="">类别</option>
+                        <option value="保险">保险</option>
+                        <option value="年审">年审</option>
+                        <option value="保养">保养</option>
+                    </select>
+                    <select name="gzr" id="gzr">
+                        <option value="">所有人</option>
+                    </select>
+                    <select name="sfcj" id="sfcj">
+                        <option value="">所有</option>
+                        <option value="是">成交</option>
+                        <option value="否">未成交</option>
+                    </select>
+                    <select name="sffk" id="sffk">
+                        <option value="">所有</option>
+                        <option value="是">已反馈</option>
+                        <option value="否">未反馈</option>
+                    </select>
+
                 </div>
-                <div class="am-u-sm-1 am-u-md-1">
+                <div class="am-u-sm-2 am-u-md-2">
                     <div class="am-form-group">
                         <input type="text" id="startDate" />
                     </div>
                 </div>
-                <div class="am-u-sm-1 am-u-md-1" style="padding-left:20px">
+                <div class="am-u-sm-2 am-u-md-2" >
                     <div class="am-form-group">
                         <input type="text" id="endDate" style="width:100px" />
                     </div>
                 </div>
-                <div class="am-u-sm-6 am-u-md-6 am-u-end">
+                <div class="am-u-sm-2 am-u-md-2 am-u-end">
                     <div class="am-form-group">
                         关键字：<input id="searchkey" type="text" />
                         <input id="search" type="button" value="模糊查询" />
@@ -142,7 +157,23 @@
                 });
             }
         }
-        $('#khlb').change(function () {
+        $('#lb').change(function () {
+            $('#search').click();
+
+        });
+        $('#gzr').change(function () {
+            $('#search').click();
+
+        });
+        $('#sfcj').change(function () {
+            $('#search').click();
+
+        });
+        $('#sffk').change(function () {
+            $('#search').click();
+
+        });
+        $('#shop').change(function () {
             $('#search').click();
 
         });
@@ -163,34 +194,55 @@
                 url += "&searchkey=" + searchkey;
             location.href = url;
         }
-        function updatedate() {
-            $.ligerDialog.waitting('正在更新,请稍候...');
-            $.post('index.php?g=Query&m=Consume&a=updatedate&type=2', null,
-                     function (result) {
-                         $.ligerDialog.closeWaitting();
-                         $.ligerDialog.alert(result);
-                     }, 'text');
-        }
-        function batchmessage() {
-            $.ligerDialog.waitting('正在发送,请稍候...');
-            $.post('index.php?g=Query&m=Consume&a=sendbatchmessage&type=2', null,
-                     function (data) {
-                         $.ligerDialog.closeWaitting();
-                         $.ligerDialog.alert(data);
-                     }, 'text');
+        function f_totalRender(data, currentPageData) {
+            return " 总信息:" + data.Total
+                     + '条 反馈：' + data.fkcount
+                     + '条 成交：' + data.cjcount
+                     + '条 反馈率:' + (data.fkcount / data.Total*100).toFixed(2)
+                     + '%  成交率:' + (data.cjcount / data.Total*100).toFixed(2)+'%';
         }
         $(document).ready(function () {
+            $.post('index.php?g=Query&m=Consume&a=getywy', null,
+            function (data) {
+                if (data) {
+                    $('#gzr').empty();
+                    $('#gzr').append("<option value=''>所有人</option>");
+                    $(data).each(function () {
+                        var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
+                        $('#gzr').append(option);
+                    });
+                }
+            }, 'JSON');
+            $.post('index.php?g=Query&m=Consume&a=getshoplist', null,
+            function (data) {
+                if (data) {
+                    $('#shop').empty();
+                    $('#shop').append("<option value='all'>所有门店</option>");
+                    $(data).each(function () {
+                        var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                        $('#shop').append(option);
+                    });
+                }
+            }, 'JSON');
             $('#startDate').ligerDateEditor({               
             });
             $('#endDate').ligerDateEditor({  });
             cargird = $("#maingrid4").ligerGrid({
                 columns: [
+                        { display: '门店', name: '门店', width: 100 },
                         {
                             display: '提醒时间', name: '跟踪时间', width: 140, render: function (rowdata, index, value) {
                                 return todate(value, true);
                             }
                         },
-                        { display: '车牌号码', name: '车牌号码', width: 100, align: 'left',render: function (rowdata, index, value) {
+                        {
+                            display: '反馈时间', name: '反馈时间', width: 140, render: function (rowdata, index, value) {
+                                return todate(value, true);
+                            }
+                        },
+                        { display: '是否成交', name: '是否成交', width: 60 },
+                        {
+                            display: '车牌号码', name: '车牌号码', width: 100, align: 'left', render: function (rowdata, index, value) {
                             return '<a href="javascript:void(0);" onclick="carinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
                         } },
                         { display: '车主', name: '车主', width: 140,render: function (rowdata, index, value) {
@@ -206,6 +258,7 @@
                 ],
                 isScroll: true,
                 pageSize: 20,
+                totalRender: f_totalRender,
                 fixedCellHeight: false,
                 url: '/index.php?g=Query&m=Consume&a=gettracemessage',
                 height: '98%',
@@ -216,15 +269,27 @@
             $('#search').click(function () {
                 cargird.changePage('first');
                 var parms = {};
-                var khlb = $('#khlb').val();
+                var sffk = $('#sffk').val();
+                if (sffk != '')
+                    parms.sffk = sffk;
+                var lb = $('#lb').val();
+                if (lb != '')
+                    parms.lb = lb;
+                var shop = $('#shop').val();
+                if (shop != '')
+                    parms.shop = shop;
+                var sfcj = $('#sfcj').val();
+                if (sfcj != '')
+                    parms.sfcj = sfcj;
+                var gzr = $('#gzr').val();
+                if (gzr != '')
+                    parms.gzr = gzr;
                 var startDate = $("#startDate").val();
-                var endDate = $("#endDate").val();
                 if (startDate != '')
                     parms.startDate = startDate;
+                var endDate = $("#endDate").val();
                 if (endDate != '')
                     parms.endDate = endDate;
-                if (khlb != '')
-                    parms.khlb = khlb;
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     parms.searchkey = searchkey;

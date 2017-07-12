@@ -512,7 +512,10 @@ private function MessageTip($carinfo,$mendian,$wxlb){
     $data['车主']=$carinfo['车主'];
     $data['车牌号码']=$carinfo['车牌号码'];
     $data['跟踪时间']=date('Y-m-d H:i',time());
-    $data['跟踪人']='系统';
+    $data['登记人']='系统';
+    $data['是否反馈']='否';
+    $data['是否成交']='否';
+    $data['门店']=$mendian;
     $data['跟踪类型']='到店消费';
     $data['年份']=date('Y');
     $model=new templateNews();

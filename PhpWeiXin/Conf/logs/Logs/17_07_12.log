@@ -1,0 +1,53 @@
+[ 2017-07-12T13:38:20+08:00 ] 0.0.0.0 /index.php?XDEBUG_SESSION_START=17D29FD2
+NOTIC: [8] Undefined index: db_dsn D:\phpprojects\nsacg\PhpWeiXin\Lib\Core\Db.class.php 第 133 行.
+NOTIC: [8] Undefined index: db_params D:\phpprojects\nsacg\PhpWeiXin\Lib\Core\Db.class.php 第 134 行.
+NOTIC: [8192] mysql_connect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead D:\phpprojects\nsacg\PhpWeiXin\Lib\Driver\Db\DbMysql.class.php 第 55 行.
+SQL: SHOW COLUMNS FROM `tp_agent` [ RunTime:0.013061s ]
+SQL: SELECT * FROM `tp_agent` WHERE ( `siteurl` = 'http://localhost:25331' ) LIMIT 1   [ RunTime:0.012582s ]
+INFO: [ app_begin ] --START--
+INFO: Run ReadHtmlCache Behavior [ RunTime:0.008139s ]
+INFO: [ app_begin ] --END-- [ RunTime:0.008192s ]
+NOTIC: [8] A session had already been started - ignoring session_start() D:\phpprojects\nsacg\PhpWeiXin\Common\functions.php 第 526 行.
+NOTIC: [8] Undefined offset: 1 D:\phpprojects\nsacg\PhpWeiXin\Lib\Core\Action.class.php 第 57 行.
+SQL: SHOW COLUMNS FROM `tp_agent` [ RunTime:0.017057s ]
+SQL: SELECT * FROM `tp_agent` WHERE ( `siteurl` = 'http://localhost:25331' ) LIMIT 1   [ RunTime:0.012620s ]
+NOTIC: [8] Undefined index: localhost:25331nomsite D:\phpprojects\nsacg\PhpWeiXin\PigCms\Lib\Action\BaseAction.class.php 第 26 行.
+SQL: SHOW COLUMNS FROM `tp_mobilesite` [ RunTime:0.012633s ]
+NOTIC: [8] Undefined index: localhost:25331 D:\phpprojects\nsacg\PhpWeiXin\PigCms\Lib\Action\BaseAction.class.php 第 328 行.
+SQL: SELECT * FROM `tp_mobilesite` WHERE ( `owndomain` = 'localhost:25331' ) LIMIT 1   [ RunTime:0.012113s ]
+SQL: SELECT * FROM `tp_agent` WHERE ( `siteurl` = 'http://localhost:25331' ) LIMIT 1   [ RunTime:0.013035s ]
+NOTIC: [8] Constant STATICS already defined D:\phpprojects\nsacg\PhpWeiXin\PigCms\Lib\Action\BaseAction.class.php 第 106 行.
+SQL: SHOW COLUMNS FROM `tp_images` [ RunTime:0.012496s ]
+SQL: SELECT * FROM `tp_images` LIMIT 1   [ RunTime:0.011654s ]
+SQL: SHOW COLUMNS FROM `tp_links` [ RunTime:0.011849s ]
+SQL: SELECT * FROM `tp_links` WHERE ( `status` = 1 ) AND ( `agentid` = 0 )  [ RunTime:0.012271s ]
+SQL: SHOW COLUMNS FROM `tp_renew` [ RunTime:0.012310s ]
+SQL: SHOW COLUMNS FROM `tp_banners` [ RunTime:0.012123s ]
+SQL: SHOW COLUMNS FROM `tp_case` [ RunTime:0.012571s ]
+SQL: SELECT * FROM `tp_renew` WHERE ( `status` = 1 ) AND ( `agentid` = 0 ) ORDER BY id DESC LIMIT 5   [ RunTime:0.012063s ]
+SQL: SELECT * FROM `tp_banners` WHERE ( `status` = 1 ) AND ( `agentid` = 0 ) ORDER BY id DESC  [ RunTime:0.011993s ]
+SQL: SELECT * FROM `tp_case` WHERE ( `status` = 1 ) AND ( `agentid` = 0 ) ORDER BY id DESC LIMIT 10   [ RunTime:0.011387s ]
+SQL: SHOW COLUMNS FROM `tp_news` [ RunTime:0.012997s ]
+SQL: SELECT * FROM `tp_news` LIMIT 1   [ RunTime:0.012488s ]
+SQL: SHOW COLUMNS FROM `tp_img` [ RunTime:0.013261s ]
+SQL: SELECT * FROM `tp_img` WHERE ( `classid` = 0 ) ORDER BY id DESC LIMIT 5   [ RunTime:0.011825s ]
+SQL: SELECT * FROM `tp_img` WHERE ( `classid` = 0 ) ORDER BY id DESC LIMIT 5   [ RunTime:0.012130s ]
+SQL: SELECT * FROM `tp_img` WHERE ( `classid` = 0 ) ORDER BY id DESC LIMIT 5   [ RunTime:0.012199s ]
+INFO: [ view_template ] --START--
+INFO: Run LocationTemplate Behavior [ RunTime:-0.319509s ]
+INFO: [ view_template ] --END-- [ RunTime:0.019438s ]
+INFO: [ view_parse ] --START--
+NOTIC: [8] Use of undefined constant uid - assumed 'uid' D:\phpprojects\nsacg\PhpWeiXin\Conf\logs\Cache\Home\921d53177c151344e729eca7c171fe97.php 第 31 行.
+NOTIC: [8] Undefined index: uid D:\phpprojects\nsacg\PhpWeiXin\Conf\logs\Cache\Home\921d53177c151344e729eca7c171fe97.php 第 31 行.
+INFO: Run ParseTemplate Behavior [ RunTime:-0.338990s ]
+INFO: [ view_parse ] --END-- [ RunTime:0.064973s ]
+INFO: [ view_filter ] --START--
+INFO: Run ContentReplace Behavior [ RunTime:-0.404001s ]
+INFO: Run TokenBuild Behavior [ RunTime:-0.405619s ]
+INFO: Run WriteHtmlCache Behavior [ RunTime:-0.408867s ]
+INFO: Run ShowRuntime Behavior [ RunTime:-0.409749s ]
+INFO: [ view_filter ] --END-- [ RunTime:0.010347s ]
+INFO: [ view_end ] --START--
+INFO: Run ShowPageTrace Behavior [ RunTime:-0.414859s ]
+INFO: [ view_end ] --END-- [ RunTime:0.002388s ]
+

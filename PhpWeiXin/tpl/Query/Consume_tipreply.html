@@ -28,6 +28,14 @@
                                 url: '/index.php?g=Query&m=Consume&a=getywy',
                             }
                         },
+                        {
+                            display: "是否成交", name: "是否成交", newline: false, type: "combobox",
+                            options: {
+                                valueField: 'name',
+                                textField: 'name',
+                                data: [{ name: '是' }, {name:'否'}]
+                            }
+                        },
                         { display: '跟踪内容', name: '内容', type: "textarea", width: 425, height: 320 },
 
                 ],

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 class DingdingAction extends BaseAction {
     public function _initialize(){
 		 
@@ -26,6 +26,7 @@ class DingdingAction extends BaseAction {
         if(IS_POST){
             $comment=$_POST['comment'];              
             $id=$_POST['id'];
+            $issell=$_POST['issell'];
             $membernum=$_POST['membernum'];
             $lb=$_POST['lb'];
             $user=$_POST['user'];
@@ -37,6 +38,7 @@ class DingdingAction extends BaseAction {
             }else{
                 $type='保养';
             }
+            
             $traceinfo=M('客户跟踪','dbo.','difo')->where(array('流水号'=>$id))->find();
             $tracedata['类别']=$type;
             $tracedata['内容']=$comment;
@@ -47,7 +49,12 @@ class DingdingAction extends BaseAction {
             $tracedata['车主']=$membernum;
             $tracedata['登记人']=$user;
             M('客户跟踪','dbo.','difo')->add($tracedata);
-            M('客户跟踪','dbo.','difo')->where(array('流水号'=>$id))->save(array('是否反馈'=>'是','反馈内容'=>$comment));
+            M('客户跟踪','dbo.','difo')->where(array('流水号'=>$id))
+                ->save(array('是否反馈'=>'是',
+                    '跟踪人'=>$user,
+                    '反馈时间'=>date('Y-m-d H:i',time()),
+                    '是否成交'=>($issell=='true'?'是':'否'),
+                    '反馈内容'=>$comment));
             echo 'carno='.$traceinfo['车牌号码'].'&lb='.$type;
 
         }

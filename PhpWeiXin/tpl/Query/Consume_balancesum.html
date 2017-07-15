@@ -61,11 +61,15 @@
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         var  grid;
-        var cardialog, modifydialog,bxdialog, caldialog,printdialog, memberdialog,detaildilog;
+        var paybillsdilog,cardialog, receivedilog, modifydialog, bxdialog, caldialog, printdialog, memberdialog, detaildilog;
         var selectrow;
         var menu = $.ligerMenu({
             width: 100, items:
                 [
+                 { text: '收款冲账', click: receivable },
+                { line: true },
+                  { text: '付款冲账', click: paybills },
+                { line: true },
                 { text: '查看明细账', click: viewdetail },
                 { line: true },
                 { text: '修改对账摘要', click: modify },
@@ -87,7 +91,47 @@
                     showMin: false,
                     isResize: true,
                     modal: false,
+                    title: '收款冲账'
+                });
+            }
+        }
+        function receivable() {
+            if (receivedilog) {
+                receivedilog.setUrl('/index.php?g=Query&m=Consume&a=receivable');
+                receivedilog.set('row', selectrow);
+                receivedilog.show();
+            } else {
+                receivedilog = $.ligerDialog.open({
+                    height: 600,
+                    url: '/index.php?g=Query&m=Consume&a=receivable',
+                    width: 950,
+                    row: selectrow,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
                     title: '往来明细账'
+                });
+            }
+        }
+        function paybills() {
+            if (paybillsdilog) {
+                paybillsdilog.setUrl('/index.php?g=Query&m=Consume&a=paybills');
+                paybillsdilog.set('row', selectrow);
+                paybillsdilog.show();
+            } else {
+                paybillsdilog = $.ligerDialog.open({
+                    height: 600,
+                    url: '/index.php?g=Query&m=Consume&a=paybills',
+                    width: 950,
+                    row: selectrow,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    title: '付款冲账'
                 });
             }
         }

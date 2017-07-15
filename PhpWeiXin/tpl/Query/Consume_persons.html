@@ -187,7 +187,18 @@
                     });
                 }
             }, 'JSON');
+            $.post('index.php?g=Query&m=Consume&a=getpersonbydepart', null,
+                     function (data) {
+                         if (data) {
+                             $('#zhuxiu').empty();
+                             $('#zhuxiu').append("<option value=''>所有人</option>");
 
+                             $(data).each(function () {
+                                 var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
+                                 $('#zhuxiu').append(option);
+                             });
+                         }
+                     }, 'JSON');
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                     { display: '门店', name: '门店', align: 'left', width: 100 },
@@ -216,26 +227,26 @@
 
             });
             $('#bumen').change(function () {
-                var submitData = {
-                    bumen: $('#bumen').val()
-                };
-                if ($('#bumen').val() != '') {
-                    $.post('index.php?g=Query&m=Consume&a=getpersonbydepart', submitData,
-                     function (data) {
-                         if (data) {
-                             $('#zhuxiu').empty();
-                             $('#zhuxiu').append("<option value=''>所有人</option>");
+                //var submitData = {
+                //    bumen: $('#bumen').val()
+                //};
+                //if ($('#bumen').val() != '') {
+                //    $.post('index.php?g=Query&m=Consume&a=getpersonbydepart', submitData,
+                //     function (data) {
+                //         if (data) {
+                //             $('#zhuxiu').empty();
+                //             $('#zhuxiu').append("<option value=''>所有人</option>");
 
-                             $(data).each(function () {
-                                 var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
-                                 $('#zhuxiu').append(option);
-                             });
-                         }
-                     }, 'JSON');
-                } else {
-                    $('#zhuxiu').empty();
-                    $('#zhuxiu').append("<option value=''>所有人</option>");
-                }
+                //             $(data).each(function () {
+                //                 var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
+                //                 $('#zhuxiu').append(option);
+                //             });
+                //         }
+                //     }, 'JSON');
+                //} else {
+                //    $('#zhuxiu').empty();
+                //    $('#zhuxiu').append("<option value=''>所有人</option>");
+                //}
                 $('#search').click();
             });
             $('#zhuxiu').change(function () {

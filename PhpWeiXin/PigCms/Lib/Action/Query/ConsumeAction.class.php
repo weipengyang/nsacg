@@ -1384,7 +1384,12 @@ class ConsumeAction extends Action{
             M('应收应付单','dbo.','difo')->where(array('ID'=>$record['ID']))->save($crkitem);
             $dwid=$record['单位编号'];
             $je=$record['总金额'];
-            M('应收应付单','dbo.','difo')->execute("UPDATE 往来单位 SET 应收款=应收款+$je,往来余款=往来余款+$je WHERE ID='$dwid'");
+            if($record['账款类别']=='应收款'){
+                M('应收应付单','dbo.','difo')->execute("UPDATE 往来单位 SET 应收款=应收款+$je,往来余款=往来余款+$je WHERE ID='$dwid'");
+            }else{
+                M('应收应付单','dbo.','difo')->execute("UPDATE 往来单位 SET 应付款=应付款+$je,往来余款=往来余款-$je WHERE ID='$dwid'");
+               
+            }
             //$this->writeLog($crk['ID'],$crk['单据编号'],'出库审核',$crk['单据类别'].'出库审核');
             echo '审核通过';
             exit;
@@ -2983,6 +2988,102 @@ class ConsumeAction extends Action{
         $data['取用预存']=0;
         $data['本次冲账']=$record['金额'];
         M('日常收支','dbo.','difo')->add($data);
+    
+    }
+    public function savereceivebill(){
+        $rows=$_POST['rows'];
+        foreach($rows as $row){
+            $balance['已结算金额']=$row['总金额'];
+            $balance['未结算金额']=0;
+            $balance['本次结算']=$row['总金额'];
+            $balance['挂账金额']=0;
+            M('应收应付单','dbo.','difo')->where(array('流水号'=>$row['流水号']))->save($balance);
+        }
+        $record=$_POST['balance'];
+        $je=$record['金额'];
+        $dwid=$record['userID'];
+        $bianhao=$this->getcodenum("BI");
+        $data['本次应付']=0;
+        $data['本次应收']=$record['金额'];
+        $data['实付金额']=0;
+        $data['实收金额']=$record['金额'];
+        $data['单据类别']='应收款';
+        $data['单据编号']=$bianhao;
+        $data['ID']=$this->getcode(20,1,1);
+        $data['制单日期']=date('Y-m-d',time());
+        $data['制单人']=cookie('username');
+        $data['单位名称']=$record['单位名称'];
+        $data['单位编号']=$record['ID'];
+        $data['账款类别']=$record['账款类别'];
+        $data['开户银行']='';
+        $data['银行账号']='';
+        $data['整单折扣']=1; 
+        $data['折扣金额']=0;
+        $data['结算方式']=$record['结算方式'];
+        $data['结算账户']=$record['结算账户'];
+        $data['支票号']=0;
+        $data['凭证号']=0;
+        $data['摘要']=$record['备注'];
+        $data['收支项目']=$record['收支项目'];
+        $data['当前状态']='待审核';
+        $data['发票类别']=$record['门店'];
+        $data['发票号']='';
+        $data['取用预付']=0;
+        $data['取用预收']=0;
+        $data['取用预存']=0;
+        $data['本次冲账']=$record['金额'];
+        M('日常收支','dbo.','difo')->add($data);
+        M('应收应付单','dbo.','difo')->execute("UPDATE 往来单位 SET 应收款=应收款-$je,往来余款=往来余款-$je WHERE ID='$dwid'");
+
+        echo '操作成功';
+    
+    }
+    public function savepaybill(){
+        $rows=$_POST['rows'];
+        foreach($rows as $row){
+            $balance['已结算金额']=$row['总金额'];
+            $balance['未结算金额']=0;
+            $balance['本次结算']=$row['总金额'];
+            $balance['挂账金额']=0;
+            M('应收应付单','dbo.','difo')->where(array('流水号'=>$row['流水号']))->save($balance);
+        }
+        $record=$_POST['balance'];
+        $je=$record['金额'];
+        $dwid=$record['userID'];
+        $bianhao=$this->getcodenum("BE");
+        $data['本次应付']=$record['金额'];
+        $data['本次应收']=0;
+        $data['实付金额']=$record['金额'];
+        $data['实收金额']=0;
+        $data['单据类别']='应付款';
+        $data['单据编号']=$bianhao;
+        $data['ID']=$this->getcode(20,1,1);
+        $data['制单日期']=date('Y-m-d',time());
+        $data['制单人']=cookie('username');
+        $data['单位名称']=$record['单位名称'];
+        $data['单位编号']=$record['ID'];
+        $data['账款类别']=$record['账款类别'];
+        $data['开户银行']='';
+        $data['银行账号']='';
+        $data['整单折扣']=1; 
+        $data['折扣金额']=0;
+        $data['结算方式']=$record['结算方式'];
+        $data['结算账户']=$record['结算账户'];
+        $data['支票号']=0;
+        $data['凭证号']=0;
+        $data['摘要']=$record['备注'];
+        $data['收支项目']=$record['收支项目'];
+        $data['当前状态']='待审核';
+        $data['发票类别']=$record['门店'];
+        $data['发票号']='';
+        $data['取用预付']=0;
+        $data['取用预收']=0;
+        $data['取用预存']=0;
+        $data['本次冲账']=$record['金额'];
+        M('日常收支','dbo.','difo')->add($data);
+        M('应收应付单','dbo.','difo')->execute("UPDATE 往来单位 SET 应付款=应付款-$je,往来余款=往来余款+$je WHERE ID='$dwid'");
+
+        echo '操作成功';
     
     }
     public  function savestock()

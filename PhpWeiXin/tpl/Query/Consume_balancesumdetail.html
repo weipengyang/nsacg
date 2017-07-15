@@ -102,13 +102,6 @@
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                     {
-                        display: '当前状态', name: '当前状态', align: 'left', width: 80, render: function (rowdata, index, value) {
-                            if (value == '待审核')
-                                value = '<span style="color:red">' + value + '</span>';
-                            return value;
-                        }
-                    },
-                    {
                         display: '账款类别', name: '账款类别', align: 'left', width: 80, render: function (rowdata, index, value) {
                             if (value == '审核')
                                 value = '<span style="color:red">' + value + '</span>';
@@ -121,7 +114,6 @@
                         return todate(value, false);
                     }
                 },
-                { display: '制单人', name: '制单人', width: 120, align: 'left' },
                 {
                     display: '单位名称', name: '单位名称', minWidth: 150, render: function (rowdata, index, value) {
 
@@ -130,6 +122,8 @@
                     }
                 },
                 { display: '总金额', name: '总金额', minWidth: 120 },
+                { display: '已结算金额', name: '已结算金额', minWidth: 120 },
+                { display: '未结算金额', name: '未结算金额', minWidth: 120 },
                 { display: '门店', name: '门店', minWidth: 80 },
                 { display: '摘要', name: '摘要', minWidth: 200 },
                 ],

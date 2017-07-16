@@ -14657,6 +14657,7 @@
     <Content Include="tpl\Other\default\style\js\registerSSO.js" />
     <Content Include="tpl\Other\index.html" />
     <Content Include="tpl\Query\Consume_paybills.html" />
+    <Content Include="tpl\Query\Consume_printbalancebill.html" />
     <Content Include="tpl\Query\Consume_receivable.html" />
     <Content Include="tpl\Query\Consume_addproductlist.html" />
     <Content Include="tpl\Query\Consume_employeeedit.html" />

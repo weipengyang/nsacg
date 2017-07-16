@@ -28,10 +28,12 @@ class ConsumeAction extends Action{
             }
             else{
                 $username=cookie('username');
-                cookie('username',$username,3600*24);
+                cookie('username',$username,3600*2);
+                cookie('department',cookie('department'),3600*2);
+                cookie('role',cookie('role'),3600*2);
                 if($this->isAjax()){
-                    Log::write('url1:'. $_SERVER['PHP_SELF']);
-                    Log::write('url2:'. '/index.php?g=Query&m=Consume&a='.ACTION_NAME);
+                    //Log::write('url1:'. $_SERVER['PHP_SELF']);
+                    //Log::write('url2:'. '/index.php?g=Query&m=Consume&a='.ACTION_NAME);
                 
                 //if(!in_array(ACTION_NAME, array('main', 'getmainmenu','getmenus'))){
                 //    //$url=$_SERVER['PHP_SELF'];
@@ -61,7 +63,9 @@ class ConsumeAction extends Action{
             $user=M('用户管理','dbo.','difo')->where(array('姓名'=>$username))->find();
             if($user&&$user['密码']==$password)
             {
-                cookie('username',$username,3600*24);
+                cookie('username',$username,3600*2);
+                cookie('department',$user['门店权限'],3600*2);
+                cookie('role',$user['角色权限'],3600*2);
                 $this->redirect(U('Consume/main'));
                 exit();
             }
@@ -582,6 +586,10 @@ class ConsumeAction extends Action{
             $where['门店']=trim($_POST['shop']);
             
         }
+        else{
+               $where['门店']=array('in',explode(',',cookie('department')));
+        
+        }
         if($_POST['startdate']&&trim($_POST['startdate'])!='')
         {
             $where['日期']=array('egt',trim($_POST['startdate']));
@@ -703,6 +711,9 @@ class ConsumeAction extends Action{
          {
              $where['门店']=array('like','%'.trim($_POST['bm'].'%'));
              
+         }else{
+             $where['门店']=array('in',explode(',',cookie('department')));
+
          }
          if($_POST['startdate']&&trim($_POST['startdate'])!='')
          {
@@ -1474,7 +1485,10 @@ class ConsumeAction extends Action{
         } 
         if (isset($_POST['shop'])&&trim($_POST['shop'])!=''){
             $where['门店']=$_POST['shop'];
-        } 
+        }else{
+             $where['门店']=array('in',explode(',',cookie('department')));
+
+         } 
         if($_POST['startdate']&&trim($_POST['startdate'])!='')
         {
             $where['制单日期']=array('egt',trim($_POST['startdate']));
@@ -1495,7 +1509,7 @@ class ConsumeAction extends Action{
         }
         if($searchkey){       
             $searchwhere['账款类别']=array('like',$searchkey);
-            $searchwhere['门店']=array('like',$searchkey);
+            //$searchwhere['门店']=array('like',$searchkey);
             $searchwhere['车牌号码']=array('like',$searchkey);
             $searchwhere['单位名称']=array('like',$searchkey);
             $searchwhere['单据编号']=array('like',$searchkey);
@@ -1540,7 +1554,10 @@ class ConsumeAction extends Action{
         } 
         if (isset($_POST['shop'])&&trim($_POST['shop'])!=''){
             $where['门店']=$_POST['shop'];
-        } 
+        }else{
+            $where['门店']=array('in',explode(',',cookie('department')));
+
+        }
         if($_POST['startdate']&&trim($_POST['startdate'])!='')
         {
             $where['制单日期']=array('egt',trim($_POST['startdate']));
@@ -1561,7 +1578,7 @@ class ConsumeAction extends Action{
         }
         if($searchkey){       
             $searchwhere['账款类别']=array('like',$searchkey);
-            $searchwhere['门店']=array('like',$searchkey);
+            //$searchwhere['门店']=array('like',$searchkey);
             $searchwhere['车牌号码']=array('like',$searchkey);
             $searchwhere['单位名称']=array('like',$searchkey);
             $searchwhere['单据编号']=array('like',$searchkey);
@@ -1598,6 +1615,9 @@ class ConsumeAction extends Action{
         }
         if (isset($_POST['shop'])&&trim($_POST['shop'])!='all'){
             $where['门店']=$_POST['shop'];
+        }else{
+            $where['门店']=array('in',explode(',',cookie('department')));
+
         }
         if (isset($_POST['gzr'])&&trim($_POST['gzr'])!=''){
             $where['跟踪人']=array('like','%'.trim($_POST['gzr']).'%');
@@ -1628,7 +1648,7 @@ class ConsumeAction extends Action{
         }
         if($searchkey){       
             $searchwhere['内容']=array('like',$searchkey);
-            $searchwhere['门店']=array('like',$searchkey);
+            //$searchwhere['门店']=array('like',$searchkey);
             $searchwhere['跟踪人']=array('like',$searchkey);
             $searchwhere['登记人']=array('like',$searchkey);
             $searchwhere['反馈内容']=array('like',$searchkey);
@@ -2576,6 +2596,9 @@ class ConsumeAction extends Action{
         {
             $where['门店']=trim($_POST['shop']);
             
+        }else{
+            $where['门店']=array('in',explode(',',cookie('department')));
+
         }
         if($_POST['startDate']&&trim($_POST['startDate'])!='')
         {
@@ -2654,6 +2677,9 @@ class ConsumeAction extends Action{
         {
             $where['门店']=trim($_POST['shop']);
             
+        }else{
+            $where['门店']=array('in',explode(',',cookie('department')));
+
         }
         if($_POST['startDate']&&trim($_POST['startDate'])!='')
         {
@@ -2716,6 +2742,9 @@ class ConsumeAction extends Action{
         {
             $where['门店']=trim($_POST['shop']);
             
+        }else{
+            $where['门店']=array('in',explode(',',cookie('department')));
+
         }
         if($_POST['zhuxiu']&&trim($_POST['zhuxiu'])!='')
         {
@@ -2836,6 +2865,9 @@ class ConsumeAction extends Action{
         {
             $where['门店']=trim($_POST['shop']);
             
+        }else{
+            $where['门店']=array('in',explode(',',cookie('department')));
+
         }
         if($_POST['zhuxiu']&&trim($_POST['zhuxiu'])!='')
         {
@@ -3581,8 +3613,14 @@ class ConsumeAction extends Action{
         echo json_encode($wxlb);
     
 } 
-    public  function getshoplist(){
+    public  function getallshoplist(){
         $wxlb=M('门店目录','dbo.','difo')->select();
+        echo json_encode($wxlb);
+    
+} 
+    public  function getshoplist(){
+        $where['名称']=array('in',explode(',',cookie('department')));
+        $wxlb=M('门店目录','dbo.','difo')->where($where)->select();
         echo json_encode($wxlb);
     
 } 
@@ -3741,11 +3779,9 @@ class ConsumeAction extends Action{
         {
             $where['门店']=$_POST['shop'];
             
-        }
-        if($_POST['shop']&&trim($_POST['shop'])!='')
-        {
-            $where['门店']=$_POST['shop'];
-            
+        }else{
+            $where['门店']=array('in',explode(',',cookie('department')));
+
         }
         if($_POST['lly']&&trim($_POST['lly'])!='')
         {
@@ -3817,6 +3853,9 @@ class ConsumeAction extends Action{
         if(isset($_POST['shop'])&&$_POST['shop']!='all'){
             $where['门店']=$_POST['shop'];
 
+        }else{
+            $where['门店']=array('in',explode(',',cookie('department')));
+
         }
         if(isset($_POST['fwgw'])){
             $where['制单人']=$_POST['fwgw'];
@@ -3880,6 +3919,9 @@ class ConsumeAction extends Action{
         }
         if(isset($_POST['shop'])&&$_POST['shop']!='all'){
             $where['门店']=$_POST['shop'];
+
+        }else{
+            $where['门店']=array('in',explode(',',cookie('department')));
 
         }
         if(isset($_POST['lb'])&&$_POST['lb']!='all'){
@@ -3945,6 +3987,9 @@ class ConsumeAction extends Action{
         if(isset($_POST['shop'])&&$_POST['shop']!='all'){
             $where['门店']=$_POST['shop'];
 
+        }else{
+            $where['门店']=array('in',explode(',',cookie('department')));
+
         }
         if(isset($_POST['xslb'])&&$_POST['xslb']!=''){
             $where['销售类别']=$_POST['xslb'];
@@ -3984,6 +4029,9 @@ class ConsumeAction extends Action{
         }
         if(isset($_POST['shop'])&&$_POST['shop']!='all'){
             $where['门店']=$_POST['shop'];
+
+        }else{
+            $where['门店']=array('in',explode(',',cookie('department')));
 
         }
         if(isset($_POST['xslb'])&&$_POST['xslb']!=''){
@@ -7005,7 +7053,15 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         $this->assign('userinfo',$userinfo);
         $this->display();
    }
-   public function printdbbill(){
+    public function printbalancebill(){
+       $id=$_GET['ID'];
+        $items=M('日常收支','dbo.','difo')->where(array('ID'=>$id))->find();
+        $userinfo=M('往来单位','dbo.','difo')->where(array('ID'=>$items['单位编号']))->find();
+        $this->assign('record',$items);
+        $this->assign('userinfo',$userinfo);
+        $this->display();
+   }
+  public function printdbbill(){
        $id=$_GET['ID'];
         $wxrecord=M('车辆代办','dbo.','difo')->where(array('ID'=>$id))->find();
         $userinfo=M('往来单位','dbo.','difo')->where(array('ID'=>$wxrecord['客户ID']))->find();

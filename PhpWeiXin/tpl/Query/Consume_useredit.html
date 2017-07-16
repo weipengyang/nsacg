@@ -32,12 +32,12 @@
                    {
                        display: "所属部门", name: "所属门店", newline: true, type: "combobox", options: {
                            textField: '名称',
-                           valueField: '名称',                           url: '/index.php?g=Query&m=Consume&a=getshoplist'
+                           valueField: '名称',                           url: '/index.php?g=Query&m=Consume&a=getallshoplist'
                        }
                    },
                    {
                        display: "门店权限", name: "门店权限", newline: true, type: "checkboxlist", options: {
-                           url: '/index.php?g=Query&m=Consume&a=getshoplist',
+                           url: '/index.php?g=Query&m=Consume&a=getallshoplist',
                            textField: '名称',                           valueField: '名称',                           split:','
                        }
                    },

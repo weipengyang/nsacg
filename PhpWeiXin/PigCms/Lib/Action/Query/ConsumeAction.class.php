@@ -29,8 +29,12 @@ class ConsumeAction extends Action{
             else{
                 $username=cookie('username');
                 cookie('username',$username,3600*2);
-                cookie('department',cookie('department'),3600*2);
-                cookie('role',cookie('role'),3600*2);
+                 $user=M('用户管理','dbo.','difo')->where(array('姓名'=>$username))->find();
+                 if($user)
+                 {
+                     cookie('department',$user['门店权限'],3600*2);
+                     cookie('role',$user['角色权限'],3600*2);
+                 }
                 if($this->isAjax()){
                     //Log::write('url1:'. $_SERVER['PHP_SELF']);
                     //Log::write('url2:'. '/index.php?g=Query&m=Consume&a='.ACTION_NAME);
@@ -1253,14 +1257,10 @@ class ConsumeAction extends Action{
             $searchkey='%'.trim($_POST['searchkey']).'%';
         }
         if($searchkey){       
-            $searchwhere['收支项目']=array('like',$searchkey);
-            $searchwhere['账款类别']=array('like',$searchkey);
-            $searchwhere['结算方式']=array('like',$searchkey);
-            $searchwhere['发票类别']=array('like',$searchkey);
-            $searchwhere['发票号']=array('like',$searchkey);
-            $searchwhere['单位名称']=array('like',$searchkey);
-            $searchwhere['单据编号']=array('like',$searchkey);
-            $searchwhere['摘要']=array('like',$searchkey);
+            $searchwhere['名称']=array('like',$searchkey);
+            $searchwhere['对账摘要']=array('like',$searchkey);
+            $searchwhere['联系人']=array('like',$searchkey);
+            $searchwhere['联系电话']=array('like',$searchkey);
             $searchwhere['_logic']='OR';
             $where['_complex']=$searchwhere;
             
@@ -1530,7 +1530,6 @@ class ConsumeAction extends Action{
         echo json_encode($data);
         
     }
-
     public  function getrecevieandpayquery()
     {   
         $page=$_POST['page'];
@@ -1595,6 +1594,67 @@ class ConsumeAction extends Action{
             ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
         $data['Rows']=$yelist;
         $data['Total']=$count;
+        $data['sumdata']=$sumdata;
+        echo json_encode($data);
+        
+    }
+
+    public  function getallrecevie()
+    {   
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        if($_GET['khID']){
+            $where['当前状态']='已审核';
+            $where['单位编号']=$_GET['khID'];
+            $where['未结算金额']=array('gt',0);
+
+        }
+       if (isset($_POST['zklb'])&&trim($_POST['zklb'])!=''){
+            $where['账款类别']=$_POST['zklb'];
+        } 
+        if (isset($_POST['shop'])&&trim($_POST['shop'])!=''){
+            $where['门店']=$_POST['shop'];
+        }else{
+            $where['门店']=array('in',explode(',',cookie('department')));
+        }
+        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        {
+            $where['制单日期']=array('egt',trim($_POST['startdate']));
+            
+        }
+        if($_POST['enddate']&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('elt',trim($_POST['enddate']));
+            
+        }
+        if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
+        {
+            $where['制单日期']=array('BETWEEN',array(trim($_POST['startdate']),trim($_POST['enddate'])));
+            
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){       
+            $searchwhere['账款类别']=array('like',$searchkey);
+            //$searchwhere['门店']=array('like',$searchkey);
+            $searchwhere['车牌号码']=array('like',$searchkey);
+            $searchwhere['单位名称']=array('like',$searchkey);
+            $searchwhere['单据编号']=array('like',$searchkey);
+            $searchwhere['摘要']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $sumdata=M('应收应付单','dbo.','difo')
+           ->where($where)->field('sum(总金额) 总金额')->find();
+           $yelist=M('应收应付单','dbo.','difo')->where($where)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=count($yelist);
         $data['sumdata']=$sumdata;
         echo json_encode($data);
         
@@ -2570,6 +2630,57 @@ class ConsumeAction extends Action{
 		$data['Rows']=$list;
         $data['Total']=$sumdata['count'];
         $data['sumdata']=$sumdata;
+        echo json_encode($data);
+	}
+    public function getcoupons(){
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $where['1']=1;
+        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        {
+            $where['tp_userinfo.getcardtime']=array('egt',strtotime($_POST['startdate']));
+            
+        }
+        if($_POST['enddate']&&trim($_POST['enddate'])!='')
+        {
+            $where['tp_userinfo.getcardtime']=array('elt',strtotime($_POST['enddate']));
+            
+        }
+        if(trim($_POST['startdate'])!=''&&strtotime($_POST['enddate'])!='')
+        {
+            $where['tp_userinfo.getcardtime']=array('BETWEEN',array(strtotime($_POST['startdate']),strtotime($_POST['enddate'])));
+            
+        }
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+                $searchkey='%'.trim($_POST['searchkey']).'%';
+		}       
+        if($searchkey){       
+            $searchwhere['number']=array('like',$searchkey);
+            $searchwhere['tel']=array('like',$searchkey);
+            $searchwhere['carno']=array('like',$searchkey);
+            $searchwhere['carno1']=array('like',$searchkey);
+            $searchwhere['carno2']=array('like',$searchkey);
+            $searchwhere['truename']=array('like',$searchkey);
+            $searchwhere['wechaname']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+
+        }
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $order='getcardtime desc';
+        }
+        else{
+            $order=$sortname.' '.$sortorder;
+        }
+		$sumdata=  M('member_card_coupon_record')->join('join tp_userinfo on tp_member_card_coupon_record.wecha_id=tp_userinfo.wecha_id')->where($where)
+            ->count(); 
+		$list= M('member_card_coupon_record')
+            ->join('join tp_userinfo on tp_member_card_coupon_record.wecha_id=tp_userinfo.wecha_id')
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+		$data['Rows']=$list;
+        $data['Total']=$sumdata;
         echo json_encode($data);
 	}
 
@@ -5407,6 +5518,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         $db = M('member_card_coupon');
 		//$uid = (int)$_GET['uid'];
 		$cardid = $this->_get('cardid','intval');
+        $days=$_GET['days'];
 		$list= $db->where(array('token'=>$this->token,'ispublic'=>'1'))->field('id,title,type,days')->select();
         if(IS_POST){
             if ($list){
@@ -5419,7 +5531,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                             $data['add_time'] 		= time();
                             $data['coupon_id'] 		= $item['id'];
                             $data['cardid'] 		= $cardid;
-                            $days=$item['days'];                           
+                            if(!$days){
+                                $days=$item['days'];      
+                            }
                             $data['over_time']=strtotime(date('Y-m-d',time())."+$days day");
                             $data['token'] 			= $this->token;
                             $data['is_use'] 			= 0;
@@ -6188,6 +6302,11 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
    public function pickcheck(){      
        if(IS_POST){
            $crk=$_POST['crk'];
+           $record=M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->find();
+           if($record['当前状态']=='已审核'){
+               echo '此单已审核';
+               exit;
+           }
            $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
            if($crk['单据类别']=='出库'){
                if(count($crkmx)>0){
@@ -6250,6 +6369,11 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        if(IS_POST){
            $crk=$_POST['crk'];
            $crkmx=M('出入库明细','dbo.','difo')->where(array('ID'=>$crk['ID']))->select();
+           $record=M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->find();
+           if($record['当前状态']=='待审核'){
+               echo '此单已反审核';
+               exit;
+           }
            if($crk['单据类别']=='出库'){
                if($crkmx){
                    foreach($crkmx as $item){

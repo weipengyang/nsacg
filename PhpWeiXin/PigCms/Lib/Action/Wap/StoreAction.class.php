@@ -431,6 +431,8 @@ private function sellbill($price,$name){
       $data['制单人']='系统自动';
       $data['客户名称']=$user['名称'];
       $data['客户ID']=$user['客户ID'];
+      $data['门店']=$this->getshopname();
+      $data['销售类别']='会员套餐';
       $data['发票类别']='';
       $data['发票号码']='';
       $data['运费']=0;
@@ -467,7 +469,7 @@ private function sellbill($price,$name){
       //$data['会员卡号']=;
       //$data['代币券结算']=;
        M('销售单','dbo.','difo')->add($data);
-       $product=M('配件目录','dbo.','difo')->where(array('编号'=>'B500006'))->find();
+       $product=M('配件目录','dbo.','difo')->where(array('编号'=>'C600003'))->find();
        $crk['ID']=$data['ID'];
        $crk['仓库']='主仓库';
        $crk['编号']=$product['编号'];
@@ -1191,7 +1193,8 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
                        $arr['usecount']	= 1;
                        $arr['notes']	= '线下消费'.$r_record['coupon_name'].'一张';
                        $arr['score'] 	=0;
-                       M('Member_card_use_record')->add($arr);	//添加消费券使用记录					
+                       M('Member_card_use_record')->add($arr);	//添加消费券使用记录
+                      
                        
                        M('Member_card_coupon_record')->where(array('id'=>$couponid))->save(array('use_time'=>time(),'is_use'=>'1','carno'=>$arr['carno'],'shop'=>$arr['shop']));//会员优惠券记录修改为已使用
                        $model  = new templateNews();
@@ -1335,6 +1338,14 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
                                        $projectprice+=$project['金额']*$project['折扣']+$project['税额'];
                                    }else{
                                        $couponlist[]=$coupon;
+                                       if($coupon['coupon_type']==1){
+                                           $paytype='商品券支付';
+                                       }elseif($coupon['coupon_type']==2){
+                                           $paytype='赠送券支付';
+                                       }else{
+                                           $paytype='兑换券支付';
+                                       }
+                                       M('维修项目','dbo.','difo')->where(array('流水号'=>$project['流水号']))->save(array('结算方式'=>$paytype));
                                    }
                                }else{
                                    $projectprice+=$project['金额']*$project['折扣']+$project['税额'];
@@ -1351,7 +1362,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
                                $productprice+=$product['虚增金额']*$product['折扣']+$product['税额'];
                            }
                            else{
-                               if($product['券编码']&&doubleval($product['折扣'])>0&&$wx['维修类别']!='保险理赔'){
+                               if($product['券编码']&&doubleval($product['折扣'])>0&&$product['结算方式']!='保险理赔'){
                                    $where['token']=$this->token;
                                    $where['wecha_id']=$this->wecha_id;
                                    $where['is_use']='0';
@@ -1367,6 +1378,14 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
                                        $count=intval($product['数量'])-count($coupons)>0?intval($product['数量'])-count($coupons):0;
                                        $productprice+=$count*$product['单价']*$product['折扣']+$product['税额'];
                                        $couponlist= array_merge($couponlist,array_slice($coupons,0,intval($product['数量'])-count($coupons)>0?count($coupons):intval($product['数量'])));
+                                       if($coupons[0]['coupon_type']==1){
+                                           $paytype='商品券支付';
+                                       }elseif($coupons[0]['coupon_type']==2){
+                                           $paytype='赠送券支付';
+                                       }else{
+                                           $paytype='兑换券支付';
+                                       }
+                                       M('维修配件','dbo.','difo')->where(array('流水号'=>$product['流水号']))->save(array('结算方式'=>$paytype));
                                    }
                                }
                                else{

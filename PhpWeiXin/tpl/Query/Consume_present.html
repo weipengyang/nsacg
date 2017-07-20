@@ -25,6 +25,12 @@
         <div class="admin-content">
             <div class="admin-content-body">
                 <div id="searchbar">
+                    <select id="coupontype">
+                        <option value="">所有</option>
+                        <option value="1">商品券</option>
+                        <option value="2">赠送券</option>
+                        <option value="3">兑换券</option>
+                    </select>
                     <select id="type">
                         <option value="">所有</option>
                         <option value="1">商品券</option>
@@ -33,18 +39,18 @@
                     </select>
                     <select id="sfsy">
                         <option value="">所有</option>
-                        <option value="1">是</option>
-                        <option value="0">否</option>
+                        <option value="1">已使用</option>
+                        <option value="0">未使用</option>
                     </select>
                     <select id="sfgq">
                         <option value="">所有</option>
-                        <option value="1">是</option>
-                        <option value="0">否</option>
+                        <option value="1">过期</option>
+                        <option value="0">未过期</option>
                     </select>
 
                     关键字：<input id="searchkey" type="text" />
                     <input id="search" type="button" value="模糊查询" />
-                </div>吧 
+                </div>
 
                 <div id="maingrid4" style="margin:0; padding:0"></div>
             </div>
@@ -76,16 +82,26 @@
             }
         }
         $(document).ready(function () {
+            $.post('/index.php?g=Query&m=Consume&a=getcouponlist', null, function (data) {
+                if (data) {
+                    $('#coupontype').empty();
+                    $('#coupontype').append("<option value=''>所有</option>");
+                    $(data).each(function () {
+                        var option = "<option value='" + this.id + "'>" + this.title + "</option>";
+                        $('#coupontype').append(option);
+                    });
+                }
+            }, 'JSON');
             cargird = $("#maingrid4").ligerGrid({
                 columns: [
                         {
-                        display: '优惠券名称', name: 'coupon_name', width: 160, align: 'left', render: function (rowdata, index, value) {
+                        display: '优惠券名称', name: 'coupon_name', minWidth: 160, align: 'left', render: function (rowdata, index, value) {
                             return value;
                             // return '<a href="javascript:void(0);" onclick="carinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
                         }
                     },
                         {
-                            display: '优惠券类型', name: 'coupon_type', width: 160, align: 'left', render: function (rowdata, index, value) {
+                            display: '优惠券类型', name: 'coupon_type', minWidth: 100, align: 'left', render: function (rowdata, index, value) {
                                 if (value == '1')
                                     return '商品券';
                                 else if (value == '2')
@@ -95,7 +111,7 @@
                             }
                         },
                         {
-                            display: '是否使用', name: 'is_use', width: 160, align: 'left', render: function (rowdata, index, value) {
+                            display: '是否使用', name: 'is_use', minWidth: 80, align: 'left', render: function (rowdata, index, value) {
                                 if (value == '1')
                                     return '是';
                                 else
@@ -104,19 +120,19 @@
                         },
 
                         {
-                              display: '购领时间', name: 'add_time', width: 160, render: function (rowdata, index, value) {
+                            display: '购领时间', name: 'add_time', minWidth: 160, render: function (rowdata, index, value) {
                                   if (value > 0)
                                       return formatdate('Y-m-d H:i', value);                                  return value;
                               }
                           },
                           {
-                              display: '过期时间', name: 'over_time', width: 160, render: function (rowdata, index, value) {
+                              display: '过期时间', name: 'over_time', minWidth: 160, render: function (rowdata, index, value) {
                                   if (value > 0)
                                       return formatdate('Y-m-d H:i', value);                                  return value;
                               }
                           },
                           {
-                              display: '使用时间', name: 'use_time', width: 160, render: function (rowdata, index, value) {
+                              display: '使用时间', name: 'use_time', minWidth: 160, render: function (rowdata, index, value) {
                                   if (value > 0)
                                       return formatdate('Y-m-d H:i', value);                                  return value;
                               }
@@ -132,9 +148,37 @@
                     //carinfo(data['车牌号码']);
                 }
             });
+            $('#sfgq').change(function () {
+                $('#search').click();
+            });
+            $('#sfsy').change(function () {
+                $('#search').click();
+            });
+            $('#type').change(function () {
+                $('#search').click();
+            });
+            $('#coupontype').change(function () {
+                $('#search').click();
+            });
             $('#search').click(function () {
                 cargird.changePage('first');
                 var parms = {};
+                var coupontype = $('#coupontype').val();
+                if (coupontype != '') {
+                    parms.coupontype = coupontype;
+                }
+                var sfgq = $('#sfgq').val();
+                if (sfgq != '') {
+                    parms.sfgq = sfgq;
+                }
+                var sfsy = $('#sfsy').val();
+                if (sfsy != '') {
+                    parms.sfsy = sfsy;
+                }
+                var type = $('#type').val();
+                if (type != '') {
+                    parms.type = type;
+                }
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     parms.searchkey = searchkey;

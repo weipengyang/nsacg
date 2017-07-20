@@ -754,7 +754,7 @@ class ConsumeAction extends Action{
         $yelist=M('个人业绩表','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
         $total=M('个人业绩表','dbo.','difo')
             ->where($where)
-            ->field("sum(服务车辆数) 服务车辆,sum(工时费) 工时,sum(工时数) 工时数")
+            ->field("sum(服务车辆数) 服务车辆,sum(工时费) 工时,sum(工时数) 工时数,sum(配件费) 配件费")
             ->find();
         $data['Rows']=$yelist;
         $data['Total']=$count;
@@ -2636,32 +2636,35 @@ class ConsumeAction extends Action{
         $page=$_POST['page'];
         $pagesize=$_POST['pagesize'];
         $where['1']=1;
-        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        if($_POST['coupontype']&&trim($_POST['coupontype'])!='')
         {
-            $where['tp_userinfo.getcardtime']=array('egt',strtotime($_POST['startdate']));
+            $where['coupon_id']=$_POST['coupontype'];
             
         }
-        if($_POST['enddate']&&trim($_POST['enddate'])!='')
+        if($_POST['sfgq']&&trim($_POST['sfgq'])!='')
         {
-            $where['tp_userinfo.getcardtime']=array('elt',strtotime($_POST['enddate']));
+            if($_POST['sfgq']=='1'){
+             $where['over_time']=array('lt',time());
+            }else{
+              $where['over_time']=array('egt',time());
+           }
             
         }
-        if(trim($_POST['startdate'])!=''&&strtotime($_POST['enddate'])!='')
+        if($_POST['sfsy']&&trim($_POST['sfsy'])!='')
         {
-            $where['tp_userinfo.getcardtime']=array('BETWEEN',array(strtotime($_POST['startdate']),strtotime($_POST['enddate'])));
+            $where['is_use']=$_POST['sfsy'];
+            
+        }
+        if($_POST['type']&&trim($_POST['type'])!='')
+        {
+            $where['coupon_type']=$_POST['type'];
             
         }
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
                 $searchkey='%'.trim($_POST['searchkey']).'%';
 		}       
         if($searchkey){       
-            $searchwhere['number']=array('like',$searchkey);
-            $searchwhere['tel']=array('like',$searchkey);
-            $searchwhere['carno']=array('like',$searchkey);
-            $searchwhere['carno1']=array('like',$searchkey);
-            $searchwhere['carno2']=array('like',$searchkey);
-            $searchwhere['truename']=array('like',$searchkey);
-            $searchwhere['wechaname']=array('like',$searchkey);
+            $searchwhere['coupon_name']=array('like',$searchkey);
             $searchwhere['_logic']='OR';
             $where['_complex']=$searchwhere;
 
@@ -2669,15 +2672,14 @@ class ConsumeAction extends Action{
         $sortname=$_POST['sortname'];
         $sortorder=$_POST['sortorder'];
         if(!isset($sortname)){
-            $order='getcardtime desc';
+            $order='id desc';
         }
         else{
             $order=$sortname.' '.$sortorder;
         }
-		$sumdata=  M('member_card_coupon_record')->join('join tp_userinfo on tp_member_card_coupon_record.wecha_id=tp_userinfo.wecha_id')->where($where)
+		$sumdata=  M('member_card_coupon_record')->where($where)
             ->count(); 
 		$list= M('member_card_coupon_record')
-            ->join('join tp_userinfo on tp_member_card_coupon_record.wecha_id=tp_userinfo.wecha_id')
             ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
 		$data['Rows']=$list;
         $data['Total']=$sumdata;
@@ -3110,8 +3112,8 @@ class ConsumeAction extends Action{
         $data['ID']=$this->getcode(20,1,1);
         $data['制单日期']=date('Y-m-d',time());
         $data['制单人']=cookie('username');
-        $data['单位名称']=$record['单位名称'];
-        $data['单位编号']=$record['单位编号'];
+        $data['单位名称']=$record['客户名称'];
+        $data['单位编号']=$record['userID'];
         $data['账款类别']=$record['账款类别'];
         $data['开户银行']='';
         $data['银行账号']='';
@@ -3155,8 +3157,8 @@ class ConsumeAction extends Action{
         $data['ID']=$this->getcode(20,1,1);
         $data['制单日期']=date('Y-m-d',time());
         $data['制单人']=cookie('username');
-        $data['单位名称']=$record['单位名称'];
-        $data['单位编号']=$record['ID'];
+        $data['单位名称']=$record['客户名称'];
+        $data['单位编号']=$record['userID'];
         $data['账款类别']=$record['账款类别'];
         $data['开户银行']='';
         $data['银行账号']='';

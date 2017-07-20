@@ -176,6 +176,7 @@
                 return " 服务车辆:" + data.sumdata.服务车辆
                     + "  工时费:" + data.sumdata.工时
                     + "  工时数:" + data.sumdata.工时数
+                    + "  配件费:" + data.sumdata.配件费
             }
             $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {
                 if (data) {
@@ -208,6 +209,7 @@
                     { display: '服务车辆数', name: '服务车辆数', width: 200 },
                     { display: '工时费', name: '工时费', width: 120 },
                     { display: '工时数', name: '工时数', width: 80 },
+                    { display: '配件费', name: '配件费', width: 80 },
                    {
                      display: '产值', name: '产值',hide:true, width: 200, align: 'left', render: function (rowdata, index, value) {
                             return value;

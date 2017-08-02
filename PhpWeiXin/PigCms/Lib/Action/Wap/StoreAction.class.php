@@ -1428,7 +1428,7 @@ private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车'
        $paybill['虚增价税']=0;
        $paybill['挂账金额']=$price; 
        $paybill['车牌号码']=$carno;
-       $paybill['门店']=$shop;
+       $paybill['门店']='爱养车';
        M('应收应付单','dbo.','difo')->add($paybill);
    }
    private function genbill($price,$chezhu,$zhaiyao,$daiwen,$type='维修',$billtype='维修收款',$carno='',$shop=''){

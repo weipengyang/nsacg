@@ -19,7 +19,7 @@
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.0/css/amazeui.min.css" />
+    <link rel="stylesheet" href="/tpl/static/assets/css/amazeui.min.css" />
 </head>
 <body>
     <!--[if lte IE 9]>
@@ -88,7 +88,7 @@
         <!-- content end -->
     </div>
     <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.0/js/amazeui.min.js"></script>
+    <script src="/tpl/static/assets/js/amazeui.min.js"></script>
     <script>
         var grid;
         function setdata(myChart, type) {
@@ -174,9 +174,10 @@
             // setdata(jyChart, '个人业绩');
             function f_totalRender(data, currentPageData) {
                 return " 服务车辆:" + data.sumdata.服务车辆
-                    + "  工时费:" + data.sumdata.工时
                     + "  工时数:" + data.sumdata.工时数
+                    + "  工时费:" + data.sumdata.工时
                     + "  配件费:" + data.sumdata.配件费
+                    + "  产值:" + data.sumdata.产值
             }
             $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {
                 if (data) {
@@ -205,11 +206,10 @@
                     { display: '门店', name: '门店', align: 'left', width: 100 },
                     { display: '主修人', name: '主修人', align: 'left', width: 200 },
                     { display: '维修类别', name: '维修类别', align: 'left', width: 200 },
-                    { display: '日期', name: '时间', width: 200 },
+                    { display: '日期', name: '结算日期', width: 200 },
                     { display: '服务车辆数', name: '服务车辆数', width: 200 },
                     { display: '工时费', name: '工时费', width: 120 },
                     { display: '工时数', name: '工时数', width: 80 },
-                    { display: '配件费', name: '配件费', width: 80 },
                    {
                      display: '产值', name: '产值',hide:true, width: 200, align: 'left', render: function (rowdata, index, value) {
                             return value;

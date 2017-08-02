@@ -23,7 +23,10 @@ class ConsumeAction extends Action{
                 
                 }
                 else{
-                     $this->redirect(U('Consume/login', array('token' => $this->token)));
+                    // $this->redirect(U('Consume/login', array('token' => $this->token)));
+                     echo "<script>top.location.href='/index.php?&g=Query&m=Consume&a=login'</script>";
+                     //$this->redirect(U('Consume/main'));
+                     exit();
                 }
             }
             else{
@@ -31,7 +34,7 @@ class ConsumeAction extends Action{
                 cookie('username',$username,3600*2);
                  $user=M('用户管理','dbo.','difo')->where(array('姓名'=>$username))->find();
                  if($user)
-                 {
+                 { 
                      cookie('department',$user['门店权限'],3600*2);
                      cookie('role',$user['角色权限'],3600*2);
                  }
@@ -70,7 +73,8 @@ class ConsumeAction extends Action{
                 cookie('username',$username,3600*2);
                 cookie('department',$user['门店权限'],3600*2);
                 cookie('role',$user['角色权限'],3600*2);
-                $this->redirect(U('Consume/main'));
+                echo "<script>top.location.href='/index.php?&g=Query&m=Consume&a=main'</script>";
+                //$this->redirect(U('Consume/main'));
                 exit();
             }
             else{
@@ -721,17 +725,17 @@ class ConsumeAction extends Action{
          }
          if($_POST['startdate']&&trim($_POST['startdate'])!='')
          {
-             $where['时间']=array('egt',trim($_POST['startdate']));
+             $where['结算日期']=array('egt',trim($_POST['startdate']));
              
          }
          if($_POST['enddate']&&trim($_POST['enddate'])!='')
          {
-             $where['时间']=array('elt',trim($_POST['enddate']));
+             $where['结算日期']=array('elt',trim($_POST['enddate']));
              
          }
          if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
          {
-             $where['时间']=array('BETWEEN',array(trim($_POST['startdate']),trim($_POST['enddate'])));
+             $where['结算日期']=array('BETWEEN',array(trim($_POST['startdate']),trim($_POST['enddate'])));
              
          }
          if($_POST['zhuxiu']&&trim($_POST['zhuxiu'])!='')
@@ -740,7 +744,7 @@ class ConsumeAction extends Action{
              
          }
         if(!isset($sortname)){
-            $sortname='时间';
+            $sortname='结算日期';
             $sortorder='desc';
         }
         if($searchkey){       
@@ -754,8 +758,15 @@ class ConsumeAction extends Action{
         $yelist=M('个人业绩表','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
         $total=M('个人业绩表','dbo.','difo')
             ->where($where)
-            ->field("sum(服务车辆数) 服务车辆,sum(工时费) 工时,sum(工时数) 工时数,sum(配件费) 配件费")
+            ->field("sum(服务车辆数) 服务车辆,sum(工时费) 工时,sum(工时数) 工时数")
             ->find();
+        $where['当前状态']=array('neq','取消');
+        $total1=M('维修','dbo.','difo')
+            ->where($where)
+            ->field("sum(材料费) 配件费,sum(应收金额) 产值")
+            ->find();
+        $total['配件费']=$total1['配件费'];
+        $total['产值']=$total1['产值'];
         $data['Rows']=$yelist;
         $data['Total']=$count;
         $data['sumdata']=$total;
@@ -3169,7 +3180,7 @@ class ConsumeAction extends Action{
         $data['支票号']=0;
         $data['凭证号']=0;
         $data['摘要']=$record['备注'];
-        $data['收支项目']=$record['收支项目'];
+        $data['收支项目']=$record['收支类型'];
         $data['当前状态']='待审核';
         $data['发票类别']=$record['门店'];
         $data['发票号']='';
@@ -3205,7 +3216,7 @@ class ConsumeAction extends Action{
         $data['ID']=$this->getcode(20,1,1);
         $data['制单日期']=date('Y-m-d',time());
         $data['制单人']=cookie('username');
-        $data['单位名称']=$record['单位名称'];
+        $data['单位名称']=$record['客户名称'];
         $data['单位编号']=$record['ID'];
         $data['账款类别']=$record['账款类别'];
         $data['开户银行']='';
@@ -3217,7 +3228,7 @@ class ConsumeAction extends Action{
         $data['支票号']=0;
         $data['凭证号']=0;
         $data['摘要']=$record['备注'];
-        $data['收支项目']=$record['收支项目'];
+        $data['收支项目']=$record['收支类型'];
         $data['当前状态']='待审核';
         $data['发票类别']=$record['门店'];
         $data['发票号']='';
@@ -3890,10 +3901,10 @@ class ConsumeAction extends Action{
         $where['引用类别']='自用出库';
         if($_POST['shop']&&trim($_POST['shop'])!='')
         {
-            $where['门店']=$_POST['shop'];
+            $where['出入库单.门店']=$_POST['shop'];
             
         }else{
-            $where['门店']=array('in',explode(',',cookie('department')));
+            $where['出入库单.门店']=array('in',explode(',',cookie('department')));
 
         }
         if($_POST['lly']&&trim($_POST['lly'])!='')
@@ -5213,6 +5224,11 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
    public function purchasecheck(){
        if(IS_POST){
            $cgd=$_POST['cgd'];
+           $record=M('采购单','dbo.','difo')->where(array('流水号'=>$cgd['流水号']))->find();
+           if($record['当前状态']=='已审核'){
+               echo '该单已经审核';
+               exit;
+           }
            $cgmx=M('采购明细','dbo.','difo')->where(array('ID'=>$cgd['ID']))->select();
            if($cgd['单据类别']=='采购进货'){
                 $purchase['当前状态']='已审核';
@@ -5284,6 +5300,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 $crkitem['制单日期']=date('Y-m-d',time());;
                 $crkitem['制单人']=cookie('username');
                 $crkitem['车牌号码']=$cgd['车牌号码'];
+                $crkitem['门店']=$cgd['门店'];
                 $crkitem['当前状态']='待审核';
                 $crkitem['原因']='采购进货';
                 $crkitem['领料员']=cookie('username');
@@ -5297,6 +5314,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                     $crk['名称']=$product['名称'];
                     $crk['规格']=$product['规格'];
                     $crk['单位']=$product['单位'];
+                    $crk['门店']=$cgd['门店'];
                     $crk['数量']=$product['数量'];
                     $crk['单价']=$product['单价'];
                     $crk['金额']=$product['金额'];
@@ -5323,7 +5341,12 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
    }
    public function unpurchasecheck(){
        if(IS_POST){
-           $cgd=$_POST['cgd'];
+           $cgd=$_POST['cgd']; 
+           $record=M('采购单','dbo.','difo')->where(array('流水号'=>$cgd['流水号']))->find();
+           if($record['当前状态']=='待审核'){
+               echo '该单已经反审核';
+               exit;
+           }
            if($cgd['单据类别']=='采购进货'){
                 $crk=M('出入库单','dbo.','difo')->where(array('引用单号'=>$cgd['单据编号']))->find();
                 if($crk&&$crk['当前状态']=='已审核'){
@@ -6199,6 +6222,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $data['制单人']=cookie('username');
          $data['当前状态']='待审核';
          $data['原因']=$form['原因'];
+         $data['门店']=$form['门店'];
          $data['领料员']=$form['领料员'];
          $data['单据类别']='出库';
          $data['单据备注']=$form['备注'];
@@ -6219,6 +6243,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $crk['数量']=$product['数量'];
             $crk['单价']=$product['单价'];
             $crk['金额']=$product['金额'];
+            $crk['门店']=$form['门店'];
             $crk['成本价']=$product['成本价'];
             $crk['适用车型']=$product['适用车型'];
             $crk['产地']=$product['产地'];
@@ -6264,6 +6289,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
          $data['制单日期']=date('Y-m-d',time());
          $data['制单人']=cookie('username');
          $data['车牌号码']=$wxinfo['车牌号码'];
+         $data['门店']=$wxinfo['门店'];
          $data['当前状态']='待审核';
          $data['原因']='维修领料';
          $data['领料员']=$form['领料员'];
@@ -6280,6 +6306,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $crk['名称']=$product['名称'];
             $crk['规格']=$product['规格'];
             $crk['单位']=$product['单位'];
+            $crk['门店']=$wxinfo['门店'];
             $crk['数量']=$product['本次领料'];
             $crk['单价']=$product['单价'];
             $crk['金额']=$product['金额'];
@@ -6818,6 +6845,11 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
    public function salebillcheck(){
        if(IS_POST){
            $xsd=$_POST['xsd'];
+           $record=M('销售单','dbo.','difo')->where(array('流水号'=>$xsd['流水号']))->find();
+           if($record['当前状态']=='已审核'){
+               echo '此单据已经审核';
+               exit;
+           }
            $xsmx=$_POST['xsdmx'];
            if($xsd['单据类别']=='销售出库'){
                $sellbill['当前状态']='已审核';
@@ -6888,7 +6920,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $crkitem['引用ID']=$xsd['ID'];
                $crkitem['引用类别']='销售出库';
                $crkitem['单据编号']=$this->getcodenum('CK');
-               $crkitem['制单日期']=date('Y-m-d',time());;
+               $crkitem['制单日期']=date('Y-m-d',time());
+               $crkitem['门店']=$xsd['门店'];
                $crkitem['制单人']=cookie('username');
                $crkitem['车牌号码']=$xsd['车牌号码'];
                $crkitem['当前状态']='待审核';
@@ -6905,6 +6938,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                    $crk['规格']=$product['规格'];
                    $crk['单位']=$product['单位'];
                    $crk['数量']=$product['数量'];
+                   $crk['门店']=$xsd['门店'];
                    $crk['单价']=$product['单价'];
                    $crk['金额']=$product['金额'];
                    $crk['成本价']=$product['成本价'];
@@ -6913,7 +6947,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                    $crk['备注']=$product['备注'];
                    M('出入库明细','dbo.','difo')->add($crk);
                }
-               $this->writeLog($xsd['引用ID'],$xsd['引用单号'],'销售审核','销售审核');
+               $this->writeLog($xsd['ID'],$xsd['单据编号'],'销售审核','销售审核');
 
                echo '审核通过';
                exit;
@@ -6929,6 +6963,11 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
    public function unsalebillcheck(){
        if(IS_POST){
            $xsd=$_POST['xsd'];
+           $record=M('销售单','dbo.','difo')->where(array('流水号'=>$xsd['流水号']))->find();
+           if($record['当前状态']=='待审核'){
+               echo '此单据已经反审核';
+               exit;
+           }
            if($xsd['单据类别']=='销售出库'){
                $crk=M('出入库单','dbo.','difo')->where(array('引用单号'=>$xsd['单据编号']))->find();
                if($crk&&$crk['当前状态']=='已审核'){
@@ -6982,6 +7021,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $data['制单人']=cookie('username');
                $data['车牌号码']=$wxinfo['车牌号码'];
                $data['当前状态']='已审核';
+               $data['门店']=$wxinfo['门店'];
                $data['审核人']='系统自动';
                $data['审核日期']=date('Y-m-d',time());
                $data['原因']='维修领料';
@@ -6997,6 +7037,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                    $crk['名称']=$product['名称'];
                    $crk['规格']=$product['规格'];
                    $crk['单位']=$product['单位'];
+                   $crk['门店']=$wxinfo['门店'];
                    $crk['数量']=$product['数量'];
                    $crk['单价']=$product['单价'];
                    $crk['金额']=$product['金额'];
@@ -7277,56 +7318,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
     }
    public function persons()
     {
-         $parms=$_GET;
-         if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
-             $searchkey='%'.trim($_GET['searchkey']).'%';
-         }
-         if($_GET['lb']&&trim($_GET['lb'])!='')
-         {
-             $where['维修类别']=trim($_GET['lb']);
-             
-         }
-         if($_GET['bm']&&trim($_GET['bm'])!='')
-         {
-             $where['班组']=array('like','%'.trim($_GET['bm'].'%'));
-             
-         }
-         if($_GET['startDate']&&trim($_GET['startDate'])!='')
-         {
-             $where['时间']=array('egt',trim($_GET['startDate']));
-             
-         }
-         if($_GET['endDate']&&trim($_GET['endDate'])!='')
-         {
-             $where['时间']=array('elt',trim($_GET['endDate']));
-             
-         }
-         if(trim($_GET['startDate'])!=''&&trim($_GET['endDate'])!='')
-         {
-             $where['时间']=array('BETWEEN',array(trim($_GET['startDate']),trim($_GET['endDate'])));
-             
-         }
-         if($_GET['zhuxiu']&&trim($_GET['zhuxiu'])!='')
-         {
-             $where['主修人']=trim($_GET['zhuxiu']);
-             
-         }
-         if($searchkey){       
-             $searchwhere['维修类别']=array('like',$searchkey);
-             $searchwhere['主修人']=array('like',$searchkey);
-             $searchwhere['_logic']='OR';
-             $where['_complex']=$searchwhere;
-
-         }
-         $count=M('个人业绩表','dbo.','difo')->join('员工目录 on 个人业绩表.主修人=员工目录.姓名')->where($where)->count();
-         $Page = new Page($count,15,$parms);
-         $show = $Page->show();
-         $zxlist=M('员工目录','dbo.','difo')->where(array('技术员'=>'1'))->order('姓名')->select();
-         $yelist=M('个人业绩表','dbo.','difo')->join('员工目录 on 个人业绩表.主修人=员工目录.姓名')->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('时间 desc,服务车辆数 desc')->select();
-         $this->assign('page',$show);
-         $this->assign('count',$count);
-         $this->assign('yelist',$yelist);
-         $this->assign('zxlist',$zxlist);
          $this->display();
     }
    public function fwgw()
@@ -8487,7 +8478,6 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $data['款项总额']=$totalprice;
        $data['客付金额']=$totalprice;
        $data['应收金额']=$totalprice;
-       //$data['材料成本']=;
        $data['人工成本']=0;
 
        M('维修','dbo.','difo')->where(array('ID'=>$id))->save($data);

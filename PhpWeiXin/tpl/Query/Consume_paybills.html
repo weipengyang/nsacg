@@ -3,7 +3,7 @@
 <head>
     <title>付款冲账</title>
     <meta name="description" content="爱养车" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.0/css/amazeui.min.css" />
+    <link rel="stylesheet" href="/tpl/static/assets/css/amazeui.min.css" />
 
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
@@ -36,14 +36,17 @@
         }
         $(function () {
             $('#startdate').ligerDateEditor();
-            $('#enddate').ligerDateEditor();
+            $('#enddate').ligerDateEditor();
+
             userdata = frameElement.dialog.get('row');
             form = $("#form1").ligerForm({
                 inputWidth: 130, labelWidth: 75, space: 3,
                 validate: true,
-                buttons: [                    {
+                buttons: [
+                    {
                         text: "更新", width: 100, click: updateRow
-                    },                    {
+                    },
+                    {
                         text: "保存", width: 100, click: function () {
                             var data = form.getData();
                             data['userID'] = userdata['ID'];
@@ -57,7 +60,9 @@
                               });
                             //alert(JSON.stringify(data));
                         }
-                    }                ],                fields: [
+                    }
+                ],
+                fields: [
                       {
                           display: "门店", name: "门店", newline: false, type: "combobox", comboboxName: 'mendian', options: {
                               valueField: '名称',

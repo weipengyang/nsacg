@@ -71,7 +71,7 @@
                 columns: [          
                 { display: '编号', name: '编号', minWidth: 100 },
                 { display: '名称', name: '名称', minWidth: 140 },
-                { display: '参考售价', name: '参考售价', minWidth: 80 },
+                { display: '参考售价', name: '售价', minWidth: 80 },
                 { display: '品牌', name: '品牌', minWidth: 100 },
                 { display: '规格', name: '规格', minWidth: 100 },
                 { display: '分库存', name: '分库存', minWidth: 60 },
@@ -80,12 +80,6 @@
                 { display: '原厂编号', name: '原厂编号', minWidth: 160 },
                 { display: '产地', name: '产地', minWidth: 120 },
                 { display: '适用车型', name: '适用车型', minWidth: 120 },
-                { display: '三包价', name: '三包价', minWidth: 120 },
-                { display: '保险价', name: '保险价', minWidth: 120 },
-                { display: '最低售价', name: '最低售价', minWidth: 120 },
-                { display: '会员价', name: '会员价', minWidth: 120 },
-                { display: '批发价', name: '批发价1', minWidth: 120 },
-                { display: '参考进价', name: '参考进价', minWidth: 120 },
                 { display: '对应券编号', name: '券编码', minWidth: 40 },
                 { display: '备注', name: '备注', minWidth: 240 }
                 ],
@@ -116,7 +110,7 @@
                         row['结算方式'] = '客付';
                         row['单位'] = data['库存单位'];
                         row['虚增类别'] ='';
-                        row['单价'] = data['参考售价'];
+                        row['单价'] = data['售价'];
                         row['折扣'] = getQueryString('discount');
                         if (parent.record['维修类别'] == '保险理赔')
                             row['折扣'] = 1;
@@ -124,7 +118,7 @@
                         row['金额'] = row['数量'] * row['单价'];
                         //row['金额'] = row['数量'] * row['单价'] * row['折扣'];
                         row['税率'] = 0;
-                        row['成本价'] = data['成本价'];
+                        row['成本价'] = data['成本'];
                         row['税额'] = row['金额'] * row['税率'];
                         row['备注'] = data['备注'];
                         form.setData(row);
@@ -152,6 +146,7 @@
                 { display: '虚增金额', name: '虚增金额', minWidth: 80 },
                 { display: '急件金额', name: '急件金额', minWidth: 80 },
                 { display: '适用车型', name: '适用车型', minWidth: 100 },
+                { display: '成本', name: '成本价', minWidth: 100, hide: true },
                 { display: '内部核算', name: '仅内部核算成本', minWidth: 80 },
                 { display: '产地', name: '产地', minWidth: 100 },
                 { display: '备注', name: '备注', minWidth: 200 },

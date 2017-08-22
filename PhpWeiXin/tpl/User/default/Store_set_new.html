@@ -154,6 +154,29 @@ afterBlur: function(){this.sync();}
             <th><span class="red">*</span>钻石会员优惠价：</th>
             <td><input type="text" id="discount3" name="discount3" value="{pigcms:$set.discount3}" class="px" style="width:100px;" /> 元</td>
         </tr>
+        <tr>
+            <td colspan="2">
+                <table class="userinfoArea" id="discounts" border="0" cellspacing="0" cellpadding="0" width="70%">
+                    <thead>
+                        <tr>
+                            <th>会员等级</th>
+                            <th>折 扣</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <volist id="grade" name="grades">
+                            <tr>
+                                <td>{pigcms:$grade.等级}</td>
+                                <td>
+                                    <input type="text" name="{pigcms:$grade.等级}" value="{pigcms:$grade.num}" pid="{pigcms:$grade.pid}" class="px" style="width:150px;" />
+                                </td>
+                            </tr>
+                        </volist>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+
        <tr> 
         <th>库存：</th> 
         <td><input type="text" id="num" name="num" value="{pigcms:$set.num}" class="px" style="width:100px;" /></td> 
@@ -411,10 +434,18 @@ $(document).ready(function(){
 	    var couponlist = [];
 	    $("#couponlist :text").each(function (i,a) {
 	        var coupon = {};
-	        coupon.num = $(this).val();
+	        coupon.num = $(this).val() == "" ? "0" : $(this).val();
 	        coupon.cid = $(this).attr("name");
 	        coupon.id = $(this).attr("pid");
 	        couponlist.push(coupon);
+	    });
+	    var discounts = [];
+	    $("#discounts :text").each(function (i, a) {
+	        var discount = {};
+	        discount.num = $(this).val() == "" ? "1" : $(this).val();
+	        discount.grade = $(this).attr("name");
+	        discount.pid = $(this).attr("pid");
+	        discounts.push(discount);
 	    });
 	    var name = $("#name").val();
 		if (name.length < 1) {
@@ -501,7 +532,8 @@ $(document).ready(function(){
 					project: project,
 					autosend: autosend,
 					couponlist:JSON.stringify(couponlist),
-					fakemembercount:fakemembercount,
+					discounts: JSON.stringify(discounts),
+					fakemembercount: fakemembercount,
 					attribute:JSON.stringify(attribute),
 					norms:JSON.stringify(norms),
 					images:JSON.stringify(images),

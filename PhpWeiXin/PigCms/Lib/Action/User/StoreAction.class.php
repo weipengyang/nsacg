@@ -522,6 +522,7 @@ class StoreAction extends UserAction{
         $db = M('member_card_coupon');
 		//$uid = (int)$_GET['uid'];
 		$list= $db->where(array('token'=>$this->token))->field("id cid,title,type,0 num")->select();
+        $grades=M('客户等级','dbo.','difo')->select();
         if ($id && ($product = M('Product')->where(array('catid' => $catid, 'token' => session('token'), 'id' => $id))->find())) {
         	$attributeData = M("Product_attribute")->where(array('pid' => $id))->select();
         	$productDetailData = M("Product_detail")->where(array('pid' => $id))->select();
@@ -535,6 +536,18 @@ class StoreAction extends UserAction{
                             if($list[$i]['cid']==$item['cid']){
                                 $list[$i]['num']=$item['num'];
                                 $list[$i]['id']=$item['id'];
+                        }
+                    }
+                }
+            }
+            $gradediscount=M('product_discount')->where(array('pid' => $id))->select();
+            if(count($gradediscount)>0)
+            {
+                for($i=0;$i<count($grades);$i++){
+                    foreach($gradediscount as $grade){
+                        if($grades[$i]['等级']==$grade['grade']){
+                            $grades[$i]['num']=$grade['num'];
+                            $grades[$i]['pid']=$grade['pid'];
                         }
                     }
                 }
@@ -562,6 +575,7 @@ class StoreAction extends UserAction{
 //	        	$temp[$row['id']] = $row;
 //	        }
         //}
+       $this->assign('grades',$grades);
        $this->assign('list', $list);
        $array = array();
         if ($attributeData) {
@@ -630,6 +644,7 @@ class StoreAction extends UserAction{
 		$intro = isset($_POST['intro']) ? $_POST['intro'] : '';
 		$attribute = isset($_POST['attribute']) ? htmlspecialchars_decode($_POST['attribute']) : '';
         $couponlist= isset($_POST['couponlist']) ? htmlspecialchars_decode($_POST['couponlist']) : '';
+        $discounts= isset($_POST['discounts']) ? htmlspecialchars_decode($_POST['discounts']) : '';
 		$norms = isset($_POST['norms']) ? htmlspecialchars_decode($_POST['norms']) : '';
 		$images = isset($_POST['images']) ? htmlspecialchars_decode($_POST['images']) : '';
 		$sort = isset($_POST['sort']) ? intval($_POST['sort']) : 100;
@@ -724,6 +739,19 @@ class StoreAction extends UserAction{
                     $data['pid']=$pid;
                     $model->add($data);
                 }
+            }
+        }
+	    M("product_discount")->where(array('pid' => $pid))->delete();
+		if(!empty($discounts))
+        {
+            $discounts=json_decode($discounts,true);
+            foreach($discounts as $item)
+            {
+                $data=$item;
+                $data['token']=$token;
+                $data['pid']=$pid;
+                M("product_discount")->add($data);
+                
             }
         }
 		if (!empty($norms)) {

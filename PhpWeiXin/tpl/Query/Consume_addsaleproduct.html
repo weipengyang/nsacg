@@ -69,7 +69,6 @@
                 columns: [          
                 { display: '编号', name: '编号', width: 80 },
                 { display: '名称', name: '名称', width: 120 },
-                { display: '批发价', name: '一级批发价', width: 80 },
                 { display: '参考售价', name: '参考售价', width: 80 },
                 { display: '品牌', name: '品牌', width: 100 },
                 { display: '规格', name: '规格', width: 100 },
@@ -107,14 +106,14 @@
                         row['结算方式'] = '客付';
                         row['单位'] = data['库存单位'];
                         row['虚增类别'] = '';
-                        row['单价'] = data['参考售价'];
+                        row['单价'] = data['售价'];
                         if (getQueryString('type') == 'purchase' || getQueryString('type') == '1') {
-                            row['单价'] = data['参考进价'];
+                            row['单价'] = data['进价'];
                         }
                         row['折扣'] = 1;
                         row['数量'] = 1;
                         row['金额'] = row['数量'] * row['单价'];
-                        row['成本价'] = data['成本价'];
+                        row['成本价'] = data['成本'];
                         //row['金额'] = row['数量'] * row['单价'] * row['折扣'];
                         row['税率'] = 0;
                         row['税额'] = row['金额'] * row['税率'];
@@ -146,6 +145,7 @@
                 { display: '急件金额', name: '急件金额', minWidth: 80 },
                 { display: '适用车型', name: '适用车型', minWidth: 100 },
                 { display: '产地', name: '产地', minWidth: 100 },
+                { display: '成本', name: '成本价', minWidth: 100,hide:true },
                 { display: '备注', name: '备注', minWidth: 200 }
                 ],
                 url: '/index.php?g=Query&m=Consume&a=getproduct&id='+$("#ID").val(),

@@ -28,7 +28,7 @@ function selectall(name) {
             </a>&nbsp;&nbsp;<a class="delete" href="###" onclick="if(confirm('确定删除吗')){$('#info').submit()}">删除</a>&nbsp;&nbsp; <strong>已经兑换 <span style="color:red">{pigcms:$usecount}</span> 张，剩余<span style="color:red">{pigcms:$leftcount}</span>张未兑换，一共 <span style="color:red">{pigcms:$count}</span>张</strong>
         </div>
         <div class="right">
-            <a href="?g=User&m=Member_card&a=exportCard&id={pigcms:$Think.get.id|intval}" class="btnGrayS vm">导出优惠券兑换码</a>
+            <a href="?g=User&m=Member_card&a=exportcoupon" class="btnGrayS vm">导出优惠券兑换码</a>
         </div>
         <div class="clr"></div>
         <!-- 导入end -->

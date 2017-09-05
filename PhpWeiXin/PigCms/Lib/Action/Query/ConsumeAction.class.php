@@ -2664,6 +2664,15 @@ class ConsumeAction extends Action{
         $pagesize=$_POST['pagesize'];
         $where['1']=1;
 		$card_create_db=M('Member_card_create');
+        if($_POST['shop']&&trim($_POST['shop'])!='')
+        {
+            $where['tp_userinfo.shop']=$_POST['shop'];
+            
+        }
+        else{
+            $where['门店']=array('in',explode(',',cookie('department')));
+
+        }
         if($_POST['startdate']&&trim($_POST['startdate'])!='')
         {
             $where['tp_userinfo.getcardtime']=array('egt',strtotime($_POST['startdate']));
@@ -2687,6 +2696,7 @@ class ConsumeAction extends Action{
             $searchwhere['number']=array('like',$searchkey);
             $searchwhere['tel']=array('like',$searchkey);
             $searchwhere['carno']=array('like',$searchkey);
+            $searchwhere['shop']=array('like',$searchkey);
             $searchwhere['carno1']=array('like',$searchkey);
             $searchwhere['carno2']=array('like',$searchkey);
             $searchwhere['truename']=array('like',$searchkey);
@@ -2722,7 +2732,7 @@ class ConsumeAction extends Action{
             $where['coupon_id']=$_POST['coupontype'];
             
         }
-        if($_POST['sfgq']&&trim($_POST['sfgq'])!='')
+        if(trim($_POST['sfgq'])!='')
         {
             if($_POST['sfgq']=='1'){
              $where['over_time']=array('lt',time());
@@ -2731,7 +2741,7 @@ class ConsumeAction extends Action{
            }
             
         }
-        if($_POST['sfsy']&&trim($_POST['sfsy'])!='')
+        if(trim($_POST['sfsy'])!='')
         {
             $where['is_use']=$_POST['sfsy'];
             

@@ -89,8 +89,10 @@
                 };
                 $.post('/index.php?g=Wap&m=Store&a=getcoupon&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData,
                 function (data) {
-                    $.toast(data);
-                    location.href = location.href;
+                    $.alert(data);
+                    setTimeout(function () {
+                        location.href = location.href;
+                    },1200);
                 });
             });
             $('.icon-saoma').click(function () {

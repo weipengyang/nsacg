@@ -18,13 +18,13 @@
                 <tr>
                     <th>兑换券位数：</th>
                     <td>
-                        <input type="text" class="px" id="weishu" value="20" name="weishu">&nbsp;位
+                        <input type="text" class="px" id="weishu" value="10" name="weishu">&nbsp;位
                     </td>
                 </tr>
                 <tr>
                     <th>类型标示：</th>
                     <td>
-                        <input type="text" class="px" id="type" value="20" name="type">
+                        <input type="text" class="px" id="type" value="X" name="type">
                     </td>
                 </tr>
                 <tr>
@@ -34,9 +34,15 @@
                     </td>
                 </tr>
                 <tr>
-                    <th>有效期：</th>
+                    <th>兑换活动有效期：</th>
                     <td>
                         <input type="text" class="px" id="days" value="30" name="days">&nbsp;天
+                    </td>
+                </tr>
+                <tr>
+                    <th>每人限兑：</th>
+                    <td>
+                        <input type="text" class="px" id="limitnum" value="2" name="limitnum">&nbsp;次
                     </td>
                 </tr>
                 <tr>
@@ -47,6 +53,7 @@
                                 <tr>
                                     <th>券名称</th>
                                     <th>赠送数量(张)</th>
+                                    <th>有效期</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -54,8 +61,10 @@
                                     <tr>
                                         <td>{pigcms:$list.title}</td>
                                         <td>
-                                            <input type="text" name="{pigcms:$list.id}" value="{pigcms:$list.num}" pid="{pigcms:$list.id}" class="px" style="width:150px;" />
-
+                                            <input type="text" name="{pigcms:$list.id}" value="{pigcms:$list.num}" pid="{pigcms:$list.id}" class="couponinfo px" style="width:150px;" />
+                                        </td>
+                                        <td>
+                                         <input type="text" class="couponlimitday px" value="10" style="width:150px;" />
                                         </td>
                                     </tr>
                                 </volist>
@@ -82,10 +91,12 @@
       var name = $("#name").val();
       var type = $("#type").val();
       var days = $("#days").val();
-      $("#couponlist :text").each(function (i, a) {
+      var limitnum = $("#limitnum").val();
+      $("#couponlist tr:gt(0)").each(function (i, a) {
           var coupon = {};
-          coupon.num = $(this).val();
-          coupon.id = $(this).attr("pid");
+          coupon.num = $(this).find(".couponinfo").val();
+          coupon.id = $(this).find(".couponinfo").attr("pid");
+          coupon.days = $(this).find(".couponlimitday").val();
           couponlist.push(coupon);
       });
       var submitData = {
@@ -93,6 +104,7 @@
           weishu: weishu,
           num: num,
           name: name,
+          limitnum: limitnum,
           type: type,
           days: days
       };

@@ -37,117 +37,130 @@ editor = K.create('#useinfo', {
 <script src="{pigcms::RES}/js/date/WdatePicker.js"></script>
 <div class="content">
         <div class="cLineB">
-			<h4>{pigcms:$thisCard.cardname}：发布礼品券 <span class="FAQ">发布积分兑换礼品信息</span></h4>
+			<h4>{pigcms:$thisCard.cardname}：发布积分兑换信息</h4>
 			<a href="javascript:history.go(-1);" class="right btnGrayS vm" style="margin-top:-27px">返回</a>
 		</div>
          
           <form method="post" action="" enctype="multipart/form-data">
           <div class="msgWrap form">
             <table class="userinfoArea" border="0" cellspacing="0" cellpadding="0" width="100%">
-              <tbody>
-				<tr>
-              		<th>礼品券名称：</th>
-              		<td><input type="input" class="px" id="title" value="{pigcms:$vip.title}" name="title" style="width:400px;"> </td>
-              	</tr>
-                  <tr>
-                      <th>有效期：</th>
-                      <td>
-                          <input type="input" class="px" id="statdate" value="<if condition=" $vip['statdate'] neq false">{pigcms:$vip.statdate|date="Y-m-d H:i:s",###}</if>" onclick="WdatePicker()" name="statdate"> （含）到
-                          <input type="input" class="px" id="enddate" value="<if condition=" $vip['enddate'] neq false">{pigcms:$vip.enddate|date="Y-m-d H:i:s",###}</if>" name="enddate" onclick="WdatePicker()">（含）
-                      </td>
-                  </tr>
+                <tbody>
+                    <tr>
+                        <th>礼品券名称：</th>
+                        <td><input type="input" class="px" id="title" value="{pigcms:$vip.title}" name="title" style="width:400px;"> </td>
+                    </tr>
+                    <tr>
+                        <th>有效期：</th>
+                        <td>
+                            <input type="input" class="px" id="statdate" value="<if condition=" $vip['statdate'] neq false">{pigcms:$vip.statdate|date="Y-m-d H:i:s",###}</if>" onclick="WdatePicker()" name="statdate"> （含）到
+                            <input type="input" class="px" id="enddate" value="<if condition=" $vip['enddate'] neq false">{pigcms:$vip.enddate|date="Y-m-d H:i:s",###}</if>" name="enddate" onclick="WdatePicker()">（含）
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>兑换礼品所需积分：</th>
+                        <td>
+                            <input type="input" class="px" id="title" value="{pigcms:$vip.integral}" name="integral" style="width:50px;"> 积分				　
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>等级限制：</th>
+                        <td>
+                          <select id="gradelimit" name="gradelimit">
+                            <volist id="grade" name="grades">
+                             <option value="{pigcms:$grade.等级}" 
+                            <if condition="$vip['gradelimit'] eq $grade['等级']">selected='true'</if> 
+                            >{pigcms:$grade.等级}
+                           </option>
+                          </volist>
+                    </select>(及以上能兑换)				　
+                    </td>
+                    </tr>
+                    <tr id="coupon">
+                        <td colspan="2">
+                            <table class="userinfoArea" id="couponlist" border="0" cellspacing="0" cellpadding="0" width="70%">
+                                <thead>
+                                    <tr>
+                                        <th>券名称</th>
+                                        <th>数量(张)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <volist id="list" name="list">
+                                        <tr>
+                                            <td>{pigcms:$list.title}</td>
+                                            <td>
+                                                <input type="text" name="{pigcms:$list.cid}" value="{pigcms:$list.num}" pid="{pigcms:$list.id}" class="px" style="width:150px;" />
+                                            </td>
+                                        </tr>
+                                    </volist>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>对应项目编码：</th>
+                        <td>
+                            <input type="input" class="px" id="code" value="{pigcms:$vip.code}" name="code" style="width:50px;">
+                        </td>
+                    </tr>
 
-				<tr>
-					<th>兑换礼品所需积分：</th>
-					<td><input type="input" class="px" id="title" value="{pigcms:$vip.integral}" name="integral" style="width:50px;"> 积分				　
-				</td>
-				</tr>
-                  <tr id="coupon" >
-                      <td colspan="2">
-                          <table class="userinfoArea" id="couponlist" border="0" cellspacing="0" cellpadding="0" width="70%">
-                              <thead>
-                                  <tr>
-                                      <th>券名称</th>
-                                      <th>数量(张)</th>
-                                  </tr>
-                              </thead>
-                              <tbody>
-                                  <volist id="list" name="list">
-                                      <tr>
-                                          <td>{pigcms:$list.title}</td>
-                                          <td>
-                                              <input type="text" name="{pigcms:$list.cid}" value="{pigcms:$list.num}" pid="{pigcms:$list.id}" class="px" style="width:150px;" />
-                                          </td>
-                                      </tr>
-                                  </volist>
-                              </tbody>
-                          </table>
-                      </td>
-                  </tr>
-                  <tr>
-                      <th>对应项目编码：</th>
-                      <td>
-                          <input type="input" class="px" id="code" value="{pigcms:$vip.code}" name="code" style="width:50px;"> 				　
-                      </td>
-                  </tr>
+                    <tr>
+                        <th>使用有效：</th>
+                        <td><input type="text" class="px" id="days" value="{pigcms:$vip.days}" name="days" style="width:100px;">天（从兑换当天算起） </td>
+                    </tr>
+                    <tr>
+                        <th>库存：</th>
+                        <td>
+                            <input type="input" class="px" id="people" value="{pigcms:$vip.people}" name="people" style="width:50px;"> 张				　
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>销量基数：</th>
+                        <td>
+                            <input type="input" class="px" id="basenum" value="{pigcms:$vip.basenum}" name="basenum" style="width:50px;"> 张				　
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>每人限兑数量：</th>
+                        <td>
+                            <input type="input" class="px" id="total" value="{pigcms:$vip.total}" name="total" style="width:50px;"> 张				　
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>优惠劵图标：</th>
+                        <td>
+                            <img src="<if condition=" $vip.pic eq '' ">/tpl/User/default/common/images/cart_info/lipin.jpg<else/>{pigcms:$vip.pic}</if>" id="pic_src" style="max-width:200px;"><br />
+                            <input type="text" name="pic" id="pic" value="<if condition=" $vip.pic eq '' ">/tpl/User/default/common/images/cart_info/lipin.jpg<else/>{pigcms:$vip.pic}</if>" class="px" style="width:200px;">
+                            <script src="/tpl/static/upyun.js"></script>
+                            <a href="###" onclick="upyunPicUpload('pic',720,400,'{pigcms:$token}')" class="a_upload">上传</a>
+                            <a href="###" onclick="viewImg('pic')">预览</a>[720*400]
+                        </td>
+                    </tr>
+                    <tr>
+                        <th valign="top">购买说明：</th>
+                        <td><textarea name="info" id="info" rows="5" style="width: 410px; height: 250px; display: none;">{pigcms:$vip.info}</textarea></td>
+                    </tr>
 
-                  <tr>
-                      <th>使用有效：</th>
-                      <td><input type="text" class="px" id="days" value="{pigcms:$vip.days}" name="days" style="width:100px;">天（从兑换当天算起） </td>
-                  </tr>
-                  <tr>
-                      <th>库存：</th>
-                      <td>
-                          <input type="input" class="px" id="people" value="{pigcms:$vip.people}" name="people" style="width:50px;"> 张				　
-                      </td>
-                  </tr>
-                  <tr>
-                      <th>销量基数：</th>
-                      <td>
-                          <input type="input" class="px" id="basenum" value="{pigcms:$vip.basenum}" name="basenum" style="width:50px;"> 张				　
-                      </td>
-                  </tr>
-                  <tr>
-                      <th>每人限兑数量：</th>
-                      <td>
-                          <input type="input" class="px" id="total" value="{pigcms:$vip.total}" name="total" style="width:50px;"> 张				　
-                      </td>
-                  </tr>
-<tr>
-  <th>优惠劵图标：</th>
-  <td>
-  <img src="<if condition="$vip.pic eq ''">/tpl/User/default/common/images/cart_info/lipin.jpg<else/>{pigcms:$vip.pic}</if>" id="pic_src"style="max-width:200px;"><br/>
-  <input type="text" name="pic" id="pic" value="<if condition="$vip.pic eq ''">/tpl/User/default/common/images/cart_info/lipin.jpg<else/>{pigcms:$vip.pic}</if>" class="px" style="width:200px;"> 
-  <script src="/tpl/static/upyun.js"></script>
-  <a href="###" onclick="upyunPicUpload('pic',720,400,'{pigcms:$token}')" class="a_upload">上传</a> 
-  <a href="###" onclick="viewImg('pic')">预览</a>[720*400]
-  </td>
-</tr>        
-              	<tr>
-              		<th valign="top">购买说明：</th>
-              		<td><textarea name="info" id="info" rows="5" style="width: 410px; height: 250px; display: none;">{pigcms:$vip.info}</textarea></td>
-              		</tr>
-
-                  <tr>
-                      <th valign="top">使用说明：</th>
-                      <td>
-                          <textarea name="useinfo" id="useinfo" rows="5" style="width: 410px; height: 250px; display: none;">{pigcms:$vip.useinfo}</textarea>
-                      </td>
-                  </tr>  
-                  <tr>
-                      <th>是否启用：</th>
-                      <td height="35">
-                          <label>
-                              <input type="radio"<if condition="$vip['ispublic'] eq '1' or $vip['ispublic'] eq ''"> checked="checked" </if> name="ispublic" class="attr" value="1">
-                              启用
-                          </label>
-                          <label>
-                              <input type="radio"<if condition="$vip['ispublic'] eq '0'"> checked="checked"</if> name="ispublic" class="attr" value="0">
-                              不启用
-                          </label>
-                      </td>
-                  </tr>
-              		<th></th>
+                    <tr>
+                        <th valign="top">使用说明：</th>
+                        <td>
+                            <textarea name="useinfo" id="useinfo" rows="5" style="width: 410px; height: 250px; display: none;">{pigcms:$vip.useinfo}</textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>是否启用：</th>
+                        <td height="35">
+                            <label>
+                                <input type="radio"<if condition="$vip['ispublic'] eq '1' or $vip['ispublic'] eq ''"> checked="checked" </if> name="ispublic" class="attr" value="1">
+                                启用
+                            </label>
+                            <label>
+                                <input type="radio"<if condition="$vip['ispublic'] eq '0'"> checked="checked"</if> name="ispublic" class="attr" value="0">
+                                不启用
+                            </label>
+                        </td>
+                    </tr>
+<th></th>
               		<td><button type="submit" name="button" class="btnGreen">保存</button>　<a href="javascript:history.go(-1);" class="btnGray vm">取消</a></td>
               		</tr>
               	</tbody>

@@ -66,12 +66,16 @@
                             <div class="row">
                                 <div class="col-50"></div>
                                 <div class="col-50">
-                                    <if condition="$coupon['leftcount'] neq 0">
-                                        <a href="#" id="exchange" class="button button-big button-fill" >立即兑换</a>
-                                        <else/>
-                                        <a href="#"  class="button button-big button-fill" style="background-color:#B2B2B2">已兑换完</a>
+                                    <if condition="$coupon['gradelimit'] elt $user['等级']">
+                                        <if condition="$coupon['leftcount'] neq 0">
+                                            <a href="#" id="exchange" class="button button-big button-fill">立即兑换</a>
+                                            <else />
+                                            <a href="#" class="button button-big button-fill" style="background-color:#B2B2B2">已兑换完</a>
                                         </if>
-                                    </div>
+                                        <else/>
+                                        <a href="#" class="button button-big button-fill" style="background-color:#B2B2B2">星级不够</a>
+                                    </if>
+</div>
                             </div>
                         </div>
                     </div>

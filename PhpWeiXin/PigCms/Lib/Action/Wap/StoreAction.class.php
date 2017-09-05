@@ -2818,12 +2818,16 @@ class StoreAction extends WapAction{
                 exit;
                 
             }
-            $list=M('member_lottery_detail')->where(array('coupon_num'=>$couponnum,'token'=>$this->token))->select();
+            $count=M('member_lottery')->where(array('lotteryid'=>$lottery['lotteryid'],'token' => $this->token,'wecha_id'=>$this->wecha_id))->count();
+            if($count>=$lottery['limitnum']){
+                echo '该活动每人限兑换'.$lottery['limitnum'].'次';
+                exit;
+            }
+            $list=M('member_lottery_detail')->where(array('coupon_num'=>$lottery['lotteryid'],'token'=>$this->token))->select();
             $card=M('member_card_create')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
             if($list)
             {
                 foreach($list as $c){
-                    $mycoupon=M("member_card_coupon")->where(array('id'=>$c['coupon_id']))->find();
                     $data['token']		= $this->token;
                     $data['wecha_id']	= $this->wecha_id;
                     $data['coupon_id']	= $c['coupon_id'];
@@ -2831,7 +2835,7 @@ class StoreAction extends WapAction{
                     $data['coupon_type']= '1';
                     $data['cardid']		= $card['cardid'];
                     $data['add_time']	= time(); 
-                    $days=$mycoupon['days'];
+                    $days=$c['days'];
                     $data['over_time']=strtotime(date('Y-m-d',time())."+$days day");
                     if(intval($c['num'])>0){
                         for($i=0;$i<intval($c['num']);$i++){
@@ -3897,6 +3901,9 @@ class StoreAction extends WapAction{
         $now 		= time();
     	$where 	= array('token'=>$this->token,'cardid'=>$thisCard['id'],'statdate'=>array('lt',$now),'enddate'=>array('gt',$now),'ispublic'=>'1');
     	$data	= M('Member_card_integral')->where($where)->order('create_time desc')->select();
+         //$card=M('member_card_create')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
+         //$user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
+         //$where['gradelimit']=array('elt',$user['等级']);
         foreach ($data as $k=>$n){
     		$data[$k]['info']	= html_entity_decode($n['info']);
     		$data[$k]['count'] 	= 1;
@@ -4046,6 +4053,9 @@ class StoreAction extends WapAction{
     	$data 	= array();
         $now 		= time();
     	$where 	= array('token'=>$this->token,'statdate'=>array('lt',$now),'enddate'=>array('gt',$now),'ispublic'=>'1');
+        //$card=M('member_card_create')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
+        //$user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
+        //$where['gradelimit']=array('elt',$user['等级']);
     	$data	= M('Member_card_integral')->where($where)->order('create_time desc')->select();
         foreach ($data as $k=>$n){
     		$data[$k]['info']	= html_entity_decode($n['info']);
@@ -4064,8 +4074,11 @@ class StoreAction extends WapAction{
         $leftcount=$data['people']-$data['basenum']-$data['num'];
         $data['leftcount'] 	= $leftcount>0?$leftcount:0;//剩余多少张
         $remainSeconds=$data['enddate']-time();
+        $card=M('member_card_create')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->find();
+        $user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
     	$this->assign('remainSeconds',$remainSeconds);
     	$this->assign('metaTitle',$data['title']);
+    	$this->assign('user',$user);
     	$this->assign('coupon',$data);
     	$this->display();
     } 

@@ -168,24 +168,34 @@ class Member_cardAction extends UserAction{
 		}
 	}
     public function lottery(){
-        $db = M('member_lottery');
-        $count		= $db->where(array('token'=>$this->token))->count();
-        $usecount		= $db->where(array('token'=>$this->token,'usetime'=>array('gt',0)))->count();
-        $leftcount=$count-$usecount;
-		$Page       = new Page($count,15);
-		$lottery 	= $db->where(array('token'=>$this->token))->limit($Page->firstRow.','.$Page->listRows)->select();
-		$this->assign('count',$count);
-		$this->assign('usecount',$usecount);
-		$this->assign('leftcount',$leftcount);
-		$this->assign('lottery',$lottery);
-		$this->assign('page',$Page->show());
-        $this->display();
+        if(IS_POST){
+            for ($i=0;$i<20;$i++){
+				$thisInfo=M('member_lottery')->where(array('id'=>$_POST['id_'.$i]))->find();
+				if ($thisInfo){
+					M('member_lottery')->where(array('id'=>$_POST['id_'.$i]))->delete();
+				}
+			}
+			$this->success('删除成功',U('Member_card/lottery'));
+        }else{
+            $db = M('member_lottery');
+            $count		= $db->where(array('token'=>$this->token))->count();
+            $usecount		= $db->where(array('token'=>$this->token,'usetime'=>array('gt',0)))->count();
+            $leftcount=$count-$usecount;
+            $Page       = new Page($count,15);
+            $lottery 	= $db->where(array('token'=>$this->token))->limit($Page->firstRow.','.$Page->listRows)->select();
+            $this->assign('count',$count);
+            $this->assign('usecount',$usecount);
+            $this->assign('leftcount',$leftcount);
+            $this->assign('lottery',$lottery);
+            $this->assign('page',$Page->show());
+            $this->display();
+        }
     }
     public function lottery_add(){
        
         $db = M('member_card_coupon');
 		//$uid = (int)$_GET['uid'];
-		$list= $db->where(array('token'=>$this->token,'attr'=>'1','ispublic'=>'1'))->field('id,title,type,days')->select();
+		$list= $db->where(array('token'=>$this->token,'ispublic'=>'1'))->field('id,title,type,days')->select();
         $this->assign('list',$list);
         if(IS_POST){
           $db = M('member_lottery');
@@ -193,10 +203,13 @@ class Member_cardAction extends UserAction{
           $weishu=intval($_POST['weishu']);
           $num=intval($_POST['num']);
           $days=intval($_POST['days']);
+          $limitnum=intval($_POST['limitnum']);
           $data['name']=$_POST['name'];
           $type=$_POST['type'];
           $data['token']=$this->token;
           $data['addtime']=time();
+          $data['limitnum']=$limitnum;
+          $data['lotteryid']=$this->getcode(20,0,1);
           $data['overtime']=strtotime(date('Y-m-d',time())."+$days day");
           for($i=0;$i<$num;$i++)
           {
@@ -204,14 +217,16 @@ class Member_cardAction extends UserAction{
                $data['lottery_num']=date('Ymd',time()).trim($type,' ').str_pad($i+1,5,'0',STR_PAD_LEFT);
                $data['coupon_num']=$couponnum;
                $db->add($data);
-              foreach($couponlist as $c)
-              {
-                  if($c['num']){
-                      $row['coupon_num']=$couponnum;
-                      $row['coupon_id']=$c['id'];
-                      $row['num']=$c['num'];
-                      M('member_lottery_detail')->add($row);
-                  }
+              
+          }
+          foreach($couponlist as $c)
+          {
+              if($c['num']){
+                  $row['coupon_num']=$data['lotteryid'];
+                  $row['coupon_id']=$c['id'];
+                  $row['num']=$c['num'];
+                  $row['days']=$c['days'];
+                  M('member_lottery_detail')->add($row);
               }
           }
           echo '生成成功';
@@ -650,7 +665,7 @@ class Member_cardAction extends UserAction{
 				$data=$member_card_inergral_db->where(array('token'=>$this->token,'id'=>$this->_get('itemid')))->find();
 			}else {
 				$data['statdate']=$now;
-				$data['enddate']=$now+10*24*3600;;
+				$data['enddate']=$now+10*24*3600;
 			}
             $list= M('Member_card_coupon')->where(array('token'=>$this->token))->field("id cid,title,type,0 num")->select();
             $couponlist=M('member_card_coupon_integral')->where(array('iid' => $_GET['itemid']))->select();
@@ -665,6 +680,8 @@ class Member_cardAction extends UserAction{
                     }
                 }
             }
+            $grades=M('客户等级','dbo.','difo')->select();
+			$this->assign('grades',$grades);
 			$this->assign('list',$list);
 			$this->assign('vip',$data);
 			$this->display();
@@ -1702,6 +1719,56 @@ class Member_cardAction extends UserAction{
 		}
 	
 	}
+	public function exportcoupon(){
+		header("Content-Type: text/html; charset=utf-8");
+		header("Content-type:application/vnd.ms-execl");
+		header("Content-Disposition:filename=优惠券兑换码.xls");
+        
+		$id = $this->_get('id','intval');
+		$token = $this->token;
+
+		$arr = array(
+			array('en'=>'lottery_num','cn'=>'编号'),
+			array('en'=>'name','cn'=>'名称'),
+			array('en'=>'coupon_num','cn'=>'兑换码')
+			
+		);
+
+		//$i = 0;
+		$fieldCount = count($arr);
+		$s = 0;
+		//thead
+		foreach ($arr as $f){
+			if ($s<$fieldCount-1){
+				echo iconv('utf-8','gbk',$f['cn'])."\t";
+			}else {
+				echo iconv('utf-8','gbk',$f['cn'])."\n";
+				
+			}
+			$s++;
+		}        
+        $info = M('member_lottery')->field('lottery_num,name,coupon_num')->select();
+        $i=0;
+        foreach($info as $key=>$val){
+            $j=0;
+            foreach ($arr as $field){
+                $fieldValue = iconv('utf-8','gbk',$val[$field['en']]);						
+                if ($j<$fieldCount-1){
+                    echo $fieldValue."\t";
+                }else {
+                    echo $fieldValue."\n";
+                }
+                $j++;
+                
+            }
+            //$i++;
+        }
+        
+    }
+		
+		
+	
+	
 	
 //删除记录
 	public function payRecord_del(){

@@ -1875,7 +1875,7 @@ class CardAction extends WapAction{
                     //$paybill['车牌号码']=$wx['车牌号码'];
                     $paybill['门店']= $this->getshopname();
                     M('应收应付单','dbo.','difo')->add($paybill);
-                    
+                                        
                     $bianhao=$this->getcodenum("BI");
                     $data['单据编号']=$bianhao;
                     $data['ID']=$this->getcode(20,1,1);

@@ -258,7 +258,9 @@ class StoreAction extends WapAction{
 			
             $user['paypass']=md5($password);
             $user['token']=$this->token;
-            $user['shop']=$this->getshopname();
+            $latitude=$_POST['latitude'];
+            $longitude=$_POST['longitude'];
+            $user['shop']=$this->getshopnamebypoint($latitude,$longitude);
             $user['wecha_id']=$this->wecha_id;
             $twid = $this->randstr{rand(0, 51)} . $this->randstr{rand(0, 51)} . $this->randstr{rand(0, 51)}.$this->randstr{rand(0, 51)}.mt_rand(1000,9999);
 			$this->savelog(2, $this->_twid, $this->token, $this->_cid);
@@ -366,7 +368,10 @@ class StoreAction extends WapAction{
             echo '注册成功'; exit;
 			
 		} else {
+            $jssdk = new JSSDK($this->wxuser['appid'],$this->wxuser['appsecret']);
+            $signPackage = $jssdk->GetSignPackage();
 			$this->assign('metaTitle', '会员注册');
+			$this->assign('signPackage', $signPackage);
 			$this->display(); 
 		}
 
@@ -512,28 +517,31 @@ class StoreAction extends WapAction{
     }
 }
     private function MessageTip($carinfo,$mendian,$wxlb){
-    $data['车主']=$carinfo['车主'];
-    $data['车牌号码']=$carinfo['车牌号码'];
-    $data['跟踪时间']=date('Y-m-d H:i',time());
-    $data['登记人']='系统';
-    $data['是否反馈']='否';
-    $data['是否成交']='否';
-    $data['门店']=$mendian;
-    $data['跟踪类型']='到店消费';
-    $data['年份']=date('Y');
-    $model=new templateNews();
-    //$booturl='https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7';
-    $booturl='https://oapi.dingtalk.com/robot/send?access_token=4ed5a797b4c6378df07b1e2b4f9eecfcb5e52e719a74aa38b3e67952fca1f445';
-    if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
-        if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
-            $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
-            $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已到'.$mendian.$wxlb;
-            $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
-            //$this->weixinmessage($content,$carinfo['服务顾问']);
-            $data['类别']='保险';
-            $data['内容']=$content;
-            $id=M('客户跟踪','dbo.','difo')->add($data);
-            $msgdata='{
+        $data['车主']=$carinfo['车主'];
+        $data['车牌号码']=$carinfo['车牌号码'];
+        $data['跟踪时间']=date('Y-m-d H:i',time());
+        $data['登记人']='系统';
+        $data['是否反馈']='否';
+        $data['是否成交']='否';
+        $data['门店']=$mendian;
+        $data['跟踪类型']='到店消费';
+        $data['年份']=date('Y');
+        $model=new templateNews();
+        $booturl='https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7';
+        $tangkeng='https://oapi.dingtalk.com/robot/send?access_token=9e3c1b9e17029774dc6f2749a82eb01d61555daa57c9cfbacc5b129d141d55e8';
+        $qufu='https://oapi.dingtalk.com/robot/send?access_token=ca22bf1b681e1b7d842c8ee8741dd4ff392934b1ffd0ae35530f9d69a61bfed1';
+        if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
+            if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
+                $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
+                $content.=date('Y-m-d',strtotime($carinfo['交保到期'])).'日到期,现车辆已到'.$mendian.$wxlb;
+                $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
+                //$this->weixinmessage($content,$carinfo['服务顾问']);
+                
+                $data['类别']='保险';
+                $data['内容']=$content;
+                $id=M('客户跟踪','dbo.','difo')->add($data);
+                $msgdata='{
+                "title": "保险跟踪信息", 
                 "actionCard": {
                     "title": "保险跟踪信息", 
                     "text": "'.$content.'", 
@@ -552,16 +560,22 @@ class StoreAction extends WapAction{
                 }, 
                "msgtype": "actionCard",
                 }';
-            $model->postMessage($booturl,$msgdata);
-
-            $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'推广方案'))->select();
-            if(count($projects)>0){
-                $membercar=M('member_card_car')->where(array('carno'=>$carinfo['车牌号码']))->find();
-                foreach($projects as $project){
-                    if($membercar){
-                        $this->weixin->send($project['内容'],$membercar['wecha_id']);
-                    }
-                    $msgdata='{
+                $model->postMessage($booturl,$msgdata);
+                if($mendian=='区府店')
+                {
+                    $model->postMessage($qufu,$msgdata);
+                }
+                else{
+                    $model->postMessage($tangkeng,$msgdata);
+                }
+                $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'推广方案'))->select();
+                if(count($projects)>0){
+                    $membercar=M('member_card_car')->where(array('carno'=>$carinfo['车牌号码']))->find();
+                    foreach($projects as $project){
+                        if($membercar){
+                            $this->weixin->send($project['内容'],$membercar['wecha_id']);
+                        }
+                        $msgdata='{
                         "msgtype": "text", 
                         "text": {
                             "content": "'.$project['内容'].'"
@@ -570,26 +584,31 @@ class StoreAction extends WapAction{
                             "isAtAll": true
                         }
                         }';
-                    $model->postMessage($booturl,$msgdata);
-                    //$this->weixinmessage($project['内容'],$carinfo['服务顾问']);
-                    $data['类别']='推广信息';
-                    $data['内容']=$project['内容'];
-                    M('客户跟踪','dbo.','difo')->add($data);
+                        $model->postMessage($booturl,$msgdata);
+                        if($mendian=='区府店'){
+                            $model->postMessage($qufu,$msgdata);
+                        }else{
+                            $model->postMessage($tangkeng,$msgdata);
+                        }
+                        //$this->weixinmessage($project['内容'],$carinfo['服务顾问']);
+                        //$data['类别']='推广信息';
+                        //$data['内容']=$project['内容'];
+                        //M('客户跟踪','dbo.','difo')->add($data);
+                    }
                 }
             }
         }
-    }
-    if(date('Y-m-d',strtotime($carinfo['年检日期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['年检日期']))!='1970-01-01'){
-        if(strtotime($carinfo['年检日期'])-(time()+90*24*3600)<0){
-            $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
-            $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
-            $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
-            //$this->weixinmessage($content,$carinfo['服务顾问']);
-           
-            $data['类别']='年审';
-            $data['内容']=$content;
-            $id=M('客户跟踪','dbo.','difo')->add($data);
-            $msgdata='{
+        if(date('Y-m-d',strtotime($carinfo['年检日期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['年检日期']))!='1970-01-01'){
+            if(strtotime($carinfo['年检日期'])-(time()+90*24*3600)<0){
+                $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆年检于';
+                $content.=date('Y-m-d',strtotime($carinfo['年检日期'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
+                $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
+                //$this->weixinmessage($content,$carinfo['服务顾问']);
+                
+                $data['类别']='年审';
+                $data['内容']=$content;
+                $id=M('客户跟踪','dbo.','difo')->add($data);
+                $msgdata='{
                 "actionCard": {
                     "title": "年审跟踪信息", 
                     "text": "'.$content.'", 
@@ -608,17 +627,21 @@ class StoreAction extends WapAction{
                 }, 
                "msgtype": "actionCard",
                 }';
-            $model->postMessage($booturl,$msgdata);
-
-            $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'年审','跟踪类型'=>'推广方案'))->select();
-            if(count($projects)>0){
-                $membercar=M('member_card_car')->where(array('carno'=>$carinfo['车牌号码']))->find();
-                foreach($projects as $project){
-                    if($membercar){
-                        $this->weixin->send($project['内容'],$membercar['wecha_id']);
-                    }
-                    //$this->weixinmessage($project['内容'],$carinfo['服务顾问']);
-                    $msgdata='{
+                $model->postMessage($booturl,$msgdata);
+                if($mendian=='区府店'){
+                    $model->postMessage($qufu,$msgdata);
+                }else{
+                    $model->postMessage($tangkeng,$msgdata);
+                }
+                $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'年审','跟踪类型'=>'推广方案'))->select();
+                if(count($projects)>0){
+                    $membercar=M('member_card_car')->where(array('carno'=>$carinfo['车牌号码']))->find();
+                    foreach($projects as $project){
+                        if($membercar){
+                            $this->weixin->send($project['内容'],$membercar['wecha_id']);
+                        }
+                        //$this->weixinmessage($project['内容'],$carinfo['服务顾问']);
+                        $msgdata='{
                         "msgtype": "text", 
                         "text": {
                             "content": "'.$project['内容'].'"
@@ -627,34 +650,24 @@ class StoreAction extends WapAction{
                             "isAtAll": true
                         }
                         }';
-                    $model->postMessage($booturl,$msgdata);
-                    $data['类别']='推广信息';
-                    $data['内容']=$project['内容'];
-                    M('客户跟踪','dbo.','difo')->add($data);
+                        //$model->postMessage($booturl,$msgdata);
+                        //$data['类别']='推广信息';
+                        //$data['内容']=$project['内容'];
+                        //M('客户跟踪','dbo.','difo')->add($data);
+                    }
                 }
             }
         }
-    }
-    if(date('Y-m-d',strtotime($carinfo['下次保养']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['下次保养']))!='1970-01-01'){
-        if(strtotime($carinfo['下次保养'])<=time()&&strtotime($carinfo['下次保养'])+60*24*3600>=time()){
-            $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
-            $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
-            $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
-            //$this->weixinmessage($content,$carinfo['服务顾问']);
-            $msgdata='{
-                "msgtype": "text", 
-                "text": {
-                    "content": "'.$content.'"
-                }, 
-                "at": {
-                    "isAtAll": true
-                }
-                }';
-            $model->postMessage($booturl,$msgdata);
-            $data['类别']='保养';
-            $data['内容']=$content;
-            $id=M('客户跟踪','dbo.','difo')->add($data);
-            $msgdata='{
+        if(date('Y-m-d',strtotime($carinfo['下次保养']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['下次保养']))!='1970-01-01'){
+            if(strtotime($carinfo['下次保养'])<=time()&&strtotime($carinfo['下次保养'])+60*24*3600>=time()){
+                $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保养于';
+                $content.=date('Y-m-d',strtotime($carinfo['下次保养'])).'日到期,现车辆已进厂'.$mendian.$wxlb;
+                $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
+                //$this->weixinmessage($content,$carinfo['服务顾问']);
+                $data['类别']='保养';
+                $data['内容']=$content;
+                $id=M('客户跟踪','dbo.','difo')->add($data);
+                $msgdata='{
                 "actionCard": {
                     "title": "保养跟踪信息", 
                     "text": "'.$content.'", 
@@ -673,11 +686,15 @@ class StoreAction extends WapAction{
                 }, 
                "msgtype": "actionCard",
                 }';
-            $model->postMessage($booturl,$msgdata);
-
+                $model->postMessage($booturl,$msgdata);
+                if($mendian=='区府店'){
+                    $model->postMessage($qufu,$msgdata);
+                }else{
+                    $model->postMessage($tangkeng,$msgdata);
+                }
+            }
         }
     }
-}
 
     private function genwxrecord($price,$carno,$type='AYC10003',$wxlb='蜡水洗车',$shop='',$comment){
     if($shop=='')
@@ -2085,7 +2102,50 @@ class StoreAction extends WapAction{
         }
         return  array_search(min($arr),$arr);
     }
-    private function distance($lat1, $lon1, $lat2,$lon2,$radius = 6378.137)
+    private function getshopnamebypoint($latitude,$longitude){
+        $arr=array();
+        $shops=M('company')->where(array('token'=>$this->token))->select();
+        foreach($shops as $shop){
+            $key=$shop['shortname'];
+            $arr["$key"]=$this->distance($latitude,$longitude,$shop['latitude'],$shop['longitude']);
+        }
+        return  array_search(min($arr),$arr);
+    }
+    /**
+ * 计算两点地理坐标之间的距离
+ * @param  Decimal $longitude1 起点经度
+ * @param  Decimal $latitude1  起点纬度
+ * @param  Decimal $longitude2 终点经度 
+ * @param  Decimal $latitude2  终点纬度
+ * @param  Int     $unit       单位 1:米 2:公里
+ * @param  Int     $decimal    精度 保留小数位数
+ * @return Decimal
+ */
+private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $unit=2, $decimal=2){
+
+    $EARTH_RADIUS = 6370.996; // 地球半径系数
+    $PI = 3.1415926;
+
+    $radLat1 = $latitude1 * $PI / 180.0;
+    $radLat2 = $latitude2 * $PI / 180.0;
+
+    $radLng1 = $longitude1 * $PI / 180.0;
+    $radLng2 = $longitude2 * $PI /180.0;
+
+    $a = $radLat1 - $radLat2;
+    $b = $radLng1 - $radLng2;
+
+    $distance = 2 * asin(sqrt(pow(sin($a/2),2) + cos($radLat1) * cos($radLat2) * pow(sin($b/2),2)));
+    $distance = $distance * $EARTH_RADIUS * 1000;
+
+    if($unit==2){
+        $distance = $distance / 1000;
+    }
+
+    return round($distance, $decimal);
+
+}
+   private function distance($lat1, $lon1, $lat2,$lon2,$radius = 6378.137)
     {
         $rad = floatval(M_PI / 180.0);
 
@@ -3327,7 +3387,7 @@ class StoreAction extends WapAction{
             $userinfo = M("Userinfo")->where(array('token' =>$this->token,'wecha_id'=>$this->wecha_id))->find();
             $carinfo=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->select(); 
             $shopname=null;
-            if(doubleval($userinfo['location_x'])>0&&$userinfo['getlocationtime']>time()-600){
+            if(doubleval($userinfo['location_x'])>0&&$userinfo['getlocationtime']>(time()-600)){
                 $arr=array();
                 $shops=M('company')->where(array('token'=>$this->token))->select();
                 foreach($shops as $shop){

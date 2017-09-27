@@ -936,7 +936,6 @@ class ConsumeAction extends Action{
           $where['_string']='isnull(库存,0)<isnull(警戒下限,0)';
         }
        
-         $cangku=$_POST['shop'];
             $yelist=M('分仓配件库存','dbo.','difo')
                    ->where($where)->limit(($page-1)*$pagesize,$pagesize)
                    ->order("$sortname  $sortorder")
@@ -975,7 +974,7 @@ class ConsumeAction extends Action{
         if($enddate==''){
             $enddate=date('Y-m-d',time());
         }
-        $cangku='主仓库';
+        $cangku='';
         if($_POST['shop']&&$_POST['shop']!='all'){
             $cangku=$_POST['shop'];
         }          
@@ -7935,8 +7934,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $data['跟踪类型']='到店消费';
        $data['年份']=date('Y');
        $model=new templateNews();
-       //$booturl='https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7';
-       $booturl='https://oapi.dingtalk.com/robot/send?access_token=4ed5a797b4c6378df07b1e2b4f9eecfcb5e52e719a74aa38b3e67952fca1f445';
+       $booturl='https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7';
+       $tangkeng='https://oapi.dingtalk.com/robot/send?access_token=9e3c1b9e17029774dc6f2749a82eb01d61555daa57c9cfbacc5b129d141d55e8';
+       $qufu='https://oapi.dingtalk.com/robot/send?access_token=ca22bf1b681e1b7d842c8ee8741dd4ff392934b1ffd0ae35530f9d69a61bfed1';
        if(date('Y-m-d',strtotime($carinfo['交保到期']))!='1900-01-01'&&date('Y-m-d',strtotime($carinfo['交保到期']))!='1970-01-01'){
            if(strtotime($carinfo['交保到期'])-(time()+90*24*3600)<0){
                $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码'].'车辆保险于';
@@ -7968,6 +7968,13 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                "msgtype": "actionCard",
                 }';
                $model->postMessage($booturl,$msgdata);
+               if($mendian=='区府店')
+               {
+                 $model->postMessage($qufu,$msgdata);
+               }
+               else{
+                   $model->postMessage($tangkeng,$msgdata);
+               }
                $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'推广方案'))->select();
                if(count($projects)>0){
                    $membercar=M('member_card_car')->where(array('carno'=>$carinfo['车牌号码']))->find();
@@ -7985,6 +7992,11 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                         }
                         }';
                        $model->postMessage($booturl,$msgdata);
+                       if($mendian=='区府店'){
+                        $model->postMessage($qufu,$msgdata);
+                       }else{
+                           $model->postMessage($tangkeng,$msgdata);
+                       }
                        //$this->weixinmessage($project['内容'],$carinfo['服务顾问']);
                        //$data['类别']='推广信息';
                        //$data['内容']=$project['内容'];
@@ -8023,6 +8035,11 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                "msgtype": "actionCard",
                 }';
                $model->postMessage($booturl,$msgdata);
+                if($mendian=='区府店'){
+                        $model->postMessage($qufu,$msgdata);
+                       }else{
+                           $model->postMessage($tangkeng,$msgdata);
+                }
                $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'年审','跟踪类型'=>'推广方案'))->select();
                if(count($projects)>0){
                    $membercar=M('member_card_car')->where(array('carno'=>$carinfo['车牌号码']))->find();
@@ -8077,7 +8094,11 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                "msgtype": "actionCard",
                 }';
                $model->postMessage($booturl,$msgdata);
-
+                if($mendian=='区府店'){
+                        $model->postMessage($qufu,$msgdata);
+                       }else{
+                           $model->postMessage($tangkeng,$msgdata);
+                       }
            }
        }
    }
@@ -8104,7 +8125,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 if($wxlb!='常规保养'){
                     $baoyang=$carinfo['常规保养数'];
                     $bylc=$carinfo['保养里程'];
-                    if(intval($licheng)-intval($carinfo['保养里程'])>intval($carinfo['常规保养数'])){
+                    if($bylc>0&&intval($licheng)-intval($carinfo['保养里程'])>intval($carinfo['常规保养数'])){
                         $content=$carinfo['客户类别'].$carinfo['联系人'].'的'.$carinfo['车牌号码']."车辆已超过$baoyang 公里未进行保养，本次里程$licheng 公里，上次保养里程$bylc 公里";
                         $content.='现车辆已进厂'.$shop.$wxlb;
                         $content.=',请做好跟踪服务（服务顾问:'.$carinfo['服务顾问'].'）'; 
@@ -8142,8 +8163,15 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                            "msgtype": "actionCard",
                             }';
                         $model=new templateNews();
-                        $booturl='https://oapi.dingtalk.com/robot/send?access_token=4ed5a797b4c6378df07b1e2b4f9eecfcb5e52e719a74aa38b3e67952fca1f445';
+                        $booturl='https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7';
+                        $tangkeng='https://oapi.dingtalk.com/robot/send?access_token=9e3c1b9e17029774dc6f2749a82eb01d61555daa57c9cfbacc5b129d141d55e8';
+                        $qufu='https://oapi.dingtalk.com/robot/send?access_token=ca22bf1b681e1b7d842c8ee8741dd4ff392934b1ffd0ae35530f9d69a61bfed1';
                         $model->postMessage($booturl,$msgdata);
+                        if($shop=='区府店'){
+                        $model->postMessage($qufu,$msgdata);
+                       }else{
+                           $model->postMessage($tangkeng,$msgdata);
+                       }
                     }
                 }
                 $carinfo['里程']=$licheng;

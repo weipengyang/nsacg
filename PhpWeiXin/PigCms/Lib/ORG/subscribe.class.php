@@ -18,7 +18,7 @@ class subscribe {
         $data = S('weixin_access_token');
         if (!empty($data)&&$data->expire_time > time()){
             $access_token = $data->access_token;
-            Log::write('wechat从缓存中获取token->'.$access_token);
+            Log::write('subscribe从缓存中获取token->'.$access_token);
         }
         else{
             $url_get='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->thisWxUser['appid'].'&secret='.$this->thisWxUser['appsecret'];
@@ -28,7 +28,7 @@ class subscribe {
                 $data->expire_time = time() + 7000;
                 $data->access_token = $access_token;
                 S('weixin_access_token',$data);
-                Log::write('wechat重新获取token->'.$access_token);
+                Log::write('subscribe重新获取token->'.$access_token);
 
             }
         } 

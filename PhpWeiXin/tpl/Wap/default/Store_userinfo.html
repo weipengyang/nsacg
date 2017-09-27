@@ -6,6 +6,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <script type='text/javascript' src='http://res.wx.qq.com/open/js/jweixin-1.1.0.js' charset='utf-8'></script>
+
 </head>
 <body>
     <div class="page">
@@ -114,7 +116,65 @@
     </div>
     <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
     <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+
     <script type="text/javascript">
+        wx.config({
+            //debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: "{pigcms:$signPackage['appId']}", // 必填，公众号的唯一标识
+            timestamp: "{pigcms:$signPackage['timestamp']}",
+            nonceStr: "{pigcms:$signPackage['nonceStr']}",
+            signature: "{pigcms:$signPackage['signature']}",// 必填，签名，见附录1
+            jsApiList: [
+                'checkJsApi',
+                'onMenuShareTimeline',
+                'onMenuShareAppMessage',
+                'onMenuShareQQ',
+                'onMenuShareWeibo',
+                'onMenuShareQZone',
+                'hideMenuItems',
+                'showMenuItems',
+                'hideAllNonBaseMenuItem',
+                'showAllNonBaseMenuItem',
+                'translateVoice',
+                'startRecord',
+                'stopRecord',
+                'onVoiceRecordEnd',
+                'playVoice',
+                'onVoicePlayEnd',
+                'pauseVoice',
+                'stopVoice',
+                'uploadVoice',
+                'downloadVoice',
+                'chooseImage',
+                'previewImage',
+                'uploadImage',
+                'downloadImage',
+                'getNetworkType',
+                'openLocation',
+                'getLocation',
+                'hideOptionMenu',
+                'showOptionMenu',
+                'closeWindow',
+                'scanQRCode',
+                'chooseWXPay',
+                'openProductSpecificView',
+                'addCard',
+                'chooseCard',
+                'openCard'
+            ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+        });
+        var latitude, longitude;
+        wx.ready(function () {
+            wx.getLocation({
+                type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+                success: function (res) {
+                    latitude = res.latitude;
+                    longitude = res.longitude;
+                }
+            });
+
+        });
+
         function check1(obj) {
             if (obj.value == '') {
                 $.alert("请输入您的姓名.");
@@ -246,6 +306,8 @@
                 password: password,
                 password2: password2,
                 sex: sex,
+                latitude:latitude,
+                longitude:longitude,
                 action: "index"
             };
             $("#showcard").hide();

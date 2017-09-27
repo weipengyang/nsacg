@@ -214,6 +214,15 @@ class Wechat
        }
        return true;
 	}
+   public function sendnews($content,$openid){
+       if($content!=''){
+           $data='{"touser":"'.$openid.'","msgtype":"news","text":{"content":"'.$content.'"}}';
+           $access_token=$this->get_access_token();
+           $result=$this->curlPost('https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token='.$access_token,$data,0);
+           return $result;
+       }
+       return true;
+	}
 	function curlPost($url, $data,$showError=1){
 		$ch = curl_init();
 		$header = "Accept-Charset: utf-8";

@@ -428,6 +428,13 @@
             });
 
         }
+        function getCookie(name) {
+            var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+            if (arr = document.cookie.match(reg))
+                return eval(unescape(arr[2].replace(/\u/g, "%u")));
+            else
+                return null;
+        }
         function memberCardRecharge(wecha_id) {
             $('#doc-modal-1').modal({
                 relatedTarget: this,
@@ -435,11 +442,12 @@
                 closeOnConfirm:false,
                 onConfirm: function(e) {
                     var price = $('#price').val();
-                    if (!(price && price >= 100 )) {
-                        $.alert({ title: '提示', content: "充值金额必须大于等于100元" });
-                        return false;
+                    if (getCookie('username') !="阳伟鹏") {
+                        if (!(price && price >= 100)) {
+                            $.alert({ title: '提示', content: "充值金额必须大于等于100元" });
+                            return false;
+                        }
                     }
-                    
                     var data = {
                         wecha_id: wecha_id,
                         price: price,

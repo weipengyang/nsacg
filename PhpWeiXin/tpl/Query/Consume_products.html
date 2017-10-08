@@ -324,18 +324,20 @@
                 }
                 },
                 { display: '入库数', name: '入库数量', align: 'center', width: 50,render: function (rowdata, index, value) {
-                    if (value&&value>0)
-                        return '<a href="javascript:void(0);" onclick="viewcrkinfo(\'' + rowdata['编号'] + '\',\'入库\');"><strong>' + value + '</strong></a>';
+                    if (value && value > 0)
+                        value = value;
                     else
-                        return value;
+                        value = 0;
+                     return '<a href="javascript:void(0);" onclick="viewcrkinfo(\'' + rowdata['编号'] + '\',\'入库\');"><strong>' + value + '</strong></a>';
                 }
                 },
                 {
                     display: '出库数', name: '出库数量', width: 60, render: function (rowdata, index, value) {
                         if (value && value > 0)
-                            return '<a href="javascript:void(0);" onclick="viewcrkinfo(\'' + rowdata['编号'] + '\',\'出库\');"><strong>' + value + '</strong></a>';
+                            value = value;
                         else
-                            return value;
+                            value = 0;
+                       return '<a href="javascript:void(0);" onclick="viewcrkinfo(\'' + rowdata['编号'] + '\',\'出库\');"><strong>' + value + '</strong></a>';
                     }
                 },
                 { display: '警戒下限', name: '警戒线', width: 60 },

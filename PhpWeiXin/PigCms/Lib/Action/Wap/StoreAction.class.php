@@ -125,7 +125,7 @@ class StoreAction extends WapAction{
     #region 用户注册
 	/**
 	 * 用户注册
-	 */
+	 */ 
 	public function userinfo(){
         if (IS_POST) {
    		    $tel= isset($_POST['tel']) ? htmlspecialchars($_POST['tel']) : '';
@@ -2555,7 +2555,6 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
 		echo $calCartInfo[0].'|'.$calCartInfo[1];
 	}
 	
-	
 	public function ordersave()
 	{
         $userinfo=M('Userinfo')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
@@ -3367,7 +3366,7 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
             if($shop=='')
                 $shop=$this->getshopname();
             $carno=$_POST['carno'];
-            $this->genwxrecord('40',$carno,'AYC10009','蜡水洗车',$shop);
+            $this->genwxrecord('35',$carno,'AYC10009','蜡水洗车',$shop);
             $wxcount=M('维修','dbo.','difo')->where(array('维修类别'=>'蜡水洗车','门店'=>$shop,'_string'=>"当前状态  in ('报价','派工')"))->count();
             $where['token']=$this->token;
             $where['wecha_id']=$this->wecha_id;

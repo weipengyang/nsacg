@@ -310,17 +310,19 @@
                  },
                 { display: '入库数', name: '入库数量', align: 'center', width: 50,render: function (rowdata, index, value) {
                     if (value&&value>0)
-                        return '<a href="javascript:void(0);" onclick="viewcrkinfo(\'' + rowdata['编号'] + '\',\'入库\',\'' + rowdata['仓库'] + '\');"><strong>' + value + '</strong></a>';
+                        value = value;
                     else
-                        return value;
+                        value=0;
+                   return '<a href="javascript:void(0);" onclick="viewcrkinfo(\'' + rowdata['编号'] + '\',\'入库\',\'' + rowdata['仓库'] + '\');"><strong>' + value + '</strong></a>';
                 }
                 },
                 {
                     display: '出库数', name: '出库数量', width: 60, render: function (rowdata, index, value) {
                         if (value && value > 0)
-                            return '<a href="javascript:void(0);" onclick="viewcrkinfo(\'' + rowdata['编号'] + '\',\'出库\',\'' + rowdata['仓库'] + '\');"><strong>' + value + '</strong></a>';
+                            value = value;
                         else
-                            return value;
+                            value = 0;
+                        return '<a href="javascript:void(0);" onclick="viewcrkinfo(\'' + rowdata['编号'] + '\',\'出库\',\'' + rowdata['仓库'] + '\');"><strong>' + value + '</strong></a>';
                     }
                 },
                 { display: '警戒下限', name: '警戒下限', width: 60 },
@@ -336,7 +338,7 @@
                 },
                 {
                     display: '操作', name: '操作', minWidth: 100, render: function (rowdata, index, value) {
-                        return '<a href="javascript:void(0);" onclick="picnfo(\'' + rowdata.流水号 + '\');"><strong>配件图片</strong></a>';
+                        return '<a href="javascript:void(0);" onclick="picnfo(\'' + rowdata.pid + '\');"><strong>配件图片</strong></a>';
                     }
                 }
                ],

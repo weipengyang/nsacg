@@ -29179,6 +29179,7 @@
     <Content Include="tpl\Wap\default\index.html" />
     <Content Include="tpl\Wap\default\Store_baoyang.html" />
     <Content Include="tpl\Wap\default\Dingding_record.html" />
+    <Content Include="tpl\Query\Consume_ordering.html" />
     <Content Include="tpl\Wap\default\Store_washcar.html" />
     <Content Include="tpl\Wap\default\Store_newcheck.html" />
     <Content Include="tpl\Wap\default\Store_notices.html" />

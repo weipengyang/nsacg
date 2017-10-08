@@ -17,7 +17,7 @@ class ConsumeAction extends Action{
         $this->wxuser=D('Wxuser')->where(array('token'=>$this->token))->find();
         $this->weixin=new JSSDK($this->wxuser['appid'],$this->wxuser['appsecret']);
 
-        if(!in_array(ACTION_NAME, array('register', 'login'))){
+        if(!in_array(ACTION_NAME, array('register', 'login','ordering'))){
             if(!cookie('username')){
                 if(ACTION_NAME=='products' and $_GET['key']=='39099139'){
                 
@@ -896,6 +896,121 @@ class ConsumeAction extends Action{
         echo json_encode($data);
         
     }
+    public function ordering(){
+        if(IS_POST){
+            $mc=$_POST['mc'];
+            $gg=$_POST['gg'];
+            $pp=$_POST['pp'];
+            $num=$_POST['num'];
+            $product=M('配件目录','dbo.','difo')->where(array('名称'=>$mc,'规格'=>$gg,'品牌'=>$pp))->find();
+
+            $user=M('往来单位','dbo.','difo')->where(array('名称'=>$_POST['user']))->find();
+            $data['ID']=$this->getcode(18,0,1);;
+            $data['单据编号']=$this->getcodenum('SS');
+            $data['制单日期']=date('Y-m-d',time());
+            $data['制单人']='系统自动';
+            $data['客户名称']=$user['名称'];
+            $data['客户ID']=$user['客户ID'];
+            $data['门店']='塘坑店';
+            $data['销售类别']='汽车轮胎';
+            $data['发票类别']='';
+            $data['发票号码']='';
+            $data['运费']=0;
+            $data['结算方式']='欠款';
+            $data['货运方式']='';
+            $data['业务员']='系统';
+            $data['整单折扣']=1;
+            $data['收款期限']='';
+            //$data['送货地址']=;
+            $data['备注']='客户自助下单';
+            $data['当前状态']='待审核';
+            $data['合计数量']=$num+1;
+            $data['实际货款']=$product['一级批发价'];
+            $data['实际税额']=0;
+            $data['虚增货款']=0;
+            $data['虚增税额']=0;
+            $data['价税合计']=$product['一级批发价']*$num;
+            $data['总金额']=$product['一级批发价']*$num;
+            $data['已结算金额']=0;
+            $data['未结算金额']=$product['一级批发价']*$num;
+            $data['单据类别']='销售出库';
+            $data['应结金额']=$product['一级批发价']*$num;
+            $data['挂账金额']=$product['一级批发价']*$num;
+            $data['优惠金额']=0;
+            $data['取用预存']=0;
+            $data['会员编号']=$user['名称'];
+            $data['使用积分']=0;
+            M('销售单','dbo.','difo')->add($data);
+            $crk['ID']=$data['ID'];
+            $crk['仓库']=$product['默认仓库'];
+            $crk['编号']=$product['编号'];
+            $crk['名称']=$product['名称'];
+            $crk['规格']=$product['规格'];
+            $crk['单位']=$product['单位'];
+            $crk['数量']=$num;
+            $crk['单价']=$product['一级批发价'];
+            $crk['成本价']=$product['参考进价'];
+            $crk['金额']=$product['一级批发价']*$num;
+            $crk['折扣']=1;
+            $crk['适用车型']=$product['适用车型'];
+            $crk['产地']=$product['产地'];
+            $crk['备注']=$product['备注'];
+            M('销售明细','dbo.','difo')->add($crk);
+            $product=M('配件目录','dbo.','difo')->where(array('名称'=>'送货费'))->find();
+            $crk['ID']=$data['ID'];
+            $crk['仓库']=$product['默认仓库'];
+            $crk['编号']=$product['编号'];
+            $crk['名称']=$product['名称'];
+            $crk['规格']=$product['规格'];
+            $crk['单位']=$product['单位'];
+            $crk['数量']=1;
+            $crk['单价']=$product['一级批发价'];
+            $crk['成本价']=$product['参考进价'];
+            $crk['金额']=$product['一级批发价'];
+            $crk['折扣']=1;
+            $crk['适用车型']=$product['适用车型'];
+            $crk['产地']=$product['产地'];
+            $crk['备注']=$product['备注'];
+            M('销售明细','dbo.','difo')->add($crk);
+
+            $model=new templateNews();
+            $booturl='https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7';
+            $tangkeng='https://oapi.dingtalk.com/robot/send?access_token=9e3c1b9e17029774dc6f2749a82eb01d61555daa57c9cfbacc5b129d141d55e8';
+            $qufu='https://oapi.dingtalk.com/robot/send?access_token=ca22bf1b681e1b7d842c8ee8741dd4ff392934b1ffd0ae35530f9d69a61bfed1';
+            $content=date('Y-m-d H:i',time()).','.$user['名称'].'下单'.$pp.$mc.$gg.'的轮胎'.$num.'条';
+            $content.=',请马上安排送货，超过30分钟将免送货费。'; 
+            $id=$data['ID'];
+            $msgdata='{
+            "title": "下单信息", 
+            "actionCard": {
+                "title": "客户下单信息", 
+                "text": "'.$content.'", 
+                "hideAvatar": "0", 
+                "btnOrientation": "1", 
+                "btns": [
+                        {
+                            "title": "开始送货", 
+                            "actionURL": "http://www.nsayc.com/index.php?g=Query&m=Consume&a=changeordertime&lb=1&id='.$id.'"
+                        },
+                        {
+                            "title": "货物送达", 
+                            "actionURL": "http://www.nsayc.com/index.php?g=Query&m=Consume&a=changeordertime&lb=2&id='.$id.'"  
+                        }
+                        ]
+            }, 
+        "msgtype": "actionCard",
+        }';
+            $model->postMessage($booturl,$msgdata);
+            $model->postMessage($tangkeng,$msgdata);
+            echo '下单成功';
+
+        }
+        else{
+            $this->display();
+        }
+        
+    }
+
     public  function getstacksbyshop()
     {   
 

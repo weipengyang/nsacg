@@ -14663,6 +14663,7 @@
     <Content Include="tpl\Query\Consume_addproductlist.html" />
     <Content Include="tpl\Query\Consume_employeeedit.html" />
     <Content Include="tpl\Query\Consume_roleauthorized.html" />
+    <Content Include="tpl\Query\Consume_autosalemanage.html" />
     <Content Include="tpl\Query\Consume_useredit.html" />
     <Content Include="tpl\Query\Consume_balancesum.html" />
     <Content Include="tpl\Query\Consume_balancequery.html" />
@@ -29095,6 +29096,7 @@
     <Content Include="tpl\Wap\default\Czz_index.html" />
     <Content Include="tpl\Wap\default\Dingding_history.html" />
     <Content Include="tpl\Wap\default\Dingding_index.html" />
+    <Content Include="tpl\Wap\default\Dingding_changeordertime.html" />
     <Content Include="tpl\Wap\default\Dining_Ajax.html" />
     <Content Include="tpl\Wap\default\Dining_header.html" />
     <Content Include="tpl\Wap\default\Dining_index.html" />

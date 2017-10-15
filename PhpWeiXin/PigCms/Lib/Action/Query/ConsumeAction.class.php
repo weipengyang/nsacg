@@ -902,15 +902,16 @@ class ConsumeAction extends Action{
             $gg=$_POST['gg'];
             $pp=$_POST['pp'];
             $num=$_POST['num'];
+            $wechaname=$_POST['wechaname'];
             $product=M('配件目录','dbo.','difo')->where(array('名称'=>$mc,'规格'=>$gg,'品牌'=>$pp))->find();
 
-            $user=M('往来单位','dbo.','difo')->where(array('名称'=>$_POST['user']))->find();
+            $user=M('往来单位','dbo.','difo')->where(array('名称'=>array('like',split(' ',$_POST['user'])[0])))->find();
             $data['ID']=$this->getcode(18,0,1);;
             $data['单据编号']=$this->getcodenum('SS');
             $data['制单日期']=date('Y-m-d',time());
             $data['制单人']='系统自动';
             $data['客户名称']=$user['名称'];
-            $data['客户ID']=$user['客户ID'];
+            $data['客户ID']=$user['ID'];
             $data['门店']='塘坑店';
             $data['销售类别']='汽车轮胎';
             $data['发票类别']='';
@@ -977,7 +978,7 @@ class ConsumeAction extends Action{
             $booturl='https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7';
             $tangkeng='https://oapi.dingtalk.com/robot/send?access_token=9e3c1b9e17029774dc6f2749a82eb01d61555daa57c9cfbacc5b129d141d55e8';
             $qufu='https://oapi.dingtalk.com/robot/send?access_token=ca22bf1b681e1b7d842c8ee8741dd4ff392934b1ffd0ae35530f9d69a61bfed1';
-            $content=date('Y-m-d H:i',time()).','.$user['名称'].'下单'.$pp.$mc.$gg.'的轮胎'.$num.'条';
+            $content=date('Y-m-d H:i',time()).','.$user['名称'].$wechaname.'下单'.$pp.$mc.$gg.'的轮胎'.$num.'条,电话:'.end(explode(' ',$_POST['user']));
             $content.=',请马上安排送货，超过30分钟将免送货费。'; 
             $id=$data['ID'];
             $msgdata='{
@@ -990,11 +991,11 @@ class ConsumeAction extends Action{
                 "btns": [
                         {
                             "title": "开始送货", 
-                            "actionURL": "http://www.nsayc.com/index.php?g=Query&m=Consume&a=changeordertime&lb=1&id='.$id.'"
+                            "actionURL": "http://www.nsayc.com/index.php?g=Wap&m=Dingding&a=changeordertime&lb=1&id='.$id.'"
                         },
                         {
                             "title": "货物送达", 
-                            "actionURL": "http://www.nsayc.com/index.php?g=Query&m=Consume&a=changeordertime&lb=2&id='.$id.'"  
+                            "actionURL": "http://www.nsayc.com/index.php?g=Wap&m=Dingding&a=changeordertime&lb=2&id='.$id.'"  
                         }
                         ]
             }, 
@@ -4324,6 +4325,60 @@ class ConsumeAction extends Action{
         }
         $count=M('销售单','dbo.','difo')->where($where)->count();
         $yelist=M('销售单','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
+        $data['Rows']=$yelist;
+        $data['Total']=$count;
+        echo json_encode($data);
+        
+    }
+    public  function getsaleautobill()
+    {   
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        if(!isset($sortname)){
+            $sortname='流水号';
+            $sortorder='desc';
+        }
+        if(isset($_POST['zt'])){
+            if($_POST['zt']!='all'){
+                $where['当前状态']=$_POST['zt'];
+            }
+        }else
+        {
+            $where['当前状态']='待审核';
+        }
+        if(isset($_POST['shop'])&&$_POST['shop']!='all'){
+            $where['门店']=$_POST['shop'];
+
+        }else{
+            $where['门店']=array('in',explode(',',cookie('department')));
+
+        }
+        if(isset($_POST['xslb'])&&$_POST['xslb']!=''){
+            $where['销售类别']=$_POST['xslb'];
+        }
+        if(isset($_POST['zdr'])&&$_POST['zdr']!=''){
+            $where['业务员']=$_POST['zdr'];
+        }
+        $where['制单人']='系统自动';
+        if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
+            $searchkey='%'.trim($_POST['searchkey']).'%';
+        }
+        if($searchkey){       
+            $searchwhere['业务员']=array('like',$searchkey);
+            $searchwhere['客户名称']=array('like',$searchkey);
+            $searchwhere['单据编号']=array('like',$searchkey);
+            $searchwhere['备注']=array('like',$searchkey);
+            $searchwhere['_logic']='OR';
+            $where['_complex']=$searchwhere;
+            
+        }
+        $count=M('销售单','dbo.','difo')->join('left join 销售单跟踪 on 销售单.ID=销售单跟踪.销售单ID')->where($where)->count();
+        $yelist=M('销售单','dbo.','difo')->join('left join 销售单跟踪 on 销售单.ID=销售单跟踪.销售单ID')->where($where)
+            ->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")
+            ->field('销售单.*,销售单跟踪.开始时间,销售单跟踪.送达时间,销售单跟踪.送货人')
+            ->select();
         $data['Rows']=$yelist;
         $data['Total']=$count;
         echo json_encode($data);

@@ -22,6 +22,36 @@ class DingdingAction extends BaseAction {
 		$this->display();
 	  
 	}
+    function changeordertime(){
+        if(IS_POST){
+            $id=$_POST['id'];
+            $lb=$_POST['lb'];
+            if($lb=='1'){
+                $data['销售单ID']=$id;
+                $data['送货人']=$_POST['user'];
+                $data['开始时间']=date('Y-m-d H:i',time());
+                $record=M('销售单跟踪','dbo.','difo')->where(array('销售单ID'=>$id))->find();
+                if($record){
+                    M('销售单跟踪','dbo.','difo')->where(array('ID'=>$id))->save($data);
+                }else{
+                    M('销售单跟踪','dbo.','difo')->add($data);
+                }
+            }else{
+                M('销售单跟踪','dbo.','difo')->where(array('销售单ID'=>$id))->save(array('送达时间'=>date('Y-m-d H:i',time())));
+            }
+            echo '操作成功';
+        }
+        else{
+            $jsapi=$this->getConfig('29443806');
+            //$this->getuser();
+            $this->assign('jsapi',$jsapi);
+            $this->assign('corpId',C('CORPID'));
+            $this->assign('second',C('SECOND')); 
+            $this->display();
+        }
+
+    }
+
 	public function record(){
         if(IS_POST){
             $comment=$_POST['comment'];              
@@ -60,7 +90,7 @@ class DingdingAction extends BaseAction {
         }
         else{
             $jsapi=$this->getConfig('29443806');
-            $this->getuser();
+            //$this->getuser();
             $this->assign('jsapi',$jsapi);
             $this->assign('corpId',C('CORPID'));
             $this->assign('second',C('SECOND')); 

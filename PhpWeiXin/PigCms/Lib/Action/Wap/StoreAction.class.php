@@ -2287,7 +2287,7 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
 		$productimage = M("Product_image")->where(array('pid' => $product['id']))->select();
         $user=M('往来单位','dbo.','difo')->where(array('名称'=>$cardinfo['number']))->find();
         $discount=M('product_discount')->where(array('grade'=>$user['等级'],'pid' => $product['id']))->getField('num');
-        $where['id']=array('in',array_column($ids,'pid'));
+        //$where['id']=array('in',array_column($ids,'pid'));
 		$this->assign('imageList', $productimage);
 		$this->assign('discount', $discount);
 		$this->assign('productDetail', $productDetail);
@@ -2305,8 +2305,8 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
 	public function getcomment()
 	{
 		$page = isset($_GET['page']) ? max(intval($_GET['page']), 1) : 1;
-		$start = ($page - 1) * $offset;
 		$offset = 10;
+        $start = ($page - 1) * $offset;
 		$pid = isset($_GET['pid']) ? intval($_GET['pid']) : 0;
 		$where = array('token' => $this->token, 'pid' => $pid, 'isdelete' => 0);
 		$product_model = M("Product_comment");
@@ -3764,12 +3764,13 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
     {
         $carinfo=$_GET['carno'];
         if(isset($carinfo)){
-            $list=M('维修','dbo.','difo')->where(array('车牌号码'=>$_GET['carno'],'当前状态'=>array('neq','取消'),'_string'=>'制单日期>DATEADD(day,-365,GETDATE())'))->order('制单日期 desc')->select();
+            $list=M('维修','dbo.','difo')->where(array('车牌号码'=>$_GET['carno'],'当前状态'=>array('neq','取消'),'_string'=>'制单日期>DATEADD(day,-365,GETDATE())','维修类别'=>array('neq','返工')))->order('制单日期 desc')->select();
         }
         else{
             $cars=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->select();
             $cars=array_column($cars,'carno');
-            $list=M('维修','dbo.','difo')->where(array('车牌号码'=>array('in',$cars),'当前状态'=>array('neq','取消'),'_string'=>'制单日期>DATEADD(day,-365,GETDATE())'))->order('制单日期 desc')->select();
+            $list=M('维修','dbo.','difo')->where(array('车牌号码'=>array('in',$cars),'当前状态'=>array('neq','取消')
+            ,'_string'=>'制单日期>DATEADD(day,-365,GETDATE())','维修类别'=>array('neq','返工')))->order('制单日期 desc')->select();
 
         }
         foreach($list as $key=>$value)

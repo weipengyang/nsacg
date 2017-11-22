@@ -1745,7 +1745,7 @@ class CardAction extends WapAction{
     private function changecarinfo($user,$number)
     {
         $car=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$user['carno']))->find();
-        $lb='1星客户';
+        $lb='2星客户';
         if(!empty($car)){
             $item['车主']=$number;
             $item['联系人']=$user['truename'];
@@ -1755,7 +1755,7 @@ class CardAction extends WapAction{
             M('维修','dbo.','difo')->where(array('客户ID'=>$car['客户ID']))->save($item);
             $czinfo['名称']=$number;
             $czinfo['会员']=1;
-            $czinfo['等级']='★';
+            $czinfo['等级']='★★';
             $czinfo['会员编号']=$number;
             $czinfo['入会日期']=date('Y-m-d',time());
             $czinfo['联系人']=$user['truename'];

@@ -31,19 +31,22 @@
             <volist name="list" id="item">
                 <span style="width:100%;text-align:center;font-size:0.6rem">{pigcms:$item.进厂时间|strtotime|date="Y-m-d H:i",###}</span>
                 <div class="card" style="">
-                    <div class="card-header" ><span>{pigcms:$item.维修类别}({pigcms:$item.车牌号码})</span><span style="float:right;color:darkorange;font-size:0.6rem">接车人:{pigcms:$item.接车人}</span></div>
+                    <div class="card-header" ><span>{pigcms:$item.维修类别}({pigcms:$item.车牌号码}) </span>
+                    <span style="float:right;color:darkorange;font-size:0.6rem">主修人:{pigcms:$item.主修人}    接车人:{pigcms:$item.接车人}</span></div>
                     <div class="card-content">
                         <div class="card-content-inner" style="font-size:0.6rem;">
                             <div class="row">
-                                <div class="col-33">项目名称</div>
-                                <div class="col-33">金额</div>
-                                <div class="col-33">服务技师</div>
+                                <div class="col-25">项目名称</div>
+                                <div class="col-25">单价</div>
+                                <div class="col-25">折扣</div>
+                                <div class="col-25">金额</div>
                             </div>
                             <volist name="item.items" id="xm">
                                 <div class="row">
-                                    <div class="col-33">{pigcms:$xm.项目名称}</div>
-                                    <div class="col-33">{pigcms:$xm.金额}</div>
-                                    <div class="col-33">{pigcms:$xm.主修人}</div>
+                                    <div class="col-25">{pigcms:$xm.项目名称}</div>
+                                    <div class="col-25">{pigcms:$xm.单价}</div>
+                                    <div class="col-25">{pigcms:$xm.折扣}</div>
+                                    <div class="col-25">{pigcms:$xm['金额']*$xm['折扣']}</div>
                                 </div>
                               </volist>
                     </div>
@@ -52,15 +55,17 @@
                         <div class="card-content">
                             <div class="card-content-inner" style="font-size:0.6rem;">  
                                 <div class="row">
-                                    <div class="col-33">配件名称</div>
-                                    <div class="col-33">数量</div>
-                                    <div class="col-33">金额</div>
+                                    <div class="col-25">配件名称</div>
+                                    <div class="col-25">数量</div>
+                                    <div class="col-25">折扣</div>
+                                    <div class="col-25">金额</div>
                                 </div>
                                 <volist name="item.peijian" id="pj">
                                     <div class="row">
-                                        <div class="col-33">{pigcms:$pj.名称}</div>
-                                        <div class="col-33">x{pigcms:$pj.数量}</div>
-                                        <div class="col-33">{pigcms:$pj.金额}</div>
+                                        <div class="col-25">{pigcms:$pj.名称}</div>
+                                        <div class="col-25">x{pigcms:$pj.数量}</div>
+                                        <div class="col-25">{pigcms:$pj.折扣}</div>
+                                        <div class="col-25">{pigcms:$pj['金额']*$pj['折扣']}</div>
                                     </div>
                                 </volist>
                             </div>

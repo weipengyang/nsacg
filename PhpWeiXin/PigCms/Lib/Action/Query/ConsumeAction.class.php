@@ -7758,7 +7758,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            }
            if($_GET['lb']&&trim($_GET['lb'])!='')
            {
-               $where['类别']=array('like','%'.trim($_GET['lb'].'%'));
+               $where['类别']=array('like',trim($_GET['lb'].'%'));
                
            }
            if($searchkey){       
@@ -7798,8 +7798,12 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            exit;
        }
        else{
-          
-           $pjlist=M('配件分类','dbo.','difo')->where(array('级别'=>'0'))->select();
+           if(cookie('username')=='老王'){
+               $pjlist=M('配件分类','dbo.','difo')->where(array('级别'=>'0','名称'=>'轮胎'))->select();
+           }else{
+               $pjlist=M('配件分类','dbo.','difo')->where(array('级别'=>'0'))->select();
+           }
+
            $this->assign('pjlist',$pjlist);
            $this->display();
        }

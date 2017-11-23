@@ -536,6 +536,7 @@ class StoreAction extends UserAction{
                             if($list[$i]['cid']==$item['cid']){
                                 $list[$i]['num']=$item['num'];
                                 $list[$i]['id']=$item['id'];
+                                $list[$i]['days']=$item['days'];
                         }
                     }
                 }

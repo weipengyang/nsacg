@@ -2794,6 +2794,10 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
                             $data['add_time']	= time(); 
                             $data['coupon_name']=$mycoupon['title'];
                             $days=$mycoupon['days'];
+                            if($c['days']){
+                                $days=$c['days'];
+                            }
+
                             $data['over_time']=strtotime(date('Y-m-d',time())."+$days day");
                             if($c['num']>0){
                                 for($i=0;$i<intval($c['num']);$i++){

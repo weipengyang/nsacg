@@ -217,6 +217,7 @@ afterBlur: function(){this.sync();}
                         <tr>
                             <th>券名称</th>
                             <th>数量(张)</th>
+                            <th>有效期(天)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -224,7 +225,10 @@ afterBlur: function(){this.sync();}
                             <tr>
                                 <td>{pigcms:$list.title}</td>
                                 <td>
-                                    <input type="text" name="{pigcms:$list.cid}" value="{pigcms:$list.num}" pid="{pigcms:$list.id}" class="px" style="width:150px;" />
+                                    <input type="text" name="{pigcms:$list.cid}" value="{pigcms:$list.num}" pid="{pigcms:$list.id}" class="couponinfo px" style="width:150px;" />
+                                </td>
+                                <td>
+                                    <input type="text" class="couponlimitday px" value="{pigcms:$list.days}" style="width:150px;" />
                                 </td>
                             </tr>
                         </volist>
@@ -432,11 +436,12 @@ $(document).ready(function(){
 	});
 	$("#save").click(function(){
 	    var couponlist = [];
-	    $("#couponlist :text").each(function (i,a) {
+	    $("#couponlist tr:gt(0)").each(function (i,a) {
 	        var coupon = {};
-	        coupon.num = $(this).val() == "" ? "0" : $(this).val();
-	        coupon.cid = $(this).attr("name");
-	        coupon.id = $(this).attr("pid");
+	        coupon.num = $(this).find(".couponinfo").val()=="" ? "0" : $(this).find(".couponinfo").val();;
+            coupon.id = $(this).find(".couponinfo").attr("pid");
+	        coupon.cid = $(this).find(".couponinfo").attr("name");
+	        coupon.days = $(this).find(".couponlimitday").val();
 	        couponlist.push(coupon);
 	    });
 	    var discounts = [];

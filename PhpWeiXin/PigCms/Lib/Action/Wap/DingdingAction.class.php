@@ -54,6 +54,7 @@ class DingdingAction extends BaseAction {
 
 	public function record(){
         if(IS_POST){
+            log::write("测试信息");
             $comment=$_POST['comment'];              
             $id=$_POST['id'];
             $issell=$_POST['issell'];
@@ -76,7 +77,7 @@ class DingdingAction extends BaseAction {
             $tracedata['跟踪类型']='现场交流';
             $tracedata['跟踪人']=$user;
             $tracedata['车牌号码']=$traceinfo['车牌号码'];
-            $tracedata['车主']=$membernum;
+            $tracedata['车主']=$traceinfo['车主'];
             $tracedata['登记人']=$user;
             M('客户跟踪','dbo.','difo')->add($tracedata);
             M('客户跟踪','dbo.','difo')->where(array('流水号'=>$id))

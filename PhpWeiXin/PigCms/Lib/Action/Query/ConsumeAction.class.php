@@ -3699,6 +3699,8 @@ class ConsumeAction extends Action{
             $cangku='主仓库';
         elseif($shop=='爱养车')
             $cangku='主仓库';
+        elseif($shop=='时代长岛店')
+            $cangku='时代长岛店仓库';
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
             $searchkey='%'.trim($_POST['searchkey']).'%';
         }
@@ -3929,13 +3931,13 @@ class ConsumeAction extends Action{
         $wxlb=M('门店目录','dbo.','difo')->select();
         echo json_encode($wxlb);
     
-} 
+}
     public  function getshoplist(){
         $where['名称']=array('in',explode(',',cookie('department')));
         $wxlb=M('门店目录','dbo.','difo')->where($where)->select();
         echo json_encode($wxlb);
     
-} 
+}
      public  function getrolelist(){
         $wxlb=M('sys_role','dbo.','difo')->select();
         echo json_encode($wxlb);

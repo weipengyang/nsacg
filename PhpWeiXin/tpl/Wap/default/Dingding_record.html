@@ -100,7 +100,7 @@
                     dd.biz.user.get({
                         onSuccess: function (info) {
                             userinfo = info;
-
+                           // alert(userinfo['nickName']);
                         },
                         onFail: function (err) {
                             alert('userGet fail: ' + JSON.stringify(err));
@@ -110,6 +110,7 @@
                 });
                 $(".button-success").click(function () {
                             var comment = {};
+
                             var submitData = {
                                 comment:  $("#content").val(),
                                 issell: $('#issell').prop('checked'),
@@ -118,6 +119,7 @@
                                 user: userinfo['nickName'],
                                 membernum: '{pigcms:$_GET["number"]}'
                             };
+
                             $.post('/index.php?g=Wap&m=Dingding&a=record', submitData,
                             function (data) {
                                 $.toast('反馈成功');

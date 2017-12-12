@@ -2891,6 +2891,7 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
             if($list)
             {
                 foreach($list as $c){
+                    $coupon=M('member_card_coupon')->where(array('id'=>$c['coupon_id']))->find();
                     $data['token']		= $this->token;
                     $data['wecha_id']	= $this->wecha_id;
                     $data['coupon_id']	= $c['coupon_id'];
@@ -2899,6 +2900,7 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
                     $data['cardid']		= $card['cardid'];
                     $data['add_time']	= time(); 
                     $days=$c['days'];
+                    $data['coupon_name']= $coupon['title'];
                     $data['over_time']=strtotime(date('Y-m-d',time())."+$days day");
                     if(intval($c['num'])>0){
                         for($i=0;$i<intval($c['num']);$i++){

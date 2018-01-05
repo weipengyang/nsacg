@@ -1841,7 +1841,7 @@ class CardAction extends WapAction{
 			if($order['paid'] == 1){
 				$record->where("orderid = '$orderid'")->setField('paytime',time());
 				if($order['type'] == 1){
-                    if($order['price']>=500||$wecha_id=='ohD3dviFloHSvcl9ieoXFibqPFJM')
+                    if($order['price']>=200 ||$wecha_id=='ohD3dviFloHSvcl9ieoXFibqPFJM')
                     {   
                         $cardnumber=$this->change();
                         if($cardnumber!='0'){

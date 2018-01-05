@@ -195,6 +195,16 @@
                 $('#my-endDate').text($('#my-end').data('date'));
                 $(this).datepicker('close');
             });
+            function getCookie(name)
+            {
+                var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)"); //正则匹配
+                if(arr=document.cookie.match(reg)){
+                    return unescape(arr[2]);
+                }
+                else{
+                    return null;
+                }
+            }
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                          { display: '门店', name: 'shop', width: 100 },
@@ -237,14 +247,16 @@
                   { display: '消费总额(元)', name: 'expensetotal', align: 'left', width: 80 },
                   { display: '余额', name: 'balance', width: 80 },
                  {
-                    display: '操作', name: '操作', minWidth: 200, render: function (rowdata, index, value) {
+                    display: '操作', name: '操作', minWidth: 340, render: function (rowdata, index, value) {
                         var html='<a href="javascript:void(0);" onclick="memberCardRecharge(\''+rowdata.wecha_id+'\')"><strong>充值</strong></a>';
                         html+= '|<a href="javascript:void(0);" onclick="RestPassWord(\'' + rowdata.wecha_id + '\');"><strong>密码重置</strong></a>';
-                        html += '|<a href="javascript:void(0);" onclick="presetcoupon(\'' + rowdata.wecha_id + '\')"><strong>送券</strong></a>';
-                        html+='|<a href="javascript:void(0);" onclick="bingCard(\'' + rowdata.wecha_id + '\',\'' + rowdata.number + '\');"><strong>绑定车牌</strong></a>';
-                        html+='| <a href="javascript:void(0);" onclick="delcar(\''+rowdata.wecha_id+'\');"><strong>删除车牌</strong></a>';
-                        html+='| <a href="javascript:void(0);" onclick="modifycar(\''+rowdata.wecha_id+'\');"><strong>修改车牌</strong></a>';
-                        html+='|<a href="javascript:void(0);" onclick="deletemember(\''+rowdata.id+'\');"><strong>删除会员</strong></a>';
+                        if(eval(getCookie("role"))=="系统管理员") {
+                            html += '|<a href="javascript:void(0);" onclick="presetcoupon(\'' + rowdata.wecha_id + '\')"><strong>送券</strong></a>';
+                            html+='|<a href="javascript:void(0);" onclick="bingCard(\'' + rowdata.wecha_id + '\',\'' + rowdata.number + '\');"><strong>绑定车牌</strong></a>';
+                            html+='| <a href="javascript:void(0);" onclick="delcar(\''+rowdata.wecha_id+'\');"><strong>删除车牌</strong></a>';
+                            html+='| <a href="javascript:void(0);" onclick="modifycar(\''+rowdata.wecha_id+'\');"><strong>修改车牌</strong></a>';
+                            html+='|<a href="javascript:void(0);" onclick="deletemember(\''+rowdata.id+'\');"><strong>删除会员</strong></a>';
+                        }
                         return html;
                     }
                 }

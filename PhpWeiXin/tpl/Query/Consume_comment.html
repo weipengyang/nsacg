@@ -43,6 +43,12 @@
                                     <option value="保险理赔">保险理赔</option>
                                     <option value="汽车维修">汽车维修</option>
                                 </select>
+                                <select  id="zhuxiu">
+                                    <option value="">所有人</option>
+                                </select>
+                                <select  id="fwgw">
+                                    <option value="">所有人</option>
+                                </select>
                                 <button type="button" class="am-btn am-btn-default am-margin-right" id="my-start">开始日期</button><span id="my-startDate"></span>
                                 <button type="button" class="am-btn am-btn-default am-margin-right" id="my-end">结束日期</button><span id="my-endDate"></span>
                             </div>
@@ -168,6 +174,51 @@
             });
         }
         $(document).ready(function () {
+            $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {
+                if (data) {
+                    $('#shop').empty();
+                    $('#shop').append("<option value=''>所有门店</option>");
+                    $(data).each(function () {
+                        var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                        $('#shop').append(option);
+                    });
+                }
+            }, 'JSON');
+
+            $.post('index.php?g=Query&m=Consume&a=getpersonbydepart', null,
+                function (data) {
+                    if (data) {
+                        $('#zhuxiu').empty();
+                        $('#zhuxiu').append("<option value=''>所有人</option>");
+
+                        $(data).each(function () {
+                            var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
+                            $('#zhuxiu').append(option);
+                        });
+                    }
+                }, 'JSON');
+            $.post('index.php?g=Query&m=Consume&a=getfwgw', null,
+                function (data) {
+                    if (data) {
+                        $('#fwgw').empty();
+                        $('#fwgw').append("<option value=''>所有人</option>");
+                        $(data).each(function () {
+                            var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
+                            $('#fwgw').append(option);
+                        });
+                    }
+                }, 'JSON');
+            $.post('index.php?g=Query&m=Consume&a=getwxlb', null,
+                function (data) {
+                    if (data) {
+                        $('#lb').empty();
+                        $('#lb').append("<option value=''>所有分类</option>");
+                        $(data).each(function () {
+                            var option = "<option value='" + this.类别 + "'>" + this.类别 + "</option>";
+                            $('#lb').append(option);
+                        });
+                    }
+                }, 'JSON');
             wxgird = $("#maingrid4").ligerGrid({
                 columns: [
                         { display: '门店', name: '门店', width:60 },
@@ -194,7 +245,7 @@
                         { display: '联系人', name: '联系人', width: 120 },
                         { display: '联系电话', name: '联系电话', width: 100 },
                         { display: '客户类别', name: '客户类别', width: 60 },
-                        { display: '服务顾问', name: '接车人', width: 80 },
+                        { display: '接车人', name: '接车人', width: 80 },
                         { display: '服务技师', name: '主修人', width: 80 },
                         { display: '维修类别', name: '维修类别', width: 60 },
                         {
@@ -239,7 +290,33 @@
             $("#lb").change(function () {
                 $('#search').click();
             });
-            $("#shop").change(function () {
+            $('#shop').change(function () {
+                var submitData = {
+                    bumen: $('#shop').val()
+                };
+                if ($('#shop').val() != '') {
+                    $.post('index.php?g=Query&m=Consume&a=getpersonbydepart', submitData,
+                        function (data) {
+                            if (data) {
+                                $('#zhuxiu').empty();
+                                $('#zhuxiu').append("<option value=''>所有人</option>");
+
+                                $(data).each(function () {
+                                    var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
+                                    $('#zhuxiu').append(option);
+                                });
+                            }
+                        }, 'JSON');
+                } else {
+                    $('#zhuxiu').empty();
+                    $('#zhuxiu').append("<option value=''>所有人</option>");
+                }
+                $('#search').click();
+            });
+            $("#zhuxiu").change(function () {
+                $('#search').click();
+            });
+            $("#fwgw").change(function () {
                 $('#search').click();
             });
             $('#my-start').datepicker().on('changeDate.datepicker.amui', function (event) {
@@ -264,6 +341,12 @@
                 var shop = $('#shop').val();
                 if (shop != '')
                     parms.shop = shop;
+                var zhuxiu = $('#zhuxiu').val();
+                if (zhuxiu != '')
+                    parms.zhuxiu = zhuxiu;
+                var fwgw = $('#fwgw').val();
+                if (fwgw != '')
+                    parms.fwgw = fwgw;
                 var lb = $('#lb').val();
                 if (lb != '')
                     parms.lb = lb;

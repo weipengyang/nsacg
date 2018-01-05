@@ -2785,7 +2785,7 @@ class ConsumeAction extends Action{
             
         }
         else{
-            $where['门店']=array('in',explode(',',cookie('department')));
+            //$where['tp_userinfo.shop']=array('in',explode(',',cookie('department')));
 
         }
         if($_POST['startdate']&&trim($_POST['startdate'])!='')
@@ -2936,9 +2936,17 @@ class ConsumeAction extends Action{
         {
             $where['制单日期']=array('BETWEEN',array(trim($_POST['startDate']),trim($_POST['endDate'])));
             
-        } 
-        if($searchkey){       
-            $where['主修人|制单人|接车人|业务编号|车主|车牌号码|联系人|联系电话']=array('like',$searchkey);
+        }
+        if($_POST['zhuxiu']){
+            $where['接车人']=$_POST['zhuxiu'];
+
+        }
+        if($_POST['fwgw']){
+            $where['接车人']=$_POST['fwgw'];
+
+        }
+        if($_POST['searchkey']){
+            $where['主修人|制单人|接车人|业务编号|车主|车牌号码|联系人|联系电话']=array('like','%'.$_POST['searchkey'].'%');
 
         }
         $sortname=$_POST['sortname'];
@@ -8553,7 +8561,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $row['编号'] = $project['编号'];
        $row['仓库'] = '区府门店仓库';
        if ($shop=='塘坑店')
-           $row['仓库'] = '塘坑门店仓库';;
+           $row['仓库'] = '塘坑门店仓库';
+       else if($shop=='时代长岛店')
+           $row['仓库'] = '时代长岛店仓库';
        $row['名称'] = $project['名称'];
        $row['券编码'] = $project['券编码'];
        $row['规格'] = $project['规格'];

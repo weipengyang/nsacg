@@ -1339,7 +1339,7 @@ class StoreAction extends WapAction{
                            if(doubleval($project['虚增金额'])>0){
                                $projectprice+=$project['虚增金额']*$project['折扣']+$project['税额'];
                            }else{
-                               if($project['券编码']&&doubleval($project['折扣'])>0&&$wx['维修类别']!='保险理赔'){
+                               if($project['券编码']&&doubleval($project['折扣'])>0&&$project['结算方式']!='保险理赔'){
                                    $where['token']=$this->token;
                                    $where['wecha_id']=$this->wecha_id;
                                    $where['is_use']='0';

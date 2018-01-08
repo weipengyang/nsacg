@@ -47,13 +47,10 @@
             <div class="am-g">
                 <div class="am-u-sm-2 am-u-md-2">
                     <div class="am-form-group">
-                        类别:
-                        <select name="khlb" id="khlb">
-                            <option value="">所有分类</option>
-                            <volist name="lblist" id="item">
-                                <option value="{pigcms:$item.客户类别}">{pigcms:$item.客户类别}</option>
-                            </volist>
-                        </select>
+
+                        <input name="khlb" id="khlb">
+
+                        </input>
                     </div>
                 </div>
                 <div class="am-u-sm-2 am-u-md-2">
@@ -290,6 +287,15 @@
         $(document).ready(function () {
             $('#startDate').ligerDateEditor();
             $('#endDate').ligerDateEditor();
+            $('#khlb').ligerComboBox({
+                isShowCheckBox: true,
+                isMultiSelect: true,
+                selectBoxHeight:'300px',
+                valueFieldID: '类别',
+                valueField: '类别',
+                textField: '类别',
+                url: '/index.php?g=Query&m=Consume&a=getkhlb',
+            });
             cargird = $("#maingrid4").ligerGrid({
                 columns: [
                         {

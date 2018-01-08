@@ -2014,7 +2014,7 @@ class ConsumeAction extends Action{
             $sortorder='asc';
         }
         if (isset($_POST['khlb'])&&trim($_POST['khlb'])!=''){
-            $where['客户类别']=$_POST['khlb'];
+            $where['客户类别']=array('in',explode(';',$_POST['khlb']));
         }
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
             $searchkey='%'.trim($_POST['searchkey']).'%';

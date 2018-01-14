@@ -1942,7 +1942,7 @@ class ConsumeAction extends Action{
             $sortorder='asc';
         }
         if (isset($_POST['khlb'])&&trim($_POST['khlb'])!=''){
-            $where['客户类别']=$_POST['khlb'];
+            $where['客户类别']=array('in',explode(';',$_POST['khlb']));
         }
         $where['是否在用']='是';
 
@@ -2082,7 +2082,7 @@ class ConsumeAction extends Action{
             $sortorder='asc';
         }
         if (isset($_POST['khlb'])&&trim($_POST['khlb'])!=''){
-            $where['客户类别']=$_POST['khlb'];
+            $where['客户类别']=array('in',explode(';',$_POST['khlb']));
         }
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
             $searchkey='%'.trim($_POST['searchkey']).'%';
@@ -2365,13 +2365,21 @@ class ConsumeAction extends Action{
 		header("Content-type:application/vnd.ms-execl");
 		header("Content-Disposition:filename=个人业绩数据_".date('Ymd',time()).".xls");
 		$arr = array(
-			array('en'=>'主修人','cn'=>'主修人'),
+			array('en'=>'业务编号','cn'=>'业务编号'),
+			array('en'=>'制单日期','cn'=>'制单日期'),
+			array('en'=>'接车人','cn'=>'接车人'),
 			array('en'=>'维修类别','cn'=>'维修类别'),
-			array('en'=>'时间','cn'=>'日期'),
-			array('en'=>'服务车辆数','cn'=>'服务车辆数'),
-			array('en'=>'工时费','cn'=>'工时费'),
-			array('en'=>'产值','cn'=>'产值')
-		);
+			array('en'=>'车牌号码','cn'=>'车牌号码'),
+            array('en'=>'车牌号码','cn'=>'车牌号码'),
+            array('en'=>'车主','cn'=>'车主'),
+            array('en'=>'客户类别','cn'=>'客户类别'),
+            array('en'=>'款项总额','cn'=>'款项总额'),
+            array('en'=>'工时费','cn'=>'工时费'),
+            //array('en'=>'工时','cn'=>'工时数'),
+            array('en'=>'结算日期','cn'=>'结算日期'),
+            array('en'=>'主修人','cn'=>'主修人'),
+            array('en'=>'门店','cn'=>'门店')
+        );
 		$i = 0;
 		$fieldCount = count($arr);
 		$s = 0;
@@ -2395,22 +2403,22 @@ class ConsumeAction extends Action{
         }
         if($_GET['bm']&&trim($_GET['bm'])!='')
         {
-            $where['部门']=array('like','%'.trim($_GET['bm'].'%'));
+            $where['门店']=array('like','%'.trim($_GET['bm'].'%'));
             
         }
         if($_GET['startdate']&&trim($_GET['startdate'])!='')
         {
-            $where['时间']=array('egt',trim($_GET['startdate']));
+            $where['结算日期']=array('egt',trim($_GET['startdate']));
             
         }
         if($_GET['endDate']&&trim($_GET['enddate'])!='')
         {
-            $where['时间']=array('elt',trim($_GET['endDate']));
+            $where['结算日期']=array('elt',trim($_GET['endDate']));
             
         }
         if(trim($_GET['startdate'])!=''&&trim($_GET['enddate'])!='')
         {
-            $where['时间']=array('BETWEEN',array(trim($_GET['startdate']),trim($_GET['enddate'])));
+            $where['结算日期']=array('BETWEEN',array(trim($_GET['startdate']),trim($_GET['enddate'])));
             
         }
         if($_GET['zhuxiu']&&trim($_GET['zhuxiu'])!='')
@@ -2419,7 +2427,7 @@ class ConsumeAction extends Action{
             
         }
         if(!isset($sortname)){
-            $sortname='时间';
+            $sortname='结算日期';
             $sortorder='desc';
         }
         if($searchkey){       
@@ -2429,8 +2437,9 @@ class ConsumeAction extends Action{
             $where['_complex']=$searchwhere;
 
         }
-        $personinfo=M('个人业绩表','dbo.','difo')->join('员工目录 on 个人业绩表.主修人=员工目录.姓名')
-            ->where($where)
+        $personinfo=M('维修','dbo.','difo')
+            ->join('维修项目 on 维修项目.ID=维修.ID')
+            ->where($where)->field('[业务编号],[制单日期] ,[接车人],[维修类别],[车牌号码],[车主],[客户类别],[款项总额],[工时费],[结算日期],[主修人],[门店]')
             ->order("$sortname  $sortorder")->select();
         if($personinfo){
 			foreach ($personinfo as $person){
@@ -2438,7 +2447,10 @@ class ConsumeAction extends Action{
 				foreach ($arr as $field){			
 					$fieldValue = $person[$field['en']];
                     switch($field['en']){		
-                        case '时间':
+                        case '结算日期':
+                            $fieldValue =date('Y-m-d',strtotime($person[$field['en']]));
+                            break;
+                        case '制单日期':
                             $fieldValue =date('Y-m-d',strtotime($person[$field['en']]));
                             break;
                     }
@@ -2456,7 +2468,121 @@ class ConsumeAction extends Action{
 		}
 		exit();
     }
+public  function exportpurchasedata(){
+        header("Content-Type: text/html; charset=utf-8");
+        header("Content-type:application/vnd.ms-execl");
+        header("Content-Disposition:filename=采购数据_".date('Ymd',time()).".xls");
+        $arr = array(
+            array('en'=>'单据类别','cn'=>'单据类别'),
+            array('en'=>'单据编号','cn'=>'单据编号'),
+            array('en'=>'制单日期','cn'=>'制单日期'),
+            array('en'=>'制单人','cn'=>'制单人'),
+            array('en'=>'业务员','cn'=>'业务员'),
+            array('en'=>'供应商','cn'=>'供应商'),
+            array('en'=>'发票类别','cn'=>'发票类别'),
+            array('en'=>'发票号码','cn'=>'发票号码'),
+            array('en'=>'结算方式','cn'=>'结算方式'),
+            array('en'=>'货运方式','cn'=>'货运方式'),
+            array('en'=>'付款期限','cn'=>'付款期限'),
+            array('en'=>'付款日期','cn'=>'付款日期'),
+            array('en'=>'送货地址','cn'=>'送货地址'),
+            array('en'=>'整单折扣','cn'=>'整单折扣'),
+            array('en'=>'合计数量','cn'=>'合计数量'),
+            array('en'=>'合计货款','cn'=>'合计货款'),
+            array('en'=>'合计税额','cn'=>'合计税额'),
+            array('en'=>'价税合计','cn'=>'价税合计'),
+            array('en'=>'运费','cn'=>'运费'),
+            array('en'=>'总金额','cn'=>'总金额'),
+            array('en'=>'审核日期','cn'=>'审核日期'),
+            array('en'=>'审核人','cn'=>'审核人'),
+            array('en'=>'备注','cn'=>'备注')
+        );
 
+        $i = 0;
+        $fieldCount = count($arr);
+        $s = 0;
+        //thead
+        foreach ($arr as $f){
+            if ($s<$fieldCount-1){
+                echo iconv('utf-8','gbk',$f['cn'])."\t";
+            }else {
+                echo iconv('utf-8','gbk',$f['cn'])."\n";
+            }
+            $s++;
+        }
+
+    $sortname='流水号';
+    $sortorder='desc';
+    if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])!=''){
+        $searchkey='%'.trim($_GET['searchkey']).'%';
+    }
+    $where['当前状态']='已审核';
+    if(isset($_GET['shop'])&&$_GET['shop']!='all'){
+        $where['门店']=$_GET['shop'];
+
+    }else{
+        $where['门店']=array('in',explode(',',cookie('department')));
+
+    }
+    if(isset($_GET['zdr'])){
+        $where['制单人']=$_GET['zdr'];
+
+    }
+    if($_GET['startdate']&&trim($_GET['startdate'])!='')
+    {
+        $where['制单日期']=array('egt',trim($_GET['startdate']));
+
+    }
+    if($_GET['enddate']&&trim($_GET['enddate'])!='')
+    {
+        $where['制单日期']=array('elt',trim($_GET['enddate']));
+
+    }
+    if(trim($_GET['startdate'])!=''&&trim($_GET['enddate'])!='')
+    {
+        $where['制单日期']=array('BETWEEN',array(trim($_GET['startdate']),trim($_GET['enddate'])));
+
+    }
+    if($searchkey){
+        $searchwhere['制单人']=array('like',$searchkey);
+        $searchwhere['业务员']=array('like',$searchkey);
+        $searchwhere['单据编号']=array('like',$searchkey);
+        $searchwhere['发票号码']=array('like',$searchkey);
+        $searchwhere['发票类别']=array('like',$searchkey);
+        $searchwhere['供应商']=array('like',$searchkey);
+        $searchwhere['车牌号码']=array('like',$searchkey);
+        $searchwhere['备注']=array('like',$searchkey);
+        $searchwhere['_logic']='OR';
+        $where['_complex']=$searchwhere;
+
+    }
+    $yelist=M('采购单','dbo.','difo')->where($where)->order("$sortname  $sortorder")->select();
+    if($yelist){
+            foreach ($yelist as $item){
+                $j = 0;
+                foreach ($arr as $field){
+                    $fieldValue = $item[$field['en']];
+                    switch($field['en']){
+                        case '制单日期':
+                        case '付款日期':
+                        case '审核日期':
+                        $fieldValue =date('Y-m-d',strtotime($item[$field['en']]));
+                            break;
+                    }
+                    if ($j<$fieldCount-1){
+                        echo iconv('utf-8','gbk',$fieldValue)."\t";
+                    }else {
+                        echo iconv('utf-8','gbk',$fieldValue)."\n";
+                    }
+                    $j++;
+                }
+                $i++;
+            }
+
+        }
+        exit();
+
+    }
     public  function exportcarsinfo(){
 		header("Content-Type: text/html; charset=utf-8");
 		header("Content-type:application/vnd.ms-execl");
@@ -4640,6 +4766,8 @@ class ConsumeAction extends Action{
         if(IS_POST){
             $carno=$_POST['carno'];
             $carinfo=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
+            $count=M('维修','dbo.','difo')->where(array('车牌号码'=>$carno))->count();
+            $carinfo['进厂次数']=$count;
             echo json_encode($carinfo);
             exit;
         }

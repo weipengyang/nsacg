@@ -160,7 +160,7 @@
             if (washdialog) washdialog.show();
             else {
                 washdialog = $.ligerDialog.open({
-                    height: 310,
+                    height: 350,
                     url: '/index.php?g=Query&m=Consume&a=washcar',
                     width: 600,
                     showToggle: false,
@@ -175,7 +175,7 @@
             if (mrdialog) mrdialog.show();
             else {
                 mrdialog = $.ligerDialog.open({
-                    height: 350,
+                    height: 370,
                     url: '/index.php?g=Query&m=Consume&a=meirong',
                     width: 600,
                     showToggle: false,
@@ -286,7 +286,8 @@
                 });
             }
         }
-        //+---------------------------------------------------
+
+        //+---------------------------------------------------
         //| 日期计算
         //+---------------------------------------------------
         Date.prototype.DateAdd = function (strInterval, Number) {

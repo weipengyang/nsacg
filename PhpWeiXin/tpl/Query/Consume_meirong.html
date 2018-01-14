@@ -33,6 +33,7 @@
                                         $("input[ligeruiid='车主']").val(data['车主']);
                                         $("input[ligeruiid='客户类别']").val(data['客户类别']);
                                         $("input[ligeruiid='联系人']").val(data['联系人']);
+                                        $("input[ligeruiid='进厂次数']").val(data['进厂次数']);
                                         $("input[ligeruiid='轮胎规格']").val(data['轮胎规格']);
                                         $("input[ligeruiid='联系电话']").val(data['联系电话']);
                                         $("input[ligeruiid='fwgw']").val(data['服务顾问']);
@@ -41,6 +42,7 @@
                                     else {
                                         $("input[ligeruiid='车主']").val('0000');
                                         $("input[ligeruiid='客户类别']").val('临时客户');
+                                        $("input[ligeruiid='进厂次数']").val('0');
                                         $("input[ligeruiid='联系人']").val('');
                                         $("input[ligeruiid='轮胎规格']").val('');
                                         $("input[ligeruiid='联系电话']").val('');
@@ -62,8 +64,12 @@
                     {
                         display: "车主", name: "车主", newline: false, type: "text",readonly:true
                     },
+
                     {
                         display: "客户类别", name: "客户类别", newline: false, type: "text", readonly: true
+                    },
+                    {
+                        display: "进厂次数", name: "进厂次数", newline: false, type: "text",readonly:true
                     },
                     { display: "联系人 ", name: "联系人", newline: true, type: "text", validate: { required: true } },
                     { display: "联系电话 ", name: "联系电话", newline: false, type: "text", validate: { required: true } },
@@ -111,7 +117,9 @@
                         },
                     }
                 ],
-                buttons: [                    { text: "取消", width: 60, click: null },                    {
+                buttons: [
+                    { text: "取消", width: 60, click: null },
+                    {
                         text: "保存", width: 60, click: function () {
                             var data = form.getData();
                             data['接车人'] = $("input[ligeruiid='fwgw']").val();
@@ -167,7 +175,9 @@
                                 });
                            
                         }
-                    }            ]            });
+                    }
+            ]
+            });
             
         });
 

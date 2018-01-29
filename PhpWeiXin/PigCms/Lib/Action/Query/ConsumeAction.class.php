@@ -3064,7 +3064,7 @@ public  function exportpurchasedata(){
             
         }
         if($_POST['zhuxiu']){
-            $where['接车人']=$_POST['zhuxiu'];
+            $where['主修人']=$_POST['zhuxiu'];
 
         }
         if($_POST['fwgw']){

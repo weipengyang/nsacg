@@ -6758,9 +6758,12 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                        M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->save($data);
                    }
                    $pjinfo=M('配件仓位','dbo.','difo')->where(array('_string'=>"编号='$code' and 仓库='$ck'"))->find();
+                   $pj=M('配件目录','dbo.','difo')->where(array('_string'=>"编号='$code' "))->find();
                    $cbprice=round(($pjinfo['库存']*$pjinfo['成本价']+$num*$price)/($pjinfo['库存']+$num),2);
-                   M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存+$num,最新进价=$price where 编号='$code'");
-                   M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存+$num,最新进价=$price,成本价=$cbprice where 编号='$code' and 仓库='$ck'");
+                   $lsj=$price+doubleval($pj['零售利润']);
+                   $pfj=$price+doubleval($pj['批发利润']);
+                   M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存+$num,最新进价=$price,参考售价=$lsj,一级批发价=$pfj  where 编号='$code'");
+                   M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存+$num,最新进价=$price,成本价=$cbprice,参考售价=$lsj,一级批发价=$pfj where 编号='$code' and 仓库='$ck'");
                }
                $crkitem['当前状态']='已审核';
                $crkitem['审核人']=cookie('username');

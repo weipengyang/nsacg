@@ -3447,8 +3447,8 @@ public  function exportpurchasedata(){
         $data['ID']=$this->getcode(20,1,1);
         $data['制单日期']=date('Y-m-d',time());
         $data['制单人']=cookie('username');
-        $data['单位名称']=$record['客户名称'];
-        $data['单位编号']=$record['userID'];
+        $data['单位名称']=$record['单位名称'];
+        $data['单位编号']=$record['单位编号'];
         $data['账款类别']=$record['账款类别'];
         $data['开户银行']='';
         $data['银行账号']='';

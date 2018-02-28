@@ -58,11 +58,13 @@
                                         <div class="col-33">金额(元)</div>
                                     </div>
                                     <volist name="item.peijian" id="pj">
+                                        <if condition="$pj.结算方式 neq '自用'">
                                         <div class="row">
                                             <div class="col-33">{pigcms:$pj.名称}</div>
                                             <div class="col-33">x{pigcms:$pj.数量}</div>
                                             <div class="col-33">{pigcms:$pj.金额}</div>
                                         </div>
+                                        </if>
                                     </volist>
                                 </div>
                             </div>

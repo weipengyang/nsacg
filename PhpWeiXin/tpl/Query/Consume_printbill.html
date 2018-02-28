@@ -30,7 +30,8 @@
             catch (e) {
             }
             printpage();
-        }
+        }
+
         function getQueryString(name) {
             var now_url = document.location.search.slice(1), q_array = now_url.split('&');
             for (var i = 0; i < q_array.length; i++) {
@@ -175,6 +176,7 @@
                     </td>
                 </tr>
                 <volist name="peijian" id="p">
+                    <if condition="$p.结算方式 neq '自用'">
                     <tr style="height: 25px; font-size: 13px; text-align: center">
                         <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$key+1}</td>
                         <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$p['编号']}</td>
@@ -187,6 +189,7 @@
                         <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$p['折扣']}</td>
                         <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$p['结算方式']}</td>
                     </tr>
+                    </if>
                 </volist>
             </table>
         </notempty>

@@ -522,13 +522,16 @@ class StoreAction extends WapAction{
         }
     }
 }
-     private function getbooturl($shop){
-         $boots=array( '塘坑店'=>'https://oapi.dingtalk.com/robot/send?access_token=9e3c1b9e17029774dc6f2749a82eb01d61555daa57c9cfbacc5b129d141d55e8',
-             '区府店'=>'https://oapi.dingtalk.com/robot/send?access_token=ca22bf1b681e1b7d842c8ee8741dd4ff392934b1ffd0ae35530f9d69a61bfed1',
-             '时代长岛店'=>'https://oapi.dingtalk.com/robot/send?access_token=bd9a4610ae31bd9826814791517bb6a4e67573368b0407358fe1468fe1288b1a',
-             '总经办'=>'https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7'
+     private function getbooturl($shop)
+     {
+         $boots = array('塘坑店' => 'https://oapi.dingtalk.com/robot/send?access_token=4f06799af0dabd74f550548bc1048cafbfa315dd03c8490ed0ae9d538411b9bf',
+             '区府店' => 'https://oapi.dingtalk.com/robot/send?access_token=b5f55dcdc31f5d3539e189fc485c42eafa01280907d669b416cbcaec5613fb23',
+             '时代长岛店' => 'https://oapi.dingtalk.com/robot/send?access_token=97e2179f6741b22b1f241bf92cfa5cf395cf4dbe21371469bd9507a08c8d80ac',
+             '业务部' => 'https://oapi.dingtalk.com/robot/send?access_token=9fca82fc45fa9d4d330732b31f68639ebcf651bbb0c53c03224476972e9e2782',
+             '总经办' => 'https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7',
+             '保险部' => 'https://oapi.dingtalk.com/robot/send?access_token=dcc3264e490a1665837a17ba67d5619feb848110ed22a3c5dccb7e48629100ef',
+             '行政部'=>'https://oapi.dingtalk.com/robot/send?access_token=9683b45fb6966c4244cd5f8d8046d8d0b8796e563ab2b802ea6e2a918cbd8655'
          );
-         return $boots[$shop];
      }
     private function MessageTip($carinfo,$mendian,$wxlb){
         $data['车主']=$carinfo['车主'];
@@ -572,6 +575,7 @@ class StoreAction extends WapAction{
                "msgtype": "actionCard",
                 }';
                 $model->postMessage($this->getbooturl('总经办'),$msgdata);
+                $model->postMessage($this->getbooturl('保险部'),$msgdata);
                 $model->postMessage($this->getbooturl($mendian),$msgdata);
                 $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'推广方案'))->select();
                 if(count($projects)>0){
@@ -590,6 +594,7 @@ class StoreAction extends WapAction{
                         }
                         }';
                         $model->postMessage($this->getbooturl('总经办'),$msgdata);
+                        $model->postMessage($this->getbooturl('保险部'),$msgdata);
                         $model->postMessage($this->getbooturl($mendian),$msgdata);
                         //$this->weixinmessage($project['内容'],$carinfo['服务顾问']);
                         //$data['类别']='推广信息';
@@ -629,6 +634,7 @@ class StoreAction extends WapAction{
                "msgtype": "actionCard",
                 }';
                 $model->postMessage($this->getbooturl('总经办'),$msgdata);
+                $model->postMessage($this->getbooturl('保险部'),$msgdata);
                 $model->postMessage($this->getbooturl($mendian),$msgdata);
                 $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'年审','跟踪类型'=>'推广方案'))->select();
                 if(count($projects)>0){
@@ -647,6 +653,9 @@ class StoreAction extends WapAction{
                             "isAtAll": true
                         }
                         }';
+                        $model->postMessage($this->getbooturl('总经办'),$msgdata);
+                        $model->postMessage($this->getbooturl('保险部'),$msgdata);
+                        $model->postMessage($this->getbooturl($mendian),$msgdata);
                         //$model->postMessage($booturl,$msgdata);
                         //$data['类别']='推广信息';
                         //$data['内容']=$project['内容'];
@@ -1332,7 +1341,7 @@ class StoreAction extends WapAction{
                            if(doubleval($project['虚增金额'])>0){
                                $projectprice+=$project['虚增金额']*$project['折扣']+$project['税额'];
                            }else{
-                               if($project['券编码']&&doubleval($project['折扣'])>0&&$project['结算方式']!='保险理赔'){
+                               if($project['券编码']&&doubleval($project['折扣'])>0&&$project['结算方式']!='保险'){
                                    $where['token']=$this->token;
                                    $where['wecha_id']=$this->wecha_id;
                                    $where['is_use']='0';
@@ -1371,7 +1380,7 @@ class StoreAction extends WapAction{
                                $productprice+=$product['虚增金额']*$product['折扣']+$product['税额'];
                            }
                            else{
-                               if($product['券编码']&&doubleval($product['折扣'])>0&&$product['结算方式']!='保险理赔'){
+                               if($product['券编码']&&doubleval($product['折扣'])>0&&$product['结算方式']!='保险'){
                                    $where['token']=$this->token;
                                    $where['wecha_id']=$this->wecha_id;
                                    $where['is_use']='0';
@@ -3227,7 +3236,6 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
                 $content=$wx['联系人'].'车牌号为'.$wx['车牌号码'].'的车辆'.date('Y-m-d',strtotime($wx['制单日期'])).'日在'.$wx['门店'].$wx['维修类别'];
                 $content.='，客户对服务的评价低于3分，接车人:'.$wx['接车人'].'，服务技师:'.$wx['主修人'].'，请及时跟踪回访。';
                 $model=new templateNews();
-                $booturl='https://oapi.dingtalk.com/robot/send?access_token=9683b45fb6966c4244cd5f8d8046d8d0b8796e563ab2b802ea6e2a918cbd8655';
                 $msgdata='{
                 "msgtype": "text", 
                 "text": {
@@ -3247,7 +3255,9 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
                 $tracedata['内容']=$content;
                 M('客户跟踪','dbo.','difo')->add($tracedata);
 
-                $model->postMessage($booturl,$msgdata);
+
+                $model->postMessage($this->getbooturl('总经办'),$msgdata);
+                $model->postMessage($this->getbooturl('行政部'),$msgdata);
                 //$this->weixinmessage($content,$wx['门店'],'评价');
             }
             $data['评价时间'] =date('Y-m-d H:i',time());
@@ -3365,20 +3375,30 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
             if($shop=='')
                 $shop=$this->getshopname();
             $carno=$_POST['carno'];
-            $this->genwxrecord('35',$carno,'AYC10009','蜡水洗车',$shop);
-            $wxcount=M('维修','dbo.','difo')->where(array('维修类别'=>'蜡水洗车','门店'=>$shop,'_string'=>"当前状态  in ('报价','派工')"))->count();
-            $where['token']=$this->token;
-            $where['wecha_id']=$this->wecha_id;
-            $where['is_use']='0';
-            $where['over_time']=array('egt',strtotime(date('Y-m-d',time())));
-            $where['coupon_id']=11;
-            $coupons=M("member_card_coupon_record")->where($where)->order('over_time')->select();
-            if(count($coupons)>0){
-                $this->weixin->send('您的前面还有'.$wxcount.'辆车正在排队洗车，为了减少您的等待时间，请把汽车钥匙交到前台，从交钥匙时刻起开始计时，等待时间超过60分钟，本次洗车免单哦。',$this->wecha_id);
-            }else{
-                $this->weixin->send('您的前面还有'.$wxcount.'辆车正在排队洗车，为了减少您的等待时间，请把汽车钥匙交到前台。',$this->wecha_id);
+            $cancelnum=M('维修','dbo.','difo')->where(
+                array('维修类别'=>'蜡水洗车',
+                    '车牌号码'=>$carno,
+                    '制单日期'=>date('Y-m-d',time()),
+                    '当前状态'=>'取消'))->count();
+            if($cancelnum>0){
+                echo '您今天取消过两次预约，请您到前台排队预约';
             }
-            echo '预约成功';
+            else {
+                $this->genwxrecord('40', $carno, 'AYC10009', '蜡水洗车', $shop);
+                $wxcount = M('维修', 'dbo.', 'difo')->where(array('维修类别' => '蜡水洗车', '门店' => $shop, '_string' => "当前状态  in ('报价','派工')"))->count();
+                $where['token'] = $this->token;
+                $where['wecha_id'] = $this->wecha_id;
+                $where['is_use'] = '0';
+                $where['over_time'] = array('egt', strtotime(date('Y-m-d', time())));
+                $where['coupon_id'] = 11;
+                $coupons = M("member_card_coupon_record")->where($where)->order('over_time')->select();
+                if (count($coupons) > 0) {
+                    $this->weixin->send('您的前面还有' . $wxcount . '辆车正在排队洗车，为了减少您的等待时间，请把汽车钥匙交到前台，从交钥匙时刻起开始计时，等待时间超过60分钟，本次洗车免单哦。', $this->wecha_id);
+                } else {
+                    $this->weixin->send('您的前面还有' . $wxcount . '辆车正在排队洗车，为了减少您的等待时间，请把汽车钥匙交到前台。', $this->wecha_id);
+                }
+                echo '预约成功';
+            }
 
         }
         else{

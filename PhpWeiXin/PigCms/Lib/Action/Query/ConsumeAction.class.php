@@ -975,9 +975,6 @@ class ConsumeAction extends Action{
             M('销售明细','dbo.','difo')->add($crk);
 
             $model=new templateNews();
-            $booturl='https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7';
-            $tangkeng='https://oapi.dingtalk.com/robot/send?access_token=9e3c1b9e17029774dc6f2749a82eb01d61555daa57c9cfbacc5b129d141d55e8';
-            $qufu='https://oapi.dingtalk.com/robot/send?access_token=ca22bf1b681e1b7d842c8ee8741dd4ff392934b1ffd0ae35530f9d69a61bfed1';
             $content=date('Y-m-d H:i',time()).','.$user['名称'].$wechaname.'下单'.$pp.$mc.$gg.'的轮胎'.$num.'条,电话:'.end(explode(' ',$_POST['user']));
             $content.=',请马上安排送货，超过30分钟将免送货费。'; 
             $id=$data['ID'];
@@ -1001,8 +998,8 @@ class ConsumeAction extends Action{
             }, 
         "msgtype": "actionCard",
         }';
-            $model->postMessage($booturl,$msgdata);
-            $model->postMessage($tangkeng,$msgdata);
+            $model->postMessage($this->getbooturl('总经办'),$msgdata);
+            $model->postMessage($this->getbooturl('业务部'),$msgdata);
             echo '下单成功';
 
         }
@@ -6760,16 +6757,28 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                    $pjinfo=M('配件仓位','dbo.','difo')->where(array('_string'=>"编号='$code' and 仓库='$ck'"))->find();
                    $pj=M('配件目录','dbo.','difo')->where(array('_string'=>"编号='$code' "))->find();
                    $cbprice=round(($pjinfo['库存']*$pjinfo['成本价']+$num*$price)/($pjinfo['库存']+$num),2);
-                   $lsj=$price+doubleval($pj['零售利润']);
-                   $pfj=$price+doubleval($pj['批发利润']);
-                   M('配件目录','dbo.','difo')->execute("update 配件目录 set 库存=库存+$num,最新进价=$price,参考售价=$lsj,一级批发价=$pfj  where 编号='$code'");
-                   M('配件仓位','dbo.','difo')->execute("update 配件仓位 set 库存=库存+$num,最新进价=$price,成本价=$cbprice,参考售价=$lsj,一级批发价=$pfj where 编号='$code' and 仓库='$ck'");
+                   $sql="update 配件目录 set 库存=库存+$num,最新进价=$price";
+                   $sql1="update 配件仓位 set 库存=库存+$num,最新进价=$price,成本价=$cbprice ";
+                   if(doubleval($pj['零售利润'])>0){
+                       $lsj=$price+doubleval($pj['零售利润']);
+                       $sql.=",参考售价=$lsj";
+                       $sql1.=",参考售价=$lsj";
+                   }
+                   if(doubleval($pj['批发利润'])>0){
+                       $pfj=$price+doubleval($pj['批发利润']);
+                       $sql.=",一级批发价=$pfj";
+                       $sql1.=",一级批发价=$pfj";
+                   }
+                   $sql.=" where 编号='$code'";
+                   $sql1.="  where 编号='$code' and 仓库='$ck' ";
+                   M('配件目录','dbo.','difo')->execute($sql);
+                   M('配件仓位','dbo.','difo')->execute($sql1);
                }
                $crkitem['当前状态']='已审核';
                $crkitem['审核人']=cookie('username');
                $crkitem['审核日期']=date('Y-m-d',time());
                M('出入库单','dbo.','difo')->where(array('流水号'=>$crk['流水号']))->save($crkitem);
-               $this->writeLog($crk['ID'],$crk['单据编号'],'入库审核','采购入库审核');
+               $this->writeLog($crk['ID'],$crk['单据编号'],'入库审核','采购');
                echo '审核通过';
                exit;
            }
@@ -8280,6 +8289,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                "msgtype": "actionCard",
                 }';
                $model->postMessage($this->getbooturl('总经办'),$msgdata);
+               $model->postMessage($this->getbooturl('保险部'),$msgdata);
                $model->postMessage($this->getbooturl($mendian),$msgdata);
                $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'推广方案'))->select();
                if(count($projects)>0){
@@ -8298,6 +8308,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                         }
                         }';
                        $model->postMessage($this->getbooturl('总经办'),$msgdata);
+                       $model->postMessage($this->getbooturl('保险部'),$msgdata);
                        $model->postMessage($this->getbooturl($mendian),$msgdata);
                        //$this->weixinmessage($project['内容'],$carinfo['服务顾问']);
                        //$data['类别']='推广信息';
@@ -8337,6 +8348,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                "msgtype": "actionCard",
                 }';
                $model->postMessage($this->getbooturl('总经办'),$msgdata);
+               $model->postMessage($this->getbooturl('保险部'),$msgdata);
                $model->postMessage($this->getbooturl($mendian),$msgdata);
                $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'年审','跟踪类型'=>'推广方案'))->select();
                if(count($projects)>0){
@@ -8355,7 +8367,10 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                             "isAtAll": true
                         }
                         }';
-                       //$model->postMessage($booturl,$msgdata);
+                       $model->postMessage($this->getbooturl('总经办'),$msgdata);
+                       $model->postMessage($this->getbooturl('保险部'),$msgdata);
+                       $model->postMessage($this->getbooturl($mendian),$msgdata);
+
                        //$data['类别']='推广信息';
                        //$data['内容']=$project['内容'];
                        //M('客户跟踪','dbo.','difo')->add($data);
@@ -8398,10 +8413,12 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        }
    }
    private function getbooturl($shop){
-       $boots=array( '塘坑店'=>'https://oapi.dingtalk.com/robot/send?access_token=9e3c1b9e17029774dc6f2749a82eb01d61555daa57c9cfbacc5b129d141d55e8',
-       '区府店'=>'https://oapi.dingtalk.com/robot/send?access_token=ca22bf1b681e1b7d842c8ee8741dd4ff392934b1ffd0ae35530f9d69a61bfed1',
-       '时代长岛店'=>'https://oapi.dingtalk.com/robot/send?access_token=bd9a4610ae31bd9826814791517bb6a4e67573368b0407358fe1468fe1288b1a',
-           '总经办'=>'https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7'
+       $boots=array( '塘坑店'=>'https://oapi.dingtalk.com/robot/send?access_token=4f06799af0dabd74f550548bc1048cafbfa315dd03c8490ed0ae9d538411b9bf',
+       '区府店'=>'https://oapi.dingtalk.com/robot/send?access_token=b5f55dcdc31f5d3539e189fc485c42eafa01280907d669b416cbcaec5613fb23',
+       '时代长岛店'=>'https://oapi.dingtalk.com/robot/send?access_token=97e2179f6741b22b1f241bf92cfa5cf395cf4dbe21371469bd9507a08c8d80ac',
+           '业务部'=>'https://oapi.dingtalk.com/robot/send?access_token=9fca82fc45fa9d4d330732b31f68639ebcf651bbb0c53c03224476972e9e2782',
+           '总经办'=>'https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7',
+           '保险部'=>'https://oapi.dingtalk.com/robot/send?access_token=dcc3264e490a1665837a17ba67d5619feb848110ed22a3c5dccb7e48629100ef'
    );
        return $boots[$shop];
    }

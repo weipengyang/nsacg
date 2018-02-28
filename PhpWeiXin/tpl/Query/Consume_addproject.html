@@ -13,8 +13,6 @@
         var data = [
                { id: 1, name: '客付' },
                { id: 2, name: '保险' },
-               { id: 3, name: '三包' },
-               { id: 4, name: '计次' },
                { id: 5, name: '免费' }
         ];
         var data1 = [
@@ -113,8 +111,10 @@
                         row['虚增类别'] ='';
                         row['主修人'] = getQueryString('zhuxiu');
                         row['折扣'] = getQueryString('discount');
-                        if (parent.record['维修类别'] == '保险理赔')
+                        if (parent.record['维修类别'] == '保险理赔') {
                             row['折扣'] = 1;
+                            row['结算方式'] = '保险';
+                        }
                         row['金额'] = row['工时'] * row['单价'];
                         //row['金额'] = row['工时'] * row['单价'] * row['折扣'];
                         row['税率'] = 0;
@@ -126,7 +126,8 @@
                     }
                    
                 }
-            });           haveproject = $("#haveproject").ligerGrid({
+            });
+           haveproject = $("#haveproject").ligerGrid({
                 height: '34%',
                 width: '100%',
                 columns: [
@@ -157,11 +158,13 @@
                 onSelectRow: function (rowdata, rowid, rowobj) {
                     form.setData(rowdata);
                 }
-            });             form = $("#form1").ligerForm({
+            });
+             form = $("#form1").ligerForm({
                 inputWidth: 100, labelWidth: 75, space:0,
                 validate: true,
                 width:'100%',
-                buttons: [                    {
+                buttons: [
+                    {
                          text: "更新", width: 80, click: function () {
                             var data = form.getData();
                             var selected = haveproject.getSelected();
@@ -174,7 +177,8 @@
                             }
                             haveproject.updateRow(selected, data);
                         }
-                    },                    {
+                    },
+                    {
                         text: "保存", width: 80, click: function () {
                             var data = haveproject.getChanges();
                             var submitData = {
@@ -192,7 +196,9 @@
                               });
                             //alert(JSON.stringify(data));
                         }
-                    }                ],                fields: [
+                    }
+                ],
+                fields: [
                     { display: "流水号", name: "流水号", newline: false, type: "hidden" },
                      {
                          display: "结算类别", name: "结算方式", newline: false, type: "combobox", options: {

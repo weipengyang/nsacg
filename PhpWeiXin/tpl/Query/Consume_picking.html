@@ -28,14 +28,15 @@
                             valueField: '姓名',
                             textField: '姓名',
                             autocomplete: true,
-                            url: '/index.php?g=Query&m=Consume&a=getfwgw'
+                            url: '/index.php?g=Query&m=Consume&a=getlly'
                         }
                     },
                     {
                         display: "备注", name: "备注", newline: true, width: 570, type: "textarea"
                     },
                 ],
-                buttons: [                    {
+                buttons: [
+                    {
                         text: "更新", width: 60, click: function () {
                             var row = product.getSelectedRow();
                             if ($("input[ligeruiid='本次领料']").val() <= row['数量']) {
@@ -49,7 +50,8 @@
                             }
 
                         }
-                    },                    {
+                    },
+                    {
                         text: "确定", width: 60, click: function () {
                             var data = form.getData();
                             alert(JSON.stringify(data));
@@ -69,7 +71,9 @@
                                   frameElement.dialog.hide();
                               });
                         }
-                    }            ]            });
+                    }
+            ]
+            });
             $("input[ligeruiid='车牌号码']").val(parent.record['车牌号码']);
             var product = $("#productgrid").ligerGrid({
                 height:'100%',

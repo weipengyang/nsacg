@@ -2171,6 +2171,7 @@ class ConsumeAction extends Action{
             $where['_complex']=$searchwhere;
             
         }
+
         $yelist=M('车辆消费分析','dbo.','difo')->query("exec 车辆消费分析 '$startdate','$enddate','$fwgw','$khlb',$page,$pagesize,'$searchkey',$flag");
         $StockTotal=M('出入库统计数量','dbo.','difo')->query("exec 车辆消费统计数据 '$startdate','$enddate','$fwgw','$khlb','$searchkey',$flag");
         $count=$StockTotal[0]['数量'];        
@@ -6676,7 +6677,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
         if($form['备注']==''){
             $data['单据备注']='维修领料';
         }
-        M('出入库单','dbo.','difo')->add($data);
+
         foreach($products as $product){
             $crk['ID']=$data['ID'];
             $crk['仓库']=$product['仓库'];
@@ -6694,14 +6695,19 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $crk['备注']=$product['备注'];
             $num=$product['本次领料'];
             $code=$product['编号'];
+            if($product['结算方式']=='自用'){
+                $data['引用类别']='自用出库';
+                $data['单据备注']='维修自用';
+            }
             M('出入库明细','dbo.','difo')->add($crk);
             M('配件目录','dbo.','difo')->execute("UPDATE 配件目录 SET 维修领用=维修领用+$num WHERE 编号='$code'");
             M('维修配件','dbo.','difo')->execute("UPDATE 维修配件 SET 待审核数量=isnull(待审核数量,0)+$num WHERE ID='$wxID'and 编号='$code'");
            
         }
+         M('出入库单','dbo.','difo')->add($data);
         echo '领料成功';
     }
-     else{ 
+     else{
 
          $this->display();
      }
@@ -6722,7 +6728,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                            $num=$item['数量'];
                            $code=$item['编号'];
                            $ck=$item['仓库'];
-                           if($crk['引用类别']=='维修领料'){
+                           if($crk['引用类别']=='维修领料' or $crk['单据备注']=='维修自用'){
                                $pj=M('维修配件','dbo.','difo')->where(array('ID'=>$crk['引用ID'],'编号'=>$item['编号']))->find();
                                $num=$pj['待审核数量'];
                                $data['待审核数量']=0;
@@ -8899,9 +8905,12 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                    $totalproduct+=$product['虚增金额']+$product['税额'];
                }
                else{
-                   $productprice+=$product['金额']*$product['折扣']+$product['税额'];
-                   $totalproduct+=$product['金额']+$product['税额'];
-                   $sumcost+=$product['成本价']*$product['数量'];
+                   if($product['结算方式']!='自用') {
+                       $productprice += $product['金额'] * $product['折扣'] + $product['税额'];
+                       $totalproduct += $product['金额'] + $product['税额'];
+                   }
+                       $sumcost += $product['成本价'] * $product['数量'];
+
                }
                
            }

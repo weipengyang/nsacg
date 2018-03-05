@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>车俩信息编辑</title>
+    <title>车辆信息编辑</title>
     <meta name="description" content="爱养车" />
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
@@ -61,7 +61,10 @@
             var form = $("#form1").ligerForm({
                 inputWidth: 160, labelWidth: 90, space: 20,
                 validate: true,
-                buttons: [                    { text: "保存", width: 60, click: submitForm }                ],                tab: {
+                buttons: [
+                    { text: "保存", width: 60, click: submitForm }
+                ],
+                tab: {
                     items: [
                         {
                             title: '基本信息',
@@ -140,7 +143,8 @@
                                         condition: {
                                             prefixID: 'condtion_',
                                             fields: [{ name: 'searchkey', type: 'text', width: 120, label: '客户信息', labelWidth: 90 }]
-                                            
+                                            
+
                                         },
                                         onSelected: function (e) {
                                             var row = e.data[0];
@@ -321,7 +325,8 @@
                     checkbox: checkbox                   
                 };
                 return options;
-            }            function setdata()
+            }
+            function setdata()
             {
                
                 var carinfo ={pigcms:$carinfo};
@@ -344,6 +349,9 @@
                     $("div[data-index='1']").html(
                       '<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=fileupload&carno='+ carinfo['流水号']+ '"></iframe></div>'
                      );
+                    var opttype=frameElement.dialog.get('opttype');
+                    if(opttype!='modify' && opttype!='add')
+                       $("div[ligeruiid='Button1009']").hide();
                 }
             }
         });

@@ -27,18 +27,14 @@
         <div class="admin-content">
         <div class="admin-content-body">
             <div class="am-g">
-                <div class="am-u-sm-3 am-u-md-3">
-                    <div class="am-form-group">
-                        <select data-am-selected="{btnSize: 'sm',btnWidth:'100px'}" id="khlb">
-                            <option value="ALL">所有分类</option>
-                            <volist name="lblist" id="item">
-                                <option value="{pigcms:$item.客户类别}">{pigcms:$item.客户类别}</option>
-                            </volist>
-                        </select>
-                        <select data-am-selected="{btnSize: 'sm',btnWidth:'100px'}" id="fwgw">
-                            <option value="ALL">所有分类</option>
-                        </select>
-                    </div>
+                <div class="am-u-sm-2 am-u-md-2">
+                    <input type="text" id="khlb">
+
+                </div>
+                <div class="am-u-sm-2 am-u-md-2">
+                    <select data-am-selected="{btnSize: 'sm',btnWidth:'100px'}" id="fwgw">
+                        <option value="ALL">所有分类</option>
+                    </select>
                 </div>
                 <div class="am-u-sm-1 am-u-md-1">
                     <div class="am-input-group am-datepicker-date" style="width:100px" data-am-datepicker="{format: 'yyyy-mm-dd'}">
@@ -154,6 +150,18 @@
                   });
               }
           }, 'JSON');
+            $('#khlb').ligerComboBox({
+                isShowCheckBox: true,
+                isMultiSelect: true,
+                selectBoxHeight:'300px',
+                valueFieldID: '类别',
+                valueField: '类别',
+                textField: '类别',
+                url: '/index.php?g=Query&m=Consume&a=getkhlb',
+            });
+
+
+
             $('#export').click(function () {
                 var url='/index.php?g=Query&m=Consume&a=exportUseRecord';
                 var khlb = $('#khlb').val();
@@ -201,7 +209,7 @@
                 }
             });
             $('#khlb').change(function () {
-                $('#search').click();
+                //$('#search').click();
             });
             $('#unconsume').change(function () {
                 $('#search').click();

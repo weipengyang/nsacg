@@ -82,7 +82,8 @@
                 checkbox: checkbox
             };
             return options;
-        }        function setdata() {
+        }
+        function setdata() {
             memberinfo ={pigcms:$memberinfo};
             wxmemberinfo ={pigcms:$wxmemberinfo};
             if (memberinfo && memberinfo != '') {
@@ -94,6 +95,9 @@
                 //$("input[ligeruiid='车型']").val(memberinfo['车型']);
                 $("input[ligeruiid='类别']").val(memberinfo['类别']);
                 $("input[ligeruiid='等级']").val(memberinfo['等级']);
+                var opttype=frameElement.dialog.get('opttype');
+                if(opttype!='modify' && opttype!='add')
+                    $("div[ligeruiid='Button1003']").hide();
                 //$("input[ligeruiid='车辆类别']").val(memberinfo['车辆类别']);
                 //$("input[ligeruiid='颜色']").val(memberinfo['颜色']);
                 //$("input[ligeruiid='外观']").val(memberinfo['外观']);
@@ -108,7 +112,10 @@
             form = $("#form1").ligerForm({
                 inputWidth: 160, labelWidth: 85, space: 20,
                 validate: true,
-                buttons: [                    { text: "保存", width: 60, click: submitForm }                ],                tab: {
+                buttons: [
+                    { text: "保存", width: 60, click: submitForm }
+                ],
+                tab: {
                     items: [
                         {
                             title: '基本信息',

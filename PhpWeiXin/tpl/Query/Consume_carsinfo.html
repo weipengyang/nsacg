@@ -102,6 +102,7 @@
         }
         function memberinfo(carno) {
             if (memberdialog) {
+                memberdialog.set('opttype','modify');
                 memberdialog.setUrl('/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno);
                 memberdialog.show();
             }
@@ -110,6 +111,7 @@
                     height: 500,
                     url: '/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno,
                     width: 900,
+                    opttype:'modify',
                     showMax: true,
                     showToggle: true,
                     showMin: false,
@@ -177,7 +179,9 @@
             valueField: '类别',
             textField: '类别',
             url: '/index.php?g=Query&m=Consume&a=getkhlb',
-        });                   $('#sfzy').change(function () {
+        });
+           
+        $('#sfzy').change(function () {
             $('#search').click();
 
         });

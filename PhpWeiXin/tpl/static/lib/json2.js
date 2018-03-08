@@ -166,6 +166,16 @@ if (!this.JSON2)
 if (gettopQueryString('a')!== 'main' && gettopQueryString('a') != 'login') {
     top.location.href = '/index.php?&g=Query&m=Consume&a=main';
 }
+function getCookie(name)
+{
+    var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)"); //正则匹配
+    if(arr=document.cookie.match(reg)){
+        return unescape(arr[2]);
+    }
+    else{
+        return null;
+    }
+}
 function formatdate(format, timestamp) {
     var a, jsdate = ((timestamp) ? new Date(timestamp * 1000) : new Date());
     var pad = function (n, c) {
@@ -314,11 +324,19 @@ function todate(num, istime) {
         var times = '';
         if (str.length > 4) {
             date = str[3] + "-";
-            date = date + month[str[0]] + "-" + str[2];
+            var  day=str[2];
+            if(parseInt(str[2])<10){
+                day="0"+str[2];
+            }
+            date = date + month[str[0]] + "-" + day;
             times = str[4].split(':');
         } else {
             date = str[2] + "-";
-            date = date + month[str[0]] + "-" + str[1];
+            var  day=str[1];
+            if(parseInt(str[1])<10){
+                day="0"+str[1];
+            }
+            date = date + month[str[0]] + "-" + day;
             times = str[3].split(':');
         }
         if (istime) {

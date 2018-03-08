@@ -10,7 +10,7 @@
     <body>
 	<div class="mui-content">
 		        <ul class="mui-table-view mui-grid-view mui-grid-9">
-		            <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3" onclick="sendod()"><a href="#">
+		            <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3" onclick="sendoa()"><a href="#">
 		                    <span class="mui-icon mui-icon-home"></span>
 		                    <div class="mui-media-body">发OA消息</div></a></li>
 		            <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3" onclick="sendding()"><a href="#">
@@ -42,8 +42,9 @@
 		<div style="height:50px;width:100%;text-align:center;padding-top:3px;border-top:1px #e0e0e0 solid;font-size:15px;position:fixed;bottom:0px;">开发更多功能</br>请联系QQ:773477953</div>
 		</div>
 	</body>
-<script type='text/javascript' src='http://g.alicdn.com/dingding/open-develop/1.5.1/dingtalk.js' charset='utf-8'></script>
-<script>
+	<script type='text/javascript' src='http://g.alicdn.com/dingding/open-develop/1.5.1/dingtalk.js' charset='utf-8'></script>
+	<script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+	<script>
 dd.config({
     agentId: "{pigcms:$jsapi.agentId}",
     corpId: "{pigcms:$jsapi.corpId}",
@@ -123,7 +124,16 @@ dd.biz.util.uploadImage({
 	  time:"12344566",
 	  },
     onSuccess : function(result) {
-       device('图片地址：'+result)
+        var submitData = {
+            url:result,
+            opt: "modify"
+        };
+        $.post('index.php?g=Wap&m=Dingding&a=testcarno', submitData,
+            function (data) {
+                alert(data);
+
+            });
+       //device('图片地址：'+result)
     },
     onFail : function(err) {
 	
@@ -179,13 +189,15 @@ function getuser()
 {
     dd.biz.user.get({
         onSuccess: function (info) {
-            alert('userGet success: ' + JSON.stringify(info));
+            userinfo=info;
+            alert(JSON.stringify(info));
         },
         onFail: function (err) {
             alert('userGet fail: ' + JSON.stringify(err));
         }
     });
 }
+var userinfo;
 function title(titles){
 dd.biz.navigation.setTitle({
     title : titles,//控制标题文本，空字符串表示显示默认文本
@@ -227,19 +239,19 @@ function Conversation() {
     })
 }
 
-function sendod(){
-  $.ajax({
-     type: 'POST',
-     url: "index.php?g=Wap&m=Dingding&a=sendoa",
-    data: '' ,
-    dataType:'json',  
-    success:function(data) {
-       device(data.info);
-	},
-	 error : function(err) {	 
-        alert(JSON.stringify(err));  
-     }  
-});
+function sendoa(){
+
+    var submitData = {
+        message:'测试信息',
+        'userid':userinfo['emplId']
+    };
+    $.post('index.php?g=Wap&m=Dingding&a=sendoa', submitData,
+        function (data) {
+            alert(data);
+
+        });
+
+
 }
 </script>
 </html>

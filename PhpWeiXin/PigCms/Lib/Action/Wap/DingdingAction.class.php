@@ -149,7 +149,7 @@ class DingdingAction extends BaseAction {
 	
 	public function getuser($mobile='')
     {
-        $url='https://oapi.dingtalk.com/user/get_by_mobile?access_token='.$this->token.'&mobile=18824160215';
+        $url='https://oapi.dingtalk.com/user/get_by_mobile?access_token='.$this->token.'&mobile=18515153280';
         $result=$this->dingtalkcurl($url);
         Log::write(json_encode('手机号码'.json_encode($result)));
 
@@ -218,15 +218,25 @@ class DingdingAction extends BaseAction {
         curl_close($curl);
         return json_decode($output,true);
 	}
-	
+    public function  testcarno(){
+        @import('@.ORG.BaiduSdk.AipOcr');
+        Log::write($_POST['url'][0]);
+        $image = file_get_contents($_POST['url'][0]);
+        $client = new AipOcr('10890054', 'eEvrXxNigsKN9FrRxrYGecyO', 'QOALV6DtDzu5gF8oDcKlVLxHNOKoAnw1');
+        $result=$client->licensePlate($image);
+
+        echo $result['words_result']['number'];
+    }
 	public function sendoa(){
+
 		$url='https://oapi.dingtalk.com/message/send?access_token='.$this->token;
-		$data['touser']='@all';//收件人
+		$data['touser']=$_POST['userid'];//收件人
 		$data['agentid']='29443806';//微应用id
 		$data['msgtype']="text";		
 		$datasb['content']='测试消息';
 		$data['text']=$datasb;
 		$send=$this->dingtalkcurl($url,json_encode($data));
+
         Log::write(json_encode('发送消息'.json_encode($send)));
 
 	}

@@ -3820,39 +3820,41 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
             {
                 $carno=strtoupper($carno);
                 $carinfo=M('member_card_car')->where(array('token' =>$this->token,'carno'=>$carno))->find();
-                if(!isset($carinfo))
-                {   
-                    $count=M('member_card_car')->where(array('token' =>$this->token,'wecha_id'=>$wecha_id))->count();
-                    if($count<2){
-                        $user=M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->find();
-                        if($user['carno']==""){
-                            M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno'=>$carno));
-                        }elseif($user['carno2']==""){
-                            M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno1'=>$carno));
-                        }else{
-                            M('userinfo')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->save(array('carno2'=>$carno));
+                if(!isset($carinfo)) {
+                    $cardinfo = M('member_card_create')->where(array('token' => $this->token, 'wecha_id' => $wecha_id))->find();
+                    if ($cardinfo['cardid'] != 12) {
+                        $count = M('member_card_car')->where(array('token' => $this->token, 'wecha_id' => $wecha_id))->count();
+                        if ($count >= 2) {
+                            echo '一个微信最多绑定两辆车';
+                            exit();
                         }
-                    }else{
-                        echo '一个微信最多绑定两辆车';
-                        exit();
                     }
-                    M('member_card_car')->add(array('token' => $this->token,'wecha_id'=>$wecha_id,'carno'=>$carno,'optuser'=>$user['truename'],'bindtime'=>time()));
-                    $cardno=M('member_card_create')->where(array('token' => $this->token,'wecha_id'=>$wecha_id))->find();
-                    $czinfo=M('往来单位','dbo.','difo')->where(array('名称'=>$cardno['number']))->find();
-                    $item['车主']=$cardno['number'];
-                    $item['车牌号码']=$carno;
-                    $item['是否在用']='是';
-                    $item['门店']=$this->getshopname();
-                    $item['客户ID']=$czinfo['ID'];
-                    $item['手机号码']=$user['tel'];
-                    $item['联系人']=$user['truename'];
-                    $item['联系电话']=$user['tel'];
-                    $item['客户类别']=$czinfo['类别'];
-                    $mycar=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->find();
-                    if($mycar){
-                        M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$carno))->save($item);
-                    }else{
-                        M('车辆档案','dbo.','difo')->add($item);
+                    $user = M('userinfo')->where(array('token' => $this->token, 'wecha_id' => $wecha_id))->find();
+                    if ($user['carno'] == "") {
+                        M('userinfo')->where(array('token' => $this->token, 'wecha_id' => $wecha_id))->save(array('carno' => $carno));
+                    } elseif ($user['carno2'] == "") {
+                        M('userinfo')->where(array('token' => $this->token, 'wecha_id' => $wecha_id))->save(array('carno1' => $carno));
+                    } else {
+                        M('userinfo')->where(array('token' => $this->token, 'wecha_id' => $wecha_id))->save(array('carno2' => $carno));
+                    }
+
+                    M('member_card_car')->add(array('token' => $this->token, 'wecha_id' => $wecha_id, 'carno' => $carno, 'optuser' => $user['truename'], 'bindtime' => time()));
+                    $cardno = M('member_card_create')->where(array('token' => $this->token, 'wecha_id' => $wecha_id))->find();
+                    $czinfo = M('往来单位', 'dbo.', 'difo')->where(array('名称' => $cardno['number']))->find();
+                    $item['车主'] = $cardno['number'];
+                    $item['车牌号码'] = $carno;
+                    $item['是否在用'] = '是';
+                    $item['门店'] = $this->getshopname();
+                    $item['客户ID'] = $czinfo['ID'];
+                    $item['手机号码'] = $user['tel'];
+                    $item['联系人'] = $user['truename'];
+                    $item['联系电话'] = $user['tel'];
+                    $item['客户类别'] = $czinfo['类别'];
+                    $mycar = M('车辆档案', 'dbo.', 'difo')->where(array('车牌号码' => $carno))->find();
+                    if ($mycar) {
+                        M('车辆档案', 'dbo.', 'difo')->where(array('车牌号码' => $carno))->save($item);
+                    } else {
+                        M('车辆档案', 'dbo.', 'difo')->add($item);
                     }
                     echo '添加成功';
                     exit();

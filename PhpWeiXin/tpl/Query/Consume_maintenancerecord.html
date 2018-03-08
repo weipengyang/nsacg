@@ -607,7 +607,11 @@
 
             var form = liger.get("form1");
             var data = form.getData();
-            data['预计完工'] =$("input[ligeruiid='预计完工']").val();
+            if(eval(getCookie("role"))!="系统管理员" && $("input[ligeruiid='预计完工']").val()!=todate(record['预计完工'], true)) {
+                $.ligerDialog.alert('没有权限修改预计完工');
+                return;
+            }
+            data['预计完工'] = $("input[ligeruiid='预计完工']").val();
             $.post('/index.php?g=Query&m=Consume&a=savewxinfo', data,
               function (msg) {
                   $.ligerDialog.alert(msg);
@@ -941,6 +945,7 @@
                                     display: "预计完工", name: "预计完工", newline: false, type: "date", options: {
                                         showTime: true
                                     }
+
                                 },
                                 { display: "下次保养 ", name: "下次保养", newline: false, type: "date" },
                                 { display: "车辆类型", name: "车辆类别", newline: false, type: "text" },
@@ -1422,7 +1427,7 @@
                 setdisabled();
                 setClickEvent();
                 grid.select(grid.data.Rows[0]);
-            }, 500);
+            }, 2000);
             $("#lb").change(function () {
                 $('#search').click();
             });

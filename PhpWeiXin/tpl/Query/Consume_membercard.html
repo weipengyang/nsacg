@@ -440,14 +440,32 @@
             });
 
         }
-        function getCookie(name) {
-            var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
-            if (arr = document.cookie.match(reg))
-                return eval(unescape(arr[2].replace(/\u/g, "%u")));
-            else
-                return null;
-        }
+
+        var rechargedialog;
         function memberCardRecharge(wecha_id) {
+                var url = '/index.php?g=Query&m=Consume&a=recharge';
+                url += '&wecha_id=' + wecha_id;
+                if (rechargedialog) {
+                    rechargedialog.setUrl(url);
+                    rechargedialog.show();
+                }
+                else {
+                    rechargedialog = $.ligerDialog.open({
+                        height: 180,
+                        url: url,
+                        width: 320,
+                        showMax: false,
+                        showToggle: true,
+                        showMin: false,
+                        isResize: true,
+                        modal: true,
+                        title: '充值'
+                    });
+                }
+
+
+        }
+        function memberCardRecharge11(wecha_id) {
             $('#doc-modal-1').modal({
                 relatedTarget: this,
                 width: 350,

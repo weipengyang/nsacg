@@ -68,7 +68,7 @@
                         <div id="paigongdiv">
                             <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="add();"><i class="am-icon-hand-o-left"></i>开单</button>
                             <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="check();"><i class="am-icon-hand-o-left"></i>审核</button>
-                            <button type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="uncheck();"><i class="am-icon-hand-o-left"></i>反审</button>
+                            <button id="uncheck" type="button" class="am-btn am-btn-warning am-round am-btn-sm" onclick="uncheck();"><i class="am-icon-hand-o-left"></i>反审</button>
                             <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="deleterecord();"><i class="am-icon-hand-o-right"></i>删除</button>
                             <button type="button" class="am-btn am-btn-secondary am-round am-btn-sm" onclick="printbill();"><i class="am-icon-hand-o-right"></i>打印</button>
                         </div>
@@ -282,6 +282,9 @@
             return todate(value);
         }
         $(function () {
+            if(eval(getCookie("role"))!="系统管理员"){
+                $("#uncheck").hide();
+            }
             $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {
                 if (data) {
                     $('#shop').empty();
@@ -341,7 +344,7 @@
                 url: '/index.php?g=Query&m=Consume&a=getpurchase',
                 height: '50%',
                 onDblClickRow: function (data, rowindex, rowobj) {
-                    wxinfo(data['流水号']);
+                    //wxinfo(data['流水号']);
                 },
                 onSelectRow: function (data, rowindex,rowobj) {
                     record = data;

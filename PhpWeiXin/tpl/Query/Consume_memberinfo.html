@@ -263,7 +263,7 @@
                 isScroll: true,
                 pageSize: 10,
                 parms: { khID:memberinfo['ID'] },
-                url: '/index.php?g=Query&m=Consume&a=gethistoryinfo',
+                url: '/index.php?g=Query&m=Consume&a=gethistoryinfo&flag=1',
                 height: '80%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     wxinfo(data['流水号']);
@@ -294,7 +294,7 @@
                 isScroll: true,
                 pageSize: 10,
                 urlParms: { khID:memberinfo['ID']},
-                url: '/index.php?g=Query&m=Consume&a=getxsinfo',
+                url: '/index.php?g=Query&m=Consume&a=getxsinfo&flag=1',
                 height: '80%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     wxinfo(data['流水号']);
@@ -327,7 +327,7 @@
                 isScroll: true,
                 pageSize: 10,
                 urlParms: { khID: memberinfo['ID'] },
-                url: '/index.php?g=Query&m=Consume&a=getbxinfo',
+                url: '/index.php?g=Query&m=Consume&a=getbxinfo&flag=1',
                 height: '80%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     wxinfo(data['流水号']);
@@ -356,7 +356,7 @@
                 isScroll: true,
                 pageSize: 10,
                 urlParms: { khID: memberinfo['ID'] },
-                url: '/index.php?g=Query&m=Consume&a=getdbinfo',
+                url: '/index.php?g=Query&m=Consume&a=getdbinfo&flag=1',
                 height: '80%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     wxinfo(data['流水号']);

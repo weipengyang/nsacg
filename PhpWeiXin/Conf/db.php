@@ -3,7 +3,7 @@ return array (
   'DB_TYPE' => 'mysql',
   'DB_HOST' => '56f20c6f558b5.gz.cdb.myqcloud.com',
   'DB_PORT' => '13659',
-  'DB_NAME' => 'pigcms',
+  'DB_NAME' => 'aycweixin',
   'DB_USER' => 'cdb_outerroot',
   'DB_PWD' => 'acg39071899',
   'DB_PREFIX' => 'tp_',

@@ -89,22 +89,23 @@
             function f_totalRender(data, currentPageData) {
                 return " 服务车辆:" + data.sumdata.服务车辆数
                     + "  工时:" + data.sumdata.工时
+                    + "  配件费:" + data.sumdata.材料费
                     + "  产值:" + data.sumdata.产值
+                    + "  应收金额:" + data.sumdata.应收金额
                     + "  毛利:" + data.sumdata.毛利;
             }
             grid = $("#maingrid4").ligerGrid({
                 columns: [
-                    { display: '接车人', name: '接车人', align: 'left', width: 200 },
+                    { display: '接车人', name: '接车人', align: 'left', width: 100 },
                     { display: '日期', name: '日期', width: 200 },
-                    { display: '维修类别', name: '维修类别', align: 'left', width: 200 },
-                    { display: '服务车辆数', name: '服务车辆数', width: 200 },
+                    { display: '维修类别', name: '维修类别', align: 'left ', width: 100 },
+                    { display: '服务车辆数', name: '服务车辆数', width: 100 },
                     {
-                        display: '产值', name: '产值', width: 200, align: 'left', render: function (rowdata, index, value) {
-                            return value;
-                        }
+                        display: '产值', name: '产值', width: 120, align: 'left'
                     },
                     { display: '工时费', name: '工时费', width: 120 },
                     { display: '毛利', name: '毛利', width: 120 },
+                    { display: '应收金额', name: '应收金额', width: 120 },
 
                 ],
                 totalRender: f_totalRender,

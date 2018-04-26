@@ -560,7 +560,7 @@
                                         $.ligerDialog.alert(rows[i]['项目名称'] + "没有派工");
                                         return;
                                     }
-                                    if (rows[i]['开工时间'] == null || rows[i]['开工时间'] == '' || todate(rows[i]['开工时间']) == '1900-01-1') {
+                                    if (rows[i]['开工时间'] == null || rows[i]['开工时间'] == '' || todate(rows[i]['开工时间']) == '1900-01-01') {
                                         $.ligerDialog.alert(rows[i]['项目名称'] + "开工时间为空");
                                         return;
                                     }
@@ -762,12 +762,12 @@
                      display: '操作', name: '操作', minWidth: 120, render: function (rowdata, index, value) {
                          var strhtml = '';
                          if (rowdata.当前状态 == '报价') {
-                             if (rowdata.开工时间 == "" || rowdata.开工时间 == null || rowdata.开工时间 == "null" || todate(rowdata.开工时间, false) == '1900-01-1') {
+                             if (rowdata.开工时间 == "" || rowdata.开工时间 == null || rowdata.开工时间 == "null" || todate(rowdata.开工时间, false) == '1900-01-01') {
                                  strhtml += '|<a href="javascript:void(0);" onclick="assignbatchtask(\'' + rowdata.ID + '\',\'' + rowdata.门店 + '\',\'' + rowdata.维修类别 + '\');"><strong>派工</strong></a>';
                              }
 
                          }
-                         if (rowdata.上交钥匙 == "" || rowdata.上交钥匙 == null || rowdata.上交钥匙 == "null" || todate(rowdata.上交钥匙, false) == '1900-01-1') {
+                         if (rowdata.上交钥匙 == "" || rowdata.上交钥匙 == null || rowdata.上交钥匙 == "null" || todate(rowdata.上交钥匙, false) == '1900-01-01') {
                              var start = new Date(Date.parse(todate(rowdata.进厂时间, true)));
                              var end = new Date();
                              if (parseInt((end - start) / 60000) > 60 && rowdata.当前状态 != '结束' && rowdata.当前状态 != '取消') {
@@ -778,13 +778,13 @@
                          }
                          if (rowdata.当前状态 == '派工') {
                              if (rowdata.单据类别 == '快修单') {
-                                 if (rowdata.实际完工 == "" || rowdata.实际完工 == null || rowdata.实际完工 == "null" || todate(rowdata.实际完工, false) == '1900-01-1') {
+                                 if (rowdata.实际完工 == "" || rowdata.实际完工 == null || rowdata.实际完工 == "null" || todate(rowdata.实际完工, false) == '1900-01-01') {
                                      strhtml += '|<a href="javascript:void(0);" onclick="completework(\'' + rowdata.流水号 + '\');"><strong>完工</strong></a>';
                                  }
                              }
                          }
                          if (rowdata.当前状态 == '审核') {
-                             if (rowdata.实际完工 == "" ||rowdata.实际完工 == null || rowdata.实际完工 == "null" || todate(rowdata.实际完工, false) == '1900-01-1') {
+                             if (rowdata.实际完工 == "" ||rowdata.实际完工 == null || rowdata.实际完工 == "null" || todate(rowdata.实际完工, false) == '1900-01-01') {
                                  strhtml += '|<a href="javascript:void(0);" onclick="completework(\'' + rowdata.流水号 + '\');"><strong>完工</strong></a>';
                              }
                          }
@@ -820,12 +820,12 @@
                 { display: '联系人', name: '联系人', minWidth: 100 },
                  {
                      display: '已处理', name: '', minWidth: 175, render: function (rowdata, index, value) {
-                         if (rowdata.上交钥匙 != "" && rowdata.上交钥匙 != null && rowdata.上交钥匙 != "null" && todate(rowdata.上交钥匙, false) != '1900-01-1') {
+                         if (rowdata.上交钥匙 != "" && rowdata.上交钥匙 != null && rowdata.上交钥匙 != "null" && todate(rowdata.上交钥匙, false) != '1900-01-01') {
                              var start = new Date(Date.parse(todate(rowdata.上交钥匙, true)));
                              var pretime = new Date(Date.parse(todate(rowdata.预计完工, true)));
                              var prehour = ((pretime - start) / 60000 / 60).toFixed(2);
                              var usehour = 0;
-                             if (rowdata.实际完工 != null && rowdata.实际完工 != "" && rowdata.实际完工 != "null" && todate(rowdata.实际完工, false) != '1900-01-1') {
+                             if (rowdata.实际完工 != null && rowdata.实际完工 != "" && rowdata.实际完工 != "null" && todate(rowdata.实际完工, false) != '1900-01-01') {
                                  end = new Date(Date.parse(todate(rowdata.实际完工, true)));
                                  usehour = ((end - start) / 60000 / 60).toFixed(2);
                              }

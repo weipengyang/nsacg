@@ -103,6 +103,7 @@ class DbMssql extends Db{
      * @return integer
      */
     public function execute($str) {
+
         $this->initConnect(true);
         if ( !$this->_linkID ) return false;
         $this->queryStr = $str;

@@ -372,7 +372,7 @@ class StoreAction extends WapAction{
                 }
             }
             echo '注册成功'; exit;
-			
+
 		} else {
             $jssdk = new JSSDK($this->wxuser['appid'],$this->wxuser['appsecret']);
             $signPackage = $jssdk->GetSignPackage();

@@ -222,7 +222,7 @@
                 document.getElementById(obj.id).style.background = "red";
                 return;
             }
-            reg = /^0{0,1}(13[0-9]|145|15[0-9]|18[0-9])[0-9]{8}$/i;
+            reg = /^0{0,1}(13[0-9]|145|15[0-9]|18[0-9]|17[0-9])[0-9]{8}$/i;
             if (!reg.test(obj.value)) {
                 $.alert("错误,请输入11位的手机号！");
                 document.getElementById(obj.id).style.background = "red";
@@ -232,7 +232,7 @@
         }
         function checkCarNo(obj) {
             if (obj.value != '') {
-                reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i;
+                reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5,6}$/i;
                 if (!reg.test(obj.value)) {
                     $.alert("请输入完整的车牌号码，格式如粤T83G5NB");
                     document.getElementById(obj.id).style.background = "red";
@@ -248,7 +248,7 @@
                 document.getElementById(obj.id).style.background = "red";
                 return;
             }
-            reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i;
+            reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5,6}$/i;
             reg2 = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{4}[\u4e00-\u9fa5]$/i;
             if (!reg.test(obj.value) && !reg2.test(obj.value)) {
                     $.alert("请输入完整的车牌号码，格式如粤T83G5N");

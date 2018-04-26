@@ -29,8 +29,8 @@
                 <div class="am-g">
                     <div class="am-u-sm-4 am-u-md-4">
                         <div class="am-form-group">
-                            部门
-                            <select id="bumen">
+                            门店
+                            <select id="shop">
                                 <option value="">所有门店</option>
                                 <option value="区府店">区府店</option>
                                 <option value="塘坑店">塘坑店</option>
@@ -118,6 +118,16 @@
                 + "  门店充值:" + data.qiantai
         }
         $(document).ready(function () {
+            $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {
+                if (data) {
+                    $('#shop').empty();
+                    $('#shop').append("<option value=''>所有门店</option>");
+                    $(data).each(function () {
+                        var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                        $('#shop').append(option);
+                    });
+                }
+            }, 'JSON');
             $('#search').click(function () {
                 var parms = {};
                 var enddate = $('#enddate').val();
@@ -126,7 +136,7 @@
                 var startdate = $('#startdate').val();
                 if (startdate != '')
                     parms['startdate'] = startdate;
-                var bm = $('#bumen').val();
+                var bm = $('#shop').val();
                 if (bm != '')
                     parms['bm'] = bm;
                 var searchkey = $('#searchkey').val();
@@ -135,7 +145,9 @@
                 grid.set('parms', parms);
                 grid.reload();
             });
-
+            $('#shop').change(function () {
+                $('#search').click();
+            });
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                    

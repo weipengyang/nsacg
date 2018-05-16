@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>会员消费查询</title>
+    <title>会员消费</title>
     <meta name="description" content="爱养车">
     <meta name="keywords" content="index">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,164 +14,191 @@
     <meta name="apple-mobile-web-app-title" content="爱养车" />
     <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
     <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+
     <link rel="stylesheet" href="/tpl/static/assets/css/amazeui.min.css" />
-    <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
     <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+
 </head>
 <body >
-  
-    <div class="am-cf admin-main" style="padding:0;margin:0">
-        <!-- content start -->
-        <div class="admin-content">
-            <div class="admin-content-body">
-                <div class="am-cf am-padding am-padding-bottom-0">
-                    <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">会员充值支付查询</strong> </div>
-                </div>
-                <hr>
-                <div class="am-g">
-                    <div class="am-u-sm-12 am-u-md-3">
-                        <div class="am-form-group">
-                            <select data-am-selected="{btnSize: 'sm'}" id="shop">
-                                <option value="">所有门店</option>
-                                <option value="塘坑店">塘坑店</option>
-                                <option value="区府店">区府店</option>
-                            </select>
-                        </div>
+<div class="am-cf admin-main" style="padding:0;margin:0">
+    <!-- content start -->
+    <div class="admin-content">
+        <div class="admin-content-body">
+            <div class="am-g">
+
+                <div class="am-u-sm-4 am-u-md-4">
+                    <div class="am-form-group">
+                        门店
+                        <select id="shop" data-am-selected="{btnSize: 'sm'}">
+                            <option value="">所有门店</option>
+                            <option value="区府店">区府店</option>
+                            <option value="塘坑店">塘坑店</option>
+                        </select>
                     </div>
-                    <div class="am-u-sm-12 am-u-md-3">
-                        <div class="am-input-group am-input-group-sm">
-                            <input type="text" id="searchkey" class="am-form-field">
-                            <span class="am-input-group-btn">
+                </div>
+                <div class="am-u-sm-1 am-u-md-1">
+                    <div class="am-input-group am-datepicker-date" style="width:100px" data-am-datepicker="{format: 'yyyy-mm-dd'}">
+                        <input type="text" class="am-form-field" id="startdate" style="width:100px" placeholder="开始日期" readonly>
+                        <span class="am-input-group-btn am-datepicker-add-on">
+                                <button class="am-btn am-btn-default" type="button"><span class="am-icon-calendar"></span> </button>
+                            </span>
+                    </div>
+                </div>
+                <div class="am-u-sm-1 am-u-md-1 am-u-md-offset-1 am-u-sm-offset-1">
+                    <div class="am-input-group am-datepicker-date" style="width:100px" data-am-datepicker="{format: 'yyyy-mm-dd'}">
+                        <input type="text" class="am-form-field" id="enddate" style="width:100px" placeholder="结束日期" readonly>
+                        <span class="am-input-group-btn am-datepicker-add-on">
+                                <button class="am-btn am-btn-default" type="button"><span class="am-icon-calendar"></span> </button>
+                            </span>
+                    </div>
+                </div>
+                <div class="am-u-sm-2 am-u-md-2  am-u-end am-u-md-offset-1">
+                    <div class="am-input-group am-input-group-sm">
+                        <input type="text" id="searchkey" class="am-form-field">
+                        <span class="am-input-group-btn">
                                 <button id="search" class="am-btn am-btn-default" type="button">搜索</button>
                             </span>
-                        </div>
-                    </div>
-                    <div class="am-u-sm-12 am-u-md-3">
-                        <div class="am-form-group">
-                            <button class="am-btn am-btn-primary" id="reflash">
-                                <i class="am-icon-refresh"></i>
-                                刷新
-                            </button>
-                        </div>
                     </div>
                 </div>
-                <div class="am-g">
-                    <div class="am-u-sm-12">
-                        <form class="am-form">
-                            <table class="am-table am-table-striped am-table-hover table-main">
-                                <thead>
-                                    <tr>
-                                        <th class="table-title">姓名</th>
-                                        <th class="table-title">会员卡号</th>
-                                        <th class="table-title">门店</th>
-                                        <th class="table-title">消费车辆</th>
-                                        <th class="table-title">日期</th>
-                                        <th class="table-title">订单号</th>
-                                        <th class="table-title">订单名称</th>
-                                        <th class="table-title">交易金额</th>
-                                        <th class="table-title">状态</th>
-                                        <th class="table-title">备注</th>
-
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <volist id="rmb" name="rmb">
-                                        <tr>
-                                            <td>{pigcms:$rmb.truename}</td>
-                                            <td><a href="javascript:void(0);" onclick="memberinfo('{pigcms:$rmb.number}')">{pigcms:$rmb.number}</a></td>
-                                            <td>{pigcms:$rmb.shop}</td>
-                                            <td><a href="javascript:void(0);" onclick="carinfo('{pigcms:$rmb.usecar}')">{pigcms:$rmb.usecar}</a></td>
-                                            <td>{pigcms:$rmb.createtime|date='Y-m-d H:i',###}</td>
-                                            <td>{pigcms:$rmb.orderid}</td>
-                                            <td>{pigcms:$rmb.ordername}</td>
-                                            <td>{pigcms:$rmb.price}</td>
-                                            <td><if condition="$rmb['paid'] eq 1">交易成功<else /><font color="red">未付款</font></if></td>
-                                            <td>{pigcms:$rmb.note}</td>
-
-                                        </tr>
-                                    </volist>
-                                </tbody>
-                            </table>
-                            <div class="am-cf">
-                                <div class="am-fr">
-                                    <div class="cLine">
-                                        <div class="pageNavigator right">
-                                            <div class="pages">{pigcms:$page}</div>
-                                        </div>
-                                        <div class="clr"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr />
-                        </form>
-                    </div>
+                <div class="am-u-sm-1 am-u-md-1">
+                    <!--<button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="exportdata();">导出数据</button>-->
                 </div>
-
             </div>
+            <div id="maingrid4" style="margin:0; padding:0;"></div>
         </div>
-        <!-- content end -->
     </div>
-    <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
-    <script src="/tpl/static/assets/js/amazeui.min.js"></script>
-    <script src="/tpl/static/assets/js/app.js"></script>
-    <script>
-        var cardialog, memberdialog;
-        function carinfo(carno) {
-            if (cardialog) {
-                cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
-                cardialog.show();
-            }
-            else {
-                cardialog = $.ligerDialog.open({
-                    height: 500,
-                    url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
-                    width: 900,
-                    showMax: true,
-                    showToggle: true,
-                    showMin: false,
-                    isResize: true,
-                    modal: false,
-                    title: '车俩信息编辑'
+    <!-- content end -->
+</div>
+<script src="/tpl/static/assets/js/amazeui.min.js"></script>
+<script src="/tpl/static/assets/js/app.js"></script>
+<script>
+    var cardialog, memberdialog;
+    function carinfo(carno) {
+        if (cardialog) {
+            cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
+            cardialog.show();
+        }
+        else {
+            cardialog = $.ligerDialog.open({
+                height: 500,
+                url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
+                width: 900,
+                showMax: true,
+                showToggle: true,
+                showMin: false,
+                isResize: true,
+                modal: false,
+                title: '车俩信息编辑'
+            });
+        }
+    }
+    function memberinfo(carno) {
+        if (memberdialog) {
+            memberdialog.setUrl('/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno);
+            memberdialog.show();
+        }
+        else {
+            memberdialog = $.ligerDialog.open({
+                height: 500,
+                url: '/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno,
+                width: 900,
+                showMax: true,
+                showToggle: true,
+                showMin: false,
+                isResize: true,
+                modal: false,
+                title: '会员资料编辑'
+            });
+        }
+    }
+    function f_totalRender(data, currentPageData) {
+        //console.log(currentPageData);
+        return " 消费总额:" + data.sum;
+        // + "  微信充值:" + data.weixin
+        //+ "  门店充值:" + data.qiantai;
+        //return "";
+    }
+    $(document).ready(function () {
+        $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {
+            if (data) {
+                $('#shop').empty();
+                $('#shop').append("<option value=''>所有门店</option>");
+                $(data).each(function () {
+                    var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                    $('#shop').append(option);
                 });
             }
-        }
-        function memberinfo(carno) {
-            if (memberdialog) {
-                memberdialog.setUrl('/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno);
-                memberdialog.show();
-            }
-            else {
-                memberdialog = $.ligerDialog.open({
-                    height: 500,
-                    url: '/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno,
-                    width: 900,
-                    showMax: true,
-                    showToggle: true,
-                    showMin: false,
-                    isResize: true,
-                    modal: false,
-                    title: '会员资料编辑'
-                });
-            }
-        }
-        $(document).ready(function () {
-            $('#search').click(function () {
-                location.href = '/index.php?g=Query&m=Consume&a=consume&searchkey=' + $('#searchkey').val()+"&shop="+$('#shop').val();
-
-            });
-            $('#reflash').click(function () {
-                location.href = '/index.php?g=Query&m=Consume&a=consume';
-
-            });
-
+        }, 'JSON');
+        $('#search').click(function () {
+            var parms = {};
+            var enddate = $('#enddate').val();
+            if (enddate != '')
+                parms['enddate'] = enddate;
+            var startdate = $('#startdate').val();
+            if (startdate != '')
+                parms['startdate'] = startdate;
+            var bm = $('#shop').val();
+            if (bm != '')
+                parms['bm'] = bm;
+            var searchkey = $('#searchkey').val();
+            if (searchkey != '')
+                parms['searchkey'] = searchkey;
+            grid.set('parms', parms);
+            grid.reload();
         });
-        //reflash();
-        //function reflash() {
+        $('#shop').change(function () {
+            $('#search').click();
+        });
+        grid = $("#maingrid4").ligerGrid({
+            columns: [
 
-        //    location.href = location.href;
-        //    setTimeout("reflash()", 100000);
+                { display: '姓名', name: 'truename', width: 100, align: 'left' },
+                {
+                    display: '会员卡号', name: 'number', minWidth: 100, render: function (rowdata, index, value) {
 
-        //}
-    </script>
+                    return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\')">' + value + '</a>';
+                }
+                },
+                { display: '门店', name: 'shop', minWidth: 120 },
+                {
+                    display: '消费日期', name: 'createtime', minWidth: 100, render: function (rowdata, index, value) {
+                    if (value > 0)
+                        return formatdate('Y-m-d', value);
+                    return value;
+                }
+                },
+                { display: '订单号', name: 'orderid', minWidth: 100 },
+                { display: '订单名称', name: 'ordername', minWidth: 140 },
+                { display: '交易金额', name: 'price', minWidth: 100 },
+
+                {
+                    display: '状态', name: 'paid', minWidth: 80, render: function (rowdata, index, value) {
+                    if (value == '1') {
+                        return '交易成功';
+                    } else {
+                        return '未付款';
+                    }
+                }
+                },
+                { display: '备注', name: 'note', minWidth: 80},
+            ],
+            isScroll: true,
+            pageSize: 20,
+            totalRender: f_totalRender,
+            url: '/index.php?g=Query&m=Consume&a=getconsumebyshop&type=1',
+            height: '95%',
+        });
+
+    });
+    //reflash();
+    //function reflash() {
+
+    //    location.href = location.href;
+    //    setTimeout("reflash()", 100000);
+
+    //}
+</script>
 </body>
 </html>

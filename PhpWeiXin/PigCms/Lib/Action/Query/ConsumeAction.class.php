@@ -634,7 +634,7 @@ class ConsumeAction extends Action{
             ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
         $total=M('服务顾问业绩表','dbo.','difo')->join('员工目录 on 服务顾问业绩表.接车人=员工目录.姓名')
             ->where($where)
-            ->field("sum(服务车辆数) 服务车辆数,sum(工时费) 工时,sum(产值) 产值,sum(毛利) 毛利,sum(材料费) 材料费,sum(应收金额) 应收金额")
+            ->field("sum(服务车辆数) 服务车辆数,sum(工时费) 工时,sum(产值) 产值,sum(毛利) 毛利,sum(材料费) 材料费,sum(应收金额) 应收金额,sum(现收金额) 现收金额")
             ->find();
         $data['Rows']=$yelist;
         $data['Total']=$count;
@@ -4009,6 +4009,10 @@ public  function exportpurchasedata(){
              ->where(array('类别'=>array('like','%'.$_POST['key'].'%'),'类别'=>array('not in',array('蜡水洗车','汽车美容'))))
              ->select();
        }
+       elseif (!$_POST['key']){
+           $wxlb=M('维修类别','dbo.','difo')->select();
+
+       }
         else
         $wxlb=M('维修类别','dbo.','difo')->where(array('类别'=>array('like','%'.$_POST['key'].'%')))->select();
         echo json_encode($wxlb);
@@ -5793,6 +5797,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                     $czinfo['名称']=$carinfo['车牌号码'];
                     $carinfo['车主']=$carinfo['车牌号码'];
                     $czinfo['客户']=1;
+                    $czinfo['门店']='爱养车';
                     $czinfo['ID']=$this->getcode(18,0,0);
                     $carinfo['客户ID']=$czinfo['ID'];
                     $czinfo['会员']=0;
@@ -6412,97 +6417,74 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
     }
    public function members()
     {
-        $where=array('1'=>'1');
-        if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
-            $searchkey='%'.trim($_GET['searchkey']).'%';
-        }
-        if($_GET['shop']&&trim($_GET['shop'])!='')
-        {
-            $where=array('shop'=>trim($_GET['shop']));
-
-        }
-        else{
-            $where['shop']=array('neq','');
-        }
-        if($searchkey){
-            $searchwhere['tp_userinfo.carno']=array('like',$searchkey);
-            $searchwhere['carno1']=array('like',$searchkey);
-            $searchwhere['carno2']=array('like',$searchkey);
-            $searchwhere['orderid']=array('like',$searchkey);
-            $searchwhere['number']=array('like',$searchkey);
-            $searchwhere['ordername']=array('like',$searchkey);
-            $searchwhere['truename']=array('like',$searchkey);
-            $searchwhere['wechaname']=array('like',$searchkey);
-            $searchwhere['_logic']='OR';
-            $where['_complex']=$searchwhere;
-
-        }
-        $parms=$_GET;
-        $count= M('Member_card_use_record')
-            ->join('join tp_userinfo on tp_member_card_use_record.wecha_id=tp_userinfo.wecha_id')
-            ->join('tp_member_card_create on tp_member_card_use_record.wecha_id=tp_member_card_create.wecha_id')
-            ->where($where)->count();
-		$Page = new Page($count,15,$parms);
-		$show = $Page->show();
-		$record = M('Member_card_use_record')
-            ->join('join tp_userinfo on tp_member_card_use_record.wecha_id=tp_userinfo.wecha_id')
-            ->join('join tp_member_card_create on tp_member_card_use_record.wecha_id=tp_member_card_create.wecha_id')
-            ->where($where)->order('tp_member_card_use_record.time desc')->limit($Page->firstRow.','.$Page->listRows)->select();
-        $this->assign('page',$show);
-        $this->assign('record',$record);
-        $pay_record=M('Member_card_pay_record');
-        unset($where['shop']);
-        $count2      = $pay_record
-            ->join('join tp_userinfo on tp_member_card_pay_record.wecha_id=tp_userinfo.wecha_id')
-             ->join('join tp_member_card_create on tp_member_card_pay_record.wecha_id=tp_member_card_create.wecha_id')
-           ->where($where)->count();
-		$Page2       = new Page($count2,15,$parms);
-		$rmb = $pay_record
-            ->join('join tp_userinfo on tp_member_card_pay_record.wecha_id=tp_userinfo.wecha_id')
-            ->join('join tp_member_card_create on tp_member_card_pay_record.wecha_id=tp_member_card_create.wecha_id')
-            ->where($where)->limit($Page2->firstRow.','.$Page2->listRows)->order('createtime DESC')->select();
-		$show2       = $Page2->show();
-		$this->assign('rmb',$rmb);
-		$this->assign('page2',$show2);
         $this->display();
 
     }
-   public function consume()
+    public function getconsumebyshop()
     {
-        if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])){
-            $searchkey='%'.trim($_GET['searchkey']).'%';
-        }
-        if($_GET['shop']&&trim($_GET['shop'])!='')
+        $page=$_POST['page'];
+        $pagesize=$_POST['pagesize'];
+        $sortname=$_POST['sortname'];
+        $sortorder=$_POST['sortorder'];
+        $where['1']=1;
+        if($_GET['khID'])
         {
-            $where=array('shop'=>trim($_GET['shop']));
+            $where['tp_member_card_create.number']=trim($_GET['khID']);
+        }
+        if($_GET['type'])
+        {
+            $where['_string']="ordername not like '%充值%' and paid=1";
+        }
+        if(!isset($sortname)){
+            $order='tp_member_card_pay_record.createtime desc';
+        }
+        else{
+            $order=$sortname.' '.$sortorder;
+        }
+        if($_POST['bm']&&trim($_POST['bm'])!='')
+        {
+            $where['tp_member_card_pay_record.shop']=trim($_POST['bm']);
 
         }
-        $where['_string']="ordername not like '%充值%' and paid=1";
-        if($searchkey){
-            $searchwhere['tp_userinfo.carno']=array('like',$searchkey);
-            $searchwhere['carno1']=array('like',$searchkey);
-            $searchwhere['carno2']=array('like',$searchkey);
-            $searchwhere['orderid']=array('like',$searchkey);
-            $searchwhere['number']=array('like',$searchkey);
-            $searchwhere['ordername']=array('like',$searchkey);
-            $searchwhere['truename']=array('like',$searchkey);
-            $searchwhere['wechaname']=array('like',$searchkey);
-            $searchwhere['_logic']='OR';
-            $where['_complex']=$searchwhere;
+        if($_POST['startdate']&&trim($_POST['startdate'])!='')
+        {
+            $where['createtime']=array('egt',strtotime(trim($_POST['startdate'])));
 
         }
-        $parms=$_GET;
+        if($_POST['enddate']&&trim($_POST['enddate'])!='')
+        {
+            $where['createtime']=array('elt',strtotime(trim($_POST['enddate'])));
+
+        }
+        if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
+        {
+            $where['createtime']=array('BETWEEN',array(strtotime(trim($_POST['startdate'])),strtotime(trim($_POST['enddate']))+3600*24));
+
+        }
         $count= M('Member_card_pay_record')
             ->join('join tp_userinfo on tp_member_card_pay_record.wecha_id=tp_userinfo.wecha_id')
-             ->join('join tp_member_card_create on tp_member_card_pay_record.wecha_id=tp_member_card_create.wecha_id')
-           ->where($where)->count();
-		$Page = new Page($count,15,$parms);
-		$rmb = M('Member_card_pay_record')
+            ->join('join tp_member_card_create on tp_member_card_pay_record.wecha_id=tp_member_card_create.wecha_id')
+            ->where($where)->count();
+        $rmb = M('Member_card_pay_record')
             ->join('join tp_userinfo on tp_member_card_pay_record.wecha_id=tp_userinfo.wecha_id')
             ->join('join tp_member_card_create on tp_member_card_pay_record.wecha_id=tp_member_card_create.wecha_id')
-            ->where($where)->limit($Page->firstRow.','.$Page->listRows)->order('createtime DESC')->select();
-		$this->assign('rmb',$rmb);
-		$this->assign('page',$Page->show());
+            ->field("createtime,number,ordername,truename,tp_member_card_pay_record.shop,paytime,paytype,orderid,ordername,price,paid,note")
+            ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
+
+        $sum= M('Member_card_pay_record')
+            ->join('join tp_userinfo on tp_member_card_pay_record.wecha_id=tp_userinfo.wecha_id')
+            ->join('join tp_member_card_create on tp_member_card_pay_record.wecha_id=tp_member_card_create.wecha_id')
+            ->where($where)->sum('price');
+        $data['Rows']=$rmb;
+        $data['Total']=$count;
+        $data['sum']=$sum;
+        echo json_encode($data);
+
+    }
+
+
+   public function consume()
+    {
         $this->display();
 
     }

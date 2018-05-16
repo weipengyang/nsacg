@@ -1949,7 +1949,7 @@ class CardAction extends WapAction{
                     $model->sendTempMsg($dataKey,$dataArr);
 					
 				}
-					$this->success('支付成功',U('Store/myinfo',array('token'=>$token,'wecha_id'=>$wecha_id,'cardid'=>$cardinfo['cardid'])));
+                $this->success('支付成功',U('Store/myinfo',array('token'=>$token,'wecha_id'=>$wecha_id,'cardid'=>$cardinfo['cardid'])));
 
 			}else{
 				exit('支付失败');

@@ -522,16 +522,16 @@ class StoreAction extends WapAction{
         }
     }
 }
-     private function getbooturl($shop)
-     {
-         $boots = array('塘坑店' => 'https://oapi.dingtalk.com/robot/send?access_token=4f06799af0dabd74f550548bc1048cafbfa315dd03c8490ed0ae9d538411b9bf',
-             '区府店' => 'https://oapi.dingtalk.com/robot/send?access_token=b5f55dcdc31f5d3539e189fc485c42eafa01280907d669b416cbcaec5613fb23',
-             '时代长岛店' => 'https://oapi.dingtalk.com/robot/send?access_token=97e2179f6741b22b1f241bf92cfa5cf395cf4dbe21371469bd9507a08c8d80ac',
-             '业务部' => 'https://oapi.dingtalk.com/robot/send?access_token=9fca82fc45fa9d4d330732b31f68639ebcf651bbb0c53c03224476972e9e2782',
-             '总经办' => 'https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7',
-             '保险部' => 'https://oapi.dingtalk.com/robot/send?access_token=dcc3264e490a1665837a17ba67d5619feb848110ed22a3c5dccb7e48629100ef',
+     private function getbooturl($shop){
+         $boots=array( '塘坑店'=>'https://oapi.dingtalk.com/robot/send?access_token=4f06799af0dabd74f550548bc1048cafbfa315dd03c8490ed0ae9d538411b9bf',
+             '区府店'=>'https://oapi.dingtalk.com/robot/send?access_token=b5f55dcdc31f5d3539e189fc485c42eafa01280907d669b416cbcaec5613fb23',
+             '时代长岛店'=>'https://oapi.dingtalk.com/robot/send?access_token=97e2179f6741b22b1f241bf92cfa5cf395cf4dbe21371469bd9507a08c8d80ac',
+             '前台客服'=>'https://oapi.dingtalk.com/robot/send?access_token=48b08982d4f558a8e47d8e04b00dc680972626ee476a46b847fb91b6e4b96aef',
+             '总经办'=>'https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7',
+             '服务部'=>'https://oapi.dingtalk.com/robot/send?access_token=c74584b1c9998408bff2d3205cf02bc7ba1f3bd994077c13258261a005aa229a',
              '行政部'=>'https://oapi.dingtalk.com/robot/send?access_token=9683b45fb6966c4244cd5f8d8046d8d0b8796e563ab2b802ea6e2a918cbd8655'
          );
+         return $boots[$shop];
      }
     private function MessageTip($carinfo,$mendian,$wxlb){
         $data['车主']=$carinfo['车主'];
@@ -575,7 +575,8 @@ class StoreAction extends WapAction{
                "msgtype": "actionCard",
                 }';
                 $model->postMessage($this->getbooturl('总经办'),$msgdata);
-                $model->postMessage($this->getbooturl('保险部'),$msgdata);
+                $model->postMessage($this->getbooturl('前台客服'),$msgdata);
+                $model->postMessage($this->getbooturl('服务部'),$msgdata);
                 $model->postMessage($this->getbooturl($mendian),$msgdata);
                 $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'推广方案'))->select();
                 if(count($projects)>0){
@@ -594,7 +595,8 @@ class StoreAction extends WapAction{
                         }
                         }';
                         $model->postMessage($this->getbooturl('总经办'),$msgdata);
-                        $model->postMessage($this->getbooturl('保险部'),$msgdata);
+                        $model->postMessage($this->getbooturl('前台客服'),$msgdata);
+                        $model->postMessage($this->getbooturl('服务部'),$msgdata);
                         $model->postMessage($this->getbooturl($mendian),$msgdata);
                         //$this->weixinmessage($project['内容'],$carinfo['服务顾问']);
                         //$data['类别']='推广信息';
@@ -634,7 +636,8 @@ class StoreAction extends WapAction{
                "msgtype": "actionCard",
                 }';
                 $model->postMessage($this->getbooturl('总经办'),$msgdata);
-                $model->postMessage($this->getbooturl('保险部'),$msgdata);
+                $model->postMessage($this->getbooturl('前台客服'),$msgdata);
+                $model->postMessage($this->getbooturl('服务部'),$msgdata);
                 $model->postMessage($this->getbooturl($mendian),$msgdata);
                 $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'年审','跟踪类型'=>'推广方案'))->select();
                 if(count($projects)>0){
@@ -654,7 +657,8 @@ class StoreAction extends WapAction{
                         }
                         }';
                         $model->postMessage($this->getbooturl('总经办'),$msgdata);
-                        $model->postMessage($this->getbooturl('保险部'),$msgdata);
+                        $model->postMessage($this->getbooturl('前台客服'),$msgdata);
+                        $model->postMessage($this->getbooturl('服务部'),$msgdata);
                         $model->postMessage($this->getbooturl($mendian),$msgdata);
                         //$model->postMessage($booturl,$msgdata);
                         //$data['类别']='推广信息';
@@ -693,6 +697,7 @@ class StoreAction extends WapAction{
                "msgtype": "actionCard",
                 }';
                 $model->postMessage($this->getbooturl('总经办'),$msgdata);
+                $model->postMessage($this->getbooturl('服务部'),$msgdata);
                 $model->postMessage($this->getbooturl($mendian),$msgdata);
             }
         }
@@ -1192,7 +1197,7 @@ class StoreAction extends WapAction{
                $data['结算日期']=date('Y-m-d H:i',time());
                $data['当前状态']='出厂';
                $data['挂账金额']=0;
-               $data['现收金额']=$price;
+               $data['现收金额']=0;
                $data['标志']='已结算';
                M('维修','dbo.','difo')->where(array('流水号'=>$itemid))->save($data);
                $couponids=json_decode($_POST['couponids']);
@@ -2809,9 +2814,7 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
                             }
                             
                         }
-                        if(!(strpos($product['name'], '蜡水洗车') !== false)){
-                            $this->sellbill($va['price'],$product['name']);
-                        }
+                        $this->sellbill($va['price'],$product['name']);
                     }
                     else{
                         if(strpos($product['name'], '打蜡') !== false){

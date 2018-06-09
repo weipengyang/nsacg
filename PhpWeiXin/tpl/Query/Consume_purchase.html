@@ -31,17 +31,19 @@
         <div class="admin-content">
             <div class="admin-content-body">
                 <div class="am-g">
-                    <div class="am-u-sm-4 am-u-md-4">
+                    <div class="am-u-sm-2 am-u-md-2">
                         <div class="am-form-group">
                             制单人
                             <select id="fwgw">
                                 <option value="">所有人</option>
                             </select>
-                            类别
-                            <select id="lb">
-                                <option value="">所有分类</option>
-                            </select>
+
+
                         </div>
+
+                    </div>
+                    <div class="am-u-sm-2 am-u-md-2">
+                        <input type="text" id="lb">
                     </div>
                     <div class="am-u-sm-1 am-u-md-1">
                         <div class="am-input-group am-datepicker-date" style="width:100px" data-am-datepicker="{format: 'yyyy-mm-dd'}">
@@ -127,22 +129,20 @@
                      });
                  }
              }, 'JSON');
-            $.post('index.php?g=Query&m=Consume&a=getwxlb', null,
-            function (data) {
-                if (data) {
-                    $('#lb').empty();
-                    $('#lb').append("<option value=''>所有分类</option>");
-                    $(data).each(function () {
-                        var option = "<option value='" + this.类别 + "'>" + this.类别 + "</option>";
-                        $('#lb').append(option);
-                    });
-                }
-            }, 'JSON');
+            $('#lb').ligerComboBox({
+                isShowCheckBox: true,
+                isMultiSelect: true,
+                selectBoxHeight:'300px',
+                valueFieldID: '类别',
+                valueField: '类别',
+                textField: '类别',
+                url: '/index.php?g=Query&m=Consume&a=getwxlb',
+            });
             $('#fwgw').change(function () {
                 $('#search').click();
             });
             $('#lb').change(function () {
-                $('#search').click();
+                //$('#search').click();
             });
             $('#search').click(function () {
                 var parms = {};

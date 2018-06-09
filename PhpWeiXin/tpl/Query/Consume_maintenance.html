@@ -31,18 +31,9 @@
                             <select id="zhuxiu">
                                 <option value="">所有人</option>
                             </select>
-                            <select  id="lb">
-                                <option value="">所有分类</option>
-                                <option value="蜡水洗车">蜡水洗车</option>
-                                <option value="汽车美容">汽车美容</option>
-                                <option value="普通快修">普通快修</option>
-                                <option value="常规保养">常规保养</option>
-                                <option value="保险理赔">保险理赔</option>
-                                <option value="汽车维修">汽车维修</option>
-                                <option value="汽车喷漆">汽车喷漆</option>
-                                <option value="售后保修">售后保修</option>
-                                <option value="返工">返工</option>
-                            </select>
+                            <div class="am-u-sm-2 am-u-md-2">
+                                <input type="text" id="lb">
+                            </div>
                             <select id="khlb">
                                 <option value="">所有客户</option>
                             </select>
@@ -128,17 +119,7 @@
                 $.ligerDialog.alert('请选择要打印的单');
             }
         }
-        $("#wxtype").change(function () {
-            if ($("#wxtype").val() == '普通快修') {
-                $('#lcdiv').hide();
-                $('#ltdiv').hide();
-                $('#lxrdiv').hide();
-            } else {
-                $('#lxrdiv').show();
-                $('#lcdiv').show();
-                $('#ltdiv').show();
-            }
-        });
+
         function viewcarinfo(carno) {
             var cardialog=$.ligerDialog.open({
                 height: 500,
@@ -226,6 +207,16 @@
                     });
                 }
             }, 'JSON');
+            $('#lb').ligerComboBox({
+                isShowCheckBox: true,
+                isMultiSelect: true,
+                selectBoxHeight:'300px',
+                valueFieldID: '类别',
+                valueField: '类别',
+                textField: '类别',
+                url: '/index.php?g=Query&m=Consume&a=getwxlb',
+            });
+
             grid = $("#maingrid4").ligerGrid({
                 columns: [
                   { display: '状态', name: '当前状态', align: 'left', width: 40 },
@@ -405,7 +396,7 @@
                 $('#search').click();
             });
             $("#lb").change(function () {
-                $('#search').click();
+                //$('#search').click();
             });
             $("#shop").change(function () {
                 $('#search').click();
@@ -433,6 +424,7 @@
                 if (shop != '')
                     parms.shop = shop;
                 var lb = $('#lb').val();
+
                 if (lb != '')
                     parms.lb = lb;
                 var overtime = $('#overtime').val();

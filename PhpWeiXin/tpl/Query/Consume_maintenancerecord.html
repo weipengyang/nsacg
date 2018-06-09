@@ -743,6 +743,17 @@
                     });
                 }
             }, 'JSON');
+            $.post('index.php?g=Query&m=Consume&a=getwxlb', null,
+                function (data) {
+                    if (data) {
+                        $('#lb').empty();
+                        $('#lb').append("<option value=''>所有类别</option>");
+                        $(data).each(function () {
+                            var option = "<option value='" + this.类别 + "'>" + this.类别 + "</option>";
+                            $('#lb').append(option);
+                        });
+                    }
+                }, 'JSON');
             panel1=$("#panel1").ligerPanel({
                 title: '维修详情',
                 width:'98%',

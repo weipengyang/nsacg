@@ -42,17 +42,18 @@
         <div class="admin-content">
             <div class="admin-content-body">
                 <div class="am-g">
-                    <div class="am-u-sm-4 am-u-md-4">
+                    <div class="am-u-sm-5 am-u-md-5">
                         <div class="am-form-group">
-                            门店
                             <select id="shop">
                                 <option value="">所有门店</option>
                             </select>
-                            业务员
                             <select id="fwgw">
-                                <option value="">所有人</option>
+                                <option value="">所有业务员</option>
                             </select>
-                            销售类别
+                            <select id="sgy">
+                                <option value="">所有施工员</option>
+                            </select>
+
                             <select id="xslb">
                                 <option value="">所有</option>
                             </select>
@@ -132,13 +133,24 @@
            function (data) {
                if (data) {
                    $('#fwgw').empty();
-                   $('#fwgw').append("<option value=''>所有人</option>");
+                   $('#fwgw').append("<option value=''>所有业务员</option>");
                    $(data).each(function () {
                        var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
                        $('#fwgw').append(option);
                    });
                }
            }, 'JSON');
+            $.post('index.php?g=Query&m=Consume&a=getpersonbydepart', null,
+                function (data) {
+                    if (data) {
+                        $('#sgy').empty();
+                        $('#sgy').append("<option value=''>所有施工员</option>");
+                        $(data).each(function () {
+                            var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
+                            $('#sgy').append(option);
+                        });
+                    }
+                }, 'JSON');
             $.post('index.php?g=Query&m=Consume&a=getshoplist', null,
            function (data) { 
                if (data) {
@@ -154,7 +166,7 @@
           function (data) {
               if (data) {
                   $('#xslb').empty();
-                  $('#xslb').append("<option value=''>所有</option>");
+                  $('#xslb').append("<option value=''>所有销售类别</option>");
                   $(data).each(function () {
                       var option = "<option value='" + this.params_name + "'>" + this.params_name + "</option>";
                       $('#xslb').append(option);
@@ -209,6 +221,9 @@
             $("#fwgw").change(function () {
                 $('#search').click();
             });
+            $("#sgy").change(function () {
+                $('#search').click();
+            });
             $("#xslb").change(function () {
                 $('#search').click();
             });
@@ -230,6 +245,9 @@
                 var fwgw = $('#fwgw').val();
                 if (fwgw != '')
                     parms['zdr'] = fwgw;
+                var sgy = $('#sgy').val();
+                if (sgy != '')
+                    parms['sgy'] = sgy;
                 var searchkey = $('#searchkey').val();
                 if (searchkey != '')
                     parms.searchkey = searchkey;

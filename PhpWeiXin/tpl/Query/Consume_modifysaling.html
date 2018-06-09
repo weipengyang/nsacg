@@ -33,7 +33,8 @@
                     checkbox: checkbox
                 };
                 return options;
-            }             form = $("#form1").ligerForm({
+            }
+             form = $("#form1").ligerForm({
                 inputWidth: 140, labelWidth: 75, space: 20,
                 validate: true,
                 fields: [
@@ -66,7 +67,8 @@
                              condition: {
                                  prefixID: 'condtion_',
                                  fields: [{ name: 'searchkey', type: 'text', width: 120, label: '客户', labelWidth: 90 }]
-
+
+
                              },
                              onSelected:function (e) {
                                  var row = e.data[0];
@@ -113,7 +115,7 @@
                           options: {
                               valueField: '方式',
                               textField: '方式',
-                              autocomplete: true,
+
                               url: '/index.php?g=Query&m=Consume&a=gethyfs',
                           }
                       },
@@ -157,9 +159,18 @@
                             url: '/index.php?g=Query&m=Consume&a=getcarnobypersonid',
                         }
                     },
-                   
+                    {
+                        display: "施工员", name: "施工员", newline: false, type: "combobox",
+                        options: {
+                            valueField: '姓名',
+                            textField: '姓名',
+
+                            url: '/index.php?g=Query&m=Consume&a=getpersonbydepart',
+                        }
+                    },
                 ],
-                buttons: [                    {
+                buttons: [
+                    {
                         text: "保存", width: 60, click: function () {
                             var data = form.getData();
                             data['客户ID'] = data['客户名称'];
@@ -188,11 +199,14 @@
 
                               });
                         }
-                    }            ]             });
+                    }
+            ]
+             });
              var data = frameElement.dialog.data;
              setTimeout(function () {
                  form.setData(data);
                  $("input[ligeruiid='运费']").val(0);
+
                  $("input[ligeruiid='客户名称']").val(data['客户名称']);
                  $("input[ligeruiid='发票类别']").val(data['发票类别']);
                  $("input[ligeruiid='结算方式']").val(data['结算方式']);
@@ -203,7 +217,7 @@
                      carno.setParm('id', data['客户ID']);
                      carno.reload();
                  }
-             }, 300);
+             }, 500);
              
             //calprice();
         });

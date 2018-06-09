@@ -31,7 +31,7 @@
         <div class="admin-content">
                 <div class="admin-content-body">
                     <div class="am-g">
-                        <div class="am-u-sm-4 am-u-md-4">
+                        <div class="am-u-sm-3 am-u-md-3">
                             <div class="am-form-group">
                                 <select id="bumen">
                                     <option value="">所有门店</option>
@@ -42,19 +42,10 @@
                                     <option value="">所有人</option>
                                 </select>
 
-                                <select  id="lb">
-                                    <option value="">所有分类</option>
-                                    <option value="蜡水洗车">蜡水洗车</option>
-                                    <option value="汽车美容">汽车美容</option>
-                                    <option value="汽车喷漆">汽车喷漆</option>
-                                    <option value="普通快修">普通快修</option>
-                                    <option value="常规保养">常规保养</option>
-                                    <option value="保险理赔">保险理赔</option>
-                                    <option value="汽车维修">汽车维修</option>
-                                    <option value="售后保修">售后保修</option>
-                                    <option value="返工">返工</option>
-                                </select>
                            </div>
+                        </div>
+                        <div class="am-u-sm-2 am-u-md-2">
+                            <input type="text" id="lb">
                         </div>
                         <div class="am-u-sm-1 am-u-md-1">
                             <div class="am-input-group am-datepicker-date" style="width:100px" data-am-datepicker="{format: 'yyyy-mm-dd'}">
@@ -192,6 +183,15 @@
                     });
                 }
             }, 'JSON');
+            $('#lb').ligerComboBox({
+                isShowCheckBox: true,
+                isMultiSelect: true,
+                selectBoxHeight:'300px',
+                valueFieldID: '类别',
+                valueField: '类别',
+                textField: '类别',
+                url: '/index.php?g=Query&m=Consume&a=getwxlb',
+            });
             $.post('index.php?g=Query&m=Consume&a=getpersonbydepart', null,
                      function (data) {
                          if (data) {

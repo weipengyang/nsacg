@@ -94,7 +94,8 @@
                     checkbox: checkbox
                 };
                 return options;
-            }             form = $("#form1").ligerForm({
+            }
+             form = $("#form1").ligerForm({
                 inputWidth: 140, labelWidth: 75, space: 20,
                 validate: true,
                 fields: [
@@ -128,7 +129,8 @@
                              condition: {
                                  prefixID: 'condtion_',
                                  fields: [{ name: 'searchkey', type: 'text', width: 120, label: '客户', labelWidth: 90 }]
-
+
+
                              },
                              onSelected:function (e) {
                                  var row = e.data[0];
@@ -219,9 +221,18 @@
                             url: '/index.php?g=Query&m=Consume&a=getcarnobypersonid',
                         }
                     },
-                   
+                    {
+                        display: "施工员", name: "施工员", newline: false, type: "combobox",comboboxName:'combperson',
+                        options: {
+                            valueField: '姓名',
+                            textField: '姓名',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getpersonbydepart',
+                        }
+                    },
                 ],
-                buttons: [                    {
+                buttons: [
+                    {
                         text: "保存", width: 60, click: function () {
                             var data = form.getData();
                             data['客户ID'] = data['客户名称'];
@@ -259,7 +270,9 @@
 
                               });
                         }
-                    }            ]            });
+                    }
+            ]
+            });
             //$("input[ligeruiid='车牌号码']").val(parent.record['车牌号码']);
              product = $("#productgrid").ligerGrid({
                 height:'100%',

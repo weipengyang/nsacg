@@ -113,7 +113,7 @@
                         row['虚增类别'] ='';
                         row['单价'] = data['售价'];
                         row['折扣'] = getQueryString('discount');
-                        if (parent.record['维修类别'] == '保险理赔') {
+                        if (parent.record['维修类别'] == '保险理赔'||parent.record['维修类别'] == '查勘理赔') {
                             row['折扣'] = 1;
                             row['结算方式'] = '保险';
                         }

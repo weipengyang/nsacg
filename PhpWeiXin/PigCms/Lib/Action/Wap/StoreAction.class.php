@@ -1238,8 +1238,12 @@ class StoreAction extends WapAction{
                exit;
 
            }elseif($type==2){
-               $this->consumerecord($price,'汽车商品支付',$userinfo);
                $xsd=M('销售单','dbo.','difo')->where(array('流水号'=>$itemid))->find();
+               if($xsd['当前状态']=='已审核'){
+                   echo '该单已经结算';
+                   exit;
+               }
+               $this->consumerecord($price,'汽车商品支付',$userinfo);
                $xsmx=M('销售明细','dbo.','difo')->where(array('ID'=>$xsd['ID']))->select();
                $this->genbill($price,$xsd['客户名称'],'销售出库收款('.$xsd['单据编号'].')',$xsd['客户ID'],'销售','销售出库',$xsd['车牌号码'],$xsd['门店']);
                M('销售单','dbo.','difo')->where(array('流水号'=>$itemid))->save(array('当前状态'=>'已审核'));
@@ -1278,10 +1282,14 @@ class StoreAction extends WapAction{
            }
            elseif($type==3){
                $bx=M('车辆保险','dbo.','difo')->where(array('流水号'=>$itemid))->find();
+               if($bx['当前状态']=='结束'){
+                   echo '该单已经结算';
+                   exit;
+               }
                $this->genbill($price,$bx['车主'],'保险收款('.$bx['业务编号'].')',$bx['客户ID'],'保险','保险收款');
                if($bx['总金额']>0){
                    $wldw=M('往来单位','dbo.','difo')->where(array('名称'=>$bx['保险公司']))->find();
-                   $this->gendbbill($bx['总金额'],$bx['保险公司'],'代办保险付款('.$bx['业务编号'].')',$wldw['ID'],$bx['业务编号'],'保险代办',$bx['ID'],$bx['车牌号码']);
+                   $this->gendbbill($bx['总金额'],$bx['保险公司'],'代办保险付款('.$bx['业务编号'].')',$wldw['ID'],$bx['业务编号'],'保险代办',$bx['ID'],$bx['车牌号码'],$bx['门店']);
                }
                $data['挂账金额']=0;
                $data['现收金额']=$price;
@@ -1297,10 +1305,14 @@ class StoreAction extends WapAction{
            }
            else{
                $db=M('车辆代办','dbo.','difo')->where(array('流水号'=>$itemid))->find();
+               if($db['当前状态']=='结束'){
+                   echo '该单已经结算';
+                   exit;
+               }
                $this->genbill($price,$db['车主'],'代办收款('.$db['业务编号'].')',$db['客户ID'],'代办服务','代办服务收款',$db['车牌号码']);
                if($db['代办费用']>0){
                    $wldw=M('往来单位','dbo.','difo')->where(array('名称'=>$db['车管单位']))->find();
-                   $this->gendbbill($db['代办费用'],$db['车管单位'],'代办'.$db['代办类型'].'付款('.$db['业务编号'].')',$wldw['ID'],$db['业务编号'],'其它代办',$db['ID'],$db['车牌号码']);
+                   $this->gendbbill($db['代办费用'],$db['车管单位'],'代办'.$db['代办类型'].'付款('.$db['业务编号'].')',$wldw['ID'],$db['业务编号'],'其它代办',$db['ID'],$db['车牌号码'],$db['门店']);
                }
                $data['挂账金额']=0;
                $data['现收金额']=$price;
@@ -1451,7 +1463,7 @@ class StoreAction extends WapAction{
        $paybill['虚增价税']=0;
        $paybill['挂账金额']=$price; 
        $paybill['车牌号码']=$carno;
-       $paybill['门店']='爱养车';
+       $paybill['门店']=$shop;
        M('应收应付单','dbo.','difo')->add($paybill);
    }
     private function genbill($price,$chezhu,$zhaiyao,$daiwen,$type='维修',$billtype='维修收款',$carno='',$shop=''){

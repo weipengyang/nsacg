@@ -22,6 +22,14 @@
                 inputWidth: 160, labelWidth: 85, space: 20,
                 validate: true,
                 fields: [
+                    {
+                        display: "门店", name: "门店", newline: false, type: "combobox", comboboxName: 'mendian', options: {
+                        valueField: '名称',
+                        textField: '名称',
+                        url: '/index.php?g=Query&m=Consume&a=getshoplist',
+                    }
+
+                    },
                    {
                        display: "业务员", name: "业务员", newline: false, type: "combobox", comboboxName: 'ywy',
                        options: {
@@ -120,13 +128,18 @@
                  { display: '备注', name: '备注', type: "textarea", width: 430, height: 100 },
 
                 ],
-                buttons: [                    {
+                buttons: [
+                    {
                         text: "保存", width: 60, click: function () {
                             var data = form.getData();
                             if (data['车牌号码'] == '') {
                                 $.ligerDialog.alert('请输入车牌号码');
                                 return;
                             }
+                        if (data['门店'] == '') {
+                            $.ligerDialog.alert('请选择门店');
+                            return;
+                        }
                             data = JSON2.parse(JSON2.stringify(data));
                             data['备注'] = $("#备注").val();
                             var type = frameElement.dialog.get('opttype');
@@ -142,11 +155,14 @@
 
                               });
                         }
-                    },                {
+                    },
+                {
                         text: "取消", width: 60, click: function () {
                             frameElement.dialog.hide();
                         }
-                    }            ]            });
+                    }
+            ]
+            });
             if (frameElement.dialog.get('opttype') == 'modify'){
                 setTimeout(function () {
                     var record = frameElement.dialog.get('data');  

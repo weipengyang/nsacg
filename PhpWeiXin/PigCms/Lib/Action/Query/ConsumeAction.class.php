@@ -5506,7 +5506,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $paybill['虚增价税']=0;
            $paybill['挂账金额']=$dbinfo['挂账金额'];
            $paybill['车牌号码']=$dbinfo['车牌号码'];
-           $paybill['门店']='爱养车';
+           $paybill['门店']=$dbinfo['门店'];
            M('应收应付单','dbo.','difo')->add($paybill);
            if($dbinfo['挂账金额']==0){
                $inout['单据编号']=$this->getcodenum('BI');
@@ -5517,11 +5517,11 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $inout['实收金额']=$dbinfo['现收金额'];
                $inout['折扣金额']=0;
                $inout['结算方式']=$dbinfo['结算方式'];
-               $inout['结算账户']='爱养车';
+               $inout['结算账户']=$dbinfo['门店'];
                $inout['摘要']='车辆代办收款('.$dbinfo['业务编号'].')';
                $inout['收支项目']=$dbinfo['代办类别'];
                $inout['当前状态']='待审核';
-               $inout['发票类别']='爱养车';
+               $inout['发票类别']=$dbinfo['门店'];
                $inout['发票号']=$dbinfo['车牌号码'];
                $inout['单位编号']=$dbinfo['客户ID'];
                $inout['ID']=$this->getcode(18,1,1);
@@ -5586,7 +5586,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            $paybill['虚增价税']=0;
            $paybill['挂账金额']=$bxinfo['挂账金额'];
            $paybill['车牌号码']=$bxinfo['车牌号码'];
-           $paybill['门店']='爱养车';
+           $paybill['门店']=$bxinfo['门店'];
            M('应收应付单','dbo.','difo')->add($paybill);
            if($bxinfo['挂账金额']==0){
                $inout['单据编号']=$this->getcodenum('BI');
@@ -5597,11 +5597,11 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                $inout['实收金额']=$bxinfo['现收金额'];
                $inout['折扣金额']=0;
                $inout['结算方式']=$bxinfo['结算方式'];
-               $inout['结算账户']='爱养车';
+               $inout['结算账户']=$bxinfo['门店'];
                $inout['摘要']='车辆代办收款('.$bxinfo['业务编号'].')';
                $inout['收支项目']='车辆保险';
                $inout['当前状态']='待审核';
-               $inout['发票类别']='爱养车';
+               $inout['发票类别']=$bxinfo['门店'];
                $inout['发票号']=$bxinfo['车牌号码'];
                $inout['单位编号']=$bxinfo['客户ID'];
                $inout['ID']=$this->getcode(18,1,1);

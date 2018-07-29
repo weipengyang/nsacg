@@ -95,15 +95,15 @@
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         var  grid;
-        var cardialog;
+        var cardialog,memberdialog;
         var record;
-        function viewcarinfo(carno) {
+        function carinfo(carno) {
             if (cardialog) {
                 cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
                 cardialog.show();
             }
             else {
-                    cardialog = $.ligerDialog.open({
+                cardialog = $.ligerDialog.open({
                     height: 500,
                     url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
                     width: 900,
@@ -115,6 +115,25 @@
                     title: '车辆信息编辑'
                 });
                 cardialog.max();
+            }
+        }
+        function memberinfo(carno) {
+            if (memberdialog) {
+                memberdialog.setUrl('/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno);
+                memberdialog.show();
+            }
+            else {
+                memberdialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    title: '会员资料编辑'
+                });
             }
         }
         function format(rowdata, index, value) {
@@ -159,8 +178,20 @@
                 { display: '制单人', name: '制单人', width: 100, align: 'left' },
                 { display: '业务员', name: '业务员', minWidth: 100 },
                 { display: '保险公司', name: '保险公司', minWidth: 120 },
-                { display: '车牌号码', name: '车牌号码', minWidth: 100 },
-                { display: '车主', name: '车主', minWidth: 100 },
+                    {
+                        display: '车主', name: '车主', minWidth: 140, render: function (rowdata, index, value) {
+
+                        return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                    }
+                    },
+                    {
+                        display: '车牌号码', name: '车牌号码', minWidth: 100, render: function (rowdata, index, value) {
+
+                        return '<a href="javascript:void(0);" onclick="carinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                    }
+                    },
                 { display: '驾驶员', name: '驾驶员', minWidth: 140 },
                 { display: '驾驶证号', name: '驾驶证号', minWidth: 100 },
                 { display: '驾驶员电话', name: '驾驶员电话', minWidth: 80 },
@@ -206,7 +237,7 @@
                 isScroll: true,
                 pageSize: 20,
                 totalRender: f_totalRender,
-                url: '/index.php?g=Query&m=Consume&a=getbxdata',
+                url: '/index.php?g=Query&m=Consume&a=getbxdata&type=1',
                 height: '95%',
             });
            

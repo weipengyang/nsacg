@@ -61,6 +61,12 @@ class ConsumeAction extends Action{
             }
         }
     }
+    public  function setremark(){
+       $openid=$_GET['openid'];
+       $remark=$_GET['number'];
+       $result=$this->weixin->remark($openid,$remark);
+       return '设置成功';
+    }
     public  function login()
     {
         if(IS_POST)
@@ -2641,7 +2647,7 @@ public  function exportpurchasedata(){
             $sortname='年检日期';
         $sortorder='asc';
         if (isset($_GET['khlb'])&&trim($_GET['khlb'])!=''){
-            $where['客户类别']=$_GET['khlb'];
+            $where['客户类别']=array('in',explode(';',$_GET['khlb']));
         }
         if (isset($_GET['searchkey'])&&trim($_GET['searchkey'])!=''){
             $searchkey='%'.trim($_GET['searchkey']).'%';
@@ -3336,6 +3342,11 @@ public  function exportpurchasedata(){
             $where['主修人']=trim($_POST['zhuxiu']);
 
         }
+        if($_POST['fwgw']&&trim($_POST['fwgw'])!='')
+        {
+            $where['接车人']=trim($_POST['fwgw']);
+
+        }
         if($_POST['carno']&&trim($_POST['carno'])!='')
         {
             $where['车牌号码']=trim($_POST['carno']);
@@ -3391,11 +3402,7 @@ public  function exportpurchasedata(){
         $wxinfo=M('维修档案','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
         $count=M('维修','dbo.','difo')->where($where)->count();
         $where1=$where;
-        if($_POST['lb']=='蜡水洗车'){
-            $where1['_string']=" 当前状态 !='取消' and isnull(已处理,0)>10 and isnull(已处理,0)<100";
-        }else{
-            $where1['_string']=" 当前状态 !='取消'";
-        }
+        $where1['_string']=" 当前状态 !='取消'";
         $dealtime=M('维修','dbo.','difo')->where($where1)->field('sum(convert(int,isnull(已处理,0))) 已处理')->find();
         $where['车主']=array('like','%AYC%');
         $hycount=M('维修','dbo.','difo')->where($where)->count();
@@ -4553,7 +4560,6 @@ public  function exportpurchasedata(){
 
         }else{
             $where['门店']=array('in',explode(',',cookie('department')));
-
         }
         if(isset($_POST['xslb'])&&$_POST['xslb']!=''){
             $where['销售类别']=$_POST['xslb'];
@@ -4571,7 +4577,6 @@ public  function exportpurchasedata(){
         if(trim($_POST['startdate'])!=''&&trim($_POST['enddate'])!='')
         {
             $where['制单日期']=array('BETWEEN',array(trim($_POST['startdate']),trim($_POST['enddate'])));
-
         }
         if($_POST['zdr']&&trim($_POST['zdr'])!='')
         {
@@ -4620,6 +4625,7 @@ public  function exportpurchasedata(){
         $pagesize=$_POST['pagesize'];
         $sortname=$_POST['sortname'];
         $sortorder=$_POST['sortorder'];
+        $type=$_GET["type"];
         if(!isset($sortname)){
             $sortname='流水号';
             $sortorder='desc';
@@ -4662,7 +4668,11 @@ public  function exportpurchasedata(){
             $where['_complex']=$searchwhere;
 
         }
-        $where['_string']=" 当前状态!='取消'";
+        if($type=="1"){
+            $where['_string'] = " 当前状态='结束'";
+        }else {
+            $where['_string'] = " 当前状态!='取消'";
+        }
         $count=M('车辆保险','dbo.','difo')
             ->where($where)->count();
         $yelist=M('车辆保险','dbo.','difo')
@@ -6174,6 +6184,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                     if($cardnumber!='0'){
                        $mycard['number']=$cardnumber;
                        $this->changecarinfo($uinfo,$cardnumber);
+                       $this->weixin->remark($uinfo['wecha_id'],$cardnumber);
                     }
                 }
            $paybill['ID']=$this->getcode(18,1,1);
@@ -9015,7 +9026,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
    private function changecarinfo($user,$number)
    {
        $car=M('车辆档案','dbo.','difo')->where(array('车牌号码'=>$user['carno']))->find();
-       $lb='1星客户';
+       $lb='2星客户';
        if(!empty($car)){
            $item['车主']=$number;
            $item['联系人']=$user['truename'];
@@ -9027,7 +9038,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
 
            $czinfo['名称']=$number;
            $czinfo['会员']=1;
-           $czinfo['等级']='★';
+           $czinfo['等级']='★★';
            $czinfo['会员编号']=$number;
            $czinfo['入会日期']=date('Y-m-d',time());
            $czinfo['联系人']=$user['truename'];

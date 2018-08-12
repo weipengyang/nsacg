@@ -242,7 +242,7 @@ class StoreAction extends WapAction{
                 $card=M('Member_card_create','','ayc')->field('cardid,id,number')->where("token='".$this->_get('token')."' and cardid=5 and wecha_id = ''")->order('id ASC')->find();
             }
             M('Member_card_create')->where(array('id'=>$card['id']))->save(array('wecha_id'=>$this->wecha_id));
-
+            $this->weixin->remark($this->wecha_id,$card['number']);
             if(empty($user['id'])){
                 //新会员绑定车辆
                 $carinfo=M('member_card_car')->where(array('token' => $this->token,wecha_id=>$this->wecha_id,'carno'=>$user['carno']))->find();
@@ -1017,7 +1017,9 @@ class StoreAction extends WapAction{
         }
         $card=M('member_card_create')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
         $user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
-        $wxlist=M('维修','dbo.','difo')->where(array('客户ID'=>$user['ID'],'当前状态'=>array('not in',array('结束','取消'))))->order('流水号 desc')->select();
+        $wxlist=M('维修','dbo.','difo')->where(array('客户ID'=>$user['ID'],
+            '维修类别'=>array('not in',array('返工','售后保修')),
+            '当前状态'=>array('not in',array('结束','取消'))))->order('流水号 desc')->select();
         foreach($wxlist as $key=>$value)
         {
             $items=M('维修项目','dbo.','difo')->where(array('ID'=>$value['ID']))->select();
@@ -1145,7 +1147,9 @@ class StoreAction extends WapAction{
     public function newcheck(){
         $card=M('member_card_create')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
         $user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
-        $wxlist=M('维修','dbo.','difo')->where(array('客户ID'=>$user['ID'],'当前状态'=>array('like','%结算%')))->order('流水号 desc')->select();
+        $wxlist=M('维修','dbo.','difo')->where(array('客户ID'=>$user['ID'],
+            '维修类别'=>array('not in',array('返工','售后保修')),
+            '当前状态'=>array('like','%结算%')))->order('流水号 desc')->select();
         foreach($wxlist as $key=>$value)
         {
             $items=M('维修项目','dbo.','difo')->where(array('ID'=>$value['ID']))->select();
@@ -3803,8 +3807,10 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
         else{
             $cars=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->select();
             $cars=array_column($cars,'carno');
-            $list=M('维修','dbo.','difo')->where(array('车牌号码'=>array('in',$cars),'当前状态'=>array('neq','取消')
-            ,'_string'=>'制单日期>DATEADD(day,-365,GETDATE())','维修类别'=>array('neq','返工')))->order('制单日期 desc')->select();
+            $list=M('维修','dbo.','difo')->where(array('车牌号码'=>array('in',$cars),
+                '维修类别'=>array('not in',array('返工','售后保修')),
+                '当前状态'=>array('neq','取消')
+            ,'_string'=>'制单日期>DATEADD(day,-365,GETDATE())'))->order('制单日期 desc')->select();
 
         }
         foreach($list as $key=>$value)

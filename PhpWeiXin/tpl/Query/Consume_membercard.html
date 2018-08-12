@@ -255,6 +255,7 @@
                             html+='|<a href="javascript:void(0);" onclick="bingCard(\'' + rowdata.wecha_id + '\',\'' + rowdata.number + '\');"><strong>绑定车牌</strong></a>';
                             html+='| <a href="javascript:void(0);" onclick="delcar(\''+rowdata.wecha_id+'\');"><strong>删除车牌</strong></a>';
                             html+='| <a href="javascript:void(0);" onclick="modifycar(\''+rowdata.wecha_id+'\');"><strong>修改车牌</strong></a>';
+                            html+='| <a href="javascript:void(0);" onclick="setremark(\''+rowdata.wecha_id+'\',\''+rowdata.number+'\');"><strong>修改备注</strong></a>';
                             html+='|<a href="javascript:void(0);" onclick="deletemember(\''+rowdata.id+'\');"><strong>删除会员</strong></a>';
                         }
                         return html;
@@ -505,6 +506,12 @@
                     }
                 }, "json");
             }
+        }
+        function  setremark(openid,number) {
+            $.post('/index.php?g=Query&m=Consume&a=setremark&openid=' + openid+'&number='+number, null,
+                function (data) {
+                 $.alert(data);
+                });
         }
         function deletemember(id) {
             if (confirm("您确认要删除？")) {

@@ -3,6 +3,7 @@ class CardAction extends WapAction{
 	public $wecha_id;
 	public $thisUser;
 	public $isamap;
+	public $weixin;
 	public function __construct(){
 		parent::_initialize();
 		if (!defined('RES')){
@@ -12,6 +13,7 @@ class CardAction extends WapAction{
 		//
 		$this->token=$this->_get('token');
 		$this->thisUser = M('Userinfo')->where(array('token'=>$this->_get('token'),'wecha_id'=>$this->wecha_id))->find();
+        $this->weixin=new JSSDK($this->wxuser['appid'],$this->wxuser['appsecret']);
 		if (!$this->wecha_id && ACTION_NAME != 'companyMap'){
 			$this->error('您没有权限使用会员卡，如需使用请关注微信“'.$this->wxuser['wxname'].'”并回复会员卡',U('Index/index',array('token'=>$this->token)));
 		}
@@ -1848,6 +1850,7 @@ class CardAction extends WapAction{
                             $cardinfo['number']=$cardnumber;
                             $uinfo=M('Userinfo')->where("wecha_id = '$wecha_id' AND token = '$token'")->find();
                             $this->changecarinfo($uinfo,$cardnumber);
+                            $this->weixin->remark($this->wecha_id,$cardinfo['number']);
                         }
 
                     }

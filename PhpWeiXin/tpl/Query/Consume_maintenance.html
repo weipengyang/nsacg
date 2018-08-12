@@ -21,7 +21,7 @@
         <div class="admin-content">
             <div class="admin-content-body">
                 <div class="am-g">
-                    <div class="am-u-sm-10 am-u-md-9">
+                    <div class="am-u-sm-10 am-u-md-10">
                         <div class="am-form-group am-form-select">
                             <select  id="shop">
                                 <option value="">所有门店</option>
@@ -29,6 +29,9 @@
                                 <option value="区府店">区府店</option>
                             </select>
                             <select id="zhuxiu">
+                                <option value="">所有人</option>
+                            </select>
+                            <select id="fwgw">
                                 <option value="">所有人</option>
                             </select>
                             <div class="am-u-sm-2 am-u-md-2">
@@ -54,14 +57,14 @@
                             </select>
                             <button type="button" class="am-btn am-btn-default am-margin-right" id="my-start">开始日期</button><span id="my-startDate"></span>
                             <button type="button" class="am-btn am-btn-default am-margin-right" id="my-end">结束日期</button><span id="my-endDate"></span>
-                            <button id="print" class="am-btn am-btn-warning" onclick="printbill();" type="button">打印结算单</button>
+                            <button id="print" class="am-btn am-btn-warning" onclick="printbill();" type="button">打印</button>
                         </div>
                     </div>
-                    <div class="am-u-sm-2 am-u-md-3">
+                    <div class="am-u-sm-2 am-u-md-2">
                         <div class="am-input-group am-input-group-sm">
                             <input type="text" id="searchkey" class="am-form-field">
                             <span class="am-input-group-btn">
-                                <button id="search" class="am-btn am-btn-default" type="button">模糊查询</button>
+                                <button id="search" class="am-btn am-btn-default" type="button">查询</button>
                             </span>
                         </div>
                     </div>
@@ -195,7 +198,18 @@
                     });
                 }
             }, 'JSON');
+            $.post('index.php?g=Query&m=Consume&a=getfwgw', null,
+                function (data) {
+                    if (data) {
+                        $('#fwgw').empty();
+                        $('#fwgw').append("<option value=''>接车人</option>");
 
+                        $(data).each(function () {
+                            var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
+                            $('#fwgw').append(option);
+                        });
+                    }
+                }, 'JSON');
             $.post('index.php?g=Query&m=Consume&a=getkhlb', null,
             function (data) {
                 if (data) {
@@ -395,6 +409,9 @@
             $("#khlb").change(function () {
                 $('#search').click();
             });
+            $("#fwgw").change(function () {
+                $('#search').click();
+            });
             $("#lb").change(function () {
                 //$('#search').click();
             });
@@ -424,9 +441,11 @@
                 if (shop != '')
                     parms.shop = shop;
                 var lb = $('#lb').val();
-
                 if (lb != '')
                     parms.lb = lb;
+                var fwgw = $('#fwgw').val();
+                if (fwgw != '')
+                    parms.fwgw = fwgw;
                 var overtime = $('#overtime').val();
                 if (overtime != '')
                     parms.overtime = overtime;

@@ -176,6 +176,8 @@
             return " 入场台次:" + data.Total
                  + "  会员入场台次:" + data.hyCount
                  + "  平均维修时间:" + (data.dealtime / data.Total).toFixed(2) + "分钟"
+                 + "  超期:" + data.cqcount + "台次"
+                 + "  超期率:" + (data.cqcount / data.Total * 100).toFixed(2) + "%"
                  + "  会员入场比:" + (data.hyCount / data.Total * 100).toFixed(2) + "%"
                  + "  评价台次:" + data.TotalData.commentcount
                  + "  会员评价比:" + (data.TotalData.commentcount / data.hyCount * 100).toFixed(2) + "%"

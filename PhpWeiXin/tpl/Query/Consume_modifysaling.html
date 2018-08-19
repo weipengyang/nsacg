@@ -182,6 +182,10 @@
                                 $.ligerDialog.alert('请选择业务员');
                                 return;
                             }
+                            if(data['备注'].indexOf('蜡水洗车')!=-1&&data['业务员'] != '系统自动'){
+                                $.ligerDialog.alert('此类销售单业务员只能选系统自动');
+                                return;
+                            }
                             if (data['客户名称'] == '') {
                                 $.ligerDialog.alert('请选择客户');
                                 return;
@@ -205,8 +209,11 @@
              var data = frameElement.dialog.data;
              setTimeout(function () {
                  form.setData(data);
-                 $("input[ligeruiid='运费']").val(0);
+                 if(data['制单人']=='系统自动'){
 
+                     $("input[ligeruiid='备注']").attr("disabled",'disabled');
+                 }
+                 $("input[ligeruiid='运费']").val(0);
                  $("input[ligeruiid='客户名称']").val(data['客户名称']);
                  $("input[ligeruiid='发票类别']").val(data['发票类别']);
                  $("input[ligeruiid='结算方式']").val(data['结算方式']);

@@ -776,9 +776,9 @@ class StoreAction extends WapAction{
                 if($carinfo['客户类别']=='VIP客户'){
                     $price=0;
                 }
-                if($seatnum<7){
+                if($seatnum<=7){
                     $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC10009'))->find();
-                }elseif($seatnum>=7&&$seatnum<11){
+                }elseif($seatnum>7&&$seatnum<11){
                     $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC10003'))->find();
                 }else{
                     $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC10004'))->find();

@@ -89,7 +89,7 @@
     <script src="/tpl/static/assets/js/app.js"></script>
     <script>
         var  grid, product = null;
-        var wxdialog, cardialog, caldialog, saledialog, printdialog,modifydialog;
+        var wxdialog, cardialog, caldialog, saledialog, printdialog,modifydialog,memberdialog;
         var record;
         function printbill() {
             var row = grid.getSelectedRow();
@@ -113,6 +113,25 @@
             }
             else {
                 $.ligerDialog.alert('请选择要打印的单');
+            }
+        }
+        function memberinfo(carno) {
+            if (memberdialog) {
+                memberdialog.setUrl('/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno);
+                memberdialog.show();
+            }
+            else {
+                memberdialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    title: '会员资料编辑'
+                });
             }
         }
         function viewcarinfo(carno) {
@@ -346,7 +365,14 @@
                 { display: '销售类别', name: '销售类别', width: 100, align: 'left' },
                 { display: '制单人', name: '制单人', width: 100, align: 'left' },
                 { display: '业务员', name: '业务员', minWidth: 100 },
-                { display: '客户名称', name: '客户名称', minWidth: 120 },
+                    {
+                        display: '客户名称', name: '客户名称', minWidth: 130, render: function (rowdata, index, value) {
+
+                        return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                    }
+                    },
+
                 { display: '发票类别', name: '发票类别', minWidth: 100 },
                 { display: '发票号', name: '发票号', minWidth: 100 },
                 { display: '结算方式', name: '结算方式', minWidth: 100 },

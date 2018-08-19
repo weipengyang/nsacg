@@ -3401,14 +3401,21 @@ public  function exportpurchasedata(){
         }
         $wxinfo=M('维修档案','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
         $count=M('维修','dbo.','difo')->where($where)->count();
-        $where1=$where;
-        $where1['_string']=" 当前状态 !='取消'";
+        $where1=$where2=$where;
+        if($_POST['lb']=='蜡水洗车'){
+            $where1['_string']=" 当前状态 !='取消' and isnull(已处理,0)>10 and isnull(已处理,0)<100";
+        }else{
+            $where1['_string']=" 当前状态 !='取消'";
+        }
+        $where2['_string']="实际完工>预计完工";
+        $cqcount=M('维修','dbo.','difo')->where($where2)->count();
         $dealtime=M('维修','dbo.','difo')->where($where1)->field('sum(convert(int,isnull(已处理,0))) 已处理')->find();
         $where['车主']=array('like','%AYC%');
         $hycount=M('维修','dbo.','difo')->where($where)->count();
         $where['是否评论']='是';
         $TotalData=M('维修','dbo.','difo')->where($where)->field('count(1) commentcount,AVG(convert(float,服务质量)) 服务质量,AVG(convert(float,服务态度)) 服务态度,AVG(convert(float,前台接待)) 前台接待')->find();
         $data['Rows']=$wxinfo;
+        $data['cqcount']=$cqcount;
         $data['dealtime']=$dealtime['已处理'];
         $data['Total']=$count;
         $data['hyCount']=$hycount;

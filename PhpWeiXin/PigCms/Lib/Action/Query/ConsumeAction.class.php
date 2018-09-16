@@ -7891,9 +7891,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                    $price=0;
                }
                if($seatnum<7){
-                   $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC10009'))->find();
+                   $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC10001'))->find();
                }elseif($seatnum>=7&&$seatnum<11){
-                   $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC10003'))->find();
+                   $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC10002'))->find();
                }else{
                    $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC10004'))->find();
                }

@@ -777,9 +777,9 @@ class StoreAction extends WapAction{
                     $price=0;
                 }
                 if($seatnum<=7){
-                    $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC10009'))->find();
+                    $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC10001'))->find();
                 }elseif($seatnum>7&&$seatnum<11){
-                    $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC10003'))->find();
+                    $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC10002'))->find();
                 }else{
                     $xm=M('项目目录','dbo.','difo')->where(array('项目编号'=>'AYC10004'))->find();
                 }
@@ -3403,7 +3403,7 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
                 echo '您今天取消过两次预约，请您到前台排队预约';
             }
             else {
-                $this->genwxrecord('40', $carno, 'AYC10009', '蜡水洗车', $shop);
+                $this->genwxrecord('40', $carno, 'AYC10001', '蜡水洗车', $shop);
                 $wxcount = M('维修', 'dbo.', 'difo')->where(array('维修类别' => '蜡水洗车', '门店' => $shop, '_string' => "当前状态  in ('报价','派工')"))->count();
                 $where['token'] = $this->token;
                 $where['wecha_id'] = $this->wecha_id;

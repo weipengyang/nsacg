@@ -173,13 +173,14 @@
             }
         }
         function f_totalRender(data, currentPageData) {
-            return " 入场台次:" + data.Total
-                 + "  会员入场台次:" + data.hyCount
+            return "总台次:" + data.Total
+                + "  金额:" + data.summoney.toFixed(2)+"元"
+                 + "  会员台次:" + data.hyCount
                  + "  平均维修时间:" + (data.dealtime / data.Total).toFixed(2) + "分钟"
                  + "  超期:" + data.cqcount + "台次"
                  + "  超期率:" + (data.cqcount / data.Total * 100).toFixed(2) + "%"
                  + "  会员入场比:" + (data.hyCount / data.Total * 100).toFixed(2) + "%"
-                 + "  评价台次:" + data.TotalData.commentcount
+                 + "  评价:" + data.TotalData.commentcount+"次"
                  + "  会员评价比:" + (data.TotalData.commentcount / data.hyCount * 100).toFixed(2) + "%"
                  + "  服务态度平均分:" + (parseFloat(data.TotalData.服务态度)).toFixed(2)
                  + "  服务质量平均分:" + (parseFloat(data.TotalData.服务质量)).toFixed(2);

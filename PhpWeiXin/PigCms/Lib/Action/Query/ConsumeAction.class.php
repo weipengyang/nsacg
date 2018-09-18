@@ -3400,7 +3400,7 @@ public  function exportpurchasedata(){
             $order=$sortname.' '.$sortorder.',流水号 desc';
         }
         $wxinfo=M('维修档案','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
-        $count=M('维修','dbo.','difo')->where($where)->count();
+        $sumdata=M('维修','dbo.','difo')->where($where)->field('count(1) total,sum(应收金额) summoney')->find();
         $where1=$where2=$where;
         if($_POST['lb']=='蜡水洗车'){
             $where1['_string']=" 当前状态 !='取消' and isnull(已处理,0)>10 and isnull(已处理,0)<100";
@@ -3417,8 +3417,9 @@ public  function exportpurchasedata(){
         $data['Rows']=$wxinfo;
         $data['cqcount']=$cqcount;
         $data['dealtime']=$dealtime['已处理'];
-        $data['Total']=$count;
+        $data['Total']=$sumdata['total'];
         $data['hyCount']=$hycount;
+        $data['summoney']=$sumdata['summoney'];
         $data['TotalData']=$TotalData;
       echo json_encode($data);
 

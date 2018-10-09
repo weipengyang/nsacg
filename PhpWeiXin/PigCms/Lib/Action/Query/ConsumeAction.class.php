@@ -3275,8 +3275,8 @@ public  function exportpurchasedata(){
         $wxinfo=M('维修档案','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
         $count=M('维修','dbo.','difo')->where($where)->count();
         $where1=$where;
-        $where1['_string']=" 当前状态 !='取消' and isnull(已处理,0)>10 and isnull(已处理,0)<100";
-        $dealtime=M('维修','dbo.','difo')->where($where1)->field('sum(convert(int,isnull(已处理,0))) 已处理')->find();
+        $where1['_string']=" 当前状态 !='取消'  and 开工时间 is not null and 开工时间<>'1900-01-01 00:00:00.000' ";
+        $dealtime=M('维修','dbo.','difo')->where($where1)->field('sum(datediff(MI,开工时间,ISNULL(实际完工,GETDATE()))) 已处理')->find();
         $where['车主']=array('like','%AYC%');
         $hycount=M('维修','dbo.','difo')->where($where)->count();
         $where['是否评论']='是';
@@ -3315,7 +3315,7 @@ public  function exportpurchasedata(){
         }
         if($_POST['overtime']=='1'){
 
-           $where['_string']="实际完工>预计完工";
+           $where['_string']="ISNULL(实际完工,GETDATE())>预计完工";
         }
         if($_POST['khlb']&&trim($_POST['khlb'])!='')
         {
@@ -3402,14 +3402,10 @@ public  function exportpurchasedata(){
         $wxinfo=M('维修档案','dbo.','difo')->where($where)->limit(($page-1)*$pagesize,$pagesize)->order($order)->select();
         $sumdata=M('维修','dbo.','difo')->where($where)->field('count(1) total,sum(应收金额) summoney')->find();
         $where1=$where2=$where;
-        if($_POST['lb']=='蜡水洗车'){
-            $where1['_string']=" 当前状态 !='取消' and isnull(已处理,0)>10 and isnull(已处理,0)<100";
-        }else{
-            $where1['_string']=" 当前状态 !='取消'";
-        }
-        $where2['_string']="实际完工>预计完工";
+        $where1['_string']=" 当前状态 !='取消'  and 开工时间 is not null and 开工时间<>'1900-01-01 00:00:00.000' ";
+        $where2['_string']="ISNULL(实际完工,GETDATE())>预计完工";
         $cqcount=M('维修','dbo.','difo')->where($where2)->count();
-        $dealtime=M('维修','dbo.','difo')->where($where1)->field('sum(convert(int,isnull(已处理,0))) 已处理')->find();
+        $dealtime=M('维修','dbo.','difo')->where($where1)->field('sum(datediff(MI,开工时间,ISNULL(实际完工,GETDATE()))) 已处理')->find();
         $where['车主']=array('like','%AYC%');
         $hycount=M('维修','dbo.','difo')->where($where)->count();
         $where['是否评论']='是';
@@ -4658,6 +4654,16 @@ public  function exportpurchasedata(){
             $where['业务员']=trim($_POST['ywy']);
 
         }
+        if($_POST['shop']&&trim($_POST['shop'])!='')
+        {
+            $where['门店']=trim($_POST['shop']);
+
+        }
+        if($_POST['zdr']&&trim($_POST['zdr'])!='')
+        {
+            $where['制单人']=trim($_POST['zdr']);
+
+        }
         if($_POST['bxgs']&&trim($_POST['bxgs'])!='')
         {
             $where['保险公司']=trim($_POST['bxgs']);
@@ -4723,6 +4729,11 @@ public  function exportpurchasedata(){
         if($_POST['cgdw']&&trim($_POST['cgdw'])!='')
         {
             $where['车管单位']=trim($_POST['cgdw']);
+
+        }
+        if($_POST['shop']&&trim($_POST['shop'])!='')
+        {
+            $where['门店']=trim($_POST['shop']);
 
         }
         if($_POST['dblb']&&trim($_POST['dblb'])!='')
@@ -8330,8 +8341,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                "msgtype": "actionCard",
                 }';
                $model->postMessage($this->getbooturl('总经办'),$msgdata);
-               $model->postMessage($this->getbooturl('前台客服'),$msgdata);
-               $model->postMessage($this->getbooturl('服务部'),$msgdata);
+               $model->postMessage($this->getbooturl('后台客服'),$msgdata);
+               //$model->postMessage($this->getbooturl('服务部'),$msgdata);
                $model->postMessage($this->getbooturl($mendian),$msgdata);
                $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'推广方案'))->select();
                if(count($projects)>0){
@@ -8350,8 +8361,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                         }
                         }';
                        $model->postMessage($this->getbooturl('总经办'),$msgdata);
-                       $model->postMessage($this->getbooturl('前台客服'),$msgdata);
-                       $model->postMessage($this->getbooturl('服务部'),$msgdata);
+                       $model->postMessage($this->getbooturl('后台客服'),$msgdata);
+                       //$model->postMessage($this->getbooturl('服务部'),$msgdata);
                        $model->postMessage($this->getbooturl($mendian),$msgdata);
                        //$this->weixinmessage($project['内容'],$carinfo['服务顾问']);
                        //$data['类别']='推广信息';
@@ -8391,8 +8402,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                "msgtype": "actionCard",
                 }';
                $model->postMessage($this->getbooturl('总经办'),$msgdata);
-               $model->postMessage($this->getbooturl('前台客服'),$msgdata);
-               $model->postMessage($this->getbooturl('服务部'),$msgdata);
+               $model->postMessage($this->getbooturl('后台客服'),$msgdata);
+               //$model->postMessage($this->getbooturl('服务部'),$msgdata);
                $model->postMessage($this->getbooturl($mendian),$msgdata);
                $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'年审','跟踪类型'=>'推广方案'))->select();
                if(count($projects)>0){
@@ -8412,8 +8423,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                         }
                         }';
                        $model->postMessage($this->getbooturl('总经办'),$msgdata);
-                       $model->postMessage($this->getbooturl('前台客服'),$msgdata);
-                       $model->postMessage($this->getbooturl('服务部'),$msgdata);
+                       $model->postMessage($this->getbooturl(' 后台客服'),$msgdata);
+                       //$model->postMessage($this->getbooturl('服务部'),$msgdata);
                        $model->postMessage($this->getbooturl($mendian),$msgdata);
 
                        //$data['类别']='推广信息';
@@ -8452,7 +8463,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                "msgtype": "actionCard",
                 }';
                $model->postMessage($this->getbooturl('总经办'),$msgdata);
-               $model->postMessage($this->getbooturl('服务部'),$msgdata);
+               //$model->postMessage($this->getbooturl('服务部'),$msgdata);
                $model->postMessage($this->getbooturl($mendian),$msgdata);
 
            }
@@ -8462,9 +8473,10 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        $boots=array( '塘坑店'=>'https://oapi.dingtalk.com/robot/send?access_token=4f06799af0dabd74f550548bc1048cafbfa315dd03c8490ed0ae9d538411b9bf',
        '区府店'=>'https://oapi.dingtalk.com/robot/send?access_token=b5f55dcdc31f5d3539e189fc485c42eafa01280907d669b416cbcaec5613fb23',
        '时代长岛店'=>'https://oapi.dingtalk.com/robot/send?access_token=97e2179f6741b22b1f241bf92cfa5cf395cf4dbe21371469bd9507a08c8d80ac',
-           '前台客服'=>'https://oapi.dingtalk.com/robot/send?access_token=48b08982d4f558a8e47d8e04b00dc680972626ee476a46b847fb91b6e4b96aef',
-           '总经办'=>'https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7',
-           '服务部'=>'https://oapi.dingtalk.com/robot/send?access_token=c74584b1c9998408bff2d3205cf02bc7ba1f3bd994077c13258261a005aa229a'
+           '后台客服'=>'https://oapi.dingtalk.com/robot/send?access_token=0bd4c35c71a652ed37589d683838a2a2af7dc55f1d402259735901c1a48855d4',
+           '总经办'=>'https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7'
+           //,'服务部'=>'https://oapi.dingtalk.com/robot/send?access_token=c74584b1c9998408bff2d3205cf02bc7ba1f3bd994077c13258261a005aa229a'
+
    );
        return $boots[$shop];
    }
@@ -8530,7 +8542,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                             }';
                         $model=new templateNews();
                         $model->postMessage($this->getbooturl('总经办'),$msgdata);
-                        $model->postMessage($this->getbooturl('服务部'),$msgdata);
+                        //$model->postMessage($this->getbooturl('服务部'),$msgdata);
                         $model->postMessage($this->getbooturl($shop),$msgdata);
                     }
                 }

@@ -526,9 +526,9 @@ class StoreAction extends WapAction{
          $boots=array( '塘坑店'=>'https://oapi.dingtalk.com/robot/send?access_token=4f06799af0dabd74f550548bc1048cafbfa315dd03c8490ed0ae9d538411b9bf',
              '区府店'=>'https://oapi.dingtalk.com/robot/send?access_token=b5f55dcdc31f5d3539e189fc485c42eafa01280907d669b416cbcaec5613fb23',
              '时代长岛店'=>'https://oapi.dingtalk.com/robot/send?access_token=97e2179f6741b22b1f241bf92cfa5cf395cf4dbe21371469bd9507a08c8d80ac',
-             '前台客服'=>'https://oapi.dingtalk.com/robot/send?access_token=48b08982d4f558a8e47d8e04b00dc680972626ee476a46b847fb91b6e4b96aef',
+             '后台客服'=>'https://oapi.dingtalk.com/robot/send?access_token=0bd4c35c71a652ed37589d683838a2a2af7dc55f1d402259735901c1a48855d4',
              '总经办'=>'https://oapi.dingtalk.com/robot/send?access_token=2477f2bc29e472747c2e75e01bb1ab2b405221c2ce152dc13307b4dda5fa28d7',
-             '服务部'=>'https://oapi.dingtalk.com/robot/send?access_token=c74584b1c9998408bff2d3205cf02bc7ba1f3bd994077c13258261a005aa229a',
+             //'服务部'=>'https://oapi.dingtalk.com/robot/send?access_token=c74584b1c9998408bff2d3205cf02bc7ba1f3bd994077c13258261a005aa229a',
              '行政部'=>'https://oapi.dingtalk.com/robot/send?access_token=9683b45fb6966c4244cd5f8d8046d8d0b8796e563ab2b802ea6e2a918cbd8655'
          );
          return $boots[$shop];
@@ -575,8 +575,8 @@ class StoreAction extends WapAction{
                "msgtype": "actionCard",
                 }';
                 $model->postMessage($this->getbooturl('总经办'),$msgdata);
-                $model->postMessage($this->getbooturl('前台客服'),$msgdata);
-                $model->postMessage($this->getbooturl('服务部'),$msgdata);
+                $model->postMessage($this->getbooturl('后台客服'),$msgdata);
+                //$model->postMessage($this->getbooturl('服务部'),$msgdata);
                 $model->postMessage($this->getbooturl($mendian),$msgdata);
                 $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'保险','跟踪类型'=>'推广方案'))->select();
                 if(count($projects)>0){
@@ -595,8 +595,8 @@ class StoreAction extends WapAction{
                         }
                         }';
                         $model->postMessage($this->getbooturl('总经办'),$msgdata);
-                        $model->postMessage($this->getbooturl('前台客服'),$msgdata);
-                        $model->postMessage($this->getbooturl('服务部'),$msgdata);
+                        $model->postMessage($this->getbooturl('后台客服'),$msgdata);
+                        //$model->postMessage($this->getbooturl('服务部'),$msgdata);
                         $model->postMessage($this->getbooturl($mendian),$msgdata);
                         //$this->weixinmessage($project['内容'],$carinfo['服务顾问']);
                         //$data['类别']='推广信息';
@@ -636,8 +636,8 @@ class StoreAction extends WapAction{
                "msgtype": "actionCard",
                 }';
                 $model->postMessage($this->getbooturl('总经办'),$msgdata);
-                $model->postMessage($this->getbooturl('前台客服'),$msgdata);
-                $model->postMessage($this->getbooturl('服务部'),$msgdata);
+                $model->postMessage($this->getbooturl('后台客服'),$msgdata);
+                //$model->postMessage($this->getbooturl('服务部'),$msgdata);
                 $model->postMessage($this->getbooturl($mendian),$msgdata);
                 $projects=M('客户跟踪','dbo.','difo')->where(array('车牌号码'=>$carinfo['车牌号码'],'年份'=>date('Y',time()),'类别'=>'年审','跟踪类型'=>'推广方案'))->select();
                 if(count($projects)>0){
@@ -657,8 +657,8 @@ class StoreAction extends WapAction{
                         }
                         }';
                         $model->postMessage($this->getbooturl('总经办'),$msgdata);
-                        $model->postMessage($this->getbooturl('前台客服'),$msgdata);
-                        $model->postMessage($this->getbooturl('服务部'),$msgdata);
+                        $model->postMessage($this->getbooturl('后台客服'),$msgdata);
+                        //$model->postMessage($this->getbooturl('服务部'),$msgdata);
                         $model->postMessage($this->getbooturl($mendian),$msgdata);
                         //$model->postMessage($booturl,$msgdata);
                         //$data['类别']='推广信息';
@@ -697,7 +697,7 @@ class StoreAction extends WapAction{
                "msgtype": "actionCard",
                 }';
                 $model->postMessage($this->getbooturl('总经办'),$msgdata);
-                $model->postMessage($this->getbooturl('服务部'),$msgdata);
+                //$model->postMessage($this->getbooturl('服务部'),$msgdata);
                 $model->postMessage($this->getbooturl($mendian),$msgdata);
             }
         }

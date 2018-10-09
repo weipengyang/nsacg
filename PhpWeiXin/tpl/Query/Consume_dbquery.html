@@ -44,6 +44,9 @@
                 <div class="am-g">
                     <div class="am-u-sm-5 am-u-md-5">
                         <div class="am-form-group">
+                            <select  id="shop">
+                                <option value="">所有门店</option>
+                            </select>
                             业务员
                             <select id="fwgw">
                                 <option value="">所有人</option>
@@ -130,6 +133,16 @@
                   + "  手续费:" + data.TotalData.手续费;
         }
         $(function () {
+            $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {
+                if (data) {
+                    $('#shop').empty();
+                    $('#shop').append("<option value=''>所有门店</option>");
+                    $(data).each(function () {
+                        var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                        $('#shop').append(option);
+                    });
+                }
+            }, 'JSON');
             $.post('index.php?g=Query&m=Consume&a=getywy', null,
            function (data) {
                if (data) {
@@ -200,6 +213,9 @@
                 url: '/index.php?g=Query&m=Consume&a=getdbdata',
                 height: '95%',
             });
+            $("#shop").change(function () {
+                $('#search').click();
+            });
             $("#fwgw").change(function () {
                 $('#search').click();
             });
@@ -218,6 +234,9 @@
                 var startdate = $('#startdate').val();
                 if (startdate != '')
                     parms['startdate'] = startdate;
+                var shop = $('#shop').val();
+                if (shop != '')
+                    parms.shop = shop;
                 var dblb = $('#dblb').val();
                 if (dblb != '')
                     parms['dblb'] = dblb

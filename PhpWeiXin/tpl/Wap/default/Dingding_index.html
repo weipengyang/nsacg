@@ -42,16 +42,17 @@
 		<div style="height:50px;width:100%;text-align:center;padding-top:3px;border-top:1px #e0e0e0 solid;font-size:15px;position:fixed;bottom:0px;">开发更多功能</br>请联系QQ:773477953</div>
 		</div>
 	</body>
-	<script type='text/javascript' src='http://g.alicdn.com/dingding/open-develop/1.5.1/dingtalk.js' charset='utf-8'></script>
+	<script type='text/javascript' src='http://g.alicdn.com/dingding/dingtalk-jsapi/2.0.72/dingtalk.open.js' charset='utf-8'></script>
 	<script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
 	<script>
-dd.config({
-    agentId: "{pigcms:$jsapi.agentId}",
-    corpId: "{pigcms:$jsapi.corpId}",
-    timeStamp: "{pigcms:$jsapi.timeStamp}",
-    nonceStr: "{pigcms:$jsapi.nonceStr}",
-    signature: "{pigcms:$jsapi.signature}",
-    jsApiList: [
+   dd.config({
+        agentId: "{pigcms:$jsapi.agentId}",
+        corpId: "{pigcms:$jsapi.corpId}",
+	    timeStamp: "{pigcms:$jsapi.timeStamp}",
+        nonceStr: "{pigcms:$jsapi.nonceStr}",
+    	signature: "{pigcms:$jsapi.signature}",
+        type:0,
+        jsApiList: [
         'runtime.info',
         'device.notification.prompt',
         'biz.chat.pickConversation',
@@ -71,11 +72,13 @@ dd.config({
 });
 
 dd.ready(function() {
+
+    alert(1);
   dd.runtime.permission.requestOperateAuthCode({
       agentId: "{pigcms:$jsapi.agentId}",
       corpId: "{pigcms:$jsapi.corpId}",
       onSuccess: function (result) {
-          alert(JSON.stringify(result));
+          //alert(JSON.stringify(result));
       },
       onFail: function (err) { }
 

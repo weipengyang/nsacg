@@ -25,8 +25,6 @@
                         <div class="am-form-group am-form-select">
                             <select  id="shop">
                                 <option value="">所有门店</option>
-                                <option value="塘坑店">塘坑店</option>
-                                <option value="区府店">区府店</option>
                             </select>
                             <select id="zhuxiu">
                                 <option value="">所有人</option>
@@ -173,10 +171,17 @@
             }
         }
         function f_totalRender(data, currentPageData) {
+            var dealtime=(data.dealtime / data.Total).toFixed(2);
+            var strdeal;
+            if(dealtime>60){
+                strdeal=(dealtime/60).toFixed(2)+"小时";
+            }else{
+                strdeal=dealtime+"分钟";
+            }
             return "总台次:" + data.Total
                 + "  金额:" + data.summoney.toFixed(2)+"元"
                  + "  会员台次:" + data.hyCount
-                 + "  平均维修时间:" + (data.dealtime / data.Total).toFixed(2) + "分钟"
+                 + "  平均维修时间:" + strdeal
                  + "  超期:" + data.cqcount + "台次"
                  + "  超期率:" + (data.cqcount / data.Total * 100).toFixed(2) + "%"
                  + "  会员入场比:" + (data.hyCount / data.Total * 100).toFixed(2) + "%"
@@ -388,13 +393,7 @@
                     wxinfo(data['流水号']);
                 }
             });
-            $('#shop').change(function () {
-                var submitData = {
-                    bumen: $('#shop').val()
-                };
 
-                $('#search').click();
-            });
             $('#zhuxiu').change(function () {
                 $('#search').click();
             });

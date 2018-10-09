@@ -1,13 +1,13 @@
 <?php
 class DingdingAction extends BaseAction {
     public function _initialize(){
-		 
 		$url='https://oapi.dingtalk.com/gettoken?corpid='.C('CORPID').'&corpsecret='.C('CORPSECRET');
 		$result=$this->dingtalkcurl($url);
 		if($result['errcode']!==0){
 			$this->error('获取token失败'.$result['errmsg']);
 		}else{
 			$this->token=$result['access_token'];
+            Log::write(json_encode('access_token:'.json_encode($result)));
 		}
 
 	}
@@ -18,7 +18,6 @@ class DingdingAction extends BaseAction {
         $this->getuser();
         $this->assign('jsapi',$jsapi);
 		$this->assign('corpId',C('CORPID'));
-		$this->assign('second',C('SECOND')); 
 		$this->display();
 	  
 	}
@@ -69,7 +68,7 @@ class DingdingAction extends BaseAction {
             }else{
                 $type='保养';
             }
-            
+
             $traceinfo=M('客户跟踪','dbo.','difo')->where(array('流水号'=>$id))->find();
             $tracedata['类别']=$type;
             $tracedata['内容']=$comment;
@@ -158,8 +157,8 @@ class DingdingAction extends BaseAction {
     {
         $corpId = C('CORPID');
         $agentId = $agen;
-        $nonceStr = '123456';
-        $timeStamp = (String)time();
+        $nonceStr = 'abcdefg';
+        $timeStamp =(String)time();
         
         //获取jsapi
 		$url='https://oapi.dingtalk.com/get_jsapi_ticket?access_token='.$this->token;
@@ -169,7 +168,6 @@ class DingdingAction extends BaseAction {
 		   exit();
 		}
 		$ticket=$result['ticket'];
-		
 		$pageURL = 'http';
 
         if (array_key_exists('HTTPS',$_SERVER)&&$_SERVER["HTTPS"] == "on")
@@ -180,25 +178,26 @@ class DingdingAction extends BaseAction {
 
         if ($_SERVER["SERVER_PORT"] != "80")
         {
-            $pageURL .= $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"] . $_SERVER["REQUEST_URI"];
+            $pageURL .= $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"] . urldecode($_SERVER["REQUEST_URI"]);
         }
         else
         {
-            $pageURL .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
+            $pageURL .= $_SERVER["SERVER_NAME"] .$_SERVER["REQUEST_URI"];
         }
 		$url = $pageURL;
-		
-       
-		
+
 		$signature = sha1('jsapi_ticket=' . $ticket .'&noncestr=' . $nonceStr .'&timestamp=' . $timeStamp .'&url=' . $url);
-			
-        $config = array(
+        Log::write("------".$signature);
+		$result=$this->dingtalkcurl('https://debug.dingtalk.com/apiagent/createSignature?'.'jsapi_ticket=' . $ticket .'&noncestr=' . $nonceStr .'&timestamp=' . $timeStamp .'&url=' . urlencode($url));
+		Log::write("-----".json_encode($result));
+		$config = array(
             'url' => $url,
             'nonceStr' => $nonceStr,
             'agentId' => $agentId,
             'timeStamp' => $timeStamp,
             'corpId' => $corpId,
-            'signature' => $signature);
+            'signature' => $result['signature']);
+        Log::write("-----".json_encode($config));
         return $config;
     }
 	

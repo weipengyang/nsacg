@@ -18,6 +18,6 @@ return array(
     'CORPID'                =>'ding36884f8a82159575',//企业CORPID
     'CORPSECRET'            =>'tBwwroDNnnRDkC3k5Cqf3CHtVBdPAt0xvnBLqCz0FidKYDWT-Xdz9kPwHySB4Zx_',
     'SSOsecret'               =>'iP0pnIqnEpo1l0v3CuTXU1fD4NapwA-oH3UB8Opryd1-fZmF-hXDQ0t6SgUt3o2i',//微应用id
-    'AGENTID'               =>'14147381',//微应用id
+    'AGENTID'               =>'29443806',//微应用id
 );
 ?>

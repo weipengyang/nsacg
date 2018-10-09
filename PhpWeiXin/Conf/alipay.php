@@ -5,5 +5,5 @@ return array (
   'tenpay_partnerkey' => '',
   'alipay_name' => '888888',
   'alipay_pid' => '88888',
-  'alipay_key' => '888',
+  'alipay_key' => '8881',
 );

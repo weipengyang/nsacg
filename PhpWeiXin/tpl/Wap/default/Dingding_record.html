@@ -56,6 +56,7 @@
         <script type='text/javascript' src='http://g.alicdn.com/dingding/open-develop/1.5.1/dingtalk.js' charset='utf-8'></script>
         <script type="text/javascript">
             var userinfo;
+            var url="{pigcms:$jsapi.url}";
             dd.config({
                 agentId: "{pigcms:$jsapi.agentId}",
                 corpId: "{pigcms:$jsapi.corpId}",
@@ -80,7 +81,9 @@
                     'biz.util.uploadImage',
                     'device.geolocation.get']
             });
-
+            dd.error(function(err) {
+                alert(JSON.stringify(err));
+            });
             function device(count) {
                 dd.device.notification.toast({
                     icon: '', //icon样式，有success和error，默认为空 0.0.2

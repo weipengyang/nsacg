@@ -14,7 +14,8 @@
             form = $("#form1").ligerForm({
                 inputWidth: 180, labelWidth: 80, space:20,
                 validate: true,
-                buttons: [                    {
+                buttons: [
+                    {
                         text: "保存", width: 100, click: function () {
                             var data = {};
                             data['itemid'] = getQueryString('id');
@@ -26,6 +27,7 @@
                                 $.ligerDialog.alert('请选择主修人');
                                 return;
                             }
+                            data['latetime']=$("input[ligeruiid='延后时间']").val();
                             $.post('/index.php?g=Query&m=Consume&a=assigntask', data,
                               function (msg) {
                                   $.ligerDialog.alert(msg);
@@ -45,11 +47,14 @@
                                   //location.href = location.href;
                               });
                         }
-                    },                    {
+                    },
+                    {
                         text: "取消", width: 100, click: function () {
                            
                         }
-                    }                ],                fields: [
+                    }
+                ],
+                fields: [
                     { display: "流水号", name: "流水号", newline: true, type: "hidden" },
                     {
                         display: "主修人", name: "主修人", newline: true, type: "combobox",
@@ -68,6 +73,7 @@
                         },
 
                     },
+                    { display: "延后时间", name: "延后时间", newline: true, type: "number" },
                 ]
             });
 
@@ -76,6 +82,7 @@
 </head>
 
 <body style="padding:0;margin:0">
+<div>前面还有{pigcms:$count}台车正在施工</div>
 <div id="form1" style="margin:0; padding:0;"></div>
 </body>
 </html>

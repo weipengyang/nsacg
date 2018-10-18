@@ -350,7 +350,7 @@
                         if (rowdata.上交钥匙 == "" || rowdata.上交钥匙 == null || rowdata.上交钥匙 == "null" || todate(rowdata.上交钥匙, false) == '1900-01-1') {
                             var start = new Date(Date.parse(todate(rowdata.进厂时间, true)));
                             var end = new Date();
-                            if (parseInt((end - start) / 60000) > 30 && rowdata.当前状态 != '结束' && rowdata.当前状态 != '取消') {
+                            if (parseInt((end - start) / 60000) > 120 && rowdata.当前状态 != '结束' && rowdata.当前状态 != '取消') {
                                 cancelwash(rowdata.流水号,false);
                             } else {
                                 strhtml += '<a href="javascript:void(0);" onclick="submitcarkey(\'' + rowdata.流水号 + '\',\'' + rowdata.维修类别 + '\');"><strong>钥匙上交</strong></a>|';

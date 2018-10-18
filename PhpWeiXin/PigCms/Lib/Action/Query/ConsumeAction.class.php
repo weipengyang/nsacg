@@ -6599,12 +6599,13 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        if(IS_POST){
            $zhuxiu=$_POST['zhuxiu'];
            $itemid=$_POST['itemid'];
+           $latetime=intval($_POST['latetime']);
            $yg=M('员工目录','dbo.','difo')->where(array('姓名'=>$zhuxiu))->find();
            $item['主修人']=$zhuxiu;
            $item['班组']=$yg['班组'];
            $wxinfo=M('维修项目','dbo.','difo')->where(array('ID'=>$itemid))->find();
            if(!isset($wxinfo['开工时间'])){
-               $item['开工时间']=date('Y-m-d H:i',time());
+               $item['开工时间']=date('Y-m-d H:i',time()+$latetime*60);
            }
            if(isset($_POST['code'])){
                M('维修项目','dbo.','difo')->where(array('流水号'=>$_POST['code']))->save($item);
@@ -6616,10 +6617,12 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
              $wx=M('维修','dbo.','difo')->where(array('ID'=>$itemid))->find();
              if(!isset($wx['开工时间'])||date('Y-m-d',strtotime($wx['开工时间']))=='1900-01-01'){
                  $data['当前状态']='派工';
-                 $data['开工时间']=date('Y-m-d H:i',time());
+                 $data['开工时间']=date('Y-m-d H:i',time()+$latetime*60);
              }
              M('维修','dbo.','difo')->where(array('ID'=>$itemid))->save($data);
           }
+           $membercar=M('member_card_car')->where(array('carno'=>$wx['车牌号码']))->find();
+           $this->weixin->send('您的车辆大约在'.$latetime.'分钟后开始洗车。',$membercar['wecha_id']);
            //$data['当前状态']='结束';
            //$data['出厂时间']=date('Y-m-d H:i',time());
            //$data['实际完工']=date('Y-m-d H:i',time());
@@ -6633,6 +6636,9 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            exit;
        }
        else{
+           $shop=$_GET['shop'];
+           $wxcount = M('维修', 'dbo.', 'difo')->where(array('维修类别' => '蜡水洗车', '门店' => $shop, '_string' => "当前状态  in ('派工')"))->count();
+           $this->assign('count',$wxcount);
            $this->display();
        }
    }
@@ -7502,17 +7508,18 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
 
                }
            }
+           $costtime=intval(floor((time()-strtotime($wxinfo['开工时间']))/60));
            $user=M('member_card_car')->where(array('carno'=>$wxinfo['车牌号码']))->find();
            $model  = new templateNews();
            $dataKey    = 'TM151213';
            $dataArr    = array(
-               'first'         => '尊敬的车主，您的爱车已经维修完毕。',
+               'first'         => '尊敬的车主，您的爱车已经清洗完毕。',
                'keyword1'      =>$wxinfo['车牌号码'],//车牌号
                'keyword2'      => date('Y-m-d H:i',time()),//完工时间
                'keyword3'      => $wxinfo['接车人'],//接车人与联系电话
                'keyword4'      => $wxinfo['应收金额'].'元',//维修费用
                'wecha_id'      => $user['wecha_id'],
-               'remark'        => '请您安排时间到店取车，结算请点击详情。',
+               'remark'        => "本次洗车共花费$costtime 分钟，超过60分钟，系统将自动免单,请您安排时间到店取车，结算请点击详情。",
                'url'           => U('Wap/Store/newcheck',array('token'=>$this->token,'wecha_id'=>$user['wecha_id']),true,false,true),
            );
            $model->sendTempMsg($dataKey,$dataArr);
@@ -8470,7 +8477,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
        }
    }
    private function getbooturl($shop){
-       $boots=array( '塘坑店'=>'https://oapi.dingtalk.com/robot/send?access_token=4f06799af0dabd74f550548bc1048cafbfa315dd03c8490ed0ae9d538411b9bf',
+       $boots=array( '塘坑店'=>'https://oapi.dingtalk.com/robot/send?access_token=c0f66c71806a90d05cd29f4d696725c135930284302158791983e35aa647c1af',
        '区府店'=>'https://oapi.dingtalk.com/robot/send?access_token=b5f55dcdc31f5d3539e189fc485c42eafa01280907d669b416cbcaec5613fb23',
        '时代长岛店'=>'https://oapi.dingtalk.com/robot/send?access_token=97e2179f6741b22b1f241bf92cfa5cf395cf4dbe21371469bd9507a08c8d80ac',
            '后台客服'=>'https://oapi.dingtalk.com/robot/send?access_token=0bd4c35c71a652ed37589d683838a2a2af7dc55f1d402259735901c1a48855d4',

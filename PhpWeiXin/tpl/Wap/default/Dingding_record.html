@@ -22,6 +22,9 @@
                         </div>
                         <textarea cols="40" id="content" name="content" placeholder="请在此输入反馈内容" rows="5" style="width: 100%;line-height: 20px;"></textarea>
                         <div class="row">
+                            <input type="text" id="userinfo" placeholder="反馈人" style="width: 100%;line-height: 20px;"/>
+                        </div>
+                        <div class="row">
                             <div class="col-100">
                                 <div class="list-block">
                                     <ul>
@@ -53,11 +56,11 @@
         </div>
         <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
         <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
-        <script type='text/javascript' src='http://g.alicdn.com/dingding/open-develop/1.5.1/dingtalk.js' charset='utf-8'></script>
+        <script type='text/javascript' src='http://g.alicdn.com/dingding/dingtalk-jsapi/2.0.72/dingtalk.open.js' charset='utf-8'></script>
         <script type="text/javascript">
             var userinfo;
-            var url="{pigcms:$jsapi.url}";
-            dd.config({
+            //var url="{pigcms:$jsapi.url}";
+            /*dd.config({
                 agentId: "{pigcms:$jsapi.agentId}",
                 corpId: "{pigcms:$jsapi.corpId}",
                 timeStamp: "{pigcms:$jsapi.timeStamp}",
@@ -80,9 +83,9 @@
                     'biz.map.view',
                     'biz.util.uploadImage',
                     'device.geolocation.get']
-            });
+            });*/
             dd.error(function(err) {
-                alert(JSON.stringify(err));
+                //alert(JSON.stringify(err));
             });
             function device(count) {
                 dd.device.notification.toast({
@@ -102,11 +105,11 @@
                 dd.ready(function () {
                     dd.biz.user.get({
                         onSuccess: function (info) {
-                            userinfo = info;
+                            //userinfo = info;
                            // alert(userinfo['nickName']);
                         },
                         onFail: function (err) {
-                            alert('userGet fail: ' + JSON.stringify(err));
+                            //alert('userGet fail: ' + JSON.stringify(err));
                         }
                     });
 
@@ -119,7 +122,7 @@
                                 issell: $('#issell').prop('checked'),
                                 id: '{pigcms:$_GET["id"]}',
                                 lb: '{pigcms:$_GET["lb"]}',
-                                user: userinfo['nickName'],
+                                user: $("#userinfo").val(),
                                 membernum: '{pigcms:$_GET["number"]}'
                             };
 

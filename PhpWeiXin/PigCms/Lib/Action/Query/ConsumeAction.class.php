@@ -1955,7 +1955,7 @@ class ConsumeAction extends Action{
         if (isset($_POST['khlb'])&&trim($_POST['khlb'])!=''){
             $where['客户类别']=array('in',explode(';',$_POST['khlb']));
         }
-        $where['是否在用']='是';
+        $where['是否在用']=array('neq','否');
 
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
             $searchkey='%'.trim($_POST['searchkey']).'%';
@@ -2069,7 +2069,7 @@ class ConsumeAction extends Action{
             $where['_complex']=$searchwhere;
 
         }
-        $where['是否在用']='是';
+        $where['是否在用']=array('neq','否');
         $count=M('车辆资料','dbo.','difo')
             ->join('left join 维修统计 on 车辆资料.车牌号码=维修统计.车牌')
             ->where($where)->count();
@@ -2137,7 +2137,7 @@ class ConsumeAction extends Action{
             $where['_complex']=$searchwhere;
 
         }
-        $where['是否在用']='是';
+        $where['是否在用']=array('neq','否');
         $count=M('车辆资料','dbo.','difo')
             ->join('left join 维修统计 on 车辆资料.车牌号码=维修统计.车牌')
             ->where($where)->count();
@@ -3130,6 +3130,10 @@ public  function exportpurchasedata(){
         {
             $where['客户类别']=trim($_POST['khlb']);
 
+        }
+        if($_GET['carno']&&trim($_GET['carno'])!='')
+        {
+            $where['车牌号码']=trim($_GET['carno']);
         }
         if($_POST['carno']&&trim($_POST['carno'])!='')
         {
@@ -4682,11 +4686,12 @@ public  function exportpurchasedata(){
             $where['_complex']=$searchwhere;
 
         }
-        if($type=="1"){
-            $where['_string'] = " 当前状态='结束'";
-        }else {
+        //if($type=="1"){
+        //    $where['_string'] = " 当前状态='结束'";
+        //}else
+        //{
             $where['_string'] = " 当前状态!='取消'";
-        }
+       //}
         $count=M('车辆保险','dbo.','difo')
             ->where($where)->count();
         $yelist=M('车辆保险','dbo.','difo')
@@ -7519,7 +7524,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                'keyword3'      => $wxinfo['接车人'],//接车人与联系电话
                'keyword4'      => $wxinfo['应收金额'].'元',//维修费用
                'wecha_id'      => $user['wecha_id'],
-               'remark'        => "本次洗车共花费$costtime 分钟，超过60分钟，系统将自动免单,请您安排时间到店取车，结算请点击详情。",
+               'remark'        => "本次洗车耗时$costtime 分钟，超过60分钟，系统将自动免单,请您安排时间到店取车，结算请点击详情。",
                'url'           => U('Wap/Store/newcheck',array('token'=>$this->token,'wecha_id'=>$user['wecha_id']),true,false,true),
            );
            $model->sendTempMsg($dataKey,$dataArr);

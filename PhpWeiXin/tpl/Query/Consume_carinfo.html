@@ -56,6 +56,18 @@
          {name:'是'},
          {name:'否'},
         ];
+        var bxdata=[
+            {name:'是'},
+            {name:'续保'},
+            {name:'流失'},
+            {name:'否'},
+        ];
+        var ytdata=[
+            {name:'活跃'},
+            {name:'一般'},
+            {name:'流失'},
+            {name:'否'},
+        ];
         $(function ()
         {
             var form = $("#form1").ligerForm({
@@ -127,7 +139,7 @@
                                     display: "是否在用", name: "是否在用", newline: false, type: "combobox", options: {
                                         valueField: 'name',
                                         textField: 'name',
-                                        data: data
+                                        data: ytdata
                                     }, group: '车辆信息'
                                 },
                                 {
@@ -183,7 +195,7 @@
                                     display: "保险客户", name: "保险客户", newline: false, type: "combobox", options: {
                                     valueField: 'name',
                                     textField: 'name',
-                                    data:data
+                                    data:bxdata
                                 }, group: '车主信息' },
                                 { display: "地址", name: "地址", newline: false, width: 430, type: "text", group: '车主信息' },
                                 { display: "驾驶员", name: "驾驶员", newline: false, type: "text", group: '驾驶证信息' },
@@ -278,7 +290,7 @@
                 ],
                 isScroll: true,
                 pageSize: 15,
-                url: '/index.php?g=Query&m=Consume&a=gethistoryinfo&flag=1',
+                url: '/index.php?g=Query&m=Consume&a=gethistoryinfo&flag=1&carno='+getQueryString("carno"),
                 height: '80%',
                 onDblClickRow: function (data, rowindex, rowobj) {
                     wxinfo(data['流水号']);
@@ -335,8 +347,8 @@
                     carinfo = JSON2.stringify(carinfo);
                     carinfo = JSON2.parse(carinfo);
                     form.setData(carinfo);
-                    historygrid.set('parms', { carno:carinfo['车牌号码'] });
-                    historygrid.reload();
+                    //historygrid.set('parms', { carno:carinfo['车牌号码'] });
+                    //historygrid.reload();
                     $("input[ligeruiid='车主']").val(carinfo['车主']);
                     $("input[ligeruiid='车型']").val(carinfo['车型']);
                     $("input[ligeruiid='保险客户']").val(carinfo['保险客户']);

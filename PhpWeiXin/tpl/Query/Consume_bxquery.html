@@ -198,6 +198,13 @@
             }, 'JSON');
             grid = $("#maingrid4").ligerGrid({
                 columns: [
+                    {
+                        display: '当前状态', name: '当前状态', align: 'left', width: 60, render: function (rowdata, index, value) {
+                        if (value == '审核')
+                            value = '<span style="color:red">' + value + '</span>';
+                        return value;
+                    }
+                    },
                 {
                     display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
                         return todate(value, false);

@@ -27,15 +27,19 @@
         <div class="admin-content">
         <div class="admin-content-body">
             <div class="am-g">
-                <div class="am-u-sm-2 am-u-md-2">
-                    <input type="text" id="khlb">
-                    
+                <div class="am-u-sm-1 am-u-md-1">
+                    客户类
                 </div>
                 <div class="am-u-sm-2 am-u-md-2">
-                    是否在用
+                   <input type="text" id="khlb">
+                </div>
+                <div class="am-u-sm-2 am-u-md-2">
+                    活跃度
                     <select name="sfzy" id="sfzy">
                         <option value="">所有</option>
-                        <option value="是">是</option>
+                        <option value="活跃">活跃</option>
+                        <option value="一般">一般</option>
+                        <option value="流失">流失</option>
                         <option value="否">否</option>
                     </select>
                 </div>
@@ -171,7 +175,7 @@
             }
             return num;
         }
-        $('#khlb').ligerComboBox({
+        var khlblist=$('#khlb').ligerComboBox({
             isShowCheckBox: true,
             isMultiSelect: true,
             selectBoxHeight:'300px',
@@ -180,7 +184,7 @@
             textField: '类别',
             url: '/index.php?g=Query&m=Consume&a=getkhlb',
         });
-           
+        //khlblist.insertItem(0,);
         $('#sfzy').change(function () {
             $('#search').click();
 
@@ -215,17 +219,15 @@
                                 if (value == null || $.trim(value) == '' || $.trim(value) == '否')
                                     value = '<span style="color:red">否</span>';
                                 else
-                                    value = '<span style="color:blue">是</span>';
+                                    value = '<span style="color:blue">'+value+'</span>';
 
                                 return value;
                             }
                         },
-                        {
-                            display: '品牌型号', name: '品牌', width: 90, render: function (rowdata, index, value) {
-
-                                return rowdata['品牌'] + '/' + rowdata['车型'];
-                            }
-                        },
+                       { display: '品牌', name: '品牌', minWidth: 80 },
+                       { display: '车型', name: '车型', minWidth: 80 },
+                       { display: '里程', name: '里程', width: 80 },
+                       { display: '活跃度', name: '是否在用', width: 50 },
                         { display: '年份排量', name: '排量', minWidth: 120,hide:true},
                         { display: '车架号', name: '车架号', width: 150, hide: true },
                         //{ display: '发动机型号', name: '发动机型号', minWidth: 60, hide: true },
@@ -241,15 +243,10 @@
                         { display: '入场次数', name: '入场次数', minWidth: 60, hide: true },
                         { display: '消费总额', name: '消费总额', minWidth: 60, hide: true },
                         { display: '洗车次数', name: '洗车次数', minWidth: 60, hide: true },
-                        { display: '洗车金额', name: '洗车金额', minWidth: 60, hide: true },
-                        { display: '美容次数', name: '美容次数', minWidth: 60, hide: true },
-                        { display: '美容金额', name: '美容金额', minWidth: 60, hide: true },
                         { display: '维修次数', name: '维修数量', minWidth: 60, hide: true },
                         { display: '维修金额', name: '维修金额', minWidth: 80, hide: true },
                         { display: '保险次数', name: '保险次数', minWidth: 50, hide: true },
                         { display: '保险金额', name: '保险金额', minWidth: 50, hide: true },
-                        { display: '代办次数', name: '代办次数', minWidth: 50, hide: true },
-                        { display: '代办金额', name: '代办金额', minWidth: 60, hide: true },
                         { display: '保险公司', name: '保险公司', minWidth: 80, hide: true },
                         {
                             display: '保险到期', name: '交保到期', minWidth: 100, render: function (rowdata, index, value) {

@@ -1956,6 +1956,15 @@ class ConsumeAction extends Action{
             $where['客户类别']=array('in',explode(';',$_POST['khlb']));
         }
         $where['是否在用']=array('neq','否');
+        if($_POST['sfzy']&&trim($_POST['sfzy'])!=''){
+            $where['是否在用']=$_POST['sfzy'];
+        }
+        if (isset($_POST['shop'])&&trim($_POST['shop'])!=''){
+            $where['门店']=$_POST['shop'];
+        }else{
+            $where['门店']=array('in',explode(',',cookie('department')));
+
+        }
 
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
             $searchkey='%'.trim($_POST['searchkey']).'%';
@@ -2070,6 +2079,15 @@ class ConsumeAction extends Action{
 
         }
         $where['是否在用']=array('neq','否');
+        if($_POST['sfzy']&&trim($_POST['sfzy'])!=''){
+            $where['是否在用']=$_POST['sfzy'];
+        }
+        if (isset($_POST['shop'])&&trim($_POST['shop'])!=''){
+            $where['门店']=$_POST['shop'];
+        }else{
+            $where['门店']=array('in',explode(',',cookie('department')));
+
+        }
         $count=M('车辆资料','dbo.','difo')
             ->join('left join 维修统计 on 车辆资料.车牌号码=维修统计.车牌')
             ->where($where)->count();
@@ -6623,11 +6641,16 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
              if(!isset($wx['开工时间'])||date('Y-m-d',strtotime($wx['开工时间']))=='1900-01-01'){
                  $data['当前状态']='派工';
                  $data['开工时间']=date('Y-m-d H:i',time()+$latetime*60);
+
+             }
+             if($wx['维修类别']=='蜡水洗车') {
+                 $data['预计完工'] = date('Y-m-d H:i', time() + $latetime * 60 + 60 * 60);
              }
              M('维修','dbo.','difo')->where(array('ID'=>$itemid))->save($data);
+             $membercar=M('member_card_car')->where(array('carno'=>$wx['车牌号码']))->find();
+             $this->weixin->send('您的爱车大约在'.$latetime.'分钟后开始施工。',$membercar['wecha_id']);
           }
-           $membercar=M('member_card_car')->where(array('carno'=>$wx['车牌号码']))->find();
-           $this->weixin->send('您的车辆大约在'.$latetime.'分钟后开始洗车。',$membercar['wecha_id']);
+
            //$data['当前状态']='结束';
            //$data['出厂时间']=date('Y-m-d H:i',time());
            //$data['实际完工']=date('Y-m-d H:i',time());

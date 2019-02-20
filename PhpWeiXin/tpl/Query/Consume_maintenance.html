@@ -276,8 +276,8 @@
                 { display: '联系人', name: '联系人', minWidth: 100 },
                  {
                      display: '已处理', name: '', minWidth: 100, render: function (rowdata, index, value) {
-                         if (rowdata.上交钥匙 != "" && rowdata.上交钥匙 != null && rowdata.上交钥匙 != "null" && todate(rowdata.上交钥匙, false) != '1900-01-01') {
-                             var start = new Date(Date.parse(todate(rowdata.上交钥匙, true)));
+                         if (rowdata.开工时间 != "" && rowdata.开工时间 != null && rowdata.开工时间 != "null" && todate(rowdata.开工时间, false) != '1900-01-01') {
+                             var start = new Date(Date.parse(todate(rowdata.开工时间, true)));
                              var pretime = new Date(Date.parse(todate(rowdata.预计完工, true)));
                              var prehour =pretime - start;
                              var usetime = 0;

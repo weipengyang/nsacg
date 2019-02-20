@@ -151,6 +151,7 @@
                                   
 
                                 },
+
                                 { display: "备用电话", name: "备用电话", newline: true, type: "text",
                                     
                                 },
@@ -187,6 +188,15 @@
                                 { display: "积分", name: "total_score", newline: false, type: "text", readonly: true },
                                 { display: "服务折扣", name: "服务折扣", newline: false, type: "text" },
                                 { display: "销售折扣", name: "销售折扣", newline: false, type: "text" },
+                                {
+                                    display: "门店", name: "门店", newline: false, type: "combobox", comboboxName: 'mendian', options: {
+                                    valueField: '名称',
+                                    textField: '名称',
+                                    url: '/index.php?g=Query&m=Consume&a=getshoplist',
+                                }
+
+                                },
+                                { display: "服务顾问", name: "fwgw", newline: false, type: "text", readonly: true },
 
 
                             ]

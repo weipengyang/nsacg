@@ -1894,7 +1894,7 @@ class CardAction extends WapAction{
                     $data['实付金额']=0;
                     $data['实收金额']=$order['price'];
                     $data['折扣金额']=0;
-                    $data['结算方式']='转账';
+                    $data['结算方式']='在线充值';
                     $data['结算账户']= $this->getshopname();
                     $data['支票号']=0;
                     $data['凭证号']=0;

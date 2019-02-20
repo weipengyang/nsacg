@@ -50,8 +50,19 @@
                         <input name="khlb" id="khlb">
 
                         </input>
+                        <select name="sfzy" id="sfzy">
+                            <option value="">活跃度</option>
+                            <option value="活跃">活跃</option>
+                            <option value="一般">一般</option>
+                            <option value="流失">流失</option>
+                            <option value="否">否</option>
+                        </select>
+                        <select  id="shop">
+                            <option value="">所有门店</option>
+                        </select>
                     </div>
                 </div>
+
                 <div class="am-u-sm-2 am-u-md-2">
                     <div class="am-form-group">
                         <input type="text" id="startDate" />
@@ -66,7 +77,7 @@
                     <div class="am-form-group">
                         关键字：<input id="searchkey" type="text" style="width:100px"  />
                         <input id="search" type="button" class="am-btn am-btn-success am-btn-sm" value="模糊查询" />
-                        <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="batchmessage();">一键发送模板消息</button>
+                        <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="batchmessage();">模板消息</button>
                         <button type="button" class="am-btn am-btn-success am-btn-sm" onclick="exportdata();">导出数据</button>
                         <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="updatedate();">更新日期</button>
                     </div>
@@ -102,6 +113,10 @@
                 });
             }
         }
+        $('#sfzy').change(function () {
+            $('#search').click();
+
+        });
         function addtrace(data) {
             if (adddialog) {
                 adddialog.set('data', data);
@@ -178,9 +193,8 @@
                 });
             }
         }
-        $('#khlb').change(function () {
-           // $('#search').click();
-
+        $("#shop").change(function () {
+            $('#search').click();
         });
         function updatedate() {
             $.ligerDialog.waitting('正在更新,请稍候...');
@@ -295,6 +309,16 @@
                 textField: '类别',
                 url: '/index.php?g=Query&m=Consume&a=getkhlb',
             });
+            $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {
+                if (data) {
+                    $('#shop').empty();
+                    $('#shop').append("<option value=''>所有门店</option>");
+                    $(data).each(function () {
+                        var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                        $('#shop').append(option);
+                    });
+                }
+            }, 'JSON');
             cargird = $("#maingrid4").ligerGrid({
                 columns: [
                         {
@@ -306,6 +330,7 @@
                         { display: '车牌号码', name: '车牌号码', width: 80, align: 'left',render: function (rowdata, index, value) {
                             return '<a href="javascript:void(0);" onclick="carinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
                         } },
+                        { display: '活跃度', name: '是否在用', minWidth: 60 },
                         { display: '车主', name: '车主', minWidth: 140,render: function (rowdata, index, value) {
                             return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
                         }  },
@@ -367,6 +392,12 @@
             $('#search').click(function () {
                 cargird.changePage('first');
                 var parms = {};
+                var sfzy = $('#sfzy').val();
+                if (sfzy != '')
+                    parms.sfzy = sfzy;
+                var shop = $('#shop').val();
+                if (shop != '')
+                    parms.shop = shop;
                 var khlb = $('#khlb').val();
                 var startDate = $("#startDate").val();
                 var endDate = $("#endDate").val();

@@ -260,7 +260,8 @@ class StoreAction extends WapAction{
             $user['token']=$this->token;
             $latitude=$_POST['latitude'];
             $longitude=$_POST['longitude'];
-            $user['shop']=$this->getshopnamebypoint($latitude,$longitude);
+            $shopname=$this->getshopnamebypoint($latitude,$longitude);
+            $user['shop']=$shopname;
             $user['wecha_id']=$this->wecha_id;
             $twid = $this->randstr{rand(0, 51)} . $this->randstr{rand(0, 51)} . $this->randstr{rand(0, 51)}.$this->randstr{rand(0, 51)}.mt_rand(1000,9999);
 			$this->savelog(2, $this->_twid, $this->token, $this->_cid);
@@ -290,8 +291,8 @@ class StoreAction extends WapAction{
                 $item['手机号码']=$user['tel'];
                 $item['客户类别']=$lb;
                 //M('维修','dbo.','difo')->where(array('客户ID'=>$car['客户ID']))->save($item);
-                $item['是否在用']='是';
-                $item['门店']=$this->getshopname();
+                $item['是否在用']='一般';
+                $item['门店']=$shopname;
                 M('车辆档案','dbo.','difo')->where(array('客户ID'=>$car['客户ID']))->save($item);
                 $czinfo['名称']=$card['number'];
                 $czinfo['会员']=1;
@@ -299,7 +300,7 @@ class StoreAction extends WapAction{
                 $czinfo['入会日期']=date('Y-m-d',time());
                 $czinfo['联系人']=$user['truename'];
                 $czinfo['联系电话']=$user['tel'];
-                $czinfo['门店']=$this->getshopname();
+                $czinfo['门店']=$shopname;
                 $czinfo['手机号码']=$user['tel'];
                 $czinfo['类别']=$lb;
                 M('往来单位','dbo.','difo')->where(array('ID'=>$car['客户ID']))->save($czinfo);
@@ -314,7 +315,7 @@ class StoreAction extends WapAction{
                 $czinfo['入会日期']=date('Y-m-d',time());
                 $czinfo['联系人']=$user['truename'];
                 $czinfo['联系电话']=$user['tel'];
-                $czinfo['门店']=$this->getshopname();
+                $czinfo['门店']=$shopname;
                 $czinfo['手机号码']=$user['tel'];
                 $czinfo['类别']=$lb;
                 M('往来单位','dbo.','difo')->add($czinfo);
@@ -322,8 +323,8 @@ class StoreAction extends WapAction{
                 $item['车牌号码']=$user['carno'];
                 $item['客户ID']=$czinfo['ID'];
                 $item['手机号码']=$user['tel'];
-                $item['是否在用']='是';
-                $item['门店']=$this->getshopname();
+                $item['是否在用']='一般';
+                $item['门店']=$shopname;
                 $item['联系人']=$user['truename'];
                 $item['联系电话']=$user['tel'];
                 $item['客户类别']=$lb;
@@ -1019,7 +1020,7 @@ class StoreAction extends WapAction{
         $card=M('member_card_create')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
         $user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
         $wxlist=M('维修','dbo.','difo')->where(array('客户ID'=>$user['ID'],
-            '维修类别'=>array('not in',array('返工','售后保修')),
+            '维修类别'=>array('not in',array('返工','售后保修','保险理赔','查勘理赔')),
             '当前状态'=>array('not in',array('结束','取消'))))->order('流水号 desc')->select();
         foreach($wxlist as $key=>$value)
         {
@@ -1149,7 +1150,7 @@ class StoreAction extends WapAction{
         $card=M('member_card_create')->where(array('token'=>$this->token,'wecha_id'=>$this->wecha_id))->find();
         $user=M('往来单位','dbo.','difo')->where(array('名称'=>$card['number']))->find();
         $wxlist=M('维修','dbo.','difo')->where(array('客户ID'=>$user['ID'],
-            '维修类别'=>array('not in',array('返工','售后保修')),
+            '维修类别'=>array('not in',array('返工','售后保修','保险理赔','查勘理赔')),
             '当前状态'=>array('like','%结算%')))->order('流水号 desc')->select();
         foreach($wxlist as $key=>$value)
         {
@@ -1981,6 +1982,7 @@ class StoreAction extends WapAction{
         $cars=M('member_card_car')->where(array('wecha_id'=>$wecha_id))->select();
         $carnames='\''.implode('\',\'',array_column($cars,'carno')).'\'';
         M('维修','dbo.','difo')->execute("update 车辆档案 set 服务顾问='$fwgw' where 车牌号码 in($carnames)");
+        M('userinfo')->where(array('wecha_id'=>$wecha_id))->save(array('fwgw'=>$fwgw));
         }
     }
     #region 原来的首页
@@ -3388,7 +3390,7 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
     	$this->assign('type',$type);
     	$this->display();
     }
-    //我要洗车
+
     public function washcar(){
         if(IS_POST){
             $shop=$_POST['shop'];
@@ -3830,7 +3832,7 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
             $cars=M('member_card_car')->where(array('token' => $this->token,'wecha_id'=>$this->wecha_id))->select();
             $cars=array_column($cars,'carno');
             $list=M('维修','dbo.','difo')->where(array('车牌号码'=>array('in',$cars),
-                '维修类别'=>array('not in',array('返工','售后保修')),
+                '维修类别'=>array('not in',array('返工','售后保修','保险理赔','查勘理赔')),
                 '当前状态'=>array('neq','取消')
             ,'_string'=>'制单日期>DATEADD(day,-365,GETDATE())'))->order('制单日期 desc')->select();
 
@@ -3886,7 +3888,7 @@ private function getDistance($longitude1, $latitude1, $longitude2, $latitude2, $
                     $czinfo = M('往来单位', 'dbo.', 'difo')->where(array('名称' => $cardno['number']))->find();
                     $item['车主'] = $cardno['number'];
                     $item['车牌号码'] = $carno;
-                    $item['是否在用'] = '是';
+                    $item['是否在用'] = '一般';
                     $item['门店'] = $this->getshopname();
                     $item['客户ID'] = $czinfo['ID'];
                     $item['手机号码'] = $user['tel'];

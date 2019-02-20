@@ -28,12 +28,15 @@
         <div class="admin-content-body">
             <div class="am-g">
                 <div class="am-u-sm-1 am-u-md-1">
-                    客户类
+                    客户
                 </div>
                 <div class="am-u-sm-2 am-u-md-2">
                    <input type="text" id="khlb">
                 </div>
-                <div class="am-u-sm-2 am-u-md-2">
+                <div class="am-u-sm-3 am-u-md-3">
+                    <select  id="shop">
+                        <option value="">所有门店</option>
+                    </select>
                     活跃度
                     <select name="sfzy" id="sfzy">
                         <option value="">所有</option>
@@ -42,6 +45,7 @@
                         <option value="流失">流失</option>
                         <option value="否">否</option>
                     </select>
+
                 </div>
                 <div class="am-u-sm-6 am-u-md-6">
                     关键字：<input id="searchkey" type="text" />
@@ -189,6 +193,18 @@
             $('#search').click();
 
         });
+        $('#shop').change(function () {
+            $('#search').click();
+
+        });
+        function f_totalRender(data, currentPageData) {
+            return "活跃车辆:"+ data.sumdata[0].活跃+"辆"
+                +"  流失车辆:" + data.sumdata[0].流失+'辆'
+                +"  活跃率:" + (data.sumdata[0].活跃/data.sumdata[0].总数* 100).toFixed(2)+'%'
+                + "  流失率:" + (data.sumdata[0].流失/data.sumdata[0].总数* 100).toFixed(2)+'%'
+                + "  车辆总数:" + data.sumdata[0].总数 + '辆';
+
+        }
         var cargird;
         $(document).ready(function () {
            $.ligerDefaults.Filter.operators['string'] =
@@ -199,11 +215,22 @@
                    $('#search').click();
            }
           );
+            $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {
+                if (data) {
+                    $('#shop').empty();
+                    $('#shop').append("<option value=''>所有门店</option>");
+                    $(data).each(function () {
+                        var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                        $('#shop').append(option);
+                    });
+                }
+            }, 'JSON');
             $('#highgrade').click(function () {
                 cargird.showFilter();
             });
             cargird = $("#maingrid4").ligerGrid({
                 columns: [
+                        { display: '门店', name: '门店', minWidth: 85 },
                         { display: '车牌号码', name: '车牌号码', width: 80, align: 'left',render: function (rowdata, index, value) {
                             return '<a href="javascript:void(0);" onclick="carinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
                         } },
@@ -267,7 +294,8 @@
                 isScroll: true,
                 pageSize: 20,
                 url: '/index.php?g=Query&m=Consume&a=getcarsinfo',
-                height: '100%',
+                height: '98%',
+                totalRender: f_totalRender,
                 onDblClickRow: function (data, rowindex, rowobj) {
                     carinfo(data['车牌号码']);
                 }
@@ -278,6 +306,9 @@
                 var khlb = $('#khlb').val();
                 if (khlb != '')
                     parms.khlb = khlb;
+                var shop = $('#shop').val();
+                if (shop != '')
+                    parms.shop = shop;
                 var sfzy = $('#sfzy').val();
                 if (sfzy != '')
                     parms.sfzy = sfzy;

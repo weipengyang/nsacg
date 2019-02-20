@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>更换服务顾问</title>
+    <meta name="description" content="爱养车" />
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var form;
+        $(function () {
+            form = $("#form1").ligerForm({
+                inputWidth: 180, labelWidth: 80, space:20,
+                validate: true,
+                buttons: [
+                    {
+                        text: "保存", width: 100, click: function () {
+                        var data = {};
+                        data['wecha_id'] = getQueryString('wecha_id');
+                        data['fwgw'] = $("input[ligeruiid='服务顾问']").val();
+                        if (data['fwgw'] == '') {
+                            $.ligerDialog.alert('请选择服务顾问');
+                            return;
+                        }
+
+                        $.post('/index.php?g=Query&m=Consume&a=modifyfwgw', data,
+                            function (msg) {
+                                $.ligerDialog.alert(msg);
+                                if (parent.parent.grid) {
+                                    parent.parent.grid.reload();
+                                }
+                                else {
+                                    if (parent.grid) {
+                                        parent.grid.reload();
+                                    }
+                                }
+                                if (parent.project) {
+                                    parent.project.reload();
+                                }
+                                frameElement.dialog.hide();
+                                //parent.reload();
+                                //location.href = location.href;
+                            });
+                    }
+                    },
+                    {
+                        text: "取消", width: 100, click: function () {
+
+                    }
+                    }
+                ],
+                fields: [
+                    { display: "流水号", name: "流水号", newline: true, type: "hidden" },
+                    {
+                        display: "服务顾问", name: "服务顾问", newline: true, type: "combobox",
+                        options: {
+                            valueField: '姓名',
+                            textField: '姓名',
+                            autocomplete: true,
+                            alwayShowInDown: true,
+                            selectBoxHeight:50,
+                            //selectBoxWidth:180,
+                            url: '/index.php?g=Query&m=Consume&a=getfwgw',
+                        },
+
+                    }
+                ]
+            });
+
+        });
+    </script>
+</head>
+
+<body style="padding:0;margin:0">
+<div id="form1" style="margin:0; padding:0;"></div>
+</body>
+</html>

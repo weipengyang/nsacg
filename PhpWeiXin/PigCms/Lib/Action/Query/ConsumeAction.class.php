@@ -1289,15 +1289,28 @@ class ConsumeAction extends Action{
         $pagesize=$_POST['pagesize'];
         $sortname=$_POST['sortname'];
         $sortorder=$_POST['sortorder'];
+        $strwhere='where 1=1 ';
         if(!isset($sortname)){
             $sortname='流水号';
             $sortorder='desc';
         }
         if (isset($_POST['khlb'])&&trim($_POST['khlb'])!=''){
             $where['客户类别']=array('in',explode(';',$_POST['khlb']));
+            $khlbs=explode(';',$_POST['khlb']);
+            $str = join(",",$khlbs);
+            $inStr = "'".str_replace(",","','",$str)."'";
+            $strwhere.=" and 客户类别 in ($inStr)";
         }
         if (isset($_POST['sfzy'])&&trim($_POST['sfzy'])!=''){
             $where['是否在用']=$_POST['sfzy'];
+        }
+        if (isset($_POST['shop'])&&trim($_POST['shop'])!=''){
+            $where['门店']=$_POST['shop'];
+            $shop=$_POST['shop'];
+            $strwhere.=" and 门店='$shop'";
+        }else{
+            $where['门店']=array('in',explode(',',cookie('department')));
+
         }
         if (isset($_POST['searchkey'])&&trim($_POST['searchkey'])!=''){
             $searchkey='%'.trim($_POST['searchkey']).'%';
@@ -1353,6 +1366,9 @@ class ConsumeAction extends Action{
             ->where($where)->limit(($page-1)*$pagesize,$pagesize)->order("$sortname  $sortorder")->select();
         $data['Rows']=$yelist;
         $data['Total']=$count;
+        $strql="select *,(select COUNT(1) from 车辆档案 $strwhere ) 总数 from (select 是否在用,count(1) num from 车辆档案 $strwhere group by 是否在用 ) a  pivot( sum(num) for  是否在用 in ([活跃],[流失]) ) t";
+        $sumdata=M('车辆资料','dbo.','difo')->query($strql);
+        $data['sumdata']=$sumdata;
         echo json_encode($data);
 
     }
@@ -1478,6 +1494,18 @@ class ConsumeAction extends Action{
         $data['sumdata']=$sumdata;
         echo json_encode($data);
 
+    }
+    public  function  modifyfwgw(){
+        if(IS_POST) {
+            $wecha_id = $_POST['wecha_id'];
+            $fwgw = $_POST['fwgw'];
+            $cars = M('member_card_car')->where(array('wecha_id' => $wecha_id))->select();
+            $carnames = '\'' . implode('\',\'', array_column($cars, 'carno')) . '\'';
+            M('维修', 'dbo.', 'difo')->execute("update 车辆档案 set 服务顾问='$fwgw' where 车牌号码 in($carnames)");
+            M('userinfo')->where(array('wecha_id' => $wecha_id))->save(array('fwgw' => $fwgw));
+        }else{
+            $this->display();
+        }
     }
     public  function getbalancequery()
     {
@@ -2945,6 +2973,11 @@ public  function exportpurchasedata(){
         }
         else{
             //$where['tp_userinfo.shop']=array('in',explode(',',cookie('department')));
+
+        }
+        if($_POST['fwgw']&&trim($_POST['fwgw'])!='')
+        {
+            $where['tp_userinfo.fwgw']=$_POST['fwgw'];
 
         }
         if($_POST['startdate']&&trim($_POST['startdate'])!='')
@@ -5851,6 +5884,22 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
            echo '保存成功';
        }
    }
+    public function updateshop(){
+        $cars= M('userinfo')
+            ->where(array('fwgw'=>array('eq','')))
+            ->field('carno1,carno,carno2,id')->select();
+        foreach ($cars as $car){
+
+            $shop=M('车辆档案','dbo.','difo')
+                ->where(array('车牌号码'=>$car['carno']))
+                ->field('服务顾问')->find();
+            $shop=$shop['服务顾问'];
+
+            if($shop) {
+                M('userinfo')->where(array('id'=>$car['id']))->save(array('fwgw'=>$shop));
+            }
+            }
+    }
    public function carinfo()
     {
         if(IS_POST){
@@ -5866,7 +5915,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                     $czinfo['名称']=$carinfo['车牌号码'];
                     $carinfo['车主']=$carinfo['车牌号码'];
                     $czinfo['客户']=1;
-                    $czinfo['门店']='爱养车';
+                    $czinfo['门店']=$carinfo['门店'];
                     $czinfo['ID']=$this->getcode(18,0,0);
                     $carinfo['客户ID']=$czinfo['ID'];
                     $czinfo['会员']=0;
@@ -5893,6 +5942,8 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                     if($carinfo[$key]==null||$carinfo[$key]=='null')
                         unset($carinfo[$key]);
                 }
+                M('userinfo')->where(array('carno|carno1|carno2'=>$carinfo['车牌号码']))->save(array('shop'=>$carinfo['门店']));
+                M('往来单位','dbo.','difo')->where(array('名称'=>$carinfo['车主']))->save(array('门店'=>$carinfo['门店']));
                 if(M('车辆档案','dbo.','difo')->where(array('流水号'=>$code))->save($carinfo)){
                     echo '保存成功';
                     exit();
@@ -5917,6 +5968,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
             $number=$memberinfo['流水号'];
             unset($memberinfo['流水号']);
             unset($memberinfo['balance']);
+            unset($memberinfo['fwgw']);
             unset($memberinfo['expensetotal']);
             unset($memberinfo['total_score']);
             if(M('往来单位','dbo.','difo')->where(array('流水号'=>$number))->save($memberinfo)){
@@ -8624,7 +8676,7 @@ SELECT noticeid,count(1) num from tp_member_card_noticedetail GROUP BY noticeid
                 $carinfo['客户类别']='临时客户';
                 $carinfo['最近维修']=date('Y-m-d',time());
                 $carinfo['维修次数']=1;
-                $carinfo['是否在用']='是';
+                $carinfo['是否在用']='一般';
                 $carinfo['手机号码']=$phone;
                 $carinfo['门店']=$shop;
                 $carinfo['联系电话']=$phone;

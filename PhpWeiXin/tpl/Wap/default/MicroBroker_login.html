@@ -1,0 +1,38 @@
+<include file="MicroBroker:header"/>
+<style>body{background:url({pigcms:$staticPath}/tpl/static/microbroker/images/bg-loader.jpg) no-repeat; background-size:100% 100%;}.foot a{ color: #fff;}</style>
+<section class="main animated fadeInDown">
+	<div class="login-box">
+		<h1 class="login-logo"></h1>
+		<div class="login-regular login-input">
+			<p class="fn-clear"><label for="user-name"><i class="icon-name"></i></label>
+			<if condition="!empty($brokerarr) && is_array($brokerarr)">
+			<input type="tel" class="input" value="{pigcms:$brokerarr.tel}" name="phone" id="phone"/>
+			<else/>
+			<input type="tel" class="input" value="" name="phone" id="phone" placeholder="请输入注册时手机号" />
+			</if>
+			</p>
+			<p class="fn-clear"><label for="user-psw"><i class="icon-psw"></i></label><input type="password" pattern="[0-9]*" class="input" name="userpsw" id="userpsw" placeholder="请输入密码6~8个数字"  /></p>
+		</div>
+		<p class="login-btn"><input type="submit" value="登录" class="btn submit-btn" id="J_login" /></p>
+	</div>
+</section>
+<footer class="foot">
+<if condition="$iscopyright eq 1">
+{pigcms:$homeInfo.copyright}
+<else/>
+{pigcms:$siteCopyright}
+</if>
+<!---<a href="{pigcms:$f_siteUrl}">&copy; Powered by {pigcms:$f_siteName}</a>-->
+</footer>
+<script src="{pigcms:$staticPath}/tpl/static/microbroker/js/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+	//隐藏右上角菜单，需要显示请把hideOptionMenu换成showOptionMenu
+	WeixinJSBridge.call('hideOptionMenu');
+	//隐藏下方工具栏，需要显示顶部导航栏，请把hideToolbar换成showToolbar
+	WeixinJSBridge.call('hideToolbar');
+});
+</script>
+
+<script src="http://g.tbcdn.cn/kissy/k/1.4.0/seed.js"></script>
+<script src="{pigcms:$staticPath}/tpl/static/microbroker/js/mod.jjr.js"></script>

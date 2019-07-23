@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script>var SITEURL='';</script>
+<title>关于我们|{pigcms::C('site_name')}|{pigcms::C('site_title')}</title>
+<meta name="keywords" content="{pigcms::C('keyword')}" />
+<meta name="description" content="{pigcms::C('content')}" />
+<link href="{pigcms::RES}/css/index-one.css" rel="stylesheet" type="text/css" />
+<script src="{pigcms::RES}/js/jquery-1.7.2.min.js"></script>
+<link href="{pigcms::RES}/css/basic.css" rel="stylesheet" type="text/css" />
+</head>
+<body id="nv_member">
+<include file="Public:header"/>
+<div id="wp" class="wp"><link href="{pigcms::RES}/css/style.css" rel="stylesheet" type="text/css" />
+<!--中间内容-->
+<style type="text/css">
+.section p{padding-top:0;margin-top:0; font-size:16px;/*text-indent: 2em;*/}
+.ListProduct th, .ListProduct td{ text-align:center}
+<!--引用百度地图API-->
+    html,body{margin:0;padding:0;}
+    .iw_poi_title {color:#CC5522;font-size:14px;font-weight:bold;overflow:hidden;padding-right:13px;white-space:nowrap}
+    .iw_poi_content {font:12px arial,sans-serif;overflow:visible;padding-top:4px;white-space:-moz-pre-wrap;word-wrap:break-word}
+	.banner{height:200px; text-align:center; border-bottom:2px solid #ddd;}
+.hbanner{ background: url({pigcms::RES}/images/banner/about.jpg) center no-repeat #B4B4B4;}
+</style>
+<script src="http://api.map.baidu.com/api?key=&v=1.1&services=true" type="text/javascript"></script>
+<div class="banner hbanner"></div>
+<div class="qtcontent">
+        <div class="intro">
+            <div class="normalTitle"><h2>关于{pigcms::C('site_name')}</h2></div>
+            <div class="normalContent">
+                <div class="section ">
+                    <div>
+                    	<img style="float:right;margin:0 0 15px 15px;" alt="{pigcms::C('site_name')}公众号" src="{pigcms::RES}/images/weixin_erweima_about.png">
+                        <p>	{pigcms::C('site_name')}是{pigcms::C('copyright')}旗下网站，{pigcms::C('site_name')}志在帮助那些不懂技术的个人或企业建立属于自己的接口程序，让完全不懂技术的个人或企业通过简单的配置，即可拥有强大的功能。</p><br />
+  <p>
+{pigcms::C('site_name')}是一个快速的，可视化的无线建站工具，让个人或企业可以在几分钟内完成微信网站。{pigcms::C('site_name')}不仅可以快速生成微信网站，还提供了在线抽奖活动（优惠券，大转盘，刮刮卡），在线投票，在线报名，在线预约，在线试驾，在线预定，图文回复，文本回复，LBS位置回复，地图，电话，视频，欢迎语，会员卡等模块，以后还会支持在线支付等功能。</p><br />
+<p>{pigcms::C('site_name')}还提供了一些便民查询和娱乐游戏功能供个人或企业使用，如：查天气，查快递，翻译，百科，人品计算，手机归属地查询，笑话，成语接龙，公交查询，谜语，百度问答，解梦，古诗欣赏等等，根据需求的不同选择某些功能，能更好的提高粉丝活跃度，忠诚度。</p><br />
+<p>{pigcms::C('site_name')}除了自定义库,也支持自定义关键词触发指定接口url处理业务(完美的兼容第三方微信接口和自己的业务接口)即可实现和你们自己的数据库的信息通信!  
+                        </p>
+                    </div>
+                <p class="clr"></p>
+            	</div>
+                <div class="section ">
+                <p>公司：{pigcms::C('copyright')}					<br />
+                	地址：启东市河南中路555号东方银座507/508F<br />
+               	  电话：0513-87137800<br />
+               	  传真：0513-83320999<br />
+               	  邮编：226200</p>
+              <br />
+<!--百度地图容器-->
+  <div style="width:890px;height:400px;border:#ccc solid 1px;" id="dituContent"></div>
+<script type="text/javascript">
+    //创建和初始化地图函数：
+    function initMap(){
+        createMap();//创建地图
+        setMapEvent();//设置地图事件
+        addMapControl();//向地图添加控件
+        addMarker();//向地图中添加marker
+    }
+    
+    //创建地图函数：
+    function createMap(){
+        var map = new BMap.Map("dituContent");//在百度地图容器中创建一个地图
+        var point = new BMap.Point(121.665995,31.811019);//定义一个中心点坐标
+        map.centerAndZoom(point,17);//设定地图的中心点和坐标并将地图显示在地图容器中
+        window.map = map;//将map变量存储在全局
+    }
+    
+    //地图事件设置函数：
+    function setMapEvent(){
+        map.enableDragging();//启用地图拖拽事件，默认启用(可不写)
+        map.enableScrollWheelZoom();//启用地图滚轮放大缩小
+        map.enableDoubleClickZoom();//启用鼠标双击放大，默认启用(可不写)
+        map.enableKeyboard();//启用键盘上下左右键移动地图
+    }
+    
+    //地图控件添加函数：
+    function addMapControl(){
+        //向地图中添加缩放控件
+var ctrl_nav = new BMap.NavigationControl({anchor:BMAP_ANCHOR_TOP_LEFT,type:BMAP_NAVIGATION_CONTROL_LARGE});
+map.addControl(ctrl_nav);
+        //向地图中添加缩略图控件
+var ctrl_ove = new BMap.OverviewMapControl({anchor:BMAP_ANCHOR_BOTTOM_RIGHT,isOpen:1});
+map.addControl(ctrl_ove);
+        //向地图中添加比例尺控件
+var ctrl_sca = new BMap.ScaleControl({anchor:BMAP_ANCHOR_BOTTOM_LEFT});
+map.addControl(ctrl_sca);
+    }
+    
+    //标注点数组
+    var markerArr = [{title:"{pigcms::C('copyright')}",content:"地址：启东市河南中路555号东方银座507/508F<br/>电话：400-678-6645<br/>电话：0513-87137800<br/>传真：0513-83320999",point:"121.665995|31.811019",isOpen:1,icon:{w:21,h:21,l:0,t:0,x:6,lb:5}}
+ ];
+    //创建marker
+    function addMarker(){
+        for(var i=0;i<markerArr.length;i++){
+            var json = markerArr[i];
+            var p0 = json.point.split("|")[0];
+            var p1 = json.point.split("|")[1];
+            var point = new BMap.Point(p0,p1);
+var iconImg = createIcon(json.icon);
+            var marker = new BMap.Marker(point,{icon:iconImg});
+var iw = createInfoWindow(i);
+var label = new BMap.Label(json.title,{"offset":new BMap.Size(json.icon.lb-json.icon.x+10,-20)});
+marker.setLabel(label);
+            map.addOverlay(marker);
+            label.setStyle({
+                        borderColor:"#808080",
+                        color:"#333",
+                        cursor:"pointer"
+            });
+
+(function(){
+var index = i;
+var _iw = createInfoWindow(i);
+var _marker = marker;
+_marker.addEventListener("click",function(){
+    this.openInfoWindow(_iw);
+    });
+    _iw.addEventListener("open",function(){
+    _marker.getLabel().hide();
+    })
+    _iw.addEventListener("close",function(){
+    _marker.getLabel().show();
+    })
+label.addEventListener("click",function(){
+    _marker.openInfoWindow(_iw);
+    })
+if(!!json.isOpen){
+label.hide();
+_marker.openInfoWindow(_iw);
+}
+})()
+        }
+    }
+    //创建InfoWindow
+    function createInfoWindow(i){
+        var json = markerArr[i];
+        var iw = new BMap.InfoWindow("<b class='iw_poi_title' title='" + json.title + "'>" + json.title + "</b><div class='iw_poi_content'>"+json.content+"</div>");
+        return iw;
+    }
+    //创建一个Icon
+    function createIcon(json){
+        var icon = new BMap.Icon("http://app.baidu.com/map/images/us_mk_icon.png", new BMap.Size(json.w,json.h),{imageOffset: new BMap.Size(-json.l,-json.t),infoWindowOffset:new BMap.Size(json.lb+5,1),offset:new BMap.Size(json.x,json.h)})
+        return icon;
+    }
+    
+    initMap();//创建和初始化地图
+</script>
+</div>
+<div class="section ">
+<p>银行转帐（请汇完款后及时通知我司,以便及时入帐）</p><br />
+                <table class="ListProduct" border="0" cellspacing="0" cellpadding="0" width="100%">
+                	<thead>
+                			<tr bgcolor="#a9d0f1">
+                				<th><strong>银 行</strong></th>
+                				<th><strong>开 户 银 行</strong></th>
+                				<th><strong>卡 号</strong></th>
+                				<th><strong>收款人</strong></th>
+           				</tr>
+</thead>
+<tbody>
+                			<tr>
+                				<td><strong>中国银行(公司账号)</strong></td>
+                				<td>(启东市公园路支行)</td>
+                				<td>478 059 303 900</td>
+                				<td>{pigcms::C('copyright')}</td>
+           				</tr>
+           			</tbody>
+               		</table>
+                	<p class="clr"></p>
+            	</div>
+        	</div>
+    	</div>
+    </div>
+<!--底部-->
+<!--主要功能介绍结束-->
+<include file="Public:footer"/>
+</body>
+</html>

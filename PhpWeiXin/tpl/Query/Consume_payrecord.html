@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>收支录入</title>
+    <meta name="description" content="爱养车" />
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var dialog;
+        $(function ()
+        {
+            function getGridOptions(checkbox) {
+                var options = {
+                    columns: [
+                    { display: '车主名称', name: '名称', align: 'left', width: 100, minWidth: 60 },
+                    { display: '会员编号', name: '会员编号', minWidth: 120, width: 100 },
+                    { display: '等级', name: '等级', minWidth: 120, width: 100 },
+                    { display: '联系人', name: '联系人', minWidth: 140, width: 100 },
+                    { display: '联系电话', name: '联系电话', width: 100 },
+                    { display: '手机号码', name: '手机号码', width: 100 },
+                    { display: '业务员', name: '业务员', width: 100 }
+                    ],
+                    switchPageSizeApplyComboBox: false,
+                    url: '/index.php?g=Query&m=Consume&a=getuserinfo',
+                    //data: $.extend({}, {}),
+                    pageSize: 10,
+                    checkbox: checkbox
+                };
+                return options;
+            }
+            var form = $("#form1").ligerForm({
+                inputWidth: 160, labelWidth: 85, space: 20,
+                validate: true,
+                fields: [
+                      {
+                          display: "门店", name: "门店", newline: false, type: "combobox", comboboxName: 'mendian', options: {
+                              valueField: '名称',
+                              textField: '名称',
+                              url: '/index.php?g=Query&m=Consume&a=getshoplist',
+                          }
+
+                      },
+                    {
+                        display: "往来单位", name: "客户名称", newline: false, type: "popup", options: {
+                            condition: {
+                                prefixID: 'condtion_',
+                                fields: [{ name: 'searchkey', type: 'text', width: 120, label: '客户', labelWidth: 90 }]
+
+                            },
+                            onSelected: function (e) {
+                                var row = e.data[0];
+                                
+                            },
+                            searchClick: function (e) {
+                                e.grid.set('parms', { 'searchkey': e.rules[0]['value'] });
+                                e.grid.reload();
+                            },
+                            grid: getGridOptions(false),
+                            valueField: 'ID',
+                            textField: '名称',
+                            readonly:false,
+                            width: 350
+                        }
+                    },
+                     {
+                         display: "账款类别", name: "账款类别", newline: false, type: "combobox",
+                         options: {
+                            valueField: '名称',
+                            textField: '名称',
+                            data: [
+                                { 名称: '收款单' },
+                                { 名称: '付款单' },
+                            ]
+                        }
+                    },                   
+                    {
+                        display: "收支类型", name: "收支项目", newline: false, type: "combobox", options: {
+                            valueField: '名称',
+                            textField: '名称',
+                            url: '/index.php?g=Query&m=Consume&a=getszxm',
+                        } 
+                    },
+                    { display: "金额", name: "金额", newline: false, type: "text" },
+                    {
+                        display: "结算方式 ", name: "结算方式", newline: false, type: "combobox",
+                        options: {
+                            valueField: '名称',
+                            textField: '名称',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getjsfs',
+                        }
+                    },
+                    {
+                        display: "结算账户", name: "结算账户", newline: false, type: "combobox",
+                        options: {
+                            valueField: '名称',
+                            textField: '名称',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getjszh',
+                        }
+                    },
+                    { display: '备注', name: '备注', type: "textarea", width: 425, height: 250 },
+
+                ],
+                buttons: [                    {
+                        text: "取消", width: 60, click: function () {
+                            window.parent.editdialog.hide();
+                        }
+                    },                    {
+                        text: "保存", width: 60, click: function () {
+                            var data = form.getData();
+                            data['单位编号'] = data['客户名称'];
+                            data['单位名称'] = $("input[ligeruiid='客户名称']").val();
+                            var submitData = {
+                                type:'add',
+                                record: data
+                            };
+                            $.post('index.php?g=Query&m=Consume&a=savepayrecord', submitData,
+                              function (data) {
+                                  $.ligerDialog.alert(data);
+                                  window.parent.grid.reload();
+                                  dialog.hide();
+
+                              });
+                        }
+                    }            ]            });
+            dialog = frameElement.dialog;
+            var optype = dialog.get('opttype');
+        });
+
+
+    </script>
+</head>
+
+<body style="padding:10px">
+    <div id="form1">
+    </div>
+</body>
+</html>

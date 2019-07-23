@@ -1,0 +1,51 @@
+<include file="Public:head"/> 
+<script src="/tpl/static/artDialog/jquery.artDialog.js?skin=default"></script>
+<script src="/tpl/static/artDialog/plugins/iframeTools.js"></script>
+<script src="{pigcms::RES}/js/date/WdatePicker.js"></script>
+<div class="content"  >
+<div class="cLineB">
+  <h4>添加主题活动</h4><a href="javascript:history.go(-1);" class="right btnGrayS vm" style="margin-top:-27px">返回</a>
+ </div>
+<div class="msgWrap">
+	<table class="ListProduct" border="0" cellspacing="0" cellpadding="0" width="100%">
+	<thead>
+	<tr>
+	<th width="100">姓名</th>
+	<th width="100">电话</th>
+    <th width="100">微信号</th>
+	<th width="100">备注</th>
+	<th width="100" class="norightborder">操作</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr></tr>
+	<volist name="data" id="item"> 
+		<form method="post" action="" id="info">
+		<input name="delall" type="hidden" value="">
+		<input name="wxid" type="hidden" value="">
+		<tr><td>{pigcms:$item.name}</td>
+		<td>{pigcms:$item.phone}</td>        
+        <td>{pigcms:$item.weixin}</td>
+		<td>{pigcms:$item.beizhu}</td> 
+		<td class="norightborder">
+			<a href="javascript:drop_confirm('您确定要删除吗?', '{pigcms::U('Baoming/delinfos',array('id'=>$item['id'],'token'=>$token))}');">删除 </a>
+		</td>
+		</tr>
+	</form>
+	</volist>
+	</tbody>
+	</table>
+</div>
+
+<div class="cLine">
+
+<div class="pageNavigator right">
+
+<div class="pages">{pigcms:$page}</div>
+
+</div>
+<div class="clr"></div>
+
+</div>
+
+<include file="Public:footer"/>

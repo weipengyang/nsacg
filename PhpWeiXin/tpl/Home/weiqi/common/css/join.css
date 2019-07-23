@@ -1,0 +1,22 @@
+.join_banner{width:100%; height:516px; background:url(../images/join_banner.png) no-repeat Center top;}
+.join_ban{ width:962px; height:516px; position:relative;}
+
+
+.join_main_box{ width:100%; background:url(../images/service_bg.png); padding-top:30px; padding-bottom:3px;}
+.join_main{ width:964px; margin-bottom:12px;}
+.join_title{ width:964px; position:relative;}
+.join_title p{ height:42px; line-height:40px; font-size:24px; font-family:"Î¢ÈíÑÅºÚ"; position:absolute; top:0px; left:70px; z-index:9; color:#15615d;}
+.join_cont{ width:916px; background:url(../images/join_cont_bg.png) repeat-y; padding-left:48px;}
+.join_bottom{ width:964px; height:17px; background:url(../images/join_bottom_bg.png) no-repeat;}
+.join_cont p{ width:772px; padding-left:37px; line-height:30px; font-size:16px;font-family:"Î¢ÈíÑÅºÚ"; color:#8c8c8c;}
+.join_cont .join_cont_tit{ width:841px; line-height:30px; padding-left:18px; font-size:16px;  background:url(../images/join_dian.png) no-repeat center left; color:#000;}
+.liuc{ width:964px; height:72px; background:url(../images/join_liuc_bg.png) repeat-y; padding-top:36px;}
+.liuc p{ color:#000;font-size:15px; width:180px; text-align:center; float:left; line-height:26px; padding-left:32px;}
+.join_callme{ width:936px; height:150px; height:px; background:url(../images/join_callme.png) no-repeat; }
+.call_name{ width:118px;height:103px; overflow:hidden; float:left; padding-left:40px;}
+.call_hot{ width:325px; height:103px; overflow:hidden; float:left; padding-left:172px;}
+.call_phone{ width:265px; height:103px; overflow:hidden; float:left; padding-left:12px;}
+.join_callme p{ font-size:18px;font-family:"Î¢ÈíÑÅºÚ";}
+.call_name .call_tit,.call_phone .call_tit,.call_hot .call_tit{ color:#15615d; line-height:38px;}
+.call_posi span{display:block;float:left;font-size:18px;font-family:"Î¢ÈíÑÅºÚ";}
+.call_posi .qq{width:78px; height:23px;margin-left:10px; cursor:pointer}

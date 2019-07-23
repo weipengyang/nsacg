@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">   
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+<title>{pigcms:$metaTitle}</title>
+<link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+<link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/0.4.1/weui.min.css" />
+<link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="page" style="margin:0px">
+        <nav class="bar bar-tab">
+            <a class="tab-item" href="#" onclick="location.href = document.referrer;">
+                <span class="icon icon-left"></span>
+                <span class="tab-label">返回</span>
+            </a>
+            <a class="tab-item" href="{pigcms::U('Store/cats',array('token' => $_GET['token'], 'catid' => $hostlist['id'], 'wecha_id' => $wecha_id, 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-home"></span>
+                <span class="tab-label">首页</span>
+            </a>
+            <a class="tab-item" href="{pigcms::U('Store/myinfo',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-me"></span>
+                <span class="tab-label">我</span>
+            </a>
+        </nav>
+        <div class="content" style="margin:0px">
+            <volist name="carlist" id="item">
+                <div class="card" style="background-color:#0065EE;">
+                    <div class="card-header" style="color:#FFFFFF;font-size:1rem">
+                        <span>{pigcms:$item.carno}</span><span style="float:right;color:darkorange;font-size:0.6rem">服务顾问:{pigcms:$item.carinfo.服务顾问}</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-content-inner">
+                            <div class="row" style="margin:0px;color:#FFFFFF;font-size:0.6rem">
+                                <div class="col-33">保险到期时间</div>
+                                <div class="col-33">年审到期时间</div>
+                                <div class="col-33">保养里程</div>
+                            </div>
+                            <div class="row" style="margin:0px;color:#FFFFFF;font-size:0.6rem">
+                                <div class="col-33">{pigcms:$item.carinfo.商保到期|strtotime|date="Y年m月d日",###}</div>
+                                <div class="col-33">{pigcms:$item.carinfo.年检日期|strtotime|date="Y年m月d日",###}</div>
+                                <div class="col-33">{pigcms:$item.carinfo.保养里程}公里</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer" >
+                       <a class="tab-item external" href="index.php?g=Wap&m=Store&a=carinfo&carno={pigcms:$item.carno}">
+                        <span class="icon icon-card" style="color:#FFFFFF;"></span>
+                        <span class="tab-label" style="color:#FFFFFF;">维修档案</span>
+                      </a>
+                    </div>
+                </div>
+            </volist>
+            <div class="card-content-inner">
+                <a href="#" class="button button-big" id="addcar"><i class="iconfont icon-tianjia">添加车辆</i></a>
+            </div>
+            <div class="card-content-inner" style="margin-top:2px">
+                <span style="font-size:0.8rem"><span style="color:red">注意事项:</span><br/>1、车辆绑定成功后如需要变更车牌或删除绑定车辆需要携带有效资料到服务门店前台进行更改<br/>
+                                    2、一辆车只能绑定一个微信号码，一个微信号最多绑定两台辆车
+                </span>
+            </div>
+            <div class="weui_dialog_confirm" style="display: none;">
+                <div class="weui_mask"></div>
+                <div class="weui_dialog">
+                    <div class="weui_cells weui_cells_form">
+                        <div class="weui_cell">
+                            <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">车牌号码</label></div>
+                            <div class="weui_cell_bd weui_cell_primary">
+                                <input name="carno" class="weui_input" id="carno" value=""   type="text" placeholder="请输入车牌号码">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="weui_dialog_ft" >
+                        <a href="javascript:;" class="weui_btn_dialog default">取消</a>
+                        <a href="javascript:;" class="weui_btn_dialog primary">确定</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <script>
+        function todate(num, istime) {
+            if (num && num.length > 8) {
+                num = num + "";
+                var date = "";
+                var month = new Array();
+                month["Jan"] = '01'; month["Feb"] = '02'; month["Mar"] = '03'; month["Apr"] = '04'; month["May"] = '05'; month["Jun"] = '06';
+                month["Jul"] = '07'; month["Aug"] = '08'; month["Sep"] = '09'; month["Oct"] = '10'; month["Nov"] = '11'; month["Dec"] = '12';
+                var str = num.split(" ");
+                var times = '';
+                if (str.length > 4) {
+                    date = str[3] + "-";
+                    date = date + month[str[0]] + "-" + str[2];
+                    times = str[4].split(':');
+                } else {
+                    date = str[2] + "-";
+                    date = date + month[str[0]] + "-" + str[1];
+                    times = str[3].split(':');
+                }
+                if (istime) {
+                    time = times[0] + ':' + times[1];
+                    if (times[3].indexOf('PM') > 0) {
+                        time = (parseInt(times[0]) + 12) + ':' + times[1];
+                    }
+                    return date + ' ' + time;
+                }
+                return date;
+            }
+            return num;
+        }
+
+        function modify(oldcarno,baoxian,nianjian,licheng) {
+            var opt='add';
+            if (oldcarno != '') {
+                opt = 'modify';
+                $("#carno").val(oldcarno);
+                $("#carno").attr('readonly', 'readonly');
+            }
+            else {
+                $("#carno").val('');
+                $("#carno").removeAttr('readonly');
+            }
+            $('.weui_dialog_confirm').show().on('click', '.default ', function () {
+                $('.weui_dialog_confirm').off('click').hide();
+            }).on('click', '.primary', function () {
+               
+                if (opt == 'add') {
+                    var carno = $("#carno").val();
+                    if (carno == '') {
+                        $.alert("请输入您的车牌号码");
+                        return;
+                    }
+                    var reg = /^[\u4e00-\u9fa5][A-Z][0-9a-zA-Z]{5}$/i
+                    if(!reg.test(carno)){
+                        $.alert("请输入完整的车牌号码，格式如粤T83G5NB");
+                        return;
+                    }
+                }
+                var submitData = {
+                    carno: carno,
+                    oldcarno: oldcarno,
+                    opt:opt
+                };
+                if (opt == 'add') {
+                    $.confirm('车辆绑定后无法进行更改与删除，确认要增加?', '提示', function () {
+                        $.post('index.php?g=Wap&m=Store&a=mycar', submitData,
+                         function (data) {
+                             $.alert(data);
+                             location.href = location.href;
+                         });
+                    }, function () {
+                        return false;
+                    });
+                }
+                else {
+                    $.post('index.php?g=Wap&m=Store&a=mycar', submitData,
+                      function (data) {
+                          $.alert(data);
+                          location.href = location.href;
+                      });
+                }
+
+            });
+           
+        }
+        function deleteCar(carno) {
+            var submitData = {
+                carno: carno,
+                opt: "delete"
+            };
+            $.post('index.php?g=Wap&m=Store&a=mycar', submitData,
+             function (data) {
+                 $.alert(data);
+                 location.href = location.href;
+             });
+        }
+        $(function () {
+            'use strict';
+            //对话框
+            $.init();
+           
+            $(document).on('click', '#addcar', function () {
+                  modify('');
+                });
+            });
+    </script>
+</body>
+
+</html>

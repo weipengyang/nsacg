@@ -1,0 +1,58 @@
+<include file="MicroBroker:header"/>
+<section class="main animated fadeInDown">
+	<div class="main-box">
+		<p class="rb-row"><input type="text" id="rusername" placeholder="客户姓名" class="input" value="" /></p>
+		<p class="rb-row"><input type="tel" id="rphone" placeholder="手机号码" class="input" value="" /></p>
+		<p class="rb-row rb-select">
+		<select id="rfloor" name="rfloor" class="select">
+			<option value="0" selected="selected" >请选择产品</option>
+			<if condition="!empty($broker_item) && is_array($broker_item)">
+			<pigcmslist array="broker_item" foreach="item">
+            <option value="{pigcms:$item.id}">{pigcms:$item.xmname}</option>
+			</pigcmslist>
+			</if>
+		</select>
+		<i class="icon-down-open-big"></i>
+		</p>
+		<p class="rb-row"><input type="text" id="remark" placeholder="备注" class="input" value="" /></p>
+		<div class="recommend-tips">
+			<h6>提示</h6>
+			<p>请务必提交真实的客户信息，若多次提交虚假信息，您的账号会被禁用。</p>
+		</div>
+		<p class="rb-submit"><input type="submit" value="马上推荐" class="btn" id="J_submitRec"/></p>
+	</div>
+</section>
+<aside class="recommend-pop">
+	<div class="recommend-box">
+		<h1 class="recommend-title"></h1>
+		<div class="recommend-icon"></div>
+        <div class="recommend-text">
+			<p id="recommend-desc">如果客户成交，您将获得佣金！</p>
+			<p class="user-get"></p>
+        </div>
+		<a href="{pigcms::U('MicroBroker/MyClientList',array('token'=>$token,'bid'=>$bid,'wecha_id'=>$wecha_id))}" class="recommend-submit"><i class="recommend-ok"></i></a>
+	</div>
+</aside>
+<div class="pop-bg"></div>	
+<footer class="foot">
+<if condition="$iscopyright eq 1">
+{pigcms:$homeInfo.copyright}
+<else/>
+{pigcms:$siteCopyright}
+</if>
+<!---<a href="{pigcms:$f_siteUrl}">&copy; Powered by {pigcms:$f_siteName}</a>-->
+</footer>
+<script src="{pigcms:$staticPath}/tpl/static/microbroker/js/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+var itemjson={pigcms:$itemstr};
+//alert(itemjson['s1'].xmt);
+document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+	//隐藏右上角菜单，需要显示请把hideOptionMenu换成showOptionMenu
+	WeixinJSBridge.call('hideOptionMenu');
+	//隐藏下方工具栏，需要显示顶部导航栏，请把hideToolbar换成showToolbar
+	WeixinJSBridge.call('hideToolbar');
+});
+</script>
+
+<script src="http://g.tbcdn.cn/kissy/k/1.4.0/seed.js"></script>
+<script src="{pigcms:$staticPath}/tpl/static/microbroker/js/mod.jjr.js"></script>

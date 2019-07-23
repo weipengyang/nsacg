@@ -1,0 +1,145 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>我要保养</title>
+    <meta name="viewport" content="width=device-width,height=device-height,maximum-scale=1.0,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">   
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css">
+    <link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/0.4.1/weui.min.css" />
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+ 
+</head>
+<body>
+    <div class="page" style="margin:0px">
+        <nav class="bar bar-tab">
+            <a class="tab-item" href="#" data-no-cache="true" onclick="history.go(-1);">
+                <span class="icon icon-left"></span>
+                <span class="tab-label">返回</span>
+            </a>
+            <a class="tab-item" data-no-cache="true" href="{pigcms::U('Store/cats',array('token' => $_GET['token'], 'catid' => $hostlist['id'], 'wecha_id' => $wecha_id, 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-home"></span>
+                <span class="tab-label">首页</span>
+            </a>
+            <a class="tab-item active" data-no-cache="true" href="{pigcms::U('Store/myinfo',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-me"></span>
+                <span class="tab-label">我</span>
+            </a>
+        </nav>
+        <header class="bar bar-nav">
+            <h1 class='title'>预约保养</h1>
+        </header>
+        <div class="content" style="margin:0px">
+            <div class="list-block">
+                <ul>
+                    <!-- Text inputs -->
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-name"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">门店</div>
+                                <div class="item-input">
+                                    <if condition="$shop eq null">
+                                        <input type="text" placeholder="选择门店" id='shop' readonly />
+                                        <else/>
+                                        <input type="text" value="{pigcms:$shop}" readonly />
+                                        <input type="hidden" id="shop" readonly value="{pigcms:$shop}" />
+                                    </if>
+                               </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-email"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">车牌号码</div>
+                                <div class="item-input">
+                                    <if condition="count($carinfo) gt 1">
+                                       <input type="text" placeholder="选择车辆" class="weui_input" id='carno' readonly />
+                                        <else />
+                                        <input type="text" readonly value="{pigcms:$carinfo[0].carno}" />
+                                        <input type="hidden" id="carno" readonly value="{pigcms:$carinfo[0].carno}" />
+
+                                    </if>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="content-block" style="margin-top:10px">
+                <div class="row" style="margin-top:0">
+                    <div class="col-100"><a href="#" id="submit" class="button button-big button-fill button-success">预约排队</a></div>
+                </div>
+            </div>
+        </div>
+       </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm-extend.min.js' charset='utf-8'></script>
+    <script type="text/javascript">
+        $(function () {
+            'use strict';
+            //对话框
+            $.init();
+            $("#shop").picker({
+                toolbarTemplate: '<header class="bar bar-nav">\
+                  <button class="button button-link pull-right close-picker">\
+                  确定\
+                  </button>\
+                  <h1 class="title">选择门店</h1>\
+                  </header>',
+                cols: [
+                  {
+                      textAlign: 'center',
+                      values: ['区府店','塘坑店'],
+                      cssClass: 'picker-items-col-normal'
+                  }
+                ]
+            });
+            $("#carno").picker({
+                toolbarTemplate: '<header class="bar bar-nav">\
+                  <button class="button button-link pull-right close-picker">\
+                  确定\
+                  </button>\
+                  <h1 class="title">选择车牌</h1>\
+                  </header>',
+                cols: [
+                  {
+                      textAlign: 'center',
+                      values: [
+                         <volist name="carinfo" id="car">
+                            '{pigcms:$car.carno}',
+                         </volist>
+                      ],
+                      cssClass: 'picker-items-col-normal'
+                  }
+                ]
+            });
+            $('#submit').click(function () {
+                var shop = $('#shop').val();
+                var carno = $('#carno').val();
+                if (!carno) {
+                    $.alert('请选择车牌号码');
+                    return false;
+                }
+                var submitData = {
+                    shop: shop,
+                    carno:carno
+                };
+                $.showPreloader('正在排队中');
+                $.post('/index.php?g=Wap&m=Store&a=baoyang&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData,
+                function (data) {
+                    $.hidePreloader();
+                    $.alert(data);
+                    location.href = '/index.php?g=Wap&m=Store&a=cats&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}';
+                });
+            });
+        });
+    </script>
+    <include file="Card:share" />
+</body>
+</html>

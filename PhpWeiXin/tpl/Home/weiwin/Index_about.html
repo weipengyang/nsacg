@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="{pigcms::C('keyword')}"/>
+    <meta name="description" content="{pigcms::C('content')}"/>
+    <link rel="shortcut icon" href="favicon.ico">
+
+<style>
+
+.banner{height:200px; text-align:center; border-bottom:2px solid #ddd;}
+.hbanner{ background: url({pigcms::RES}/css/img/h2003070126.jpg) center no-repeat #B4B4B4;}
+</style>
+    <title>功能介绍－{pigcms::C('site_title')}</title></head>
+    <include file="Public:header"/>
+<div class="Public-content clearfix">
+  <div class="banner hbanner"></div>
+    <div class="Public">
+
+          <div>
+                        
+                        <p>
+ <SPAN style="TEXT-ALIGN: justify; LINE-HEIGHT: 25px"> {pigcms::C('about')}</p>
+      </div>
+    
+    </div>
+</div>
+
+<include file="Public:footer"/>
+<div style="display:none">
+{pigcms::C('counts')}
+</div>
+</body></html>

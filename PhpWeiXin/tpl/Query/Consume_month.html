@@ -1,0 +1,167 @@
+﻿<!doctype html>
+<html class="no-js fixed-layout">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>爱养车</title>
+    <meta name="description" content="爱养车">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="icon" type="image/png" href="assets/i/favicon.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+    <meta name="apple-mobile-web-app-title" content="Amaze UI" />
+    <link rel="stylesheet" href="/tpl/static/assets/css/amazeui.min.css" />
+    <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
+</head>
+<body>
+    <!--[if lte IE 9]>
+    <p class="browsehappy">你正在使用<strong>过时</strong>的浏览器，Amaze UI 暂不支持。 请 <a href="http://browsehappy.com/" target="_blank">升级浏览器</a>
+      以获得更好的体验！</p>
+    <![endif]-->
+    <div class="am-cf admin-main" style="padding:0;margin:0">
+        <!-- content start -->
+        <div class="admin-content">
+                <div class="admin-content-body">
+                    <div id="doc-qrcode" class="am-text-center"></div>
+                    <div class="am-cf am-padding am-padding-bottom-0">
+                        <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">每月维修营业额查询</strong> </div>
+                    </div>
+                    <hr>
+                    <div class="am-g">
+                        <div class="am-u-sm-10 am-u-md-9">
+                            <div class="am-form-group">
+                                门店
+                                <select data-am-selected="{btnSize: 'sm'}" id="shop">
+                                    <option value="">所有门店</option>
+                                    <option value="塘坑店">塘坑店</option>
+                                    <option value="区府店">区府店</option>
+                                </select>
+                                类别
+                                <select data-am-selected="{btnSize: 'sm'}" id="lb">
+                                    <option value="">所有分类</option>
+                                    <option value="蜡水洗车">蜡水洗车</option>
+                                    <option value="蜡水洗车">汽车美容</option>
+                                    <option value="普通快修">普通快修</option>
+                                    <option value="常规保养">常规保养</option>
+                                    <option value="保险理赔">保险理赔</option>
+                                    <option value="汽车维修">汽车维修</option>
+                                </select>
+                                <div class="am-alert am-alert-danger" id="my-alert" style="display: none">
+                                    <p>开始日期应小于结束日期！</p>
+                                </div>
+                                <button type="button" class="am-btn am-btn-default am-margin-right" id="my-start">开始日期</button><span id="my-startDate">2014-12-20</span>
+                                <button type="button" class="am-btn am-btn-default am-margin-right" id="my-end">结束日期</button><span id="my-endDate">2014-12-25</span>
+                           </div>
+                        </div>
+                        <div class="am-u-sm-2 am-u-md-3">
+                            <div class="am-input-group am-input-group-sm">
+                                <input type="text" id="searchkey" class="am-form-field">
+                                <span class="am-input-group-btn">
+                                    <button id="search" class="am-btn am-btn-default" type="button">搜索</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="am-g">
+                        <div class="am-u-sm-12">
+                            <form class="am-form">
+                                <table class="am-table am-table-striped am-table-hover table-main">
+                                    <thead>
+                                        <tr>
+                                            <th class="table-title">门店</th>
+                                            <th class="table-title">日期</th>
+                                            <th class="table-title">维修类别</th>
+                                            <th class="table-title">车辆数</th>
+                                            <th class="table-title">维修营业额</th>
+                                            <th class="table-title ">毛利</th>
+                                            <th class="table-title ">材料费</th>
+                                            <th class="table-title ">材料成本</th>
+                                            <th class="table-title ">工时费</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody> 
+                                        <volist name="yelist" id="item">
+                                            <tr>
+                                                <td>{pigcms:$item.门店}</td>
+                                                <td>{pigcms:$item.日期}</td>
+                                                <td>{pigcms:$item.维修类别}</td>
+                                                <td>{pigcms:$item.车辆数}</td>
+                                                <td>{pigcms:$item.维修营业额}</td>
+                                                <td>{pigcms:$item.毛利}</td>
+                                                <td>{pigcms:$item.材料费}</td>
+                                                <td>{pigcms:$item.材料成本}</td>
+                                                <td>{pigcms:$item.工时费}</td>
+                                            </tr>
+
+                                        </volist>
+                                    </tbody>
+                                </table>
+                                <div class="am-cf">
+                                    <div class="am-fr">
+                                        <div class="cLine">
+                                            <div class="pageNavigator right">
+                                                <div class="pages">{pigcms:$page}</div>
+                                            </div>
+                                            <div class="clr"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!-- content end -->
+    </div>
+    <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
+    <script src="/tpl/static/assets/js/jquery.min.js"></script>
+    <script src="/tpl/static/assets/js/amazeui.min.js"></script>
+    <script src="/tpl/static/assets/js/app.js"></script>
+    <script>
+        $(document).ready(function () {
+            var startDate = new Date(2014, 11, 20);
+            var endDate = new Date(2014, 11, 25);
+            var $alert = $('#my-alert');
+            $('#my-start').datepicker().
+              on('changeDate.datepicker.amui', function (event) {
+                  if (event.date.valueOf() > endDate.valueOf()) {
+                      $alert.find('p').text('开始日期应小于结束日期！').end().show();
+                  } else {
+                      $alert.hide();
+                      startDate = new Date(event.date);
+                      $('#my-startDate').text($('#my-start').data('date'));
+                  }
+                  $(this).datepicker('close');
+              });
+
+            $('#my-end').datepicker().
+              on('changeDate.datepicker.amui', function (event) {
+                  if (event.date.valueOf() < startDate.valueOf()) {
+                      $alert.find('p').text('结束日期应大于开始日期！').end().show();
+                  } else {
+                      $alert.hide();
+                      endDate = new Date(event.date);
+                      $('#my-endDate').text($('#my-end').data('date'));
+                  }
+                  $(this).datepicker('close');
+              });
+            $('#search').click(function () {
+                var url = '/index.php?g=Query&m=Consume&a=month&searchkey=' + $('#searchkey').val();
+                location.href = url;
+            });
+
+        });
+        //reflash();
+        //function reflash() {
+
+        //    location.href = location.href;
+        //    setTimeout("reflash()", 100000);
+
+        //}
+    </script>
+
+</body>
+</html>

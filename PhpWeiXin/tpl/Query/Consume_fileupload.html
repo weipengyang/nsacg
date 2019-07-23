@@ -1,0 +1,54 @@
+﻿<!doctype html>
+<html class="no-js fixed-layout">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>爱养车</title>
+    <meta name="description" content="爱养车">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <script src="http://cdn.bootcss.com/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/tpl/static/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link href="/tpl/static/bower_components/bootstrap-fileinput/css/fileinput.min.css" rel="stylesheet" />
+    <script src="/tpl/static/bower_components/bootstrap-fileinput/js/fileinput.min.js"></script>
+    <script src="/tpl/static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/tpl/static/bower_components/bootstrap-fileinput/themes/fa/theme.js"></script>
+    <script src="/tpl/static/bower_components/bootstrap-fileinput/js/locales/zh.js"></script>
+   
+    <script>
+        $(document).on('ready', function () {
+        $("#input-dim-2").fileinput({
+            uploadUrl: "/index.php?g=Query&m=Consume&a=upload&carno={pigcms:$carno}",
+            language: 'zh', //设置语言
+            allowedFileExtensions: ["jpg", "png", "gif"],
+            initialPreview:{pigcms:$files},
+            initialPreviewAsData: true,
+            overwriteInitial: false,
+            initialPreviewConfig:{pigcms:$attrs},
+            deleteUrl: '/index.php?g=Query&m=Consume&a=deletefile'
+        }).on('filebatchpreupload', function (event, data) {
+            $('#kv-success-box').append('上传完成');
+            $('#kv-success-modal').modal('show');
+        });;
+});
+    </script>
+
+</head>
+<body style="padding:0px;margin:0px">
+    <input id="input-dim-2" name="photos[]" type="file" multiple class="file-loading" accept="image/*">
+    <div id="errorBlock" class="help-block"></div>
+    <div id="kv-success-modal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">提示</h4>
+                </div>
+                <div id="kv-success-box" class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

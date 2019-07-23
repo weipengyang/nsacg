@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="{pigcms::C('keyword')}"/>
+    <meta name="description" content="{pigcms::C('content')}"/>
+    <link rel="shortcut icon" href="favicon.ico">
+    <title>功能介绍－{pigcms::C('site_title')}</title></head>
+    <include file="Public:header"/>
+<div class="Public-content clearfix">
+    <div class="Public">
+        <h2 class="Public-h2">第一步、在{pigcms::C('site_name')}绑定微信公众号</h2>
+        <div class="Public-box">
+            <div class="Proxy">
+                <p>
+        <label></label>
+        <if condition="$_GET['token'] neq ''">您的接口URL是：<font color="red">{pigcms::C('site_url')}/index.php/api/<php>echo$_GET['token'];</php>
+          </font><br />
+          您的token是：<font color="red">
+            <php>echo $_GET['token'];</php>
+          </font></if>
+    </p>
+                <p>1、注册并登录<a href="{pigcms::U('Index/login')}">{pigcms::C('site_name')}接口平台</a></p>
+                <p>2、添加公众号 → 功能管理 → 勾选要开启的功能</p>                                    
+                <p><img src="{pigcms::STATICS}/help/help01.jpg" width="790px"></p>
+                <p><img src="{pigcms::STATICS}/help/help0.jpg" width="790px"></p>
+            </div>
+        </div>
+        
+            <h2 class="Public-h2">第二步、到微信公众平台设置接口。</h2>
+        <div class="Public-box">
+            <div class="Proxy">
+                <p>1、登录 <a href="http://mp.weixin.qq.com/">微信公众平台</a>（<a href="http://mp.weixin.qq.com/">http://mp.weixin.qq.com/</a>），进行身份认证，填写信息，提交身份证。</p>
+                <p>认证后，点击高级功能 → 进入开发模式</p><br>
+                <p><img src="{pigcms::STATICS}/help/help002.jpg" width="790px"></p><br>
+                <p>2、点击"成为开发者"按钮</p>
+                <p><img src="{pigcms::STATICS}/help/help003.jpg" width="790px"></p><br>
+                <p>3、填写接口配置信息</p>
+                <if condition="$_GET['token'] eq ''">
+                <p>比如你{pigcms::C('site_name')}平台上的地址是{pigcms::C('site_url')}/index.php/api/demo</p>
+                <p>那么URL就是{pigcms::C('site_url')}/INDEX.PHP/api/demo</p>
+                <else/>
+                <p>你的URL是 <font color="red">{pigcms::C('site_url')}/index.php/api/<php>echo $_GET['token'];</php></font></p>
+                </if>
+                <p>Token填写 <font color="red"><php>echo $_GET['token'];</php></font></p>
+                <p><img src="{pigcms::STATICS}/help/help004.jpg" width="790px"></p><br>
+                <p>4、确认开启</p>
+                <p>5、在手机上用微信给你的公众号输入"帮助"，测试你的接口是否配置正常！</p><br>  
+            </div>
+        </div>
+    
+    </div>
+</div>
+
+<include file="Public:footer"/>
+<div style="display:none">
+{pigcms::C('counts')}
+</div>
+</body></html>

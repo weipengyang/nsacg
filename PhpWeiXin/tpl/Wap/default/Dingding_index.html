@@ -1,0 +1,260 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>微应用DEMO</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	</head>
+    <body>
+	<div class="mui-content">
+		        <ul class="mui-table-view mui-grid-view mui-grid-9">
+		            <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3" onclick="sendoa()"><a href="#">
+		                    <span class="mui-icon mui-icon-home"></span>
+		                    <div class="mui-media-body">发OA消息</div></a></li>
+		            <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3" onclick="sendding()"><a href="#">
+		                    <span class="mui-icon mui-icon-email"></span>
+		                    <div class="mui-media-body">发ding</div></a></li>
+		            <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3" onclick="Conversation()"><a href="#">
+		                    <span class="mui-icon mui-icon-chatbubble"></span>
+		                    <div class="mui-media-body">获取会话</div></a></li>
+		            <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3" onclick="maps()"><a href="#">
+		                    <span class="mui-icon mui-icon-location"></span>
+		                    <div class="mui-media-body">唤起地图</div></a></li>
+		            <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3" onclick="imagess()"><a href="#">
+		                    <span class="mui-icon mui-icon-upload"></span>
+		                    <div class="mui-media-body">上传图片</div></a></li>
+		            <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3" onclick="getuser()"><a href="#">
+		                    <span class="mui-icon mui-icon-phone"></span>
+		                    <div class="mui-media-body">获取用户信息</div></a></li>
+		            <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3"><a href="#">
+		                    <span class="mui-icon mui-icon-gear"></span>
+		                    <div class="mui-media-body">Setting</div></a></li>
+		            <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3"><a href="#">
+		                    <span class="mui-icon mui-icon-info"></span>
+		                    <div class="mui-media-body">about</div></a></li>
+		           <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3"><a href="#">
+		                    <span class="mui-icon mui-icon-more"></span>
+		                    <div class="mui-media-body">more</div></a></li>
+		        </ul> 
+		<span class="mui-icon mui-icon-location-filled list" style="font-size:10px; ">正在计算当前地址...</span>
+		<div style="height:50px;width:100%;text-align:center;padding-top:3px;border-top:1px #e0e0e0 solid;font-size:15px;position:fixed;bottom:0px;">开发更多功能</br>请联系QQ:773477953</div>
+		</div>
+	</body>
+	<script type='text/javascript' src='http://g.alicdn.com/dingding/dingtalk-jsapi/2.0.72/dingtalk.open.js' charset='utf-8'></script>
+	<script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+	<script>
+   dd.config({
+        agentId: "{pigcms:$jsapi.agentId}",
+        corpId: "{pigcms:$jsapi.corpId}",
+	    timeStamp: "{pigcms:$jsapi.timeStamp}",
+        nonceStr: "{pigcms:$jsapi.nonceStr}",
+    	signature: "{pigcms:$jsapi.signature}",
+        type:0,
+        jsApiList: [
+        'runtime.info',
+        'device.notification.prompt',
+        'biz.chat.pickConversation',
+        'device.notification.confirm',
+        'device.notification.alert',
+        'device.notification.prompt',
+        'biz.chat.open',
+        'biz.util.open',
+        'biz.user.get',
+        'biz.contact.choose',
+        'biz.telephone.call',
+        'biz.ding.post',
+		'biz.map.locate',
+		'biz.map.view',
+		'biz.util.uploadImage',
+		'device.geolocation.get']
+});
+
+dd.ready(function() {
+
+    alert(1);
+  dd.runtime.permission.requestOperateAuthCode({
+      agentId: "{pigcms:$jsapi.agentId}",
+      corpId: "{pigcms:$jsapi.corpId}",
+      onSuccess: function (result) {
+          //alert(JSON.stringify(result));
+      },
+      onFail: function (err) { }
+
+  })
+  document.addEventListener('backbutton', function(e) {
+    e.preventDefault();
+    dd.biz.navigation.close({
+				onSuccess : function(result) {
+				    alert(JSON.stringify(result));
+				},
+				onFail : function(err) {}
+			});
+	}, false);
+coordinate();
+});
+
+dd.error(function(err) {
+    alert(JSON.stringify(err));
+});
+function device(count){
+ dd.device.notification.toast({
+		icon: '', //icon样式，有success和error，默认为空 0.0.2
+		text: count, //提示信息
+		duration: 2, //显示持续时间，单位秒，默认按系统规范[android只有两种(<=2s >2s)]
+		delay: 0, //延迟显示，单位秒，默认0
+		onSuccess : function(result) {
+			/*{}*/
+		},
+		onFail : function(err) {}
+	})
+}
+function maps(){
+dd.biz.map.locate({
+    onSuccess: function (result) {
+       
+    },
+    onFail: function (err) {
+    }
+});
+}
+function imagess(){
+dd.biz.util.uploadImage({
+    multiple: false, //是否多选，默认false
+    max: 3, //最多可选个数
+	stickers:{
+	  time:"12344566",
+	  },
+    onSuccess : function(result) {
+        var submitData = {
+            url:result,
+            opt: "modify"
+        };
+        $.post('index.php?g=Wap&m=Dingding&a=testcarno', submitData,
+            function (data) {
+                alert(data);
+
+            });
+       //device('图片地址：'+result)
+    },
+    onFail : function(err) {
+	
+	}
+})
+
+}
+function sendding(){
+dd.biz.ding.post({
+    users: ["0325531964217"],//用户列表，工号
+    corpId: "{pigcms:$jsapi.corpId}", //企业id
+    type: 1, //钉类型 1：image  2：link
+    alertType: 2,
+    alertDate: {"format":"yyyy-MM-dd HH:mm","value":"2015-05-09 08:00"},
+    attachment: {
+        images: [''],
+    }, //附件信息
+    text: '', //消息
+    onSuccess : function() {
+    //onSuccess将在点击发送之后调用
+    },
+    onFail : function(err) {
+	alert(JSON.stringify(err));
+	}
+})
+}
+function inputmessage() {
+    dd.ui.input.plain({
+        placeholder: '说点什么吧', //占位符
+        text: '', //默认填充文本
+        onSuccess: function (data) {
+            //onSuccess将在点击发送之后调用
+            /*{
+                text: String
+            }*/
+        },
+        onFail: function () {
+
+        }
+    })
+}
+function calls(){
+dd.biz.telephone.call({
+    users: [], //用户列表，工号
+    corpId: "{$jsapi.corpId}", //企业id
+    onSuccess : function() {},
+    onFail : function(err) {
+	alert(JSON.stringify(err));}
+})
+
+}
+function getuser()
+{
+    dd.biz.user.get({
+        onSuccess: function (info) {
+            userinfo=info;
+            alert(JSON.stringify(info));
+        },
+        onFail: function (err) {
+            alert('userGet fail: ' + JSON.stringify(err));
+        }
+    });
+}
+var userinfo;
+function title(titles){
+dd.biz.navigation.setTitle({
+    title : titles,//控制标题文本，空字符串表示显示默认文本
+    onSuccess : function(result) {
+        
+    },
+    onFail : function(err) {}
+});
+}
+
+//获取当前位置
+function coordinate() {
+    dd.device.geolocation.get({
+        targetAccuracy: 200,
+        coordinate: 1,
+        withReGeocode: true,
+        onSuccess: function (result) {
+            alert(JSON.stringify(result));
+            $('.list').html(result.address);
+        },
+        onFail: function (err) {
+            alert(JSON.stringify(err));
+        }
+    });
+
+}
+function Conversation() {
+    dd.biz.chat.pickConversation({
+        corpId: "{pigcms:$jsapi.corpId}",
+        isConfirm: 'true', //是否弹出确认窗口，默认为true
+        onSuccess: function (result) {
+            alert(JSON.stringify(result));
+
+        },
+        onFail: function (err) {
+            alert(JSON.stringify(err));
+
+        }
+    })
+}
+
+function sendoa(){
+
+    var submitData = {
+        message:'测试信息',
+        'userid':userinfo['emplId']
+    };
+    $.post('index.php?g=Wap&m=Dingding&a=sendoa', submitData,
+        function (data) {
+            alert(data);
+
+        });
+
+
+}
+</script>
+</html>

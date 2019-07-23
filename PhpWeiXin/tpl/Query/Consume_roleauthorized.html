@@ -1,0 +1,112 @@
+﻿<!doctype html>
+<html class="no-js fixed-layout">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>角色授权</title>
+    <meta name="description" content="爱养车">
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/tpl/static/assets/css/amazeui.min.css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <link href="//at.alicdn.com/t/font_1474792210_8989851.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+        var tree;
+        function checkall(btn) {
+            if (btn.checked) {
+                $('input:checkbox').prop("checked", true);
+            } else {
+                $('input:checkbox').prop("checked", false);
+            }
+        }
+        function f_save() {
+            var menudata = [];
+            $(':checked').each(function () {
+                menudata.push(this.value);
+
+            });
+            //alert(data.join(';'));
+            var submitdata = {
+                row: frameElement.dialog.get('roledata'),
+                menudata:menudata
+            };
+            $.post('/index.php?&g=Query&m=Consume&a=savemenu&rnd=' + Math.random(), submitdata, function (result) {
+                $.ligerDialog.alert(result);
+                setTimeout(function () {
+                    frameElement.dialog.hide();
+                }, 1000);
+            });
+        }
+        $(function () {
+            //tree=$('#tree1').ligerTree({
+            //    url:'/index.php?&g=Query&m=Consume&a=getallmenus&rnd='+ Math.random(),
+            //    idFieldName: 'Menu_id',
+            //    textFieldName: 'Menu_name',
+            //    checkbox: true,
+            //    itemopen: false,
+            //    parentIDField: '无',
+            //    parentIDFieldName: 'parentid',
+            //    onSuccess: function () {
+            //        $(".l-first").click();
+            //    }
+            //});
+            var roledata=frameElement.dialog.get('roledata');
+
+            $.post('/index.php?&g=Query&m=Consume&a=getallmenus&rnd=' + Math.random(), null, function (result) {
+                var table = document.createElement('div');
+                $(table).addClass('am-g');
+                var html = ' <div class="am-u-sm-3 am-u-sm-centered" ><input type="checkbox" onclick="checkall(this);" name="' + result[0]['Menu_id'] + '" value="' + result[0]['Menu_id'] + '" id="' + result[0]['Menu_id'] + '">';
+                html += '<label for="' + result[0]['Menu_id'] + '">' + result[0]['Menu_name'] + '</label></div>';
+                $(table).append(html);
+                $('#from1').append(table);
+                $(result[0].children).each(function () {
+                    table = document.createElement('div');
+                    $(table).addClass('am-g');
+                    html = ' <div class="am-u-sm-3 sysapp"><input type="checkbox" name="' + this['Menu_id'] + '" value="' + this['Menu_id'] + '" id="' + this['Menu_id'] + '">';
+                    html += '<label for="' + this['Menu_id'] + '">' + this['Menu_name'] + '</label></div>';
+                    $(table).append(html);
+                    $('#from1').append(table);
+                    var row = document.createElement('div');
+                    $(row).addClass('am-g');
+                    $(row).css('font-size:10px');
+                    $(row).addClass('class'+this['Menu_id']);
+                    $('#from1').append(row);
+                    $(row).ligerCheckBoxList({
+                        data: this.children,
+                        rowSize: 6,
+                        textField: 'Menu_name',
+                        valueField: 'Menu_id',
+
+                    });
+                });
+
+                $.post('/index.php?&g=Query&m=Consume&a=getrolemenus&roleid=' + roledata['RoleID'], null, function (result) {
+                    $(result).each(function () {
+                        var search = ":checkbox[value='"+this.menuid+"']";
+                        $(search).prop("checked", true);
+                    });
+
+                }, 'json');
+                $('.sysapp :checkbox').click(function () {
+                    if (this.checked) {
+                        $('.class' + this.value+' :checkbox').prop("checked", true);
+                    } else {
+                        $('.class' + this.value + ' :checkbox').prop("checked", false);
+                    }
+                });
+            },'json');
+        });
+
+    </script>
+
+</head>
+<body style="padding:0px;">
+    <div position="center">
+        <div id="from1" >
+        </div>
+    </div>
+</body>
+</html>

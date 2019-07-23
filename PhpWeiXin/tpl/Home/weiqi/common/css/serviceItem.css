@@ -1,0 +1,14 @@
+.banner_list a{height:291px;}
+.service{ width:100%; background:#fff;}
+.service_main{ width:962px; border-bottom:1px dashed #95a4a9;}
+.ser_left{ width:440px; padding-left:20px; float:left; overflow:hidden;}
+.ser_right{ width:502px; float:left;}
+
+.ser_text{padding-top:20px;padding-bottom: 30px}
+.ser_text p{ line-height:25px; width:428px;}
+.ser_text .ser_tit{ height:36px; line-height:36px; font-size:22px; font-famliy:"Î¢ÈíÑÅºÚ";color:#004e00;}
+.ser_text .ser_tit_wid{ width:426px;}
+.ser_text .ser_p_wid{ width:394px;}
+.ser_text .col{color:#1c821d;}
+.ser_text .ser_list{ width:390px; background:url(../images/service_dian.png) no-repeat 0 7px; padding-left:17px;}
+.ser_btn{display:block; width:152px; height:37px; background:url(../images/ser_btn.png) no-repeat; margin-top:5px;}

@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css">
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm-extend.min.js' charset='utf-8'></script>
+    <link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+    <title>保险</title>
+</head>
+<body>
+    <div class="page">
+        <nav class="bar bar-tab">
+            <a class="tab-item" data-no-cache="true" href="javascript:void(0);" onclick="history.go(-1);">
+                <span class="icon icon-left"></span>
+                <span class="tab-label">返回</span>
+            </a>
+            <a class="tab-item" data-no-cache="true" href="{pigcms::U('Store/cats',array('token' => $_GET['token'], 'catid' => $hostlist['id'], 'wecha_id' => $wecha_id, 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-home"></span>
+                <span class="tab-label">首页</span>
+            </a>
+            <a class="tab-item" data-no-cache="true" href="{pigcms::U('Store/myinfo',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-me"></span>
+                <span class="tab-label">我</span>
+            </a>
+        </nav>
+        <div class="content">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-content-inner">
+                        <div class="row">
+                            <div class="col-100">
+                            <h1 style="font-size:1rem;color:#F25158;font-weight:700">在爱车港购买保险六大优势</h1>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:1rem">
+                            <div class="col-100" >
+                                <span style="color:#FF0000;font-size:1rem;">一、合作单位多</span> <br/> 
+                                <span style="margin-top:0.5rem">与平安保险，太平洋保险，中国人民财产保险、中国人寿保险等<b style="color:#FF9900;font-size:1rem">12</b>家保险公司签有合作协议，可直接系统报价，想买哪家就买哪家</span>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:1rem">
+                            <div class="col-100">
+                               <span style="color:#FF0000;font-size:1rem;">二、价格优惠</span> <br/>
+                               <span style="margin-top:0.5rem">除了系统优惠打折外，保险公司给我们的返点我们也直接返还给客户，最高返还<b tyle="color:#FF9900;font-size:1rem">18%</b>，折后还能返点，价格实惠</span> 
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:1rem">
+                            <div class="col-100">
+                               <span style="color:#FF0000;font-size:1rem;">三、买保险送服务</span><br/> 
+                                <span style="margin-top:0.5rem">洗车免费！打蜡免费！补胎免费！救援免费！！通通免费！！</span>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:1rem">
+                            <div class="col-100">
+                                <span style="color:#FF0000;font-size:1rem;">四、购买方便，选择更多</span><br/>
+                                <span style="margin-top:0.5rem">通过公众号直接就可以和我们客服联系，一对一线上服务，不同保险公司，不同购买方案，直接在线比价，想怎么买就怎么买，想买哪家就买哪家，有问题可以门店处理，避免保险陷阱</span>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:1rem">
+                            <div class="col-100">
+                                <span style="color:#FF0000;font-size:1rem;">五、车辆事故、理赔方便</span><br/>
+                                <span style="margin-top:0.5rem">对于购买保险客户，我们都是<b style="color:#FF9900;font-size:1rem">一对一</b>服务，从现场报案到车辆维修，全程都有我们专人为您服务，免去您的理赔烦恼</span>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:0.6rem">
+                            <div class="col-100">
+                                <span style="color:#FF0000;font-size:1rem;">六、保险到期提醒，避免车险逾期</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="title">
+                       <span>咨询电话020-39099139</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $.config = {
+            // 路由功能开关过滤器，返回 false 表示当前点击链接不使用路由
+            routerFilter: function ($link) {
+                // 某个区域的 a 链接不想使用路由功能
+                if ($link.is('.disable-router a')) {
+                    return false;
+                }
+                return true;
+            }
+        };
+        $(function () {
+            'use strict';
+            //对话框
+            $.init();
+        });
+    </script>
+    <script type="text/javascript">
+        window.shareData = {
+            "moduleName": "Store",
+            "moduleID": "{pigcms:$product['id']}",
+            "imgUrl": "{pigcms:$product['logourl']}",
+            "timeLineLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/product',array('token' => $_GET['token'],'id'=>$product['id'], 'twid' => $mytwid, 'cid' => $cid))}",
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/product',array('token' => $_GET['token'],'id'=>$product['id'], 'twid' => $mytwid, 'cid' => $cid))}",
+            "weiboLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/product',array('token' => $_GET['token'],'id'=>$product['id'], 'twid' => $mytwid, 'cid' => $cid))}",
+            "tTitle": "{pigcms:$metaTitle}",
+            "tContent": "{pigcms:$metaTitle}"
+        };
+    </script>
+    {pigcms:$shareScript}
+</body>
+</html>

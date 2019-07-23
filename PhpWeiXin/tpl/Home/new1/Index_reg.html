@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if IE 9]>         <html class="no-js lt-ie10"> <![endif]-->
+<!--[if IE 10]>         <html class="no-js ie10"> <![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      
+  <title>立即注册 - PigCms微信接口_微信公众管理平台</title>
+
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{pigcms::RES}/css/normalize.css">
+    <link rel="stylesheet" href="{pigcms::RES}/css/main.css">
+    <link rel="stylesheet" href="{pigcms::RES}/css/anythingslider.css">
+    <script src="{pigcms::RES}/js/com-9ac93d2c51d68fe2ff212cbd6355f2f6.js" type="text/javascript"></script>
+    <script src="{pigcms::RES}/js/modernizr-2.6.2.min.js"></script>
+</head>
+<body class="bg-blue login-body">
+  <!--[if lt IE 7]>
+  <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+  <![endif]-->
+
+  
+<div class="login-main">
+	<div class="mod-form form-register">
+		<a href="{pigcms::U('Home/Index/login')}" class="btn-login"></a>
+		<div class="clearfix">
+			<p class="logo">
+				<a href="/"></a>
+			</p>
+		</div>
+		<form action="{pigcms::U('Users/checkreg')}" class="form-hor clearfix J-tips" enctype="multipart/form-data"  onsubmit="return onpost()" id="registerform" name="register" autocomplete="off" method="post">
+				<input name="step" value="2" type="hidden"/>
+			<input name="invite" value="" type="hidden"/>
+
+			<div class="form-li">
+				<div class="li-lable">*用户名</div>
+				<div class="li-input">
+				<input class="input" id="username" name="username" placeholder="请输入用户名" size="30" type="text" />
+				</div>
+				
+				<!-- <div class="li&#45;error">这里是超长错误信息</div> -->
+			</div>
+			<div class="form-li">
+				<div class="li-lable">*密码</div>
+				<div class="li-input">
+					<input class="input" id="password" name="password" placeholder="*长度为6~16位字符" size="30" type="password" value="" />
+				</div>
+				<!-- <div class="li&#45;succness"></div> -->
+			</div>
+			<div class="form-li">
+				<div class="li-lable">*确认密码</div>
+				<div class="li-input">
+				  <input class="input" id="repassword" name="repassword" size="30" type="password" />
+				</div>
+			</div>
+			<div class="form-li">
+				<div class="li-lable">*联系电话</div>
+				<div class="li-input">
+					<input class="input" id="registertel" name="tel" placeholder="*联系电话一遍我们联系，请填写" placeholder="" size="30" type="text" />
+				</div>
+			</div>
+			<div class="form-li">
+				<div class="li-lable">*验证邮箱</div>
+				<div class="li-input">
+					<input class="input" id="registeremail" name="email" placeholder="*邮箱可用于找回密码，请填写" size="30" type="text" />
+				</div>
+			</div>
+			<div class="form-li">
+				<div class="li-lable">*QQ</div>
+				<div class="li-input">
+					<input class="input" id="registerqq" name="qq" placeholder="*请输入QQ号，以便我们联系" size="30" type="text" />
+				</div>
+			</div>
+			<div class="li-btn">
+			<input class="btn btn-green btn-submit" data-disable-with="提交中..." name="commit" type="submit" value="注册" />
+			</div>
+</form>
+	</div>
+</div>
+<div class="bg-form">
+	<span>微信营销解决方案领导品牌</span>
+	<small>Micro-channel marketing solutions for leading brands</small>
+</div>
+
+
+
+  <!--<div class="modal-backdrop fade active"></div>-->
+  <!--
+  <script src="{pigcms::RES}/js/jquery-1.10.2.min.js"></script>
+  -->
+  <script src="{pigcms::RES}/js/jquery.anythingslider.min.js"></script>
+  <script src="{pigcms::RES}/js/affix.js"></script>
+  <script src="{pigcms::RES}/js/scrollspy.js"></script>
+  <script src="{pigcms::RES}/js/plugins.js"></script>
+  <script src="{pigcms::RES}/js/main.js"></script>
+
+
+
+  
+</body>
+</html>

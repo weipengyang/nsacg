@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{pigcms:$f_siteName}-{pigcms:$f_siteTitle}</title>                                                                                                      
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="description" content="{pigcms:$f_metaDes}"/>
+<meta name="keywords" content="{pigcms:$f_metaKeyword}"/>
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,initial-scale=1" />
+<link href="{pigcms::RES}/css/com.css" type="text/css" rel="stylesheet"/>
+<script type="text/javascript" src='{pigcms::RES}/js/jquery-1.6.2.min.js' ></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('.logo').mousedown(function(){
+        $(this).css('margin-top','11px');
+        $(this).css('margin-left','1px');
+    });	
+    /*leftmenu*/
+    function tabs(tabTit,active,tabCon){
+	$(tabTit).children().eq(0).addClass(active);
+        $(tabCon).children().eq(0).show().siblings().hide();
+        $(tabTit).children().click(function(){
+           $(this).addClass(active).siblings().removeClass(active);
+           var index = $(tabTit).children().index(this);
+           $(tabCon).children().eq(index).show().siblings().hide();
+        });
+    }
+    tabs('#leftmenu','active','#leftmenucon');
+});
+</script>
+<link href="favicon.ico" rel="Shortcut Icon"></link>
+</head>
+<body>
+<include file="$includeHeaderPath"/>
+			<div class="bannerbg bj2"><div class="bannercon"><span>帮助中心</span><br>深度整合行业特性，提供专业解决方案</div></div>
+		</div>
+		<!-- top end -->
+<div id="mainer" class="bg7">
+<div class="leftcon f_l"></div>
+<div class="case">
+<div class="leftnav">
+<h3>帮助中心</h3>
+<ul id="leftmenu">
+<li class="active"><a href="#">第一步</a></li>
+<li><a href="#">第二步</a></li>
+
+</ul>
+</div><!--end leftnav-->
+<div class="casecon f_l">
+<div id="leftmenucon">
+<!--第一步-->
+<div>
+<div class="solutionbox">
+<h2>如何为微信公众号配置接口？</h2>
+<p>请务必认真阅读以下2步内容，才能更有效的完成配置工作，有疑问的请联系QQ：{pigcms:$f_qq}提问。<br/><if condition="$_GET['token'] neq ''">你的接口URL是：<font color="red">{pigcms:$f_siteUrl}/index.php/api/<php>echo $_GET['token'];</php></font><br>您的token是：<font color="red"><php>echo $_GET['token'];</php></font></if></p><br>
+<h2>第一步、在{pigcms:$f_siteName}绑定你的微信公众号。</h2>
+
+ <p>1、注册并登录<a href="{pigcms::U('Index/login')}">{pigcms:$f_siteName}接口平台</a></p>
+ <p>2、添加公众号 → 功能管理 → 勾选要开启的功能</p>
+
+<img src="{pigcms::STATICS}/help/help01.jpg">
+<img src="{pigcms::STATICS}/help/help0.jpg">
+</div><!--end casebox-->
+</div><!--end-->
+<!--第二步-->
+<div>
+<div class="solutionbox">
+<h2>第二步、到微信公众平台设置接口。</h2>
+<p>1、登录 <a href="http://mp.weixin.qq.com/">微信公众平台</a>（<a href="http://mp.weixin.qq.com/">http://mp.weixin.qq.com/</a>），登录之后点击左侧菜单的“开发者中心”，下图红框中所示。</p>
+<img src="{pigcms::STATICS}/help/1.jpg">
+<p>2、进入开发者中心之后，点击下图中绿色的“启用”按钮（<span style="color:red">如果按钮是红色的就忽略这个直接进入下一步</span>），然后在弹出的页面里点击确定，然后点击下图中的“修改配置”（<span style="color:red">订阅号的开发者中心可能没有开发者ID、AppId和AppSecret，这属于正常的</span>）</p>
+<img src="{pigcms::STATICS}/help/2.jpg">
+<p>3、按照下面要求填写接口配置信息，填写后提交即可</p>
+<if condition="$_GET['token'] eq ''">
+<p>比如你{pigcms:$f_siteName}平台上的地址是{pigcms:$f_siteUrl}/index.php/api/demo</p>
+<p>那么URL就是{pigcms:$f_siteUrl}/INDEX.PHP/api/demo</p>
+<else/>
+<p>你的URL是 <font color="red">{pigcms:$f_siteUrl}/index.php/api/<php>echo $_GET['token'];</php></font></p>
+</if>
+<p>Token填写 <font color="red"><php>echo $_GET['token'];</php></font></p>
+<p><img src="{pigcms::STATICS}/help/5.jpg"</p><br>
+<p>4、在手机上用微信给你的公众号输入"帮助"，如果能接收到信息就接入成功，否则请按照以上步骤重新配置</p><br>									
+</div><!--end imgcon-->
+</div><!--end casebox-->
+</div><!--end-->
+<!--案例10-->
+<div></div><!--end-->
+</div><!--leftmenucon-->
+<br><br>
+</div><!--end casecon-->
+</div><!--end case-->
+</div><!--end mainer-->
+<div id="header" style="z-index:30; position:relative; margin-top: -14px;"><div class="dibg"><div class="dimg"><img src="{pigcms::RES}/images/dimg.png"></div></div></div>
+<include file="$includeFooterPath"/>
+</div><!--end footer-->
+</div><!-- wrapper end -->
+</body>
+</html>
+<script>
+$.fn.smartFloat = function() {
+	var position = function(element) {
+		$(window).scroll(function() {
+			$('#ding').removeClass('yincang');
+			var scrolls = $(this).scrollTop();
+				if (window.XMLHttpRequest) {
+					element.css({
+						position: "fixed",
+						top:0
+					});	
+				} else {
+					element.css({
+						top: scrolls
+					});	
+				}
+		});
+};
+	return $(this).each(function() {
+		position($(this));						 
+	});
+};
+//绑定
+$(".nav").smartFloat();
+</script>
+<script type="text/javascript" src="{pigcms::RES}/js/scrolltopcontrol.js"></script>

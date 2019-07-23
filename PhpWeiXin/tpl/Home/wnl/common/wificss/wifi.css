@@ -1,0 +1,107 @@
+@charset "utf-8";
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,p,blockquote,th,td,hr {margin:0;padding:0;}
+body {font:13px "microsoft yahei", Arial, SimSun;}
+html{_background:url(about:blank); }
+table {border-spacing:0;*border-collapse:collapse;}
+fieldset,img,a img {border:none;}
+abbr,acronym {border:none;font-variant:normal; border-style:groove}
+ins {text-decoration:none;}
+del {text-decoration:line-through;}
+address,caption,cite,code,dfn,em,th,var {font-style:normal;font-weight:500;}
+ol,ul {list-style:none;}
+h1,h2,h3,h4,h5,h6 {font-weight:bold;}
+h3{ font-size:40px; font-weight:normal; color:#fff; text-align:left; line-height:50px; margin-bottom:10px;}
+h4{ font-size:24px; font-weight:normal; color:#fff; text-align:left; line-height:40px}
+h6{ font-size:24px; font-weight:normal; color:#fff; text-align:center; line-height:30px}
+q:before,q:after {content:'';}
+a {blr:expression(this.onFocus=this.blur());}
+a {outline:none; cursor:pointer; text-decoration:none}
+/* for Firefox */
+input[type=submit]::-moz-focus-inner,input[type=button]::-moz-focus-inner{
+  border : 0px;
+}
+/* for IE8 */
+input[type=submit]:focus, input[type=button]:focus{
+  outline : none;
+}
+a:-webkit-any-link {
+	color: #9ABCE9;
+	text-decoration: none;
+	cursor: auto;
+}
+a:-webkit-any-link:active {
+	color: #9ABCE9;
+}
+p{color: white;font-size: 18px;text-align: left;line-height: 30px;}
+
+/* body */
+#w-body { width:100%; }
+.w-body-bg { width:100%; height:100; min-height:500px;}
+
+.w-scenes{position: absolute; position: fixed; width: 100%;min-width: 1000px;height: 500px; top:0}
+.w-scene{width: 100%;height: 100%;position: relative;overflow: hidden;}
+.w-scene .container{position: absolute; left: 50%; top: 26px; margin-left: -500px; width: 1003px;height: 100%;}
+.w-scene h3{ font-size:40px}
+.w-scene p { font-size:20px}
+
+#w-zlwifi-scene1{background: #63bd0e;}
+#w-zlwifi-scene1 .w-scene-left { position: absolute; margin: -170px -200px; width: 356px; height: 400px; left: 24%; top: 40%;}
+#w-zlwifi-scene1 .w-scene-right { position: absolute; margin: -200px -270px; width: 520px; height: 400px; left: 70%; top: 60%;}
+
+#w-zlwifi-scene2{background: #fc9f1e;}
+#w-zlwifi-scene2 .w-scene-left{ position: absolute; margin: -100px -280px; width: 450px; height: 300px; left: 30%; top: 54%;}
+#w-zlwifi-scene2 .w-scene-right { position: absolute; margin: -200px -270px; width: 520px; height: 400px; left: 76%; top: 50%;}
+
+#w-zlwifi-scene3{background: #46c8ea;}
+#w-zlwifi-scene3 .w-scene-left { position: absolute; margin: -150px -100px; width: 400px; height: 300px; left: 15%; top: 45%;}
+#w-zlwifi-scene3 .w-scene-right { position: absolute; margin: -130px -20px; width: 480px; height: 400px; left: 58%; top: 58%;}
+
+#w-zlwifi-scene4{background: #62f2ff;}
+#w-zlwifi-scene4 .w-scene-left{ position: absolute; margin: -100px -220px; width: 450px; height: 300px; left: 25%; top: 50%; }
+#w-zlwifi-scene4 .w-scene-right { position: absolute; margin: -200px -270px; width: 520px; height: 400px; left: 76%; top: 50%;}
+
+#w-zlwifi-scene5{background: #1bbc9d;}
+#w-zlwifi-scene5 .w-scene-left { position: absolute; margin: -150px -100px; width: 480px; height: 300px; left: 12%; top: 45%;}
+#w-zlwifi-scene5 .w-scene-right { position: absolute; margin: -130px -10px; width: 480px; height: 400px; left: 60%; top: 54%; }
+
+#w-zlwifi-scene6{background: #00e2a0;}
+#w-zlwifi-scene6 .w-scene-left{ position: absolute; margin: -100px -220px; width: 450px; height: 300px; left: 25%; top: 50%; }
+#w-zlwifi-scene6 .w-scene-right { position: absolute; margin: -200px -270px; width: 520px; height: 400px; left: 76%; top: 50%; }
+
+#w-zlwifi-scene7{background: #5c70b1;}
+#w-zlwifi-scene7 .w-scene-left { position: absolute; margin: -100px -135px; width: 480px; height: 200px; left: 12%; top: 55%;}
+#w-zlwifi-scene7 .w-scene-right { position: absolute; margin: -130px -100px; width: 480px; height: 400px; left: 60%; top: 47%;}
+
+#w-zlwifi-scene8{background: #ff7521;}
+#w-zlwifi-scene8 .w-scene-left{ position: absolute; margin: -100px -220px; width: 450px; height: 300px; left: 25%; top: 40%; }
+#w-zlwifi-scene8 .w-scene-right { position: absolute; margin: -50px -60px; width: 400px; height: 200px; left: 76%; top: 46%;}
+
+#w-public-scene{background: #5da5cb;}
+#w-public-scene .w-scene-text { position: absolute; margin: -75px 380px; left: 50%;top:25%;}
+
+.w-tips{position: fixed; right: 10px; top: 45%; margin: -130px 0 0 500px; }
+.w-tips a{display: block;width: 29px;height:29px; margin-bottom: 12px; text-decoration: none;position: relative; background: url(/tpl/Home/weiqianlong/common/images/tip-dot.png) center center no-repeat;}
+.w-tips a p{display: none; position: absolute;width: 153px; height: 28px; padding-right: 7px;left: -168px; top: 1px; color:#0f283a;font-size: 16px;line-height: 28px;text-align: center; background: url(/tpl/Home/weiqianlong/common/images/tips.png) no-repeat;}
+.w-tips a.current, .w-tips a:hover{background: url(/tpl/Home/weiqianlong/common/images/tip-over-dot.png) center center no-repeat;}
+.w-tips a:hover p{display: block;}
+
+.w-scrolldown{ position: fixed; left:0; bottom:0; width: 100%; height: 48px; opacity: 0.5; filter:alpha(opacity=50); -moz-opacity:0.5; cursor: pointer; background:#000 url(/tpl/Home/weiqianlong/common/images/scrolldown.png) center 0 no-repeat;}
+a:hover.w-scrolldown {background:#000 url(/tpl/Home/weiqianlong/common/images/scrolldown.png) center -48px no-repeat; }
+
+.w-consultation{ position:fixed; right:25%; margin-right:180px; bottom:0; width: 170px; height: 48px; cursor: pointer; background:#fcb200 url(/tpl/Home/weiqianlong/common/images/w-consultation.png) center 0 no-repeat;}
+a:hover.w-consultation { background:#000 url(/tpl/Home/weiqianlong/common/images/w-consultation.png) center -48px no-repeat; }
+
+.w-jointable{ position:fixed; right:25%; bottom:0; width: 170px; height: 48px; cursor: pointer; background:#fcb200 url(/tpl/Home/weiqianlong/common/images/w-jointable.png) center 0 no-repeat;}
+a:hover.w-jointable {background:#000 url(/tpl/Home/weiqianlong/common/images/w-jointable.png) center -48px no-repeat; }
+
+.w-cb-pannle{width: 540px;height: 100px;margin: 0 auto; display:block; padding-left: 25px;}
+
+a.w-scene-btn { float:left; display:block; background:url(/tpl/Home/weiqianlong/common/images/wifi-bottom-btn.gif) no-repeat; width:222px; height:50px; color:#fff;font-size:20px;text-align:center;margin:0 20px;line-height:50px;}
+a:hover.w-scene-btn {
+	background:url(/tpl/Home/weiqianlong/common/images/wifi-bottom-btn.gif) 0 -50px no-repeat;
+}
+
+
+
+
+

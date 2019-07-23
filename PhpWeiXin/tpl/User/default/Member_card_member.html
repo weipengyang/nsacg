@@ -1,0 +1,227 @@
+<include file="Public:head" />
+<script src="{pigcms::RES}/js/date/WdatePicker.js"></script>
+<script src="/tpl/static/artDialog/jquery.artDialog.js?skin=default"></script>
+<script src="/tpl/static/artDialog/plugins/iframeTools.js"></script>
+<script src="/tpl/static/upyun.js?{pigcms::date('YmdHis',time())}"></script>
+<div class="content">
+
+    <div class="cLineB">
+        <h4 class="left">
+            {pigcms:$thisCard.cardname}
+            消费记录
+        </h4>
+        <a class="right btnGrayS vm" href="{pigcms::U('Member_card/members',array('token'=>$token,'id'=>$thisCard['id']))}">返回</a>
+        <div class="clr"></div>
+    </div>
+    <div class="msgWrap">
+        <input name="delall" type="hidden" value="del" />
+        <input name="wxid" type="hidden" value="gh_423dwjkewad" />
+        <h5 style="margin-top:20px;">会员资料</h5>
+        <table class="ListProduct" border="0" cellspacing="0" cellpadding="0" width="100%">
+            <thead>
+                <tr>
+                    <th>卡号</th>
+                    <th>微信名</th>
+                    <th>姓名</th>
+                    <th>车牌号</th>
+                    <th>联系电话</th>
+                    <th>QQ号码</th>
+                    <th>领卡时间</th>
+                    <th>积分</th>
+                    <th>消费总额(元)</th>
+                    <th>余额(元)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr></tr>
+
+                <volist id="list" name="members">
+                    <tr>
+                        <td>{pigcms:$list.number}</td>
+                        <td>{pigcms:$list.wechaname}</td>
+                        <td>{pigcms:$list.truename}</td>
+                        <td>{pigcms:$list.carno}</td>
+                        <td>{pigcms:$list.tel}</td>
+                        <td>{pigcms:$list.qq}</td>
+                        <td>
+                            <if condition="$list['getcardtime'] gt 0">
+                                {pigcms:$list.getcardtime|date='Y-m-d',###}
+                                <else />
+                                无时间记录
+                            </if>
+                        </td>
+                        <td>{pigcms:$list.total_score}</td>
+                        <td>{pigcms:$list.expensetotal}</td>
+                        <td>{pigcms:$list.balance}<!-- &nbsp; <a href="###" onclick="memberCardRecharge({pigcms:$list.uid})" class="a_upload">充值</a>--></td>
+                    </tr>
+                    <assign name="wecha_id" value="$list['wecha_id']" />
+                </volist>
+
+
+            </tbody>
+        </table>
+        <h5 style="margin-top:20px;">优惠券信息</h5>
+        <table class="ListProduct" border="0" cellspacing="0" cellpadding="0" width="100%">
+            <thead>
+                <tr>
+                    <th>券名称</th>
+                    <th>券码</th>
+                    <th>购领时间</th>
+                    <th>使用时间</th>
+                    <th>过期时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr></tr>
+                <volist id="coupons" name="coupons">
+                    <tr>
+                        <td>{pigcms:$coupons.title}</td>
+                        <td>{pigcms:$coupons.coupon_num}</td>
+                        <td>{pigcms:$coupons.add_time|date='Y-m-d',###}</td>
+                        <td>{pigcms:$coupons.use_time|date='Y-m-d',###}</td>
+                        <td>{pigcms:$coupons.over_time|date='Y-m-d',###}</td>
+                    </tr>
+                </volist>
+            </tbody>
+        </table>
+
+        <!-- 导入 -->
+        <div style="margin:10px 0;height:30px;line-height:30px;">
+            <div class="left"><strong>积分、线下消费记录</strong></div>
+
+            <div class="right">
+                <a href="###" onclick="$('#import').css('display','')" class="btnGrayS vm">导入积分、线下消费记录</a>
+                <a href="/tpl/User/default/common/images/cardUseRecord.xls" class="btnGrayS vm">下载导入示例Excel</a>
+                <a href="?g=User&amp;m=Member_card&amp;a=exportCardUseRecord&wecha_id={pigcms:$wecha_id}" class="btnGrayS vm">导出积分、线下消费记录</a>
+                <!-- <a href="?g=User&amp;m=Member_card&amp;a=exportCardUseRecord&wecha_id={pigcms:$wecha_id}&amp;type=all" class="btnGrayS vm">导出所有会员的积分、线下消费记录</a> -->
+            </div>
+        </div>
+
+        <div style="margin-top: 20px;display:none" id="import">
+            <form enctype="multipart/form-data" action="?g=User&amp;m=Upyun&amp;a=localUploadUsecordExcel" id="thumbForm" method="POST" style="font-size:14px;padding:10px 20px 10px 0px;">
+                <div>
+                    选择本地文件：<input type="file" style="width:250px;border:1px solid #ddd" name="photo">
+                    <input id="submitbtn" name="doSubmit" type="submit" class="btnGreen" value="上传" onclick="this.value='上传中...'">
+                    <input name="id" type="hidden" value="{pigcms:$Think.get.id|intval}" />
+                    <input name="wecha_id" type="hidden" value="{pigcms:$wecha_id}" />
+                    <a href="###" onclick="$('#import').css('display','none')" class="btnGrayS vm">取消导入</a> 注意：不支持xlsx格式
+                </div>
+            </form>
+        </div>
+        <!-- 导入end -->
+        <table class="ListProduct" border="0" cellspacing="0" cellpadding="0" width="100%">
+            <thead>
+                <tr>
+                    <th>日期</th>
+                    <th>金额(元)</th>
+                    <th>获取积分</th>
+                    <th>类型</th>
+                    <th>门店</th>
+                    <th>备注</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <volist id="r" name="records">
+                    <tr>
+                        <td>{pigcms:$r.time|date='Y-m-d',###}</td>
+                        <td>{pigcms:$r.expense}</td>
+                        <td>{pigcms:$r.score}</td>
+                        <td>
+                            <if condition="$r.cat eq 2">
+                                兑换
+                                <elseif condition="$r.cat eq 3" />
+                                赠送
+                                <else />
+                                消费
+                            </if>
+                        <td>{pigcms:$r.shop}</td>
+                        <td>{pigcms:$r.notes}</td>
+                        <td><a href="javascript:drop_confirm('您确定要删除吗?', '/index.php?g=User&m=Member_card&a=useRecord_del&token={pigcms:$Think.get.token}&itemid={pigcms:$r.id}&id={pigcms:$thisCard.id}');"><strong>删除</strong></a></td>
+                    </tr>
+                </volist>
+            </tbody>
+        </table>
+        <div class="cLine">
+            <div class="pageNavigator right">
+                <div class="pages">{pigcms:$page}</div>
+            </div>
+            <div class="clr"></div>
+        </div>
+        <!-- 导入 -->
+        <div style="margin:10px 0;height:30px;line-height:30px;">
+            <div class="left"><strong>会员卡消费记录</strong></div>
+            <div class="right">
+                <a href="###" onclick="$('#import2').css('display','')" class="btnGrayS vm">导入会员卡消费记录</a>
+                <a href="/tpl/User/default/common/images/CardPayRecord.xls" class="btnGrayS vm">下载导入示例Excel</a>
+                <a href="?g=User&amp;m=Member_card&amp;a=exportrmb&wecha_id={pigcms:$wecha_id}" class="btnGrayS vm">导出会员卡消费记录</a>
+                <!--<a href="?g=User&amp;m=Member_card&amp;a=exportrmb&wecha_id={pigcms:$wecha_id}&amp;type=all" class="btnGrayS vm">导出所有会员的会员卡消费记录</a> -->
+            </div>
+        </div>
+
+        <div style="margin-top: 20px;display:none" id="import2">
+            <form enctype="multipart/form-data" action="?g=User&amp;m=Upyun&amp;a=localUploadPayrecordExcel" id="thumbForm2" method="POST" style="font-size:14px;padding:10px 20px 10px 0px;">
+                <div>
+                    选择本地文件：<input type="file" style="width:250px;border:1px solid #ddd" name="photo">
+                    <input id="submitbtn2" name="doSubmit" type="submit" class="btnGreen" value="上传" onclick="this.value='上传中...'">
+                    <input name="id" type="hidden" value="{pigcms:$Think.get.id|intval}" />
+                    <input name="wecha_id" type="hidden" value="{pigcms:$wecha_id}" />
+                    <a href="###" onclick="$('#import2').css('display','none')" class="btnGrayS vm">取消导入</a> 注意：不支持xlsx格式
+                </div>
+            </form>
+        </div>
+        <!-- 导入end -->
+        <table class="ListProduct" border="0" cellspacing="0" cellpadding="0" width="100%">
+            <thead>
+                <tr>
+                    <th>日期</th>
+                    <th>订单号</th>
+                    <th>订单名称</th>
+                    <th>交易金额</th>
+                    <th>状态</th>
+                    <th>操作</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <volist id="rmb" name="rmb">
+                    <tr>
+                        <td>{pigcms:$rmb.createtime|date='Y-m-d H:i',###}</td>
+                        <td>{pigcms:$rmb.orderid}</td>
+                        <td>{pigcms:$rmb.ordername}</td>
+                        <td>{pigcms:$rmb.price}</td>
+                        <td><if condition="$rmb['paid'] eq 1">交易成功<else /><font color="red">未付款</font></if></td>
+
+                        <td><a href="javascript:drop_confirm('您确定要删除吗?', '/index.php?g=User&m=Member_card&a=payRecord_del&pid={pigcms:$rmb.id}');"><strong>删除</strong></a></td>
+                    </tr>
+                </volist>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="cLine">
+        <div class="pageNavigator right">
+            <div class="pages">{pigcms:$page2}</div>
+        </div>
+        <div class="clr"></div>
+    </div>
+</div>
+
+<div class="clr"></div>
+      </div>
+    </div>
+  </div>
+<script>
+
+    function checkAll(form, name) {
+        for (var i = 0; i < form.elements.length; i++) {
+            var e = form.elements[i];
+            if (e.name.match(name)) {
+                e.checked = form.elements['chkall'].checked;
+            }
+        }
+    }
+</script>
+<!--底部-->
+  	</div>
+<include file="Public:footer" />  

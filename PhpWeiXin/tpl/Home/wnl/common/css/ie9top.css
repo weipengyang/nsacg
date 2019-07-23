@@ -1,0 +1,28 @@
+#ie9version{
+	font-family:Microsoft Yahei;
+	position:fixed;
+	display:none;
+	padding-top:0px;
+	height:32px;
+	width:100%;
+	background-color:#E1E871;
+	z-index:6;
+	float:left;
+	text-align:center;
+	line-height:31px;
+	font-size:15px;
+}
+#ie9version ul{
+	
+}
+#ie9version a{
+	padding-left:20px;
+	color:#0099CC;
+	background:none;
+}
+#ie9version li{
+	display:inline;
+}
+#firefoxfont{
+	padding-left:10px;
+}

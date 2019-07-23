@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+		<title>我的购买记录</title>
+		<meta content="app-id=518966501" name="apple-itunes-app" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no, maximum-scale=1.0"/>
+		<meta content="yes" name="apple-mobile-web-app-capable" />
+		<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+		<meta content="telephone=no" name="format-detection" />
+		<link href="{pigcms:$staticPath}/tpl/static/unitary/css/comm.css" rel="stylesheet" type="text/css" />
+		<link href="{pigcms:$staticPath}/tpl/static/unitary/css/member.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<script src="{pigcms:$staticPath}/tpl/static/unitary/js/jquery-2.1.3.min.js" language="javascript" type="text/javascript"></script>
+		
+		<div id="loadingPicBlock">
+			<div class="wrapper">
+				<div class="m_buylist_nav" id="navBox">
+					<p>
+						<a href="{pigcms::U('Unitary/mypay',array('token'=>$token))}" <?php if($_GET['type'] == ""){?>class="hover"<?php }?>>全部<em>{pigcms:$cart_count}</em></a>
+						<a href="{pigcms::U('Unitary/mypay',array('token'=>$token,'type'=>'ing'))}" <?php if($_GET['type'] == "ing"){?>class="hover"<?php }?>>进行中<em>{pigcms:$cart_count_ing}</em></a>
+						<a href="{pigcms::U('Unitary/mypay',array('token'=>$token,'type'=>'end'))}"  <?php if($_GET['type'] == "end"){?>class="hover"<?php }?>>已结束<em>{pigcms:$cart_count_end}</em></a>
+					</p>
+				</div>
+				
+				<div id="divBuyList" class="m_buylist marginB">
+					<volist name="cart_list" id="vo">
+					<if condition="$unitary[$vo['id']]['state'] eq 1">
+					<ul>
+						<li class="in_progress">
+							<a href="{pigcms::U('Unitary/mypayinfo',array('token'=>$token,'uid'=>$vo['unitary_id']))}">
+								<cite><img src="{pigcms:$unitary[$vo['id']]['logopic']}"><i>进行中</i></cite>
+								<dl>
+									<dt>{pigcms:$unitary[$vo['id']]['name']}</dt>
+									<dd>已参与<em class="orange">{pigcms:$unitary[$vo['id']]['pay_count']}</em>人次</dd>
+									<dd>
+										<div class="gRate">
+											<div class="Progress-bar">
+												<p class="u-progress"><span style="width:{pigcms:$unitary[$vo['id']]['proportion']}%;" class="pgbar"><span class="pging"></span></span></p>
+												<ul class="Pro-bar-li">
+													<li class="P-bar01"><em>{pigcms:$unitary[$vo['id']]['pay_count']}</em>已参与</li>
+													<li class="P-bar02"><em>{pigcms:$unitary[$vo['id']]['price']}</em>总需人次</li>
+													<li class="P-bar03"><em><?php echo $unitary[$vo['id']]['price'] - $unitary[$vo['id']]['pay_count'];?></em>剩余</li>
+												</ul>
+											</div>
+										</div>
+									</dd>
+								</dl>
+							</a>
+						</li>
+					</ul>
+					<elseif condition="$unitary[$vo['id']]['state'] eq 2" />
+					<ul>
+						<li>
+							<cite>
+								<a href="{pigcms::U('Unitary/mypayinfo',array('token'=>$token,'uid'=>$vo['unitary_id']))}"><img src="{pigcms:$unitary[$vo['id']]['logopic']}"></a>
+								<i>已结束</i>
+							</cite>
+							<dl>
+								<dt>
+									<a href="{pigcms::U('Unitary/mypayinfo',array('token'=>$token,'uid'=>$vo['unitary_id']))}" class="gray6">{pigcms:$unitary[$vo['id']]['name']}</a>
+								</dt>
+								<dd>获得者：<a href="" class="blue"><?php if(time() > $unitary[$vo['id']]['endtime']){echo $unitary[$vo['id']]['lucker']['wechaname'];}else{echo "<span style='color:#dedede'>未揭晓</span>";}?></a></dd>
+								<dd>揭晓时间：<em><?php echo date("Y-m-d H:i:s",$unitary[$vo['id']]['endtime']);?></em></dd>
+							</dl>
+						</li>
+					</ul>
+					<else />
+					<ul>
+						<li class="in_progress">
+							<a href="{pigcms::U('Unitary/mypayinfo',array('token'=>$token,'uid'=>$vo['unitary_id']))}">
+								<cite><img src="{pigcms:$unitary[$vo['id']]['logopic']}"><i style="background: blue;">已暂停</i></cite>
+								<dl>
+									<dt>{pigcms:$unitary[$vo['id']]['name']}</dt>
+									<dd>已参与<em class="orange">{pigcms:$unitary[$vo['id']]['pay_count']}</em>人次</dd>
+									<dd>
+										<div class="gRate">
+											<div class="Progress-bar">
+												<p class="u-progress"><span style="width:{pigcms:$unitary[$vo['id']]['proportion']}%;" class="pgbar"><span class="pging"></span></span></p>
+												<ul class="Pro-bar-li">
+													<li class="P-bar01"><em>{pigcms:$unitary[$vo['id']]['pay_count']}</em>已参与</li>
+													<li class="P-bar02"><em>{pigcms:$unitary[$vo['id']]['price']}</em>总需人次</li>
+													<li class="P-bar03"><em><?php echo $unitary[$vo['id']]['price'] - $unitary[$vo['id']]['pay_count'];?></em>剩余</li>
+												</ul>
+											</div>
+										</div>
+									</dd>
+								</dl>
+							</a>
+						</li>
+					</ul>
+					</if>
+					</volist>
+					<div class="noRecords gray9" style="display:none"><s></s>暂无记录</div>
+					<div id="divGoodsLoading" class="loading" style="display: none;"><b></b>正在加载</div>
+				</div>
+				
+				<div class="footer" style="display:block;">
+					<ul>
+						<li class="f_whole"><a href="{pigcms::U('Unitary/index',array('token'=>$token))}" title="所有商品"><i></i>所有商品</a></li>
+						<li class="f_car"><a id="btnCart" href="{pigcms::U('Unitary/cart',array('token'=>$token))}"  title="购物车"><i></i>购物车</a></li>
+						<li class="f_personal"><a href="{pigcms::U('Unitary/my',array('token'=>$token))}" class="hover" title="我的"><i></i>我的</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+		
+		</script>
+		
+<if condition="$unitary eq ''">
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"Unitary",
+            "moduleID":"0",
+            "imgUrl": "{pigcms:$staticPath}/tpl/static/unitary/images/wxnewspic.jpg", 
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Unitary/index',array('token'=>$token))}",
+            "tTitle": "一元夺宝",
+            "tContent": ""
+        };
+</script>
+<else />
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"Unitary",
+            "moduleID":"0",
+            "imgUrl": "{pigcms:$unitary['wxpic']}", 
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Unitary/goodswhere',array('token'=>$token,'unitaryid'=>$_GET['unitaryid']))}",
+            "tTitle": "{pigcms:$unitary['name']}",
+            "tContent": "{pigcms:$unitary['wxinfo']}"
+        };
+</script>
+</if>
+{pigcms:$shareScript}
+	</body>
+</html>

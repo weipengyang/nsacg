@@ -1,0 +1,79 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>下单</title>
+    <meta name="viewport" content="width=device-width,height=device-height,maximum-scale=1.0,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">   
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css">
+    <link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/0.4.1/weui.min.css" />
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+ 
+</head>
+<body>
+    <div class="page" style="margin:0px">
+        <header class="bar bar-nav">
+            <h1 class='title'>下单</h1>
+        </header>
+        <div class="content" style="margin:0px">
+            <div class="list-block">
+                <ul>
+                    <!-- Text inputs -->
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-name"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">数量</div>
+                                <div class="item-input">
+                                    <input type="text" value="1" id="num" />
+                               </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="content-block" style="margin-top:10px">
+                <div class="row" style="margin-top:0">
+                    <div class="col-100"><a href="#" id="submit" class="button button-big button-fill button-success">下单</a></div>
+                </div>
+            </div>
+        </div>
+       </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm-extend.min.js' charset='utf-8'></script>
+    <script type="text/javascript">
+        $(function () {
+            'use strict';
+            //对话框
+            $.init();
+            $('#submit').click(function () {
+                var num = $('#num').val();
+                var re = /^[0-9]+$/;
+                if (!re.test(num)) {
+                    $.alert('请输入正确数字');
+                    return ;
+                }
+                var submitData = {
+                    num: num,
+                    mc:"{pigcms:$_GET['gg']}",
+                    gg: "{pigcms:$_GET['hw']}",
+
+                    wechaname: "{pigcms:$_GET['wechaname']}",
+                    pp: "{pigcms:$_GET['pp']}"
+                };
+                $.showPreloader('正在处理');
+                $.post('/index.php?g=Query&m=Consume&a=ordering', submitData,
+                function (data) {
+                    $.hidePreloader();
+                    $.alert(data);
+                    //location.href = '/index.php?g=Wap&m=Store&a=cats&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}';
+                });
+            });
+        });
+    </script>
+    <include file="Card:share" />
+</body>
+</html>

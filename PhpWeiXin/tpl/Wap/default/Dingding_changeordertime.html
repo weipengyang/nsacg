@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <title>变更销售单状态</title>
+</head>
+<body>
+    <div class="page">
+        <div class="content">
+            <!-- 这里是页面内容区 -->
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-content-inner">
+                        <a href="#" id="turnin" class="button button-big button-fill button-success" style="color:#006AFF">确定</a>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+        <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+        <script type='text/javascript' src='http://g.alicdn.com/dingding/open-develop/1.5.1/dingtalk.js' charset='utf-8'></script>
+        <script type="text/javascript">
+            var userinfo;
+            dd.config({
+                agentId: "{pigcms:$jsapi.agentId}",
+                corpId: "{pigcms:$jsapi.corpId}",
+                timeStamp: "{pigcms:$jsapi.timeStamp}",
+                nonceStr: "{pigcms:$jsapi.nonceStr}",
+                signature: "{pigcms:$jsapi.signature}",
+                jsApiList: [
+                    'runtime.info',
+                    'device.notification.prompt',
+                    'biz.chat.pickConversation',
+                    'device.notification.confirm',
+                    'device.notification.alert',
+                    'device.notification.prompt',
+                    'biz.chat.open',
+                    'biz.util.open',
+                    'biz.user.get',
+                    'biz.contact.choose',
+                    'biz.telephone.call',
+                    'biz.ding.post',
+                    'biz.map.locate',
+                    'biz.map.view',
+                    'biz.util.uploadImage',
+                    'device.geolocation.get']
+            });
+
+            function device(count) {
+                dd.device.notification.toast({
+                    icon: '', //icon样式，有success和error，默认为空 0.0.2
+                    text: count, //提示信息
+                    duration: 2, //显示持续时间，单位秒，默认按系统规范[android只有两种(<=2s >2s)]
+                    delay: 0, //延迟显示，单位秒，默认0
+                    onSuccess: function (result) {
+                        /*{}*/
+                    },
+                    onFail: function (err) { }
+                })
+            }
+
+
+            $(document).ready(function () {
+                dd.ready(function () {
+                    dd.biz.user.get({
+                        onSuccess: function (info) {
+                            userinfo = info;
+
+                        },
+                        onFail: function (err) {
+                            alert('userGet fail: ' + JSON.stringify(err));
+                        }
+                    });
+
+                });
+                $(".button-success").click(function () {
+                            var comment = {};
+                            var submitData = {
+                                id: '{pigcms:$_GET["id"]}',
+                                lb: '{pigcms:$_GET["lb"]}',
+                                user: userinfo['nickName'],
+                            };
+                            $.post('/index.php?g=Wap&m=Dingding&a=changeordertime', submitData,
+                            function (data) {
+                                $.toast(data);
+                                //location.href = '/index.php?g=Wap&m=Dingding&a=history&'+data;
+                            });
+
+                        });
+                       
+                 });
+        </script>
+</body>
+</html>

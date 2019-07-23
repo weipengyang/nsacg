@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>积分兑换中心</title>
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="page" style="margin:0px">
+        <nav class="bar bar-tab">
+            <a class="tab-item" href="#" onclick="history.go(-1);">
+                <span class="icon icon-left"></span>
+                <span class="tab-label">返回</span>
+            </a>
+            <a class="tab-item" href="{pigcms::U('Store/cats',array('token' => $_GET['token'], 'catid' => $hostlist['id'], 'wecha_id' => $wecha_id, 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-home"></span>
+                <span class="tab-label">首页</span>
+            </a>
+            <a class="tab-item" href="{pigcms::U('Store/myinfo',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-me"></span>
+                <span class="tab-label">我</span>
+            </a>
+        </nav>
+        <div class="content" style="margin:0px">
+            <div class="list-block media-list" style="margin:0px">
+                <ul id="m_list">
+                    <volist name="list" id="item">
+                        <li>
+                            <a href="{pigcms::U('Store/coupondetail',array('token' =>$_GET['token'], 'id' =>$item['id'], 'wecha_id' =>$_GET['wecha_id'], 'twid' => $twid))}" class="item-link item-content" data-no-cache="true">
+                                <div class="item-media"><img src="{pigcms:$item.pic}" style='width: 120px;height:100px'></div>
+                                <div class="item-inner">
+                                    <div class="item-title" style="font-size:15px;">{pigcms:$item.title}(剩余{pigcms:$item.leftcount}份)</div>
+                                    <div class="item-title" style="color:#0055CC;font-size:12px;"><span>{pigcms:$item.integral}积分兑换一份</span></div>
+                                    <div class="item-title" style="color:#0055CC;font-size:12px;"><span>每人限兑换{pigcms:$item.total}份</span></div>
+                                    <div class="item-title" style="color:#0055CC;font-size:12px;"><span>仅限{pigcms:$item.gradelimit}及以上兑换</span></div>
+                                    <div class="item-title" style="color:#0055CC;font-size:12px;"><span>有效期至{pigcms:$item.enddate|date='Y年m月d日',###}</span></div>
+                                    <div class="item-title" style="color:#0055CC;font-size:12px;"><span style="color:#999;font-size:10px;margin-top:15px;">{pigcms:$item.num}人兑换</span></div>
+                                </div>
+                            </a>
+                        </li>
+                    </volist>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>$.init()</script>
+</body>
+</html>

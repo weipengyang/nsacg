@@ -1,0 +1,224 @@
+﻿<style>
+    /*脚*/
+    .home-footer { /* height:98px;*/
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .home-footer-con {
+        position: fixed;
+        width: 100%;
+        background: #FFF;
+        z-index: 101;
+        right: 0;
+        bottom: 0;
+        border-top: 1px solid #d7d7d7;
+    }
+
+    .home-footer-btn {
+        cursor: pointer;
+        width: 20%;
+        float: left;
+    }
+
+    .home-footer-btnicon {
+        text-align: center;
+        margin: 0 auto;
+        width: 24px;
+        height: 24px;
+        padding-top: 5px;
+    }
+
+    .home-footer-btn-t {
+        font-family: "微软雅黑";
+        font-size: 12px;
+        color: #2c3e50;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .home-footer-btn-t2 {
+        font-family: "微软雅黑";
+        font-size: 12px;
+        color: #229cf5;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .home-footer-btnicon-home {
+        width: 100%;
+        height: 100%;
+        background: url("/tpl/wap/default/common/mall/images/home-home.png") no-repeat;
+        background-size: 100% 200%;
+        background-position: top;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .home-footer-btnicon-home2 {
+        width: 100%;
+        height: 100%;
+        background: url("/tpl/wap/default/common/mall/images/home-home.png") no-repeat;
+        background-size: 100% 200%;
+        background-position: bottom;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .home-footer-btnicon-order {
+        width: 100%;
+        height: 100%;
+        background: url("/tpl/wap/default/common/mall/images/home-order.png") no-repeat;
+        background-size: 100% 200%;
+        background-position: top;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .home-footer-btnicon-order2 {
+        width: 100%;
+        height: 100%;
+        background: url("/tpl/wap/default/common/mall/images/home-order.png") no-repeat;
+        background-size: 100% 200%;
+        background-position: bottom;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .home-footer-btnicon-pro {
+        width: 100%;
+        height: 100%;
+        background: url("/tpl/wap/default/common/mall/images/home-product.png") no-repeat;
+        background-size: 100% 200%;
+        background-position: top;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .home-footer-btnicon-pro2 {
+        width: 100%;
+        height: 100%;
+        background: url("/tpl/wap/default/common/mall/images/home-product.png") no-repeat;
+        background-size: 100% 200%;
+        background-position: bottom;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .home-footer-btnicon-com {
+        width: 100%;
+        height: 100%;
+        background: url("/tpl/wap/default/common/mall/images/home-com.png") no-repeat;
+        background-size: 100% 200%;
+        background-position: top;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .home-footer-btnicon-com2 {
+        width: 100%;
+        height: 100%;
+        background: url("/tpl/wap/default/common/mall/images/home-com.png") no-repeat;
+        background-size: 100% 200%;
+        background-position: bottom;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .home-footer-btnicon-my {
+        width: 100%;
+        height: 100%;
+        background: url("/tpl/wap/default/common/mall/images/home-my.png") no-repeat;
+        background-size: 100% 200%;
+        background-position: top;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .home-footer-btnicon-my2 {
+        width: 100%;
+        height: 100%;
+        background: url("/tpl/wap/default/common/mall/images/home-my.png") no-repeat;
+        background-size: 100% 200%;
+        background-position: bottom;
+        text-align: center;
+        margin: 0 auto;
+    }
+</style>
+<div class="home-footer">
+    <div class="home-footer-con">
+        <a href="/index.php?g=Wap&m=Card&a=index&token={pigcms:$token}&cardid={pigcms:$thisCard.id}&wecha_id={pigcms:$wecha_id}">
+            <div class="home-footer-btn">
+                <div class="home-footer-btnicon">
+                    <div class="home-footer-btnicon-home2">
+                    </div>
+                </div>
+                <div class="home-footer-btn-t2" id="footer1">首页</div>
+            </div>
+        </a>
+        <a <php>if(ACTION_NAME=='card'){</php>class="active"<php>}</php> href="/index.php?g=Wap&m=Card&a=card&token={pigcms:$token}&cardid={pigcms:$thisCard.id}&wecha_id={pigcms:$wecha_id}">
+            <div class="home-footer-btn">
+                <div class="home-footer-btnicon">
+                    <div class="home-footer-btnicon-pro">
+                    </div>
+                </div><div class="home-footer-btn-t" id="footer5">商城</div>
+            </div>
+        </a>
+        <a <php>if(ACTION_NAME=='my_coupon'){</php>class="active"<php>}</php> href="/index.php?g=Wap&m=Card&a=my_coupon&token={pigcms:$token}&wecha_id={pigcms:$wecha_id}&cardid={pigcms:$thisCard.id}">
+            <div class="home-footer-btn">
+                <div class="home-footer-btnicon">
+                    <div class="home-footer-btnicon-order">
+                    </div>
+                </div>
+                <div class="home-footer-btn-t" id="footer2">服务</div>
+            </div>
+        </a>
+        <a <php>if(ACTION_NAME=='wallet'){</php>class="active"<php>}</php> href="/index.php?g=Wap&m=Card&a=wallet&token={pigcms:$token}&wecha_id={pigcms:$wecha_id}&cardid={pigcms:$thisCard.id}">
+            <div class="home-footer-btn">
+                <div class="home-footer-btnicon">
+                    <div class="home-footer-btnicon-com">
+                    </div>
+                </div>
+                <div class="home-footer-btn-t" id="footer3">套餐</div>
+            </div>
+        </a>
+        <a <php>if(ACTION_NAME=='cards'){</php>class="active"<php>}</php> href="/index.php?g=Wap&m=Card&a=cards&token={pigcms:$token}&cardid={pigcms:$thisCard.id}&wecha_id={pigcms:$wecha_id}">
+            <div class="home-footer-btn">
+                <div class="home-footer-btnicon">
+                    <div class="home-footer-btnicon-my">
+                    </div>
+                </div>
+                <div class="home-footer-btn-t" id="footer4">我的</div>
+            </div>
+        </a>
+    </div>
+</div>
+<script type="text/javascript">
+    /*
+    $(".home-footer").height(98 * $(window).width()/640);
+
+    var rightIconWidth = 48*$(window).width() / 640;
+    var listItemHeight = parseInt(48*$(window).width()/640);
+        $(".home-footer-btnicon").width(rightIconWidth);
+        $(".home-footer-btnicon").height(rightIconWidth);
+        $(".home-footer-btnicon").css("margin-top", (listItemHeight - rightIconWidth) / 0);
+        $(".home-footer-btnicon").css("padding-top", 10*$(window).width()/640);
+    $(".home-footer-btn-t").css("font-size", 22*$(window).width()/640);
+    $(".home-footer-btn-t").css("line-height", 40*$(window).width()/640 + "px");
+
+    $(".home-new").css("padding", 10*$(window).width()/640);
+    $(".home-newbox").css("margin-bottom", 10*$(window).width()/640);
+    $(".home-newbox").height(310 * $(window).width()/640);
+    $(".home-newbox-text").css("font-size", 26*$(window).width()/640);
+    $(".home-newbox-text").css("line-height", 40*$(window).width()/640 + "px");
+    $(".home-newbox-text").css("padding", 10*$(window).width()/640);
+     */
+</script><!-----页脚 结束------>
+    </div>
+<script type="text/javascript">
+    $(function () {
+        $('.home-footer-btnicon-home').removeClass().addClass('home-footer-btnicon-home2');
+        $('#footer1').removeClass().addClass('home-footer-btn-t2');
+    })
+
+</script>

@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>维修项目编辑</title>
+    <meta name="description" content="爱养车" />
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var projectinfo;
+        function calprice()
+        {
+            var price = $("input[ligeruiid='单价']").val();
+            var num = $("input[ligeruiid='工时']").val();
+            var discount = $("input[ligeruiid='折扣']").val();
+            var fax = $("input[ligeruiid='税率']").val();
+            $("input[ligeruiid='金额']").val(price * num);
+            $("input[ligeruiid='税额']").val((price * num * fax).toFixed(2));
+        }
+        $(function ()
+        {
+            var data = [
+                { id: 1, name: '客付' },
+                { id: 2, name: '保险' },
+                { id: 3, name: '三包' },
+                { id: 4, name: '计次' },
+                { id: 5, name: '免费' }
+            ];
+            var data1 = [
+              { id: 1, name: '项目' },
+              { id: 2, name: '价格' }
+            ];
+            var form = $("#form1").ligerForm({
+                inputWidth: 160, labelWidth: 85, space: 20,
+                validate: true,
+                fields: [
+                    { display: "流水号", name: "流水号", newline: true, type: "hidden" },
+                    { display: "项目编号 ", name: "项目编号", newline: true, type: "text",readonly:true },
+                    { display: "项目名称", name: "项目名称", newline: false, type: "text", readonly: true },
+                    { display: "维修工艺 ", name: "维修工艺", newline: true, type: "text" },
+                    {
+                        display: "结算类别", name: "结算方式", newline: false, type: "combobox", options: {
+                            valueField: 'name',
+                            textField: 'name',
+                            data: data,
+                        }, readonly: true
+                    },
+                    {
+                        display: "工时 ", name: "工时", newline: true, type: "text", options: {
+                            onBlur: function () {
+                                calprice();
+                            }
+                        }
+                    },
+                    {
+                        display: "单价 ", name: "单价", newline: false, type: "text", options: {
+                            onBlur: function () {
+                                calprice();
+
+                            }
+                        }
+                    },
+                    { display: "金额 ", name: "金额", newline: true, type: "text", readonly: true },
+                    {
+                        display: "折扣", name: "折扣", newline: false, type: "text", options: {
+                            onBlur: function () {
+                                calprice();
+
+                            }
+                        }
+                    },
+                    {
+                        display: "税率", name: "税率", newline: true, type: "text", options: {
+                            onBlur: function () {
+                                calprice();
+                            }
+                        }
+                    },
+                    { display: "税额", name: "税额", newline: false, type: "text",readonly:true },
+                    {
+                        display: "虚增类别", name: "虚增类别", newline: true, type: "combobox",
+                        options: {
+                            valueField: 'name',
+                            textField: 'name',
+                            data: data1,
+                        }, readonly: true
+
+                    },
+                    { display: "虚增金额", name: "虚增金额", newline: false, type: "text", readonly: true },
+                    {
+                        display: "开工时间", name: "开工时间", newline: true, type: "date", options: {
+                            showTime: true,
+                        }
+                    },
+                    {
+                        display: "完工时间", name: "完工时间", newline: false, type: "date", options: {
+                            showTime: true,
+                        }
+                    },
+                    { display: "备注", name: "备注", newline: true, type: "text", width: 320 }
+                ],
+                buttons: [                    {
+                        text: "保存", width: 60, click: function () {
+                            var row = form.getChanges();
+                            row['流水号'] = projectinfo['流水号'];
+                            row['ID'] = projectinfo['ID'];
+                            if($("input[ligeruiid='开工时间']").val()!=''){
+                                row['开工时间'] = $("input[ligeruiid='开工时间']").val();
+                            }
+                            if ($("input[ligeruiid='完工时间']").val() != '') {
+                                row['完工时间'] = $("input[ligeruiid='完工时间']").val();
+                            }
+                            var data = { 
+                                project: row,
+                                record: parent.record,
+                            };
+                            $.post('/index.php?g=Query&m=Consume&a=saveprojectbyid', data,
+                              function (msg) {
+                                  $.ligerDialog.alert(msg);
+                                  window.parent.editprojectdialog.hide();
+                                  parent.reflash();
+                              });
+                        }
+                    }                ]            });
+            projectinfo = {pigcms:$projectinfo};
+            if (projectinfo && projectinfo != '') {
+                //projectinfo = JSON2.stringify(projectinfo);
+                //projectinfo = JSON2.parse(projectinfo);
+                projectinfo['开工时间'] = todate(projectinfo['开工时间'], true);
+                projectinfo['完工时间'] = todate(projectinfo['完工时间'], true);
+                form.setData(projectinfo);
+            }
+            
+        });
+
+
+    </script>
+</head>
+
+<body style="padding:10px">
+    <div id="form1">
+    </div>
+</body>
+</html>

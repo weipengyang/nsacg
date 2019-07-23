@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">   
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>当前维修</title>
+<link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+<link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/0.4.1/weui.min.css" />
+<link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="page" style="margin:0px">
+        <nav class="bar bar-tab">
+            <a class="tab-item" href="#" onclick="history.go(-1);">
+                <span class="icon icon-left"></span>
+                <span class="tab-label">返回</span>
+            </a>
+            <a class="tab-item" href="{pigcms::U('Store/cats',array('token' => $_GET['token'], 'catid' => $hostlist['id'], 'wecha_id' => $wecha_id, 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-home"></span>
+                <span class="tab-label">首页</span>
+            </a>
+            <a class="tab-item" href="{pigcms::U('Store/myinfo',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-me"></span>
+                <span class="tab-label">我</span>
+            </a>
+        </nav>
+        <div class="content" style="margin:0px;text-align:center;">
+            <volist name="wxlist" id="item">
+                <span style="width:100%;text-align:center;font-size:0.6rem">{pigcms:$item.进厂时间|strtotime|date="Y-m-d H:i",###}</span>
+                <div class="card" style="background-color:#FFA400;color:white;margin:0;padding:0">
+                    <div class="card-header"><span>{pigcms:$item.维修类别}({pigcms:$item.车牌号码})</span><span style="font-size:1rem">{pigcms:$item.应收金额}元</span></div>
+                    <div class="card-content">
+                        <notempty name="item.items">
+                            <div class="card-content-inner" style="font-size:0.6rem;">
+                                <div class="row">
+                                    <div class="col-33">项目名称</div>
+                                    <div class="col-33">金额(元)</div>
+                                    <div class="col-33">服务技师</div>
+                                </div>
+                                <volist name="item.items" id="xm">
+                                    <div class="row">
+                                        <div class="col-33">{pigcms:$xm.项目名称}</div>
+                                        <div class="col-33">{pigcms:$xm.金额}</div>
+                                        <div class="col-33">{pigcms:$xm.主修人}</div>
+                                    </div>
+                                </volist>
+                            </div>
+                        </notempty>
+                        <notempty name="item.peijian">
+                            <div class="card-content-inner" style="font-size:0.6rem;">
+                                <div class="row">
+                                    <div class="col-33">配件名称</div>
+                                    <div class="col-33">数量</div>
+                                    <div class="col-33">金额(元)</div>
+                                </div>
+                                <volist name="item.peijian" id="pj">
+                                    <div class="row">
+                                        <div class="col-33">{pigcms:$pj.名称}</div>
+                                        <div class="col-33">x{pigcms:$pj.数量}</div>
+                                        <div class="col-33">{pigcms:$pj.金额}</div>
+                                    </div>
+                                </volist>
+                            </div>
+                        </notempty>
+                        <div class="row no-gutter">维修状态</div>
+                        <div class="row no-gutter">
+                            <div class="col-15" style="width:12%;margin:0 auto;">
+                                <if condition="$item['当前状态'] eq '报价' ">
+                                    <span style="text-align:center;font-size:0.6rem;color:red">报价</span>
+                                    <else/>
+                                    <span style="text-align:center;font-size:0.6rem">报价</span>
+                                </if>
+                            </div>
+                            <div class="col-25" style="color:blue;width:17%"><hr style="margin-top:0.5rem;width:100%;height:3px;border:none;border-top:3px ridge green;" /></div>
+                            <div class="col-15" style="width:12%">
+                                <if condition="$item['当前状态'] eq '派工'">
+                                    <span style="text-align:center;font-size:0.6rem;color:red">派工</span>
+                                    <else/>
+                                    <span style="text-align:center;font-size:0.6rem">派工</span>
+                                </if>
+                           </div>
+                            <div class="col-25" style="color:blue;width:17%"><hr style="margin-top:0.5rem;width:100%;height:3px;border:none;border-top:3px ridge green;" /></div>
+                            <div class="col-15" style="width:12%">
+                                <if condition="$item['当前状态'] eq '领料'">
+                                    <span style="text-align:center;font-size:0.6rem;color:red">领料</span>
+                                    <else/>
+                                    <span style="text-align:center;font-size:0.6rem">领料</span>
+                                </if>
+                            </div>
+                            <div class="col-25" style="color:red;width:17%"><hr style="margin-top:0.5rem;width:100%;height:3px;border:none;border-top:3px ridge green;" /></div>
+                            <div class="col-15" style="width:12%">
+                                <if condition="$item['当前状态'] eq '审核'">
+                                    <span style="text-align:center;font-size:0.6rem;color:red">完工</span>
+                                    <else/>
+                                    <span style="text-align:center;font-size:0.6rem">完工</span>
+                                </if>
+                            </div>
+                           
+                        </div>
+                    </div>
+                    <if condition="$item['确认维修'] neq '是'">
+                        <div class="card-footer" style="font-size:0.6rem;color:white;width:100%">
+                            <div class="row" style="text-wrap:none;width:100%">
+                                <div class="col-50">
+                                    <a href="#" class="button  button-round button-fill button-warning" onclick="confirmwx({pigcms:$item['流水号']})">确认维修</a>
+                                </div>
+                            </div>
+                        </div>
+                    </if>
+                </div>
+            </volist>
+          </div>
+        </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <script>
+        function confirmwx(id)
+        {
+            //$.alert('暂未实现');
+            var submitData = {
+                id: id
+            };
+            $.post('/index.php?g=Wap&m=Store&a=weixiu&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData,
+            function (data) {
+                $.alert(data);
+                location.href = location.href;
+            });
+            //location.href = "/index.php?g=Wap&m=Store&a=pay&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}&type=" + type + '&id=' + id + '&price=' + price;
+        }
+        $(function () {
+            'use strict';
+            //对话框
+            $.init();
+            SysSecond = parseInt('{pigcms:$haveSeconds}'); //这里获取倒计时的起始时间
+            InterValObj = window.setInterval(SetRemainTime, 1000); //间隔函数，1秒执行
+        });
+        //将时间减去1秒，计算天、时、分、秒
+        function SetRemainTime() {
+            if (SysSecond > 0) {
+                SysSecond = SysSecond + 1;
+                var second = Math.floor(SysSecond % 60);             // 计算秒
+                var minite = Math.floor((SysSecond / 60) % 60);      //计算分
+                var hour = Math.floor((SysSecond / 3600) % 24);      //计算小时
+                var day = Math.floor((SysSecond / 3600) / 24);        //计算天
+                $("#remainTime").html('还剩' + day + "天" + hour + "小时" + minite + "分" + second + "秒");
+            } else {//剩余时间小于或等于0的时候，就停止间隔函数
+                window.clearInterval(InterValObj);
+                //这里可以添加倒计时时间为0后需要执行的事件
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,81 @@
+<include file="Public:head" />
+<link rel="stylesheet" type="text/css" href="{pigcms:$staticPath}/tpl/static/bargain/css/cymain.css" />
+<div class="content">
+	<div class="cLineB">
+		<h4 class="left">微砍价</h4>
+		<div class="clr"></div>
+	</div>
+	
+	<div class="tab">
+		<ul>
+			<li class="tabli" id="tab1"><a href="{pigcms::U('Bargain/index',array('token'=>$token))}">砍价商品</a></li>
+			<li class="current tabli" id="tab2"><a href="{pigcms::U('Bargain/order',array('token'=>$token))}">订单管理</a></li>
+		</ul>
+	</div>
+	
+	<div class="cLineB">
+		<h4 class="left">参与用户“<?php echo $userinfo['wechaname'];?>”的商品“<?php echo $bargain['name'];?>”的砍价的人</h4>
+		<a href="{pigcms::U('Bargain/order',array('token'=>$token))}"  class="right btnGreen" >返回</a>
+	</div>
+	
+	
+	<div class="msgWrap">
+		<table class="ListProduct" border="0" cellspacing="0" cellpadding="0" width="100%">
+			<thead>
+				<tr>
+					<th width="">用户名</th>
+					<th width="">砍下价格</th>
+					<th width="" class="norightborder">砍价时间</th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php foreach($kanuser_list as $vo){?>
+					<tr>
+						<td><?php echo $vo['wechaname'];?></td>
+						<td><?php echo $vo['dao'];?>元</td>
+						<td  style="border-right:0"><?php echo date("Y-m-d H:i:s",$vo['addtime']);?></td>
+					</tr>
+				<?php }?>
+			</tbody>
+		</table>
+	</div>
+	<div class="cLine">
+		<div class="pageNavigator right">
+			<div class="pages">{pigcms:$page}</div>
+		</div>
+		<div class="clr"></div>
+	</div>
+</div>
+<script>
+	$(document).ready(function(){
+		
+	});
+	function state(id){
+		$.ajax({
+			type:"POST",
+			url:"{pigcms::U('Bargain/ajax',array('token'=>$token))}",
+			dataType:"json",
+			data:{
+				type:"state",
+				id:id,
+				token:"{pigcms:$token}"
+			},
+			success:function(data){
+				if(data.error == 0){
+					$("#state"+id).attr("src","{pigcms:$staticPath}/tpl/static/bargain/images/stop.png");
+				}else if(data.error == 1){
+					$("#state"+id).attr("src","{pigcms:$staticPath}/tpl/static/bargain/images/start.png");
+				}
+			}
+		});
+	}
+	function seach(){
+		var orderid = $("#orderid").val();
+		if(orderid != ""){
+			window.location.href="{pigcms::U('Bargain/order',array('token'=>$token))}&orderid="+orderid;
+		}else{
+			window.location.href="{pigcms::U('Bargain/order',array('token'=>$token))}";
+		}
+	}
+</script>
+<include file="Public:footer"/>

@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>付款冲账</title>
+    <meta name="description" content="爱养车" />
+    <link rel="stylesheet" href="/tpl/static/assets/css/amazeui.min.css" />
+
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <style type="text/css">
+        .l-form .l-form-buttons{
+         margin:0px
+        }
+                .l-text-field
+{
+    position:absolute; top:0px; left:0px;
+    height: 26px; line-height:26px; padding-left:2px; padding-top:0px; padding-bottom:0px;
+    vertical-align: middle;
+    background-color: #fff;
+    width:110px;  
+    border:0; margin:0; outline:none; color:#555555; 
+}
+
+    </style>
+    <script type="text/javascript">
+        var form,grid,userdata = null;
+        function updateRow() {
+            var sumprice=null;
+            $(grid.rows).each(function () {
+                sumprice += parseFloat(this.总金额);
+            });
+            $("input[ligeruiid='金额']").val(sumprice)
+        }
+        $(function () {
+            $('#startdate').ligerDateEditor();
+            $('#enddate').ligerDateEditor();
+
+            userdata = frameElement.dialog.get('row');
+            form = $("#form1").ligerForm({
+                inputWidth: 130, labelWidth: 75, space: 3,
+                validate: true,
+                buttons: [
+                    {
+                        text: "更新", width: 100, click: updateRow
+                    },
+                    {
+                        text: "保存", width: 100, click: function () {
+                            var data = form.getData();
+                            data['userID'] = userdata['ID'];
+                            var submitData = {
+                                balance: data,
+                                rows: grid.rows
+                            };
+                            $.post('index.php?g=Query&m=Consume&a=savepaybill', submitData,
+                              function (data) {
+                                  $.ligerDialog.alert(data);
+                              });
+                            //alert(JSON.stringify(data));
+                        }
+                    }
+                ],
+                fields: [
+                      {
+                          display: "门店", name: "门店", newline: false, type: "combobox", comboboxName: 'mendian', options: {
+                              valueField: '名称',
+                              textField: '名称',
+                              url: '/index.php?g=Query&m=Consume&a=getshoplist',
+                          }
+
+                      },
+                    {
+                        display: "往来单位", name: "客户名称", newline: false, type: "text",readonly:true, options: {
+                            value: userdata['名称']
+                        }
+                    },
+                     {
+                         display: "账款类别", name: "账款类别", newline: false, type: "text",readonly:true,
+                         options: {
+                             value: '付款单'
+                         }
+                     },
+                    {
+                        display: "收支类型", name: "收支类型", newline: false, type: "text", readonly: true, options: {
+                            value:'付款冲账'
+                        }
+                     },
+                    { display: "金额", name: "金额", newline: false, type: "text" },
+                    {
+                        display: "结算方式 ", name: "结算方式", newline: false, type: "combobox",
+                        options: {
+                            valueField: '名称',
+                            textField: '名称',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getjsfs',
+                        }
+                    },
+                    {
+                        display: "结算账户", name: "结算账户", newline: false, type: "combobox",
+                        options: {
+                            valueField: '名称',
+                            textField: '名称',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getjszh',
+                        }
+                    },
+                    { display: '备注', name: '备注', type: "textarea", width: 425, height: 250 },
+
+                ],
+            });
+
+            grid = $("#maingrid4").ligerGrid({
+                columns: [
+                    {
+                        display: '账款类别', name: '账款类别', align: 'left', width: 80, render: function (rowdata, index, value) {
+                            if (value == '审核')
+                                value = '<span style="color:red">' + value + '</span>';
+                            return value;
+                        }
+                    },
+                { display: '单据编号', name: '单据编号', width: 120, align: 'left' },
+                {
+                    display: '制单日期', name: '制单日期', minWidth: 120, render: function (rowdata, index, value) {
+                        return todate(value, false);
+                    }
+                },
+                { display: '总金额', name: '总金额', minWidth: 120 },
+                { display: '已结算金额', name: '已结算金额', minWidth: 120 },
+                { display: '未结算金额', name: '未结算金额', minWidth: 120 },
+                { display: '门店', name: '门店', minWidth: 80 },
+                { display: '摘要', name: '摘要', minWidth: 200 }, 
+                ],
+                isScroll: true,
+                usePager: false,
+                fixedCellHeight: false,
+                url: '/index.php?g=Query&m=Consume&a=getallrecevie&khID=' + userdata['ID'],
+                height: '100%',
+                parms:{
+                    zklb:'应付款'
+                },
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    grid.deleteSelectedRow();
+                    setTimeout(function () { updateRow(); }, 200);
+                    
+                },
+            });
+            $('#search').click(function () {
+                grid.changePage('first');
+                var parms = {
+                    zklb: '应付款'
+                };
+                var enddate = $('#enddate').val();
+                if (enddate != '')
+                    parms['enddate'] = enddate;
+                var startdate = $('#startdate').val();
+                if (startdate != '')
+                    parms['startdate'] = startdate;
+                grid.set('parms', parms);
+                grid.reload();
+            });
+
+            setTimeout(function () { updateRow(); }, 1000);
+        });
+    </script>
+</head>
+
+<body style="padding:0;margin:0">
+    <div id="form1" style="margin:0;padding:0;height:50%"></div>
+    <div id="searchbar" class="am-g">
+        <div class="am-u-sm-2 am-u-md-2">
+            <div class="am-form-group">
+                <input type="text" id="startdate" />
+            </div>
+        </div>
+        <div class="am-u-sm-2 am-u-md-2">
+            <div class="am-form-group">
+                <input type="text" id="enddate" />
+            </div>
+        </div>
+        <div class="am-u-sm-2 am-u-md-2 am-u-end">
+            <div class="am-form-group">
+                <button id="search" type="button">搜索</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="maingrid4" style="margin:0;margin-bottom:0px; padding:0;height:50%"></div>
+</body>
+</html>

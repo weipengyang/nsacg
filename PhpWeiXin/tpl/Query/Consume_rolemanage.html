@@ -1,0 +1,214 @@
+﻿<!doctype html>
+<html class="no-js fixed-layout">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>角色管理</title>
+    <meta name="description" content="爱养车">
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <link href="//at.alicdn.com/t/font_1474792210_8989851.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+        var adddialog, editdialog,grid,authorizeddialog;
+        $(function () {
+
+            grid=$("#maingrid4").ligerGrid({
+                columns: [
+                    //{ display: 'ID', name: 'RoleID', type: 'int', width: 50 },
+                    { display: '角色名', name: 'RoleName',minWidth:120},
+                    { display: '角色描述', name: 'RoleDscript', minWidth: 200 },
+                    { display: '排序', name: 'RoleSort', minWidth: 50 }
+                ],
+                dataAction: 'server',
+                pageSize: 20,
+                pageSizeOptions: [20, 30, 50, 100],
+                rownumbers: true,
+                url: "/index.php?g=Query&m=Consume&a=getroles",
+                height: '98%',
+                toolbar: {
+                    items: [
+                        { text: '增加', click: add, icon: 'add' },
+                        { line: true },
+                        { text: '修改', click: edit, icon: 'modify' },
+                        { line: true },
+                        { text: '授权', click: authorize, icon: 'modify' },
+                        { line: true },
+                        { text: '删除', click: del, icon: 'delete' }
+                        ]
+                },                onRClickToSelect: true,
+                onContextmenu: function (parm, e) {
+                    actionCustomerID = parm.data.id;
+                    menu.show({ top: e.pageY, left: e.pageX });
+                    return false;
+                }
+            });
+
+        });
+        function add(data) {
+            if (adddialog) {
+                adddialog.set('roledata', data);
+                adddialog.set('opttype', 'add');
+                adddialog.setUrl('/index.php?g=Query&m=Consume&a=addrole');
+                adddialog.show();
+            }
+            else {
+                adddialog = $.ligerDialog.open({
+                    height: 350,
+                    url: '/index.php?g=Query&m=Consume&a=addrole',
+                    width: 400,
+                    showToggle: false,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    data: data,
+                    opttype: 'add',
+                    title: '新增角色'
+                });
+            }
+        }
+
+        function edit() {
+            var data = grid.getSelectedRow();
+            if (data) {
+                if (editdialog) {
+                    editdialog.set('roledata', data);
+                    editdialog.set('opttype', 'edit');
+                    editdialog.setUrl('/index.php?g=Query&m=Consume&a=addrole');
+                    editdialog.show();
+                }
+                else {
+                    editdialog = $.ligerDialog.open({
+                        height: 350,
+                        url: '/index.php?g=Query&m=Consume&a=addrole',
+                        width: 400,
+                        showToggle: false,
+                        showMin: false,
+                        isResize: true,
+                        modal: false,
+                        roledata: data,
+                        opttype: 'edit',
+                        title: '修改角色'
+                    });
+                }
+            } else {
+                $.ligerDialog.alert('请选择要修改的记录');
+            }
+        }
+        function authorize() {
+            var data = grid.getSelectedRow();
+            if (data) {
+                if (authorizeddialog) {
+                    authorizeddialog.set('roledata', data);
+                    authorizeddialog.setUrl('/index.php?g=Query&m=Consume&a=roleauthorized');
+                    authorizeddialog.show();
+                }
+                else {
+                    authorizeddialog = $.ligerDialog.open({
+                        height: 650,
+                        url: '/index.php?g=Query&m=Consume&a=roleauthorized',
+                        width: 650,
+                        showToggle: false,
+                        showMin: false,
+                        showMax: true,
+                        isResize: true,
+                        modal: false,
+                        roledata: data,
+                        title: '菜单权限',
+                        buttons: [
+                        {
+                            text: '保存', onclick: function (item, dialog) {
+                                dialog.frame.f_save();
+                            }
+                        },
+                        {
+                            text: '关闭', onclick: function (item, dialog) {
+                                dialog.hide();
+                            }
+                        }
+                        ]
+                    });
+                }
+            } else {
+                $.ligerDialog.alert('请选择授权的角色');
+            }
+        }
+        function del() {
+            var row = grid.getSelectedRow();
+            if (row) {
+                $.ligerDialog.confirm("角色删除后不能恢复，\n您确定要移除？", function (yes) {
+                    if (yes) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/index.php?g=Query&m=Consume&a=saverole", /* 注意后面的名字对应CS的方法名称 */
+                            data: { type: "del",row: row }, /* 注意参数的格式和名称 */
+                            success: function (result) {
+                                $.ligerDialog.alert(result);
+                                setTimeout(function () {
+                                    grid.reload();
+                                }, 2000);
+                            }
+                        });
+                    }
+                })
+            } else {
+                $.ligerDialog.warn("请选择行");
+            }
+        }
+
+        function role_emp() {
+            var manager = $("#maingrid4").ligerGetGridManager();
+            var row = manager.getSelectedRow();
+            if (row) {
+                top.$.ligerDialog.open({
+                    width: 700, height: 500, url: 'system/Role_emp.aspx?rid=' + row.RoleID, title: "角色人员管理", buttons: [
+                        { text: '确定', onclick: f_importOK },
+                        { text: '取消', onclick: f_importCancel }
+                    ]
+                });
+            } else {
+                $.ligerDialog.warn("请选择行");
+            }
+        }
+        function data_authorized() {
+            var manager = $("#maingrid4").ligerGetGridManager();
+            var row = manager.getSelectedRow();
+            if (row) {
+                top.$.ligerDialog.open({
+                    width: 600, height: 300, url: 'system/Sys_data_authorized.aspx?rid=' + row.RoleID, title: "数据权限管理", buttons: [
+                        { text: '确定', onclick: f_importOK },
+                        { text: '取消', onclick: f_importCancel }
+                    ]
+                });
+            } else {
+                $.ligerDialog.warn("请选择行");
+            }
+        }
+        function f_importOK(item, dialog) {
+            var isSave = dialog.frame.f_save();
+            if (isSave == "true") {
+                dialog.close();
+            }
+        }
+        function f_importCancel(item, dialog) {
+            dialog.close();
+        }
+
+    </script>
+    </head>
+    <body style="margin:0;padding:0">
+        <div class="am-cf admin-main" style="padding:0;margin:0">
+            <!-- content start -->
+            <div class="admin-content">
+                <div class="admin-content-body">
+                    <div id="toolbar"></div>
+                    <div id="maingrid4" style="margin:0; padding:0;"></div>
+                </div>
+            </div>
+            <!-- content end -->
+        </div>
+</body>
+</html>

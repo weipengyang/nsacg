@@ -1,0 +1,239 @@
+﻿<link rel="stylesheet" type="text/css" href="{pigcms::RES}/css/index.css" media="all" />
+<script type="text/javascript" charset="utf-8" async="" src="{pigcms::RES}/crmqq.php"></script>
+<script type="text/javascript" charset="utf-8" async="" src="{pigcms::RES}/js/contains.js"></script>
+<script type="text/javascript" charset="utf-8" async="" src="{pigcms::RES}/js/localStorage.js"></script>
+<script type="text/javascript" charset="utf-8" async="" src="{pigcms::RES}/js/taskMgr.js"></script>
+<script type="text/javascript" charset="utf-8" async="" src="{pigcms::RES}/js/views.js"></script>
+ <link href="{pigcms::RES}/css/base.css" type="text/css" rel="stylesheet">
+ <script type="text/javascript" src="{pigcms::RES}/js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="{pigcms::RES}/js/jquery.cityselect.js"></script>
+    <script type="text/javascript" src="{pigcms::RES}/js/HeaderMenu.js"></script>
+    <link href="{pigcms::RES}/css/HaedMenu.css" type="text/css" rel="stylesheet">
+    <link href="{pigcms::RES}/css/notification.css" rel="stylesheet" type="text/css">
+    <script src="{pigcms::RES}/js/notification.js" type="text/javascript"></script>
+    <script src="{pigcms::RES}/js/jquery.cookie.js" type="text/javascript"></script>
+    
+
+	<script type="text/javascript" src="{pigcms::RES}/js/jfade.js"></script>
+     <script type="text/javascript" src="{pigcms::RES}/js/images.js"></script> 
+ 
+
+<script src="{pigcms::RES}/js/html5.js"></script>
+
+
+
+
+
+
+
+<script type="text/javascript" src="{pigcms::RES}/js/jQuery.js"></script>
+
+
+
+
+
+
+
+<script type="text/javascript" src="{pigcms::RES}/js/carouFredSel.js"></script>
+
+
+
+
+
+
+
+<body>
+
+
+
+ <div class="w-top">
+            <div class="w-head">
+                
+                <div class="w-wrap">
+                    <a class="w-left" href="#"><img src="{pigcms:$f_logo}" /></a>
+                    <div class="w-head-line w-left">
+                    </div>
+                    <div class="w-left w-margin10">
+                        <div class="w-city-select">
+                           
+                        </div>
+                            <div class="w-head-login">
+                                <a href="{pigcms::U('Index/login')}" class="">登录</a>&nbsp;｜&nbsp;<a href="{pigcms::U('Index/reg')}" class="">注册</a></div>
+                    </div>
+                    <ul class="w-menu Menu">
+                          <li><a href="/" class="hover">首页</a></li>
+
+
+
+
+
+
+
+                    <li><a href="{pigcms::U('Home/Index/fc')}">功能介绍</a></li>
+
+
+
+
+
+
+
+                    <li><a href="{pigcms::U('Home/Index/about')}">关于我们</a></li>
+
+
+
+
+
+
+
+                    <li><a href="{pigcms::U('Home/Index/price')}">资费说明</a></li>
+
+
+
+
+
+
+
+  
+
+  					
+
+
+
+
+
+               	<if condition="$_SESSION[uid]==false">
+				<li><a href="{pigcms::U('Index/login')}">登录后台</a></li>
+				<li><a href="{pigcms::U('Index/reg')}" class="hover">申请试用</a></li>
+					<else/>
+                <li><a href="{pigcms::U('User/Index/index')}">管理中心</a></li>
+				<li><a href="/#" onClick="Javascript:window.open('{pigcms::U('System/Admin/logout')}','_blank')" >退出</a></li>
+				</if>	
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+<!--
+
+    <div class="nav clearfix">
+
+
+
+
+
+
+
+        <div class="nav-content">   
+
+
+
+
+
+
+
+		
+
+
+
+
+
+
+
+		<img src="{pigcms::C('logo')}"   >
+
+
+
+
+
+
+
+            <div class="right line-li">
+
+
+
+
+
+
+
+                <ul>
+
+
+
+
+
+
+
+                    <li><a href="/" class="hover">首页</a></li>
+
+
+
+
+
+
+
+                    <li><a href="{pigcms::U('Home/Index/fc')}">功能介绍</a></li>
+
+
+
+
+
+
+
+                    <li><a href="{pigcms::U('Home/Index/about')}">关于我们</a></li>
+
+
+
+
+
+
+
+                    <li><a href="{pigcms::U('Home/Index/price')}">资费说明</a></li>
+
+
+
+
+
+
+
+                    <li><a href="{pigcms::U('Home/Index/guide')}">案例展示</a></li>
+
+  					
+
+
+
+
+
+               	<if condition="$_SESSION[uid]==false">
+				<li><a href="{pigcms::U('Index/login')}">登录后台</a></li>
+				<li><a href="{pigcms::U('Index/reg')}" class="hover">申请试用</a></li>
+					<else/>
+                <li><a href="{pigcms::U('User/Index/index')}">管理中心</a></li>
+				<li><a href="/#" onClick="Javascript:window.open('{pigcms::U('System/Admin/logout')}','_blank')" >退出</a></li>
+				</if>	
+
+                </ul>
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+      </div>
+
+
+
+
+
+
+
+    </div>-->

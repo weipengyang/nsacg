@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <script type="text/javascript">
+        $(document).on('click', '#cancle', function () {
+            $.alert('Here goes alert text');
+        });
+
+        //$(document).on('click', '#cancle',function(e){alert(1111);});
+        $(document).on('click', '#showcard',
+        function (e) {
+            var tel = $("#tel").val();
+            var carno = $("#carno").val();
+            var truename = $("#truename").val();
+            var password = $("#password").val();
+            var password2 = $("#password1").val();
+            var sex = $("#sex").val();
+            //var twid = $twid;
+            //var cid=$cid;
+            if (carno == '') {
+                $.alert("请输入车牌号码");
+                return;
+            }
+            if (tel == '') {
+                $.alert("请认真输入手机号");
+                return;
+            }
+            if (password == '') {
+                $.alert(" 请设置支付密码");
+                return;
+            }
+            var submitData = {
+                tel: tel,
+                carno: carno,
+                truename: truename,
+                password: password,
+                password2: password2,
+                sex: sex,
+                action: "index"
+            };
+            $.post('index.php?g=Wap&m=Store&a=userinfo&token={pigcms:$Think.get.token}&wecha_id={pigcms:$Think.get.wecha_id}', submitData,
+           function (data) {
+               if (data == 1) {
+                   $.alert('个人信息保存成功');
+               } else if (data == 2) {
+                   $.alert('成功领取了会员卡');
+               } else if (data == 3) {
+                   $.alert('该商家会员卡缺货了');
+               } else if (data == 4) { 
+                   $.alert('您的积分不够领取该会员卡');
+               } else if (data == 5) {
+                   $.alert('短信验证码无效');
+               } else if (data == 6) {
+                   $.alert('该车牌号码已经绑定两个微信，每个车牌最多绑定两个微信.');
+               }
+               else {
+                   $.alert(data);
+                   location.href = "{pigcms::U('Store/index',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id']))}";
+               }
+           });
+        });
+       
+    </script>
+</head>
+<body>
+    <div class="page">
+        <header class="bar bar-nav">
+            <h1 class='title'>用户资料</h1>
+        </header>
+        <div class="content">
+            <div class="list-block" style="margin-top:5px;padding-top:2px">
+                <ul>
+                    <!-- Text inputs -->
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-toggle"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">保险到期提醒</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-toggle"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">年检到期提醒</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-toggle"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">维修完工提醒</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-toggle"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">维修完工提醒</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-toggle"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">购买消息提醒</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-toggle"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">卡卷兑换提醒</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- Date
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-calendar"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">生日</div>
+                                <div class="item-input">
+                                    <input type="date" placeholder="Birth day" value="2014-04-30">
+                                </div>
+                            </div>
+                        </div>
+                    </li>-->
+                </ul>
+            </div>
+            <div class="content-block">
+                <div class="row">
+                    <div class="col-50"><a href="#" id="cancle" class="button button-big button-fill button-danger">取消</a></div>
+                    <div class="col-50"><a href="#" id="showcard" class="button button-big button-fill button-success">保存</a></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="meituan_check" style="margin:0 0 55px 0"><br><br><br></div>
+    </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+</body>
+    {pigcms:$shareScript}
+</html>

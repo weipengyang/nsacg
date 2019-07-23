@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>新增配件目录</title>
+    <meta name="description" content="爱养车" />
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var dialog,form;
+        $(function ()
+        {
+               form = $("#form1").ligerForm({
+                inputWidth: 160, labelWidth: 85, space: 20,
+                validate: true,
+                fields: [
+                    {
+                        display: "编号", name: "编号", newline: true, type: "text", readonly: true
+                    },
+                    { display: "原厂编号 ", name: "原厂编号", newline: false, type: "text" },
+                    { display: "类别", name: "类别", newline: false, type: "text", readonly: true },
+                   {
+                        display: "名称", name: "名称", newline: false, type: "text"
+                   },
+                    {
+                        display: "服务券编码", name: "券编码", newline: false, type: "combobox",
+                        options: {
+                            valueField: 'id',
+                            textField: 'title',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getcouponlist',
+                        }
+                    },
+                    { display: "品牌 ", name: "品牌", newline: false, type: "text" },
+                    { display: "规格 ", name: "规格", newline: false, type: "text" },
+                    { display: "最新进价 ", name: "最新进价", newline: false, type: "text", validate: { required: true } },
+                    { display: "参考进价 ", name: "参考进价", newline: false, type: "text", validate: { required: true } },
+                    { display: "参考售价", name: "参考售价", newline: false, type: "text" },
+                    { display: "一级批发价", name: "一级批发价", newline: false, type: "text" },
+                    { display: "二级批发价", name: "二级批发价", newline: false, type: "text" },
+                    { display: "三级批发价", name: "三级批发价", newline: false, type: "text" },
+                    { display: "四级批发价", name: "四级批发价", newline: false, type: "text" },
+                    { display: "五级批发价", name: "五级批发价", newline: false, type: "text" },
+                    {
+                        display: "警戒下限", name: "警戒下限", newline: false, type: "text"
+
+                    },
+                 { display: "库存单位 ", name: "库存单位", newline: false, type: "text" },
+                 { display: "产地", name: "产地", newline: false, type: "text" },
+                 { display: "等级", name: "等级", newline: false, type: "text" },
+                 { display: "适用车型 ", name: "适用车型", newline: false, type: "text" },
+                 {
+                     display: "默认仓库 ", name: "默认仓库", newline: false, type: "combobox",
+                     options: {
+                         valueField: '名称',
+                         textField: '名称',
+                         autocomplete: true,
+                         url: '/index.php?g=Query&m=Consume&a=getstorelist',
+                     }
+                 },
+                 { display: "编码", name: "编码", newline: false, type: "text" },
+                 { display: "年份", name: "年份", newline: false, type: "text" },
+                 { display: "关联编码", name: "号码", newline: false, readonly: true },
+                 { display: "零售利润", name: "零售利润", newline: false, type: "text" },
+                 { display: "批发利润", name: "批发利润", newline: false, type: "text" },
+                 { display: "停用", name: "停用", newline: false, type: "checkbox" },
+                 { display: '配套车型', name: '备注', type: "textarea", width: 430, height: 100 },
+
+                ],
+                buttons: [                    {
+                        text: "取消", width: 60, click: function () {
+                            dialog.hide();
+                        }
+                    },                    {
+                        text: "保存", width: 60, click: function () {
+                            var data = form.getData();
+                            if (data['名称'] == '') {
+                                $.ligerDialog.alert('请输入名称');
+                                return;
+                            }
+                            var opt = dialog.get('opt');
+                            var submitData = {
+                                type:opt,
+                                stockinfo: data
+                            };
+                            $.post('index.php?g=Query&m=Consume&a=savestock', submitData,
+                              function (data) {
+                                  $.ligerDialog.alert(data);
+                                  window.parent.liger.get('maingrid4').reload();
+                                  dialog.hide();
+
+                              });
+                        }
+                    }            ]            });
+            dialog = frameElement.dialog;
+            var data = dialog.get('data');
+            $("input[ligeruiid='类别']").val(data['type']);
+            $("input[ligeruiid='适用车型']").val('专车专用');
+            $("input[ligeruiid='规格']").val('原厂配套');
+
+            if (getQueryString('code')) {
+                $.post('index.php?g=Query&m=Consume&a=getstock&code=' + getQueryString('code'), null,
+                function (data) {
+                    if (data) {
+                        form.setData(data);
+                        $("input[ligeruiid='默认仓库']").val(data['默认仓库']);
+
+                    }
+                }, 'JSON');
+            }
+            else {
+                $.post('index.php?g=Query&m=Consume&a=genproductcode&type=' + data['type'], null,
+                function (code) {
+                    $("input[ligeruiid='编号']").val(code);
+
+                });
+            }
+        });
+
+    </script>
+</head>
+
+<body style="padding:10px">
+    <div id="form1">
+    </div>
+</body>
+</html>

@@ -1,0 +1,313 @@
+﻿<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>在线预订未处理</title>
+<meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="{pigcms::RES}/css/hotels.css"/>
+<script type="text/javascript" src="{pigcms::RES}/js/jquery.js"></script>
+</head>
+
+<body id="hotelsno">
+
+<div class="cardexplain">
+<ul class="round">
+<li class="title mb"><span class="none"></span></li>
+<li class="nob"><div class="beizhu"></div></li>
+<li class="nob">
+<form id="form_order" action="{pigcms::U('Home/Index/add_order')}" method="post" />
+<table class="kuang" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<th>预订人</th>
+<td><input name="name" class="px" id="truename" value="" placeholder="请输入您的真实姓名" type="text"></td>
+</tr>
+</tbody></table>
+</li>
+<li class="nob">
+<table class="kuang" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<th>联系电话</th>
+<td><input name="phone" class="px" id="tel" value="" placeholder="请输入您的电话" type="text"></td>
+</tr>
+</tbody></table>
+</li>
+<li class="nob">
+<table class="kuang" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<th>入住时间</th>
+<td> 
+<select name="come_time" id="dateline" class="dropdown-select">
+                    
+      <option selected="selected" value="2013-08-16">2013-08-16 </option>
+</select></td>
+</tr>
+</tbody></table>
+</li>
+
+        <input name="formhash" id="formhash" value="0467fd79" type="hidden">
+<li class="nob">
+<table class="kuang" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<th>类型</th>
+<td>
+<select name="type" onchange="get_price(this.value,1)" id="type" class="dropdown-select"> 
+    <option selected="selected" value="0">--选择房间类型--</option> 
+      <option  value="1">标准间</option>
+     <option  value="2">豪华间</option>
+	<option  value="3">总统套房</option>
+</select>
+</td>
+</tr>
+</tbody></table>
+</li>
+
+<li class="nob">
+<table class="kuang" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<th>预订数量</th>
+<td><select name="num" onchange="get_price(this.value,2)" class="dropdown-select" id="nums">
+<option selected="selected" value="0">--选择间数--</option>
+<option  value="1">1间</option>
+<option value="2">2间</option>
+<option value="3">3间</option>
+<option value="4">4间</option>
+<option value="5">5间</option>
+<option value="6">6间</option>
+<option value="7">7间</option>
+<option value="8">8间</option>
+<option value="9">9间</option>
+<option value="10">10间</option>
+                        <option value="11">11间</option>
+<option value="12">12间</option>
+<option value="13">13间</option>
+<option value="14">14间</option>
+<option value="15">15间</option>
+<option value="16">16间</option>
+<option value="17">17间</option>
+<option value="18">18间</option>
+<option value="19">19间</option>
+<option value="20">20间</option>
+</select></td>
+</tr>
+</tbody></table>
+</li>
+<li class="nob">
+<table class="kuang" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<th>原价</th>
+<td class="userinfo" id="price1">￥0</td>
+</tr>
+</tbody></table>
+</li>
+<li class="nob">
+<table class="kuang" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<th>现价</th>
+<td class="userinfo price" id="price2">￥0</td>
+</tr>
+</tbody></table>
+</li>
+<li class="nob">
+<table class="kuang" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<th>为你节省</th>
+<td class="userinfo price2" id="price3">￥0</td>
+</tr>
+</tbody></table>
+</li>
+                                                                   
+
+                                             <li class="nob">
+<table class="kuang" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<th class="thtop" valign="top">备注</th>
+<td><textarea name="info" class="pxtextarea" style=" height:99px;overflow-y:visible" id="info" placeholder="请输入备注信息"></textarea></td>
+</tr>
+</tbody></table>
+</form>
+</li>
+</ul>
+
+<div class="footReturn">
+<ul>
+
+<li class="footerbtn"><a id="showcard" class="submit left3" href="javascript:void(0)">提交订单</a></li>
+</ul>
+<div class="clr"></div>
+<div class="window" id="windowcenter">
+<div id="title" class="wtitle">操作成功<span class="close" id="alertclose"></span></div>
+<div class="content">
+<div id="txt"></div>
+</div>
+</div>
+</div>
+<script type="text/javascript"> 
+function get_price(num,type)
+{
+ var price_1=150;
+ var price_1_now=100;
+ var price_2=250;
+var price_2_now=180;
+ var price_3= 550;
+var price_3_now= 450;
+//类型 
+if(type==1){
+ var jian=$("#nums").val();
+        if(num==0)
+{
+       $("#price1").text("￥0");
+       $("#price2").text("￥0"); 
+       $("#price3").text("￥0");  
+} 
+       if(num==1)
+{
+       $("#price1").text("￥"+price_1*jian);
+       $("#price2").text("￥"+price_1_now*jian); 
+       $("#price3").text("￥"+(parseInt(price_1*jian)-parseInt(price_1_now*jian)));  
+}
+       if(num==2)
+{
+       $("#price1").text("￥"+price_2*jian);
+       $("#price2").text("￥"+price_2_now*jian); 
+       $("#price3").text("￥"+(parseInt(price_2*jian)-parseInt(price_2_now*jian)));  
+}
+       if(num==3)
+{
+       $("#price1").text("￥"+price_3*jian);
+       $("#price2").text("￥"+price_3_now*jian); 
+       $("#price3").text("￥"+(parseInt(price_3*jian)-parseInt(price_3_now*jian)));  
+}
+}
+if(type==2){
+ var jian=$("#type").val();
+      if(jian==0)
+{
+       $("#price1").text("￥0");
+       $("#price2").text("￥0"); 
+       $("#price3").text("￥0");  
+} 
+       if(jian==1)
+{
+       $("#price1").text("￥"+price_1*num);
+       $("#price2").text("￥"+price_1_now*num); 
+       $("#price3").text("￥"+(parseInt(price_1*num)-parseInt(price_1_now*num)));  
+}
+       if(jian==2)
+{
+       $("#price1").text("￥"+price_2*num);
+       $("#price2").text("￥"+price_2_now*num); 
+       $("#price3").text("￥"+(parseInt(price_2*num)-parseInt(price_2_now*num)));  
+}
+       if(jian==3)
+{
+       $("#price1").text("￥"+price_3*num);
+       $("#price2").text("￥"+price_3_now*num); 
+       $("#price3").text("￥"+(parseInt(price_3*num)-parseInt(price_3_now*num)));  
+}
+}
+
+
+return false
+alert(num)
+
+}
+function dothis(nums){
+ 
+var str1 = 488.0*nums;
+var str2 = 388.0*nums;
+var str3 = 100*nums;
+$("#price1").text("￥"+str1);
+$("#price2").text("￥"+str2);
+$("#price3").text("￥"+str3);
+}
+
+var oLay = document.getElementById("overlay");	
+$(document).ready(function () { 
+
+
+$("#showcard").click(function () { 
+$("#form_order").submit();
+
+
+
+var submitData = {
+wxname: "o7MB9jsGSEnQmTFoxicPMNdLFN5Y",
+truename: $("#truename").val(),
+info: $("#info").val(),
+nums: $("#inums").val(),
+dateline: $("#dateline").val(),
+//dateline2: $("#dateline2").val(),
+  
+    
+    
+    
+    
+  
+  
+  
+  
+ formhash: $("#formhash").val(),
+tel: $("#tel").val(),
+action: "setTel"
+};
+$.post('index.php?ac=hotelsno&tid=882&c=o7MB9jsGSEnQmTFoxicPMNdLFN5Y', submitData,
+function(data) {
+if (data.success == true) {
+alert(data.msg);
+setTimeout("window.location.href='index.php?ac=hotelslist&c=o7MB9jsGSEnQmTFoxicPMNdLFN5Y&tid=1'",2000);
+return
+} else {
+alert("保存失败。"); 
+}
+},
+"json")
+oLay.style.display = "block";
+}); 
+}); 
+
+$("#showcard2").click(function () { 
+var submitData = {
+reid: "882",
+wxname: "o7MB9jsGSEnQmTFoxicPMNdLFN5Y",
+formhash: $("#formhash").val(),
+action: "del"
+};
+$.post('index.php?ac=hotelsno&tid=882&c=o7MB9jsGSEnQmTFoxicPMNdLFN5Y', submitData,
+function(data) {
+if (data.success == true) {
+alert(data.msg);
+
+setTimeout("window.location.href='index.php?ac=hotelslist&c=o7MB9jsGSEnQmTFoxicPMNdLFN5Y&tid=1'",2000);
+return
+} else {
+alert("保存失败。"); 
+}
+},
+"json")
+oLay.style.display = "block";
+}); 
+
+$("#windowclosebutton").click(function () { 
+$("#windowcenter").slideUp(500);
+oLay.style.display = "none";
+
+}); 
+$("#alertclose").click(function () { 
+$("#windowcenter").slideUp(500);
+oLay.style.display = "none";
+
+}); 
+function alert(title){ 
+
+$("#windowcenter").slideToggle("slow"); 
+$("#txt").html(title);
+
+setTimeout('$("#windowcenter").slideUp(500)',4000);
+} 
+
+</script> 
+</div>
+
+
+</body></html>

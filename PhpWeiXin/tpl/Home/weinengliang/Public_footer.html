@@ -1,0 +1,45 @@
+<div class="foot_linksbg">
+<div class="foot_links">
+<div class="links">
+<h3>LINK</h3>
+<div class="links_con">
+<volist name="links" id="loo">	
+<a href="{pigcms:$loo.url}" target="blank" rel="nofollow">{pigcms:$loo.name}</a>
+</volist>
+</div>
+</div>
+<div class="keyword">
+<h3>KEYWORD</h3>
+<div class="links_con">
+<a href="{pigcms::C('site_url')}" target="_blank">{pigcms::C('site_name')}首页</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+<a href="{pigcms::U('Home/Index/reg')}" target="_blank">申请入驻</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+<a href="{pigcms::U('Home/Index/proxy')}" target="_blank">渠道代理</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+<a href="{pigcms::U('Home/Index/about')}" target="_blank">关于{pigcms::C('site_name')}</a>
+</div>
+</div>
+<div class="address">
+<p>公司地址：{pigcms::C('site_adress')}</p>
+</div>
+<div class="link_btn">
+<ul >
+<li><a href="http://wpa.qq.com/msgrd?V=3&amp;Uin={pigcms::C('site_qq')}&amp;Site={pigcms::C('site_name')}-微信公众平台开源管理系统&amp;Menu=yes&amp;from=discuz" target="_blank"title="" class="link_qq"></a></li>
+<li><a href="http://e.weibo.com/" title="" class="link_sina"></a></li>
+<li class="link_weixin_li"><a href="javasctipt:void(0);" title="" class="link_weixin"></a>
+<div class="link_weixin_ewm">
+<img src="{pigcms::RES}/images/ewm.jpg" width="129" height="129" alt="">
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="footbg">
+<div class="foot">
+<p class="fl">Powered by Copyright © 2011-<?php echo date('Y',time());?> {pigcms::C('server_topdomain')}. All Rights Reserved {pigcms::C('copyright')} {pigcms::C('ipc')} {pigcms::C('counts')}</a></p>
+<p class="fr">邮箱：{pigcms::C('site_email')}&nbsp;&nbsp;&nbsp;&nbsp;咨询热线：{pigcms::C('site_mp')}</a>
+</p>
+</div>
+</div>
+</div>
+<div class="qqico">
+ <a href="http://wpa.qq.com/msgrd?V=3&amp;Uin={pigcms::C('site_qq')}&amp;Site={pigcms::C('site_name')}-微信公众平台管理系统&amp;Menu=yes&amp;from=discuz" title="点击立即咨询" target="_blank"><img src="{pigcms::RES}/images/qqico.png" width="67" HEIGHT="65" class="png" ALT="点击立刻咨询"></a></div></div></div>

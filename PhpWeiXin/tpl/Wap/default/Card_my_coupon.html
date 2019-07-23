@@ -1,0 +1,242 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>{pigcms:$thisCard.cardname}优惠券</title>
+    <meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <link href="{pigcms::RES}/card/style/style.css" rel="stylesheet" type="text/css">
+    <script src="/tpl/static/jquery.min.js" type="text/javascript"></script>
+    <!-- <script src="/tpl/static/alert.js" type="text/javascript"></script> -->
+    <script src="{pigcms::RES}/card/js/accordian.pack.js" type="text/javascript"></script>
+    <link href="/tpl/static/kindeditor/examples/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" rel="stylesheet" type="text/css">
+    <script src="/tpl/static/kindeditor/examples/jquery-ui/js/jquery-ui-1.9.2.custom.js" type="text/javascript"></script>
+</head>
+<body id="cardnews" onload="new Accordian(&#39;basic-accordian&#39;,5,&#39;header_highlight&#39;);" class="mode_webapp">
+    <div class="qiandaobanner"><a href="javascript:history.go(-1);"><img src="{pigcms:$thisCard.vip}"></a> </div>
+    <style>
+        header {
+            margin: 0 10px;
+            position: relative;
+            z-index: 4;
+        }
+
+            header ul {
+                margin: 0 -1px;
+                border: 1px solid #179f00;
+                border-radius: 3px;
+                width: 100%;
+                overflow: hidden;
+            }
+
+                header ul li a.bl {
+                    border-left: 1px solid #0b8e00;
+                }
+
+                header ul li a.on {
+                    background-color: #179f00;
+                    color: #ffffff;
+                    background-image: -moz-linear-gradient(center bottom, #179f00 0%, #5dd300 100%);
+                }
+
+                header ul li a {
+                    color: #0b8e00;
+                    display: block;
+                    font-size: 15px;
+                    height: 28px;
+                    line-height: 28px;
+                    text-align: center;
+                    width: 33%;
+                    float: left;
+                }
+
+        .pic {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .over {
+            background: #aaa;
+            border: 1px solid #aaa;
+            box-shadow: 0 1px 0 #cccccc inset, 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .window .title {
+            background-image: linear-gradient(#179f00, #179f00);
+        }
+
+        .ui-widget-content {
+            border-color: #e9e9e9;
+        }
+
+        .ui-dialog {
+            padding: 0;
+        }
+
+        .ui-widget-header {
+            border: 0;
+            background: #179F00;
+        }
+
+        .ui-widget-header {
+            color: #fff;
+        }
+
+        .infos {
+            word-break: break-all;
+            overflow: auto;
+        }
+    </style>
+    <header>
+        <nav id="nav_1" class="p_10">
+            <ul class="box">
+                <li><a href="index.php?g=Wap&m=Card&a=my_coupon&token={pigcms:$token}&wecha_id={pigcms:$wecha_id}&cardid={pigcms:$thisCard.id}&type=1" class="<if condition=" $type eq 1">on</if>">优惠券({pigcms:$couponCount})</a></li>
+                <li><a href="index.php?g=Wap&m=Card&a=my_coupon&token={pigcms:$token}&wecha_id={pigcms:$wecha_id}&cardid={pigcms:$thisCard.id}&type=2" class="bl <if condition=" $type eq 2">on</if>">代金券({pigcms:$cashcount})</a></li>
+                <li><a href="index.php?g=Wap&m=Card&a=my_coupon&token={pigcms:$token}&wecha_id={pigcms:$wecha_id}&cardid={pigcms:$thisCard.id}&type=3" class="bl <if condition=" $type eq 3">on</if>">礼品券({pigcms:$integralcount})</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div id="basic-accordian">
+        <volist name="list" id="item">
+            <div id="test{pigcms:$item.id}-header" class="accordion_headings  <?php if ($item['id']==$firstItemID){?>header_highlight<?php } ?>">
+                <div class="tab  <if condition=" $type eq 3">
+                    gift<else />coupon</if>">
+                    <span class="title">
+                        {pigcms:$item.title}(剩余{pigcms:$item.get_count}张)
+                        <if condition="$type eq 3">
+                            <p>{pigcms:$item.integral}积分兑换一张</p>
+                            <else/>
+                            <p>会员优惠价￥{pigcms:$item.money}元</p>
+                        </if>
+                        <p>有效期至{pigcms:$item.enddate|date='Y年m月d日',###}</p>
+                    </span>
+                </div>
+                <div id="test{pigcms:$item.id}-content" >
+                    <div class="accordion_child">
+                        <div id="queren{pigcms:$item.id}">
+                            <img src="{pigcms:$item.pic}" class="pic" >
+                            <if condition="$item.get_count lt 1">
+                                <a class="submit over" href="javascript:void(0)">已经卖光</a>
+                                <else />
+                                <if condition="$type eq 3">
+                                    <a class="submit" href="javascript:void(0)" onclick="payformsubmit({pigcms:$item.id},{pigcms:$item.integral})">点击兑换</a>
+                                <else/>
+                                    <a class="submit" href="javascript:void(0)" onclick="payformsubmit({pigcms:$item.id},{pigcms:$item.money})">点击购买</a>
+                                </if>
+                            </if>
+                        </div>
+                        <ul style="min-height:100px;">
+                            <b>详情说明：</b>
+                            <p class="infos">{pigcms:$item.info}</p>
+                        </ul>
+                        <div style="clear:both;height:20px;"></div>
+                    </div>
+                    <div style="clear:both;height:20px;"></div>
+                </div>
+            </div>
+        </volist>
+    </div>
+    <script>
+        var jQ = jQuery.noConflict();
+        //加减
+        function plus_minus(number,price) {
+            var num = parseInt($('#buy_num').val());
+            num = num + parseInt(number);
+            if (num > parseInt($('#stock').text())) {
+                num = parseInt($('#stock').text());
+            }
+            if (num < 0) {
+                return false;
+            }
+            $('#buy_num').attr('value',num);
+        } 
+        function payformsubmit(itemid,money){
+            var submitData = {
+                coupon_id:itemid,
+                cardid: '{pigcms:$thisCard.id}',
+                type: '{pigcms:$type}',
+                cat:3,
+            };
+
+            var html=[];
+            html.push('<table>');
+            html.push(' <tr>');
+            html.push('<td><span>单价：￥'+money+'</span></td>');
+            html.push('</tr>');
+            html.push('<tr>');
+            html.push('<td><span>购买数量：</span><input id="buy_num" name="buy_num" type="text" value="1"></td>');
+            html.push('</tr>');
+            html.push('</table>');
+            if(submitData.type == 3){
+                jQ("#message").text('兑换礼品券需要消耗'+money+'点积分，确定领取吗？');
+            }else if(submitData.type == 2){
+                jQ("#message").text('确定要购买此代金卷吗？');
+            }else{
+                //jQ("#message").text('点击确定后将从您的会员卡上扣除'+money+'元，您确定要购买此优惠卷吗？');
+                jQ("#message").html(html.join(''));
+
+            }
+            jQ("#message").dialog({
+                title: "提示",
+                modal: true,
+                resizable: false,
+                buttons: {
+                    "取消": function() {
+                        jQ(this).dialog("close");
+                    },
+                    "确定": function() {
+                        if(submitData.type == 3){
+                            ajaxSub(submitData);//方法回调
+                        }else{
+                            var num=parseInt(jQ("#message :input").val());
+                            submitData["buynum"]=num;
+                            corfimpasswd(submitData,money*num);
+                        }
+                        //jQ("#message").text('');
+                    }
+                }
+            });
+        }
+        function corfimpasswd(submitData,money)
+        {
+            jQ("#message").html('<span>总金额:￥'+money+'元</span><input type="password" name="pass" class="inp" id="pass" placeholder="支付密码" /></div>');
+            jQ("#message").dialog({
+                title:"输入支付密码",
+                modal: true,
+                buttons: {
+                    "确定": function() {
+                        var password=jQ("#message :input").val();
+                        submitData["password"]=password
+                        ajaxSub(submitData);
+                        //jQ("#message").text('');
+                    }
+                }
+            });
+        }
+        function ajaxSub(submitData){
+            jQ.post('/index.php?g=Wap&m=Card&a=action_myCoupon&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData,function(data) {
+                jQ("#message").text(data);
+                jQ("#message").dialog({
+                    title:"温馨提示！",
+                    modal: true,
+                    buttons: {
+                        "确定": function() {
+                            jQ("#message").text('');
+                            location.href=location.href;
+                            jQ(this).dialog("close");
+                        }
+                    }
+                });
+            }, "text");
+        }
+
+        jQ(function(){
+            var boardDiv = "<div id='message' style='display:none;'><span id='spanmessage'></span></div>";
+            jQ(document.body).append(boardDiv);
+        });
+    </script>
+    <include file="Card:cardFooter" />
+    <include file="Card:share" />
+</body>
+</html>

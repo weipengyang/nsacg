@@ -1,0 +1,49 @@
+<div class="wrap_header">
+    <div class="header">
+        <div class="navigation">
+            <div class="logo"><a href="./" style="background:url({pigcms:$f_logo}) no-repeat;">&nbsp;</a></div>
+            <ul>
+                <li <if condition="(ACTION_NAME eq 'index') and (GROUP_NAME eq 'Home')">class="current"</if>><a href="/">首页</a></li>
+                <li id="li_func" onclick="current()"><a href="./index.php?m=Index&a=index#func">功能</a></li>
+                <li <eq name="ACTION_NAME" value="case">class="current"</eq>><a href="{pigcms::U('Index/case')}">案例</a></li>
+                <li <eq name="ACTION_NAME" value="agency">class="current"</eq>><a href="{pigcms::U('Index/agency')}">代理</a></li>
+                <li <eq name="ACTION_NAME" value="reg">class="current"</eq>><a href="{pigcms::U('Index/reg')}">入驻</a></li>
+                <li <eq name="ACTION_NAME" value="contact">class="current"</eq>><a href="{pigcms::U('Index/contact')}">联系</a></li>
+            </ul>
+            <div class="login">
+                <if condition="$_SESSION['uid']==false">
+                  <a href="{pigcms::U('Index/login')}">登录</a>
+                  <a href="{pigcms::U('Index/reg')}" <if condition="$curr eq 'reg' ">class="current"</if>>注册</a>
+                <else />
+				  <li><a href="/index.php?g=User&m=Index&a=index">管理</a></li>
+                 <!-- <a href="{pigcms::U('Home/Index/logout')}">退出</a><a href="{pigcms::U('User/Index/index')}"><php>echo $_SESSION['uname']</php></a>-->
+				 <a href="{pigcms::U('Home/Index/logout')}">退出</a>
+                </if>
+            </div>
+            <!---201408 热线--->
+            <div class="hotline02">全国招商热线400-000-0000</div>
+            <div class="bluemobi">
+              <a href="#"><img src="{pigcms::RES}/images/hotline.png" width="219" height="76" /></a>
+            </div>
+            <script type="text/javascript">
+            	$(function(){
+					setInterval(show,10000);
+					function show(){
+						if($(".bluemobi").css("display")=="block"){
+							$(".bluemobi").hide();
+							$(".hotline02").show();
+						}else{
+							$(".bluemobi").show();
+							$(".hotline02").hide();
+						}
+					}
+				});
+				function current(){
+					$('.navigation li').removeClass('current');
+					$('#li_func').addClass('current');	
+				}	
+            </script>
+            <!---@20141009 热线 end--->
+        </div>
+    </div>
+</div>

@@ -1,0 +1,254 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>维修结算</title>
+    <meta name="description" content="爱养车" />
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        // 打印页面设置
+        function printsetup() {
+            wb.execwb(8, 1);
+        }
+        // 打印页面预览
+        function printpreview() { wb.execwb(7, 1); }
+        function printit() { if (confirm('确定打印吗？')) { wb.execwb(6, 6) } }
+
+
+        function printpage() {
+            document.getElementById("noprint").style.display = "none"; //打印整个页面包括标题，在调用打印方法之前隐藏不需要打印的页面标签。无标题将不打印标题
+            print();
+        }
+
+        function printsetup() {
+            try {
+                document.all.WebBrowser.ExecWB(8, 1);
+            }
+            catch (e) {
+            }
+            printpage();
+        }
+
+        function getQueryString(name) {
+            var now_url = document.location.search.slice(1), q_array = now_url.split('&');
+            for (var i = 0; i < q_array.length; i++) {
+                var v_array = q_array[i].split('=');
+                if (v_array[0] == name) {
+                    return v_array[1];
+                }
+            }
+            return false;
+        }
+
+    </script>
+</head>
+
+<body style="padding:10px">
+    <div style="text-align: center">
+        <input type="button" value="打印结算单" id="noprint" class="btnnm btnSearch" onmouseover="this.className='btnon btnSearch'"
+               onmouseout="this.className='btnnm btnSearch'" onclick="printsetup();" />
+    </div>
+    <br />
+    <div id="form1">
+        <table cellpadding="0" cellspacing="0" width="100%"  align="center">
+        <tr>
+            <td colspan="4" style="height: 30px; font-size: 18px; text-align: center;color:#000000">
+                广州市爱卡汽车服务有限公司客户结算单
+            </td>
+        </tr>
+        <tr style="margin-top:2rem;height: 50px;"><td style="font-size: 13px;color:#000000">
+                业务编号:{pigcms:$wxrecord['业务编号']}
+            </td>
+            <td style="font-size: 13px;color:#000000">
+                制单日期:{pigcms:$wxrecord['制单日期']|strtotime|date="Y-m-d",###}
+            </td>
+            <td style="font-size: 13px;color:#000000">
+                制单人:{pigcms:$wxrecord['制单人']}
+            </td>
+            <td style="font-size: 13px;color:#000000">
+                接车人:{pigcms:$wxrecord['接车人']}
+            </td>
+        </tr>
+    </table>
+        <table cellpadding="0" cellspacing="0" width="100%" border="0" style="border:1px #000000 solid;border-bottom:0px;">
+            <tr style="height: 32px;">
+                <td style="font-size: 13px; padding-left:5px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                  车牌号码：{pigcms:$wxrecord['车牌号码']}
+                </td>
+                <td style="font-size: 13px; padding-left:5px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                  进厂时间:{pigcms:$wxrecord['进厂时间']|strtotime|date="Y-m-d H:i",###}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                 进厂里程:{pigcms:$wxrecord['进厂里程']}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                 油 表 数:{pigcms:$wxrecord['油表数']}
+                </td>
+            </tr>
+            <tr style="height: 32px;">
+                <td style="font-size: 13px;color:#000000;padding-left:5px;">
+                   车    主：{pigcms:$wxrecord['车主']}
+                </td>
+                <td style="font-size: 13px;color:#000000;">
+                    联 系 人：{pigcms:$wxrecord['联系人']}
+                </td>
+                <td style="font-size: 13px;color:#000000;">
+                    客户电话：{pigcms:$wxrecord['联系电话']}
+                </td>
+                <td style="font-size: 13px;color:#000000;">
+                    维修类别：{pigcms:$wxrecord['维修类别']}
+                </td>
+               
+            </tr>
+        </table>
+        <notempty name="items">
+            <table cellpadding="0" cellspacing="0" width="100%" border="0" align="center" style="margin-top:0px">
+                <tr style="height: 25px;  font-size: 13px; text-align: center;">
+                    <td style="width:8%; border: 1px #000000 solid;color:#000000">
+                        序号
+                    </td>
+                    <td colspan="3" style="width:50%; text-align: center; border: 1px #000000 solid;color:#000000">
+                        维修项目
+                    </td>
+                    <td style="width: 6%; border: 1px #000000 solid;color:#000000">
+                        工时
+                    </td>
+                    <td style="width: 6%; border: 1px #000000 solid;color:#000000">
+                        单价
+                    </td>
+                    <td style="width: 6%; border: 1px #000000 solid;color:#000000">
+                        金额
+                    </td>
+                    <td style="width: 6%; border: 1px #000000 solid;color:#000000">
+                        税额
+                    </td>
+                    <td style="width: 8%; border: 1px #000000 solid;color:#000000;">
+                        折扣
+                    </td>
+                    <td style="width: 10%; border: 1px #000000 solid;color:#000000">
+                        结算方式
+                    </td>
+                </tr>
+                <volist name="items" id="item">
+                    <tr style="height: 25px; font-size: 13px; text-align: center">
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$key+1}</td>
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$item['项目编号']}</td>
+                        <td colspan="2" style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$item['项目名称']}</td>
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$item['工时']}</td>
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">￥{pigcms:$item['单价']}</td>
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">￥{pigcms:$item['金额']}</td>
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">￥{pigcms:$item['税额']}</td>
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$item['折扣']}</td>
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$item['结算方式']}</td>
+                    </tr>
+                </volist>
+            </table>
+        </notempty>
+        <notempty name="peijian">
+            <table cellpadding="0" cellspacing="0" width="100%" border="0" align="center" style="margin-top:0px">
+                <tr style="height: 25px;  font-size: 13px; text-align: center;">
+                    <td style="width:8%; border: 1px #000000 solid;color:#000000;border-top:0">
+                        序号 
+                    </td>
+                    <td colspan="3" style="width:50%; text-align: center; border: 1px #000000 solid;color:#000000;border-top:0">
+                        维修配件
+                    </td>
+                    <td style="width: 6%; border: 1px #000000 solid;color:#000000;border-top:0">
+                        数量
+                    </td>
+                    <td style="width: 6%; border: 1px #000000 solid;color:#000000;border-top:0">
+                        单价
+                    </td>
+                    <td style="width: 6%; border: 1px #000000 solid;color:#000000;border-top:0">
+                        金额 
+                    </td>
+                    <td style="width: 6%; border: 1px #000000 solid;color:#000000;border-top:0">
+                        税额
+                    </td>
+                    <td style="width: 8%; border: 1px #000000 solid;color:#000000;border-top:0">
+                        折扣
+                    </td>
+                    <td style="width: 10%; border: 1px #000000 solid;color:#000000;border-top:0">
+                        结算方式
+                    </td>
+                </tr>
+                <volist name="peijian" id="p">
+                    <if condition="$p.结算方式 neq '自用'">
+                    <tr style="height: 25px; font-size: 13px; text-align: center">
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$key+1}</td>
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$p['编号']}</td>
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$p['名称']}</td>
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$p['备注']}</td>
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$p['数量']}</td>
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">￥{pigcms:$p['单价']}</td>
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">￥{pigcms:$p['金额']}</td>
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">￥{pigcms:$p['税额']}</td>
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$p['折扣']}</td>
+                        <td style="text-align:center;color: #000000; border:1px #000000 solid;">{pigcms:$p['结算方式']}</td>
+                    </tr>
+                    </if>
+                </volist>
+            </table>
+        </notempty>
+            <table cellpadding="0" cellspacing="0" width="100%" style="border:1px #000000 solid;border-top:0px;">
+                <tr style="height: 32px;">
+                    <td style="font-size: 13px; width: 25%; padding-left:5px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                        款项总额:￥{pigcms:$wxrecord['款项总额']}
+                    </td>
+                    <td style="font-size: 13px; width: 25%;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                        工时费:￥{pigcms:$wxrecord['工时费']}
+                    </td>
+                    <td style="font-size: 13px; width: 25%;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                        材料费:￥{pigcms:$wxrecord['材料费']}
+                    </td>
+                    <td style="font-size: 13px; width: 25%;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                        附加费:￥{pigcms:$wxrecord['附加费']}
+                    </td>
+                </tr>
+                <tr style="height: 32px;">
+                    <td style="font-size: 13px; width: 25%; padding-left:5px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                        客付金额:￥{pigcms:$wxrecord['客付金额']}
+                    </td>
+                    <td style="font-size: 13px; width: 25%;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                        优惠金额:￥{pigcms:$wxrecord['优惠金额']}
+                    </td>
+                    <td style="font-size: 13px; width: 25%;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                        应收金额:￥{pigcms:$wxrecord['应收金额']}
+                    </td>
+                    <td style="font-size: 13px; width: 25%;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                        现收金额:￥{pigcms:$wxrecord['现收金额']}
+                    </td>
+                </tr>
+                <tr style="height: 32px;">
+                    <td style="font-size: 13px; width: 25%; padding-left:5px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                        挂账金额:￥{pigcms:$wxrecord['挂账金额']}
+                    </td>
+                    <td style="font-size: 13px; width: 25%;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                        结算方式:{pigcms:$wxrecord['结算方式']}
+                    </td>
+                    <td style="font-size: 13px; width: 25%;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                        收款人:{pigcms:$wxrecord['收款人']}
+                    </td>
+                    <td style="font-size: 13px; width: 25%;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                        结算日期:{pigcms:$wxrecord['结算日期']|strtotime|date="Y-m-d",###}
+                    </td>
+                </tr>
+                <tr style="height: 32px;">
+                    <td colspan="4" style="padding-left:5px; font-size: 13px; color:#000000">
+                        备　　注：{pigcms:$wxrecord['单据备注']}
+                    </td>
+
+                </tr>
+                <tr style="height: 32px;">
+                    <td colspan="4" style="font-weight: bold; font-size: 13px;color:#000000;text-align:right">
+                        客户签字：____________________
+                    </td>
+                </tr>
+            </table>
+
+        </notempty></div>
+</body>
+</html>

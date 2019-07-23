@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+		<title>商品详情</title>
+		<meta content="app-id=518966501" name="apple-itunes-app" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no, maximum-scale=1.0"/>
+		<meta content="yes" name="apple-mobile-web-app-capable" />
+		<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+		<meta content="telephone=no" name="format-detection" />
+		<link href="{pigcms:$staticPath}/tpl/static/unitary/css/comm.css" rel="stylesheet" type="text/css" />
+		<link href="{pigcms:$staticPath}/tpl/static/unitary/css/goods.css" rel="stylesheet" type="text/css" />
+		<link href="{pigcms:$staticPath}/tpl/static/unitary/css/idangerous.swiper.css" rel="stylesheet" type="text/css" />
+		<style>
+			.pagination {
+				position: absolute;
+				left: 0;
+				text-align: center;
+				bottom:5px;
+				width: 100%;
+			}
+			.swiper-pagination-switch {
+				display: inline-block;
+				width: 10px;
+				height: 10px;
+				border-radius: 10px;
+				background: #999;
+				box-shadow: 0px 1px 2px #555 inset;
+				margin: 0 3px;
+				cursor: pointer;
+			}
+			.swiper-active-switch {
+				background: #fff;
+			}
+			.swiper-container {
+			  height: 230px;
+			  width: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<script src="{pigcms:$staticPath}/tpl/static/unitary/js/jquery190.js" language="javascript" type="text/javascript"></script>
+		<script src="{pigcms:$staticPath}/tpl/static/unitary/js/idangerous.swiper.js" language="javascript" type="text/javascript"></script>
+		
+		<div class="wrapper">
+			<?php if(time() < $unitary['endtime']){?>
+			<div id="divLotteryTime" class="pCountdown blue">
+				<s></s>
+				<span>揭晓倒计时</span>
+				<i></i>
+				<em id="min">{pigcms:$min}</em>
+				<i>:</i>
+				<em id="s">{pigcms:$s}</em>
+				<i>:</i>
+				<em id="ms">99</em>
+			</div>
+			
+			<div id="divPic" class="pPic" style="height:250px;padding:0;">
+				<div class="swiper-container">
+					<div class="swiper-wrapper">
+						<volist name="unitary_pic" id="vo">
+							<div class="swiper-slide"><img src="{pigcms:$vo}" width="100%" height="250px"></div>
+						</volist>
+					</div>
+					<div class="pagination">
+					</div>
+				</div>
+			</div>
+			
+			<div class="pro_info">
+				<h2 class="gray6">{pigcms:$unitary.name}</h2>
+				<cite class="gray9">价值：￥{pigcms:$unitary.price}.00</cite>
+			</div>
+			
+			<div class="pro_record">
+				<a href="{pigcms::U('Unitary/buyres',array('token'=>$token,'unitaryid'=>$unitary['id']))}">所有参与记录<s class="fr"></s></a>
+			</div>
+			<?php }else{?>
+			<div class="ann_detail">
+				<h3 class="gray6">{pigcms:$unitary.name}</h3>
+				<ul>
+					<li>
+						<span class="fl">
+							<a href="">
+								<if condition="$lucker.pic eq ''">
+								<img src="{pigcms:$staticPath}/tpl/static/unitary/images/00000000000000000.jpg"/>
+								<else />
+								<img src="{pigcms:$lucker.pic}"/>
+								</if>
+							</a>
+						</span>
+						<div class="ann_info">
+							<p>获得者：<a href="" class="blue">{pigcms:$lucker.name}</a></p>
+							本期夺宝<b class="orange">{pigcms:$pay_count}</b>人次
+						</div>
+					</li>
+				</ul>
+				<dl>
+					<dt class="gray6">幸运夺宝码：<b class="orange"><?php echo $unitary['lucknum'] + 100000;?></b></dt>
+					<dd class="gray9">揭晓时间：<?php echo date("Y-m-d H:i:s",$unitary['endtime']);?></dd>
+					<?php
+						$thistime = floor($lucker['addtime']/1000);
+						$ms = substr($lucker['addtime'],-3);
+					?>
+					<dd class="gray9">夺宝时间：<?php echo date("Y-m-d H:i:s",$thistime).".".$ms;?></dd>
+				</dl>
+			</div>
+			<div class="ann_btn">
+                <a href="{pigcms::U('Unitary/goodsresult',array('token'=>$token,'unitaryid'=>$unitary['id']))}">计算详情<s class="fr"></s></a>
+                <a href="{pigcms::U('Unitary/buyres',array('token'=>$token,'unitaryid'=>$unitary['id']))}">所有夺宝记录<s class="fr"></s></a>
+            </div>
+			<?php }?>
+			
+			
+			<div class="footer" style="display:block;">
+				<ul>
+					<li class="f_whole"><a href="{pigcms::U('Unitary/index',array('token'=>$token))}" class="hover" title="所有商品"><i></i>所有商品</a></li>
+					<li class="f_car"><a id="btnCart" href="{pigcms::U('Unitary/cart',array('token'=>$token))}"  title="购物车"><i><?php if($cart_count != null && $cart_count != 0){?><b>{pigcms:$cart_count}</b><?php }?></i>购物车</a></li>
+					<li class="f_personal"><a href="{pigcms::U('Unitary/my',array('token'=>$token))}"  title="我的"><i></i>我的</a></li>
+				</ul>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var mySwiper = new Swiper('.swiper-container',{
+				pagination: '.pagination',
+				loop:true,
+				grabCursor: true,
+				paginationClickable: true
+			})
+			$(function(){
+				daoshi();
+				$(".docart").click(function(){
+					var id = $(this).attr("unitaryid");
+					$.ajax({
+						type:"POST",
+						url:"{pigcms::U('Unitary/goodsajax',array('token'=>$token))}",
+						dataType:"json",
+						data:{
+							type:'docart',
+							token:"{pigcms:$token}",
+							wecha_id:"{pigcms:$wecha_id}",
+							id:id
+						},
+						success:function(data){
+							$("#btnCart i").html("<b>"+data.count+"</b>")
+							$("#dialog").fadeIn();
+							setTimeout(function(){
+								$("#dialog").fadeOut();
+							},1000);
+						}
+					});
+				})
+			})
+			var ms = parseInt($('#ms').html());
+			var s = parseInt($('#s').html());
+			var min = parseInt($('#min').html());
+			function daoshi(){
+				ms--;
+				if(ms < 0){
+					ms = 99;
+					s--;
+				}
+				if(s < 0){
+					s = 59;
+					min--
+				}
+				if(ms < 10){
+					$('#ms').html('0'+ms);
+				}else{
+					$('#ms').html(ms);
+				}
+				if(s < 10){
+					$('#s').html('0'+s);
+				}else{
+					$('#s').html(s);
+				}
+				if(min < 10){
+					$('#min').html('0'+min);
+				}else{
+					$('#min').html(min);
+				}
+				if(min < 0){
+					$('#ms').html('00');
+					$('#s').html('00');
+					$('#min').html('00');
+					location.reload();
+				}else{
+					setTimeout("daoshi()",10);
+				}
+			}
+			
+			
+			
+			
+			
+			
+		</script>
+		
+<if condition="$unitary eq ''">
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"Unitary",
+            "moduleID":"0",
+            "imgUrl": "{pigcms:$staticPath}/tpl/static/unitary/images/wxnewspic.jpg", 
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Unitary/index',array('token'=>$token))}",
+            "tTitle": "一元夺宝",
+            "tContent": ""
+        };
+</script>
+<else />
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"Unitary",
+            "moduleID":"0",
+            "imgUrl": "{pigcms:$unitary['wxpic']}", 
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Unitary/goodswhere',array('token'=>$token,'unitaryid'=>$_GET['unitaryid']))}",
+            "tTitle": "{pigcms:$unitary['name']}",
+            "tContent": "{pigcms:$unitary['wxinfo']}"
+        };
+</script>
+</if>
+{pigcms:$shareScript}
+	</body>
+</html>

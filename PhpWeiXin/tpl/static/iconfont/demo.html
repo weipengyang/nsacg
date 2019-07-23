@@ -1,0 +1,413 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>IconFont</title>
+    <link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+    <link href="demo.css" rel="stylesheet" type="text/css" />
+
+    <style>
+        .round { 
+         width:60px; height:60px;
+        background-color:#ccc; 
+        border-radius: 5px; /* 所有角都使用半径为5px的圆角，此属性为CSS3标准属性 */ 
+        -moz-border-radius: 5px; /* Mozilla浏览器的私有属性 */ 
+        -webkit-border-radius: 5px; /* Webkit浏览器的私有属性 */ 
+        border-radius: 5px 4px 3px 2px; /* 四个半径值分别是左上角、右上角、右下角和左下角 */ 
+        } 
+    </style>
+</head>
+<body class="jk-index jk-main-page">
+<div class="jk-index-container">
+    <header class="jk-index-header ">
+        <h1 class="if-icon-logo"></h1>
+        <a class="if-icon-uniE63E" href="javascript:serviceSearch()"></a>
+        <a href="/maintain/maintain-category/user-car" class="if-icon-uniE906 jk-car-logo js-car-logo"></a>
+    </header>
+    <div class="jk-index-slide">
+        <ul class="jk-index-slide-list js-slide"></ul>
+    </div>
+    <ul class="jk-index-nav">
+        <li class="jk-index-nav-item jk-index-nav-item-beauty js-index-nav-item" data-type="1">
+            <a class="jk-index-nav-item-link" href="/service?type=1">
+                <i class="if-icon-beauty-hover"></i>
+                美容
+            </a>
+        </li>
+        <li class="jk-index-nav-item jk-index-nav-item-maintain js-index-nav-item" data-type="0">
+            <a class="jk-index-nav-item-link" href="/service?type=0">
+                <i class="if-icon-maintain-hover"></i>
+                保养
+            </a>
+        </li>
+        <li class="jk-index-nav-item jk-index-nav-item-refit js-index-nav-item" data-type="2">
+            <a class="jk-index-nav-item-link" href="/service?type=2">
+                <i class="if-icon-refit-hover"></i>
+                改装
+            </a>
+        </li>
+        <li class="jk-index-nav-item jk-index-nav-item-market js-index-nav-item" data-type="3">
+            <a class="jk-index-nav-item-link" href="/service?type=3">
+                <i class="if-icon-uniE685"></i>
+                商城
+            </a>
+        </li> 
+        <li class="jk-index-nav-item jk-index-nav-item-commission">
+            <a class="jk-index-nav-item-link" href="/user/user/commission">
+                <i class="if-icon-uniE804"></i>
+                代办
+            </a>
+        </li>
+        <li class="jk-index-nav-item jk-index-nav-item-insurance">
+            <a class="jk-index-nav-item-link" href="/insurance/trains">
+                <i class="if-icon-insurance-hover"></i>
+                保险
+            </a>
+        </li>
+        <li class="jk-index-nav-item jk-index-nav-item-rescue">
+            <a class="jk-index-nav-item-link" href="/assistance#mp.weixin.qq.com">
+                <i class="if-icon-rescue-hover"></i>
+                救援
+            </a>
+        </li>
+        <li class="jk-index-nav-item jk-index-nav-item-selling-cars">
+            <a class="jk-index-nav-item-link" href="/package/package/view?package_id=848">
+                <i class="if-icon-uniE805"></i>
+                卖车
+            </a>
+        </li>
+    </ul>
+    <div class="jk-sale-module">
+        <div class="jk-sale-module-secondary">
+            <a class="jk-sale-module-secondary-item" href="javascript:;" id="top_a_0">
+                <img src="" id="top_image_0">
+            </a>
+            <a class="jk-sale-module-secondary-item" href="javascript:;" id="top_a_1">
+                <img src="" id="top_image_1">
+            </a>
+        </div>
+        <div class="jk-sale-module-secondary">
+            <a class="jk-sale-module-secondary-item" href="javascript:;" id="top_a_2">
+                <img src="" id="top_image_2">
+            </a>
+            <a class="jk-sale-module-secondary-item" href="javascript:;" id="top_a_3">
+                <img src="" id="top_image_3">
+            </a>
+        </div>
+    </div>
+    <div class="jk-index-ad-module">
+        <a class="jk-index-ad-module-item" href="javascript:;" id="middle_a_0">
+            <img src="" id="middle_image_0">
+        </a>
+        <a class="jk-index-ad-module-item" href="javascript:;" id="middle_a_1">
+            <img src="" id="middle_image_1">
+        </a>
+    </div>
+    <a href="/promotion/tp-coupon" class="jk-red-packet-entrance" id="fixed_0"><img src="" alt=""></a>
+    <footer class="jk-fixed-footer jk-footer-nav">
+    <div class="jk-fixed-footer-inner">
+        <a class="jk-footer-nav-item" href="/">
+            <i class="if-icon-uniE687"></i>
+            首页
+        </a>
+        <a class="jk-footer-nav-item" href="/service/service/center">
+            <i class="if-icon-uniE6BB"></i>
+            服务中心
+        </a>
+        <a class="jk-footer-nav-item" href="/cart/cart">
+            <i class="if-icon-uniE63C jk-subscript">
+                <span class="jk-subscript-num jk-hide" id="cartTotal"></span>
+            </i>
+            购物车
+        </a>
+        <a class="jk-footer-nav-item" href="/user/user">
+            <i class="if-icon-uniE6BF js-coupon-new-flag"></i>
+            我的
+        </a>
+    </div>
+</footer>
+<script>
+
+    //处理购物车角标数量
+    if( ( parseInt( localStorage.getItem('cartTotal') ) >= 1)){
+        //$('#cartTotal').html(localStorage.getItem('cartTotal'));
+        //$('#cartTotal').removeClass('jk-hide');
+    }
+
+    var hrefUrl = window.location.href;
+    var navItem = $(".jk-footer-nav-item");
+    if(hrefUrl.indexOf("center") != -1){
+        navItem.eq(1).addClass('current');
+    }else if(hrefUrl.indexOf("cart") != -1){
+        navItem.eq(2).addClass('current');
+    }else if(hrefUrl.indexOf("user") != -1){
+        navItem.eq(3).addClass('current');
+    }else{
+        navItem.eq(0).addClass('current');
+    }
+</script></div>
+<script src="/js/img-slide.js"></script>
+<script language="javascript">
+    //首页接口的处理
+    var path = 'v1/home/promotion?version=1.7.0';
+    var verb = 'GET';
+    var postData = '';
+    var valid = false;
+    var homeInfo = ajaxRequest(verb,path,postData,valid);
+    if(homeInfo.success){
+        if (typeof (homeInfo.data) == "object") {
+            $(homeInfo.data).each(function(index) {
+                var layout_type = homeInfo.data[index].layout_type;
+                eachElement(homeInfo.data[index].content,layout_type);
+            });
+        }
+    }else{
+        alert(homeInfo.data.message);
+    }
+
+    //循环生成相应的元素
+    function eachElement(option,layout){
+
+        switch(layout){
+            case 1:
+                $(option).each(function (index_c) {
+                    var type = option[index_c].type;
+                    var image = option[index_c].image;
+                    var url = option[index_c].url;
+                    //$('#buttom_image_'+index_c).attr('src', image);
+                    var li_html = '<li class="jk-index-slide-item"><a id="buttom_a_'+index_c+'" href="#"><img src="'+image+'"></a>'+'</li>';
+                    $('.jk-index-slide-list').append(li_html);
+                    var element = '#buttom_a_'+index_c;
+                    var need_login = option[index_c].need_login;
+                    changeElement(type, url, element, option, index_c,need_login);
+                });
+                break;
+            case 4:
+                $(option).each(function (index_c) {
+                    var type = option[index_c].type;
+                    var image = option[index_c].image;
+                    var url = option[index_c].url;
+                    $('#top_image_' + index_c).attr('src', image);
+                    var element = '#top_a_' + index_c;
+                    var need_login = option[index_c].need_login;
+                    changeElement(type, url, element, option, index_c,need_login);
+                });
+                break;
+            case 2:
+                $(option).each(function (index_c) {
+                    var type = option[index_c].type;
+                    var image = option[index_c].image;
+                    var url = option[index_c].url;
+                    $('#middle_image_'+index_c).attr('src', image);
+                    var element = '#middle_a_'+index_c;
+                    var need_login = option[index_c].need_login;
+                    changeElement(type, url, element, option, index_c,need_login);
+                });
+                break;
+            case 10:
+                $(option).each(function (index_c) {
+                    var type = option[index_c].type;
+                    var image = option[index_c].image;
+                    var url = option[index_c].url;
+                    $('#fixed_'+index_c).find('img').attr('src', image);
+                    var element = '#fixed_'+index_c;
+                    var need_login = option[index_c].need_login;
+                    changeElement(type, url, element, option, index_c,need_login);
+                });
+                break;
+            default:
+                break;
+        }
+    }
+
+    //网页元素的处理
+    function changeElement(type,url,element,option,index_c,need_login){
+        switch(type){
+            case 'topic':
+                if(url != ''){
+                    $(element).attr('href',url);
+                }
+                break;
+            case 'goods':
+                var goods_id = option[index_c].goods.id;
+                url = URL+'goods/view?goods_id='+goods_id;
+                $(element).attr('href',url);
+                break;
+            case 'package':
+                var package_id = option[index_c].package.id;
+                url = URL+'package/view?package_id='+package_id;
+                $(element).attr('href',url);
+                break;
+            case 'insurance':
+                url = URL+'insurance/trains';
+                $(element).attr('href',url);
+                break;
+            case 'violation':
+                url = URL+'violation';
+                $(element).attr('href',url);
+                break;
+            case 'vehicle_ticket':
+                url = URL+'vehicle-ticket';
+                $(element).attr('href',url);
+                break;
+            case 'vehicle_tax':
+                url = URL+'vehicle-taxes';
+                $(element).attr('href',url);
+                break;
+            case 'vehicle_inspection':
+                url = URL+'vehicle-inspection';
+                $(element).attr('href',url);
+                break;
+            case 'annual_card':
+                url = URL+'annual-card/user-car?check_car=1';
+                $(element).attr('href',url);
+                break;
+            case 'maintenance_helper':
+                var action = 'javascript:toMaintain()';
+                $(element).attr('href',action);
+                break;
+            default:
+                break;
+        }
+    }
+
+    //服务、商品搜索的跳转处理
+    function serviceSearch(){
+        window.location.href = URL + 'service/service/search';
+    }
+
+    //图片轮换
+    $(document).ready(function(){
+        imgSlide($(".js-slide"));
+    });
+
+    //判断是否有默认汽车
+
+    if(localStorage.getItem('jekun_user_id') && localStorage.getItem('jekun_user_id') > 0){
+        if(localStorage.getItem('index_car_brand_logo') && localStorage.getItem('index_car_brand_logo').length > 0){
+            var car_brand_logo = localStorage.getItem('index_car_brand_logo');
+            var car_id = localStorage.getItem('index_car_id');
+            setCarLogo(car_id,car_brand_logo);
+        }else{
+            var pathUserCar     = 'v1/user-cars';
+            var verbUserCar     = 'GET';
+            var postDataUserCar = '';
+            var validUserCar    = true;
+            var result          = ajaxRequest(verbUserCar,pathUserCar,postDataUserCar,validUserCar);
+            var is_default_num  = 0;
+            var car_index       = null;
+            //用户汽车信息的处理
+            if(result.success){
+                if (typeof (result.data) == "object") {
+                    $(result.data).each(function (index) {
+                        var is_default = result.data[index].is_default;
+                        if(is_default == 1){
+                            is_default_num++;
+                            localStorage.setItem('car_index',index);
+                        }
+                    });
+                }
+            }else{
+                alert(result.data.message);
+            }
+
+            if(is_default_num > 0)
+            {
+                var index_car_brand_logo = result.data[localStorage.getItem('car_index')].car_brand_logo;
+                var index_car_id = result.data[localStorage.getItem('car_index')].id;
+                localStorage.setItem('index_car_brand_logo',index_car_brand_logo);
+                localStorage.setItem('index_car_id',index_car_id);
+                setCarLogo(index_car_id,index_car_brand_logo);
+            } 
+        }
+    }
+
+    /**
+     * 设置头部汽车Logo
+     * @param car_id
+     * @param car_brand_logo
+     */
+    function setCarLogo(car_id, car_brand_logo)
+    {
+        var car_logo_container = $('.js-car-logo');
+        car_logo_container.removeClass('if-icon-uniE906').append('<img src="'+car_brand_logo+'">');
+    }
+
+    /**
+     * 保养助手
+     */
+    function toMaintain()
+    {
+        var index_car_id = localStorage.getItem('index_car_id');
+        if(index_car_id > 0)
+        {
+            window.location.href = URL + 'maintain/maintain-category/select?car_id='+index_car_id;
+        }else{
+            window.location.href = URL + 'maintain/maintain-category/user-car?check_car=1';
+        }
+    }
+
+</script>    <div class="jk-inner-fixed-footer">
+        <div class="jk-inner-fixed-footer-inner">
+            <a class="jk-arrow-left if-icon-angle-left" href="javascript:goBack()">后退</a>
+            <a class="jk-arrow-right if-icon-angle-left" href="javascript:history.go(-1);"></a>
+            <a class="jk-refresh if-icon-uniE666" href="javascript:location.reload();"></a>
+            <a class="if-icon-uniE687" href="/"></a>
+            <a class="if-icon-uniE6BF" href="/user/user"></a>
+        </div>
+    </div>
+    <script type="text/javascript">
+        //后退的处理
+        function goBack(){
+            var backUrl = '';
+            if(backUrl){
+                window.location.href = URL+backUrl;
+            }else{
+                history.go(-1);
+            }
+        }
+        //小写转大写
+        if($(".js-touppercase").length > 0){
+            $(".js-touppercase").blur(function(){
+                var str = $(this).val().toUpperCase();
+                str = str.replace(/\u2006/g, '');//关于 iOS 系统中，中文输入法输入英文时，字母之间可能会出现一个六分之一空格
+                $(this).val(str);
+            });
+        }
+    </script>
+    <script src="/js/dev/bottom-common.js"></script>
+
+    <script src="http://c.cnzz.com/wapstat.php?siteid=1255419725&r=http%3A%2F%2Fwap.jekunauto.com%2F&rnd=1501925103"></script></body>
+</html>
+<script>
+    //APP来源标识
+    var from = localStorage.getItem('from');
+    if(from == 'app'){
+        $('.jk-arrow-left').attr('href','#');
+        $('.jk-arrow-right').attr('href','#');
+        $('.if-icon-home').attr('href','#');
+        $('.if-icon-member').attr('href','#');
+    }
+
+    //用户购物车物品数量(当前有记录用户信息以及购物车数量非数字)
+    if( localStorage.getItem('jekun_user_id') > 0 && !(parseInt(localStorage.getItem('cartTotal')) >= 0) ){
+        var path = 'v1/carts/count';
+        var verb = 'GET';
+        var postData = '';
+        var valid = true;
+        var result = ajaxRequest(verb,path,postData,valid);
+        if(result){
+            var cartTotal = result.data.total;
+            if($('#cartTotal') && cartTotal > 0){
+                $('#cartTotal').removeClass('jk-hide');
+                $('#cartTotal').html(cartTotal);
+            }
+            localStorage.setItem('cartTotal',cartTotal);
+        }
+    }
+
+    if(localStorage.getItem('cartTotal') > 0){
+        $('#cartTotal').removeClass('jk-hide');
+        $('#cartTotal').html(localStorage.getItem('cartTotal'));
+    }
+</script>

@@ -1,0 +1,142 @@
+<include file="Public:head"/>
+<script src="{pigcms::RES}/js/date/WdatePicker.js"></script>  
+<script src="/tpl/static/artDialog/jquery.artDialog.js?skin=default"></script>
+<script src="/tpl/static/artDialog/plugins/iframeTools.js"></script>
+<script src="/tpl/static/upyun.js?{pigcms::date('YmdHis',time())}"></script>
+<div class="content">
+<include file="Member_card:menu"/>         
+<div class="cLine">
+	<div class="left" style="margin-right:10px;">
+	<form method="post" action="">
+		搜索：<input  value="" name="searchkey" class="px" style="height:25px;line-height:25px;">
+		<button type="submit" name="appidsubmit" value="true" class="btnGreen vm" ><strong>查询</strong></button>
+	</form>
+	</div>
+	<a href="?g=User&amp;m=Member_card&amp;a=exportCardUseRecord&amp;type=all" class="btnGrayS vm left" style="margin-right:10px;">导出所有会员的积分、线下消费记录</a>
+	<a href="?g=User&amp;m=Member_card&amp;a=exportrmb&amp;type=all" class="btnGrayS vm left" >导出所有会员的会员卡消费记录</a>
+	<a class="right btnGrayS vm" href="{pigcms::U('Member_card/index',array('token'=>$token))}">返回</a>
+<span class="clr"></span>
+</div>
+          <div class="msgWrap">
+           <div style="background:#fefbe4;border:1px solid #f3ecb9;color:#993300;padding:10px;margin-top:5px;">注意:在每行的输入框里可以通过输入消费金额（可以填写负数）来增减会员消费金额，积分会根据“积分设置”中的消费积分比例变化</div>
+
+          <input name="delall"  type="hidden" value="del" />
+           <input name="wxid"  type="hidden" value="gh_423dwjkewad" />
+            <TABLE class="ListProduct" border="0" cellSpacing="0" cellPadding="0" width="100%" >
+              <THEAD>
+                <TR>
+                  <th width="110px" style='font-size:10px'>卡号</th>
+                  <th width="80px" style='font-size:10px'>微信名</th>
+                  <th width="70px" style='font-size:10px'>车牌号1</th>
+                  <th width="70px" style='font-size:10px'>车牌号2</th>
+                  <th width="70px" style='font-size:10px'>车牌号3</th>
+                  <th width="100px" style='font-size:10px'>联系电话</th>
+                 <th width="80px" style='font-size:10px'>领卡时间</th>
+                 <th width="45px" style='font-size:10px'>积分</th>
+                <th width="80px" style='font-size:10px'>消费总额(元)</th>  
+                <th width="50px style='font-size:10px'">余额</th>             
+				<TH width="300px" style='font-size:10px'>操作</TH>
+                </TR>
+              </THEAD>
+              <TBODY>
+				 <volist id="list" name="members">
+                <TR>
+                  <TD style='font-size:10px'>{pigcms:$list.number}</TD>
+                  <TD style='font-size:10px'>{pigcms:$list.wechaname}</TD>
+                  <TD style='font-size:10px'>{pigcms:$list.carno}</TD>
+                  <TD style='font-size:10px' >{pigcms:$list.carno1}</TD>
+                  <TD style='font-size:10px'>{pigcms:$list.carno2}</TD>
+                  <TD style='font-size:10px'>{pigcms:$list.tel}</TD>
+                  <TD style='font-size:10px'>
+                   <if condition="$list['getcardtime'] gt 0">
+                        {pigcms:$list.getcardtime|date='Y-m-d',###}
+                    <else/>
+                   		 无时间记录
+                    </if>                      
+                  </TD>
+                  <TD style='font-size:10px'>
+                  	{pigcms:$list.total_score}
+                  </TD> 
+                  <TD style='font-size:10px'>
+                    {pigcms:$list.expensetotal}
+                    <!--<form method="post"  action="/index.php?g=User&m=Member_card&a=memberExpense&token={pigcms:$Think.get.token}&id={pigcms:$thisCard.id}" >
+                      <input type="text" name="money" value="0" class="px" style="width:40px;">
+                      <input type="hidden" name="wecha_id" value="{pigcms:$list.wecha_id}">
+                      <button type="submit" style="cursor:pointer" class="btnGrayS vm">设置</button>
+                    </form>-->
+                  </TD>
+                  <TD style='font-size:10px'>
+                  	{pigcms:$list.balance}
+                  </TD>
+                  <TD class="norightborder" style='font-size:12px'>				  
+				       <a href="javascript:void(0);" onclick="memberCardRecharge({pigcms:$list.id},{pigcms:$thisCard.id})"><strong>充值</strong></a>
+				       |  
+                       <a href="javascript:void(0);" onclick="updateGrade('{pigcms:$list.wecha_id}', {pigcms:$thisCard.id}, '{pigcms:$list.truename}', '{pigcms:$list.carno}');"><strong>等级变更</strong></a>
+                       |
+                       <a href="javascript:void(0);" onclick="memberCardPresent('{pigcms:$list.wecha_id}', {pigcms:$thisCard.id}, '{pigcms:$list.truename}', '{pigcms:$list.carno}');"><strong>赠券</strong></a>
+                       | 
+                      <a href="{pigcms::U('Member_card/member',array('token'=>$token,'wecha_id'=>$list['wecha_id'],'id'=>$thisCard['id']))}"><strong>消费记录</strong></a>
+                       |
+                      <a href="javascript:void(0);" onclick="RestPassWord('{pigcms:$list.wecha_id}');" ><strong>密码重置</strong></a>
+				       |
+				       <a href="javascript:drop_confirm('您确定要删除吗?', '/index.php?g=User&m=Member_card&a=member_del&token={pigcms:$Think.get.token}&itemid={pigcms:$list.id}&id={pigcms:$thisCard.id}');"><strong>删除</strong></a> 
+                      |
+                      <a href="javascript:void(0);" onclick="SendMessage('{pigcms:$list.wecha_id}', {pigcms:$thisCard.id}, '{pigcms:$list.truename}', '{pigcms:$list.carno}');"><strong>发送消息</strong></a>
+                    
+                  </TD>
+                </TR>
+				</volist>
+              </TBODY>
+            </TABLE>
+          </div>
+            
+          <div class="cLine">
+            <div class="pageNavigator right">
+                <div class="pages">{pigcms:$page}</div>
+              </div>
+            <div class="clr"></div>
+          </div>
+        </div>
+
+        <div class="clr"></div>
+      </div>
+    </div>
+  </div>
+<script src="/tpl/static/jquery.min.js" type="text/javascript"></script>
+ <script>
+   var jQ = jQuery.noConflict();
+  function checkAll(form, name) {
+      for(var i = 0; i < form.elements.length; i++) {
+          var e = form.elements[i];
+          if(e.name.match(name)) {
+              e.checked = form.elements['chkall'].checked;
+          }
+      }
+  }
+
+  function updateGrade(uid, cardid, name, carno) {
+      art.dialog.data('uid', uid);
+      art.dialog.data('cardid', cardid);
+      art.dialog.open('?g=User&m=Member_card&a=change&wecha_id=' + uid + '&cardid=' + cardid + '&truename=' + name + '&carno=' + carno, {id:'changegrade',lock: true, title: '会员等级变更', width: 400, height: 280, yesText: '关闭', background: '#000', opacity: 0.45 });
+  }
+  function SendMessage(uid, cardid, name, carno) {
+      art.dialog.data('uid', uid);
+      art.dialog.data('cardid', cardid);
+      art.dialog.open('?g=User&m=Member_card&a=sendmessage&wecha_id=' + uid + '&cardid=' + cardid + '&truename=' + name + '&carno=' + carno, { id: 'changegrade', lock: true, title: '会员等级变更', width: 400, height: 280, yesText: '关闭', background: '#000', opacity: 0.45 });
+  }
+  function RestPassWord(id) {
+      if (confirm("您确认要进行密码重置操作？")) {
+          jQ.post('/index.php?g=User&m=Member_card&a=resetpass&wecha_id=' + id, null,
+          function (data) {
+              if (data.success == 1) {
+                  alert(data.msg);
+              } else {
+                  alert(data.msg);
+              }
+          }, "json");
+      }
+    }
+</script>
+  <!--底部-->
+  	</div>
+<include file="Public:footer"/>  

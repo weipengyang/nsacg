@@ -1,0 +1,232 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>提现申请</title>
+    <meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+   
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css">
+    <link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/0.4.1/weui.min.css" />
+   <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <style>
+        .pic {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+
+        .line {
+            width: 100%;
+            height: 2.5rem;
+            line-height: 2.5rem;
+            overflow: hidden;
+            margin: 0px;
+            text-align: center;
+            padding: 0px;
+            color: #FF6600;
+            font-size: 1.4rem;
+            background: #333333;
+            z-index: 9999;
+            font-weight: bold;
+            filter: alpha(opacity=40);
+            -moz-opacity: 0.4;
+            -khtml-opacity: 0.4;
+            opacity: 0.4;
+        }
+
+        .bg {
+        	margin:0px;
+        	padding:0px;
+            margin-top: 5px;
+            border-radius: 4%;
+            color: white;
+            background: #11A487; /* Old browsers */
+           
+        }
+        .i11con {
+            width: 2.5rem;
+            height: 2.5rem;
+            margin: 0.15rem;
+            font-size: 1.2rem;
+            line-height: 2.5rem;
+            text-align: center;
+            border-radius: 1.25rem;
+            display: inline-block;
+        }
+         .logo {
+            display: block;
+            width: 1.5rem;
+            height: 1.5rem;
+            background-color:#2CCE29;
+            text-align: center;
+            line-height: 1.5rem;
+            border: 1px solid #ddd;
+            margin: 2px;
+            border-radius: 100%;
+        }
+   </style>
+    <script type="text/javascript">
+    $(function () {
+        'use strict';
+        //对话框
+        $.init();
+        $(document).on('click', '#withdraw', function () {
+            $('#tixian').find('#type').change(function () {
+                if ($('#tixian').find('#type').val() == 3) {
+                    $('#tixian').find('#user').css("display",'');
+                }
+                else {
+                    $('#tixian').find('#user').css("display", 'none');
+                }
+            });
+            $('#tixian').show().on('click', '.default ', function () {
+                $('.weui_dialog_confirm').off('click').hide();
+                $('#tixian').find('#money').val('');
+                $('#tixian').find('#password').val('');
+            }).on('click', '.primary', function () {
+                $('.weui_dialog_confirm').off('click').hide();
+                var money = $('#tixian').find('#money').val();
+                var password = $('#tixian').find('#password').val();
+                var reg = /^\d+(\.\d+)?$/i;
+                if (!reg.test(money)) {
+                    myalert("提示", "请输入有效的金额");
+                    return;
+                }
+                if (password == '') {
+                    myalert("提示", "请输入密码");
+                    return;
+                }
+                var submitData = {
+                    password: password,
+                    money: money
+                };
+
+                $.post('/index.php?g=Wap&m=Store&a=withdraw&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}', submitData,
+                function (data) {
+                    myalert("提示", data);
+                    location.href = location.href;
+                });
+            });
+        });
+
+    });
+    function myalert(title,content,callback) {
+        $('#dialog2').find('.weui_dialog_title').text(title);
+        $('#dialog2').find('.weui_dialog_bd').text('');
+        $('#dialog2').find('.weui_dialog_bd').text(content);
+        $('#dialog2').show().on('click', '.default ', function () {
+            $('.weui_dialog_alert').off('click').hide();
+        }).on('click', '.primary', function () {
+            $('.weui_dialog_alert').off('click').hide();
+            if (callback)
+            {
+                callback();
+            }
+        });
+    }
+    </script>
+
+</head>
+<body>
+    <div class="page" style="margin:0px">
+        <div class="weui_dialog_alert" id="dialog2" style="display: none;">
+            <div class="weui_mask"></div>
+            <div class="weui_dialog">
+                <div class="weui_dialog_hd"><strong class="weui_dialog_title">弹窗标题</strong></div>
+                <div class="weui_dialog_bd">弹窗内容，告知当前页面信息等</div>
+                <div class="weui_dialog_ft">
+                    <a href="javascript:;" class="weui_btn_dialog primary">确定</a>
+                </div>
+            </div>
+        </div>
+
+        <header class="bar bar-nav">
+            <a class="button button-link button-nav pull-left" href="#" onclick="history.go(-1);" data-transition='slide-out'>
+                <span class="icon icon-left"></span>
+                返回
+            </a>
+            <h1 class="title">提现申请</h1>
+        </header>
+        <nav class="bar bar-tab">
+            <a href="#" id="withdraw" class="tab-item" style="color:#006AFF">提现</a>
+        </nav>
+           <div class="content" style="margin:0px">
+               <div class="list-block cards-list">
+                   <ul>
+                       <volist name="records" id="item">
+                           <li class="card">
+                               <div class="card-content">
+                                   <div class="card-content-inner">
+                                       <div class="row">
+                                           <div class="col-100" style="text-align:center"><span style="font-size:1rem;color:#FF6600;align-content:center">提现金额:{pigcms:$item.money}元</span></div>
+                                       </div>
+                                       <div class="row no-gutter" style="margin-top:1.1rem">
+                                           <div class="col-15" style="width:12%;margin:0 auto;"><span class="icon icon-edit logo"></span><span style="text-align: center;font-size:0.6rem">已申请</span></div>
+                                           <div class="col-25" style="color:blue;width:32%"><hr style="margin-top:0.75rem;width:100%;height:3px;border:none;border-top:3px ridge green;" /></div>
+                                           <div class="col-15" style="width:12%"><span class="icon icon-clock logo"></span><span style="text-align: center;font-size:0.6rem">处理中</span></div>
+                                           <if condition="$item.end_time gt 0">
+                                               <if condition="$item.state eq 4">
+                                                   <div class="col-25" style="color:red;width:32%"><hr style="margin-top:0.75rem;width:100%;height:3px;border:none;border-top:3px ridge green;" /></div>
+                                                   <div class="col-15" style="width:12%"><span class="icon icon-check logo"></span><span style="text-align: center;font-size:0.6rem">审核未通过</span></div>
+                                                   <else/>
+                                                   <div class="col-25" style="color:red;width:32%"><hr style="margin-top:0.75rem;width:100%;height:3px;border:none;border-top:3px ridge green;" /></div>
+                                                   <div class="col-15" style="width:12%"><span class="icon icon-check logo"></span><span style="text-align: center;font-size:0.6rem">已完成</span></div>
+                                                  </if>
+                                                   <else />
+                                                   <div class="col-25" style="color:red;width:32%"><hr style="margin-top:0.75rem;width:100%;height:3px;border:none;border-top:3px ridge red;" /></div>
+                                                   <div class="col-15" style="width:12%"><span class="icon icon-check logo" style="background-color:red"></span><span style="text-align: center;font-size:0.6rem">已完成</span></div>
+                                               </if>
+                                        </div>
+                                       <div class="row no-gutter">
+                                           <div class="col-50" style="text-align:left"><span style="text-align: center;font-size:0.6rem">{pigcms:$item.withdraw_time|date='Y-m-d H:i',###}</span></div>
+                                           <div class="col-50" style="text-align:right"><span style="text-align: center;font-size:0.6rem"><if condition="$item.end_time gt 0">{pigcms:$item.end_time|date='Y-m-d H:i',###}</if></span></div>
+                                       </div>
+                                   </div>
+                               </div>
+                               <div class="card-footer"><span style="color:#FE995A;font-size:0.6rem">申请将在48小时内审核，审核通过后将通知到门店前台取现，如有疑问请致电02039099139或在微信公众平台上咨询</span></div>
+                           </li>
+                        </volist>
+                    </ul>
+               </div>
+               <div id="tixian" class="weui_dialog_confirm" style="display: none">
+                   <div class="weui_mask"></div>
+                   <div class="weui_dialog">
+                       <div class="weui_dialog_hd" style="height:1rem;margin-top:0.5rem;padding:0px"><strong class="weui_dialog_title">提现申请</strong></div>
+                       <div class="weui_cells weui_cells_form">
+                           <div class="weui_cell">
+                               <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">可提现金额</label></div>
+                               <div class="weui_cell_bd weui_cell_primary">
+                                   <label class="weui_label" style="white-space:nowrap;">{pigcms:$userinfo['balance']}元</label>
+                               </div>
+                           </div>
+                           <div class="weui_cell">
+                               <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap; ">提现金额</label></div>
+                               <div class="weui_cell_bd weui_cell_primary">
+                                   <input placeholder="请输入提现金额" class="weui_input" id="money" name="money" />
+                               </div>
+                           </div>
+                           <div class="weui_cell">
+                               <div class="weui_cell_hd" style="width:90px"><label class="weui_label" style="white-space:nowrap;">支付密码</label></div>
+                               <div class="weui_cell_bd weui_cell_primary">
+                                   <input name="password" class="weui_input" id="password" value="" type="password" placeholder="请输入支付密码">
+                               </div>
+                           </div>
+
+                       </div>
+                       <div class="weui_dialog_ft">
+                           <a href="javascript:;" class="weui_btn_dialog default">取消</a>
+                           <a href="javascript:;" class="weui_btn_dialog primary">确定</a>
+                       </div>
+                   </div>
+               </div>
+
+           </div>
+    </div>
+
+</body>
+</html>

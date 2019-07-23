@@ -1,0 +1,60 @@
+<include file="Public:head"/>  
+<script src="/tpl/static/artDialog/jquery.artDialog.js?skin=default"></script>
+<script src="/tpl/static/artDialog/plugins/iframeTools.js"></script>
+<script src="{pigcms::RES}/js/cart/jscolor.js" type="text/javascript"></script>
+<div class="content">
+<div class="cLineB">
+<h4 class="left">养车宝用户中心</h4>
+<div class="searchbar right">
+</div>
+<div class="clr"></div>
+</div>
+<div class="cLine">
+<form method="post"  action="" id="info" >
+关键词：
+<input type="text" class="px" name="number" value="" style="height:25px;" placeholder="请输入会员卡号">
+<input type="submit" class="btnGrayS" value="搜索">
+</form>
+<div class="clr"></div>
+</div>
+<div class="msgWrap">
+<form method="post"  action="" id="info" >
+<TABLE class="ListProduct" border="0" cellSpacing="0" cellPadding="0" width="100%">
+<THEAD>
+<tr>
+<th width="120">用户名</th>
+<th width="120">手机号</th>
+<th width="100">领卡时间</th>
+<th width="80">积分</th>
+<th width="80">养车宝余额</th>
+<th width="80">消费总额</th>
+<th width="80">操作</th>
+</tr>
+</THEAD>
+<TBODY>
+<TR></TR>
+<volist id="item" name="users">
+<TR>
+<TD>{pigcms:$item.truename}</TD>
+<TD>{pigcms:$item.tel}</TD>
+<TD><if condition="$item.getcardtime eq 0">无时间记录<else/>{pigcms:$item.getcardtime|date='Y-m-d',###}</if></TD>
+<TD>{pigcms:$item.balance}</TD>
+<TD>{pigcms:$item.yc_balance}</TD>
+<TD>{pigcms:$item.expensetotal}</TD>
+<TD><a href="{pigcms::U('Yangchebao/record',array('token'=>$this->token,wecha_id=>$item['wecha_id']))}">转入转出记录</a> </TD>
+</TR>
+</volist>
+</TBODY>
+</TABLE>
+</form>
+
+</div>
+<div class="cLine">
+<div class="pageNavigator right">
+<div class="pages">{pigcms:$page}</div>
+</div>
+<div class="clr"></div>
+</div>
+</div>  
+<div class="clr"></div>
+<include file="Public:footer"/>

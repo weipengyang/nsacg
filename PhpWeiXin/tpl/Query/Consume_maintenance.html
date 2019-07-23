@@ -1,0 +1,475 @@
+﻿<!doctype html>
+<html class="no-js fixed-layout">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>爱养车</title>
+    <meta name="description" content="爱养车">
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/tpl/static/assets/css/amazeui.min.css" />
+    <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div class="am-cf admin-main" style="padding:0;margin:0">
+        <!-- content start -->
+        <div class="admin-content">
+            <div class="admin-content-body">
+                <div class="am-g">
+                    <div class="am-u-sm-10 am-u-md-10">
+                        <div class="am-form-group am-form-select">
+                            <select  id="shop">
+                                <option value="">所有门店</option>
+                            </select>
+                            <select id="zhuxiu">
+                                <option value="">所有人</option>
+                            </select>
+                            <select id="fwgw">
+                                <option value="">所有人</option>
+                            </select>
+                            <div class="am-u-sm-2 am-u-md-2">
+                                <input type="text" id="lb">
+                            </div>
+                            <select id="khlb">
+                                <option value="">所有客户</option>
+                            </select>
+                            <select id="zt">
+                                <option value="">所有状态</option>
+                                <option value="报价">报价</option>
+                                <option value="派工">派工</option>
+                                <option value="领料">领料</option>
+                                <option value="审核">审核</option>
+                                <option value="结算">结算</option>
+                                <option value="出厂">出厂</option>
+                                <option value="结束">结束</option>
+                                <option value="取消">取消</option>
+                            </select>
+                            <select id="overtime">
+                                <option value="0">所有</option>
+                                <option value="1">超期</option>
+                            </select>
+                            <button type="button" class="am-btn am-btn-default am-margin-right" id="my-start">开始日期</button><span id="my-startDate"></span>
+                            <button type="button" class="am-btn am-btn-default am-margin-right" id="my-end">结束日期</button><span id="my-endDate"></span>
+                            <button id="print" class="am-btn am-btn-warning" onclick="printbill();" type="button">打印</button>
+                        </div>
+                    </div>
+                    <div class="am-u-sm-2 am-u-md-2">
+                        <div class="am-input-group am-input-group-sm">
+                            <input type="text" id="searchkey" class="am-form-field">
+                            <span class="am-input-group-btn">
+                                <button id="search" class="am-btn am-btn-default" type="button">查询</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div id="maingrid4" style="margin:0; padding:0"></div>
+            </div>
+        </div>
+        <!-- content end -->
+    </div>
+    <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
+    <script src="/tpl/static/assets/js/amazeui.min.js"></script>
+    <script src="/tpl/static/assets/js/app.js"></script>
+    <script>
+        var grid,memberdialog, wxdialog, printdialog;
+        function wxinfo(xh) {
+            if (wxdialog) {
+                wxdialog.setUrl('/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh);
+                wxdialog.show();
+                } else {
+                    wxdialog= $.ligerDialog.open({
+                        height: 540,
+                        url: '/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh,
+                        width: 950,
+                        showMax: true,
+                        showToggle: true,
+                        showMin: false,
+                        isResize: true,
+                        modal: false,
+                        title: '车辆维修详细信息'
+                    });
+                }
+           wxdialog.max();
+        }
+        function printbill() {
+            var row = grid.getSelectedRow();
+            if (row) {
+                if (printdialog) {
+                    printdialog.setUrl('/index.php?g=Query&m=Consume&a=printbill&ID=' + row['ID']);
+                    printdialog.show();
+                } else {
+                    printdialog = $.ligerDialog.open({
+                        height: 600,
+                        url: '/index.php?g=Query&m=Consume&a=printbill&ID=' + row['ID'],
+                        width: 950,
+                        showMax: true,
+                        showToggle: true,
+                        showMin: false,
+                        isResize: true,
+                        modal: false,
+                        title: '打印结算单'
+                    });
+                }
+            }
+            else {
+                $.ligerDialog.alert('请选择要打印的单');
+            }
+        }
+
+        function viewcarinfo(carno) {
+            var cardialog=$.ligerDialog.open({
+                height: 500,
+                url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
+                width: 900,
+                showMax: true,
+                showToggle: true,
+                showMin: false,
+                isResize: true,
+                modal: false,
+                title: '车辆信息编辑'
+            });
+            cardialog.max();
+        }
+        function memberinfo(carno) {
+            if (memberdialog) {
+                memberdialog.setUrl('/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno);
+                memberdialog.show();
+            }
+            else {
+                memberdialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=memberinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: false,
+                    title: '会员资料编辑'
+                });
+            }
+        }
+        //+---------------------------------------------------
+        //| 日期计算
+        //+---------------------------------------------------
+        Date.prototype.DateAdd = function (strInterval, Number) {
+            var dtTmp = this;
+            switch (strInterval) {
+                case 's': return new Date(Date.parse(dtTmp) + (1000 * Number));
+                case 'n': return new Date(Date.parse(dtTmp) + (60000 * Number));
+                case 'h': return new Date(Date.parse(dtTmp) + (3600000 * Number));
+                case 'd': return new Date(Date.parse(dtTmp) + (86400000 * Number));
+                case 'w': return new Date(Date.parse(dtTmp) + ((86400000 * 7) * Number));
+                case 'q': return new Date(dtTmp.getFullYear(), (dtTmp.getMonth()) + Number * 3, dtTmp.getDate(), dtTmp.getHours(), dtTmp.getMinutes(), dtTmp.getSeconds());
+                case 'm': return new Date(dtTmp.getFullYear(), (dtTmp.getMonth()) + Number, dtTmp.getDate(), dtTmp.getHours(), dtTmp.getMinutes(), dtTmp.getSeconds());
+                case 'y': return new Date((dtTmp.getFullYear() + Number), dtTmp.getMonth(), dtTmp.getDate(), dtTmp.getHours(), dtTmp.getMinutes(), dtTmp.getSeconds());
+            }
+        }
+        function f_totalRender(data, currentPageData) {
+            var dealtime=(data.dealtime / data.Total).toFixed(2);
+            var strdeal;
+            if(dealtime>60){
+                strdeal=(dealtime/60).toFixed(2)+"小时";
+            }else{
+                strdeal=dealtime+"分钟";
+            }
+            return "总台次:" + data.Total
+                + "  金额:" + data.summoney.toFixed(2)+"元"
+                 + "  会员台次:" + data.hyCount
+                 + "  平均维修时间:" + strdeal
+                 + "  超期:" + data.cqcount + "台次"
+                 + "  超期率:" + (data.cqcount / data.Total * 100).toFixed(2) + "%"
+                 + "  会员入场比:" + (data.hyCount / data.Total * 100).toFixed(2) + "%"
+                 + "  评价:" + data.TotalData.commentcount+"次"
+                 + "  会员评价比:" + (data.TotalData.commentcount / data.hyCount * 100).toFixed(2) + "%"
+                 + "  服务态度平均分:" + (parseFloat(data.TotalData.服务态度)).toFixed(2)
+                 + "  服务质量平均分:" + (parseFloat(data.TotalData.服务质量)).toFixed(2);
+        }
+        $(document).ready(function () {
+            $(document).keydown(function (event) {
+                if (event.keyCode == 13) 
+                    $('#search').click();
+                }
+            );
+            $.post('index.php?g=Query&m=Consume&a=getpersonbydepart', null,
+                function (data) {
+                    if (data) {
+                        $('#zhuxiu').empty();
+                        $('#zhuxiu').append("<option value=''>所有人</option>");
+
+                        $(data).each(function () {
+                            var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
+                            $('#zhuxiu').append(option);
+                        });
+                    }
+                }, 'JSON');
+            $.post('/index.php?g=Query&m=Consume&a=getshoplist', null, function (data) {
+                if (data) {
+                    $('#shop').empty();
+                    $('#shop').append("<option value=''>所有门店</option>");
+                    $(data).each(function () {
+                        var option = "<option value='" + this.名称 + "'>" + this.名称 + "</option>";
+                        $('#shop').append(option);
+                    });
+                }
+            }, 'JSON');
+            $.post('index.php?g=Query&m=Consume&a=getfwgw', null,
+                function (data) {
+                    if (data) {
+                        $('#fwgw').empty();
+                        $('#fwgw').append("<option value=''>接车人</option>");
+
+                        $(data).each(function () {
+                            var option = "<option value='" + this.姓名 + "'>" + this.姓名 + "</option>";
+                            $('#fwgw').append(option);
+                        });
+                    }
+                }, 'JSON');
+            $.post('index.php?g=Query&m=Consume&a=getkhlb', null,
+            function (data) {
+                if (data) {
+                    $('#khlb').empty();
+                    $('#khlb').append("<option value=''>所有</option>");
+                    $(data).each(function () {
+                        var option = "<option value='" + this.类别 + "'>" + this.类别 + "</option>";
+                        $('#khlb').append(option);
+                    });
+                }
+            }, 'JSON');
+            $('#lb').ligerComboBox({
+                isShowCheckBox: true,
+                isMultiSelect: true,
+                selectBoxHeight:'300px',
+                valueFieldID: '类别',
+                valueField: '类别',
+                textField: '类别',
+                url: '/index.php?g=Query&m=Consume&a=getwxlb',
+            });
+
+            grid = $("#maingrid4").ligerGrid({
+                columns: [
+                  { display: '状态', name: '当前状态', align: 'left', width: 40 },
+                  {
+                      display: '车牌号码', name: '车牌号码', minWidth: 85, render: function (rowdata, index, value) {
+
+                          return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                      }
+                  },
+                 { display: '维修类别', name: '维修类别', minWidth: 80 },
+                 { display: '主修人', name: '主修人', width: 60, align: 'left' },
+                 { display: '接车人', name: '接车人', minWidth: 60 },
+                 { display: '钥匙编号', name: '钥匙编号', align: 'left', width: 60 },
+                 { display: '客户类别', name: '客户类别', minWidth: 100 },
+                {
+                    display: '车主', name: '车主', minWidth: 130, render: function (rowdata, index, value) {
+
+                        return '<a href="javascript:void(0);" onclick="memberinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                    }
+                },
+                { display: '联系人', name: '联系人', minWidth: 100 },
+                 {
+                     display: '已处理', name: '', minWidth: 100, render: function (rowdata, index, value) {
+                         if (rowdata.开工时间 != "" && rowdata.开工时间 != null && rowdata.开工时间 != "null" && todate(rowdata.开工时间, false) != '1900-01-01') {
+                             var start = new Date(Date.parse(todate(rowdata.开工时间, true)));
+                             var pretime = new Date(Date.parse(todate(rowdata.预计完工, true)));
+                             var prehour =pretime - start;
+                             var usetime = 0;
+                             if (rowdata.实际完工 != null && rowdata.实际完工 != "" && rowdata.实际完工 != "null" && todate(rowdata.实际完工, false) != '1900-01-01') {
+                                 end = new Date(Date.parse(todate(rowdata.实际完工, true)));
+                                 usetime = end - start;
+                             }
+                             else {
+                                 var end = new Date();
+                                 usetime =end - start;
+                             }
+                             if (usetime > prehour) {
+                                 if (usetime > 3600 * 1000) {
+                                     return "<span style='color:red'>" + (usetime / 3600000).toFixed(2) + "小时</span>";
+                                 } else {
+                                     return "<span style='color:red'>" + (usetime / 60000).toFixed(2) + "分钟</span>";
+                                 }
+
+                             } else {
+                                 if (usetime > 3600 * 1000)
+                                     return "<span style='color:blue'>" + (usetime / 3600000).toFixed(2) + "小时</span>";
+                                 return "<span style='color:blue'>" + (usetime / 60000).toFixed(2) + "分钟</span>";
+                             }
+                         }
+                         return '';
+                     }
+                 },
+                 {
+                     display: '进厂时间', name: '进厂时间', minWidth: 130, render: function (rowdata, index, value) {
+                         return todate(value, true);
+                     }
+                 },
+                 {
+                     display: '上交钥匙', name: '上交钥匙', minWidth: 130, render: function (rowdata, index, value) {
+                         return todate(value, true);
+                     }
+                 },
+                {
+                    display: '预计完工', name: '预计完工', minWidth: 130, render: function (rowdata, index, value) {
+                        return todate(value, true);
+                    }
+                },
+                {
+                    display: '完工时间', name: '实际完工', minWidth: 130, render: function (rowdata, index, value) {
+                        return todate(value, true);
+                    }
+                },
+                { display: '制单人', name: '制单人', width: 60, align: 'left' },
+                { display: '门店', name: '门店', minWidth: 80 },
+                {
+                    display: '客户确认', name: '确认维修', align: 'center', hide: true, width: 50, render: function (rowdata, index, value) {
+                        if (value == null || value == '')
+                            value = '<span style="color:red">否</span>';
+                        else
+                            value = '<span style="color:blue">是</span>';
+
+                        return value;
+                    }
+                },
+                { display: '轮胎规格', name: '轮胎规格', hide: true, minWidth: 60 },
+                { display: '机油格', name: '机油格', hide: true, minWidth: 60 },
+                { display: '空气格', name: '空气格', hide: true, minWidth: 60 },
+                { display: '冷气格', name: '冷气格', hide: true, minWidth: 60 },
+                {
+                    display: '保险到期', name: '商保到期', hide: true, minWidth: 100, render: function (rowdata, index, value) {
+                        return todate(value, false);
+                    }
+                }
+                ],
+                rowAttrRender: function (rowdata, rowid) {
+                    if (rowdata.商保到期 != "" && todate(rowdata.商保到期, false) != '1900-01-01') {
+                        var myDate = new Date();
+                        var end = myDate.DateAdd('d', 90);
+                        start = new Date(Date.parse(todate(rowdata.商保到期, false)));
+                        if (end - start > 0) {
+                            return "style='background:#F1D3F7'";
+                        }
+                    }
+                    if (rowdata.年检日期 != "" && todate(rowdata.年检日期, false) != '1900-01-01') {
+                        var myDate = new Date();
+                        var end = myDate.DateAdd('d', 90);
+                        start = new Date(Date.parse(todate(rowdata.年检日期, false)));
+                        if (end - start > 0) {
+                            return "style='background:#F1D3F7'";
+                        }
+                    }
+                    return "";
+                },
+
+                //rowClsRender: function (rowdata, rowid) {
+                //    if (rowdata.商保到期 != "" && todate(rowdata.商保到期, false) != '1900-01-1') {
+                //        var myDate = new Date();
+                //        var end = myDate.DateAdd('d', 90);
+                //        start = new Date(Date.parse(todate(rowdata.商保到期, false)));
+                //        if (end - start < 0) {
+                //            if (rowdata['__index'] % 2 == 1) {
+                //                return 'l-grid-row-alt';
+                //            }
+                //        }
+                //    } else {
+                //        if (rowdata['__index'] % 2 == 1) {
+                //            return 'l-grid-row-alt';
+                //        }
+                //    }
+                //},
+                isScroll: true,
+                pageSize: 20,
+                totalRender: f_totalRender,
+                alternatingRow: false,
+                url: '/index.php?g=Query&m=Consume&a=getwxinfo&type=4',
+                height: '97%',
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    wxinfo(data['流水号']);
+                }
+            });
+
+            $('#zhuxiu').change(function () {
+                $('#search').click();
+            });
+            $('#overtime').change(function () {
+                $('#search').click();
+            });
+
+            $("#zt").change(function () {
+                $('#search').click();
+            });
+            $("#khlb").change(function () {
+                $('#search').click();
+            });
+            $("#fwgw").change(function () {
+                $('#search').click();
+            });
+            $("#lb").change(function () {
+                //$('#search').click();
+            });
+            $("#shop").change(function () {
+                $('#search').click();
+            });
+            $('#my-start').datepicker().on('changeDate.datepicker.amui', function (event) {
+                startDate = new Date(event.date);
+                $('#my-startDate').text($('#my-start').data('date'));
+                $(this).datepicker('close');
+            });
+            $('#my-end').datepicker().on('changeDate.datepicker.amui', function(event) {
+               endDate = new Date(event.date);
+               $('#my-endDate').text($('#my-end').data('date'));
+               $(this).datepicker('close');
+            });
+            $('#search').click(function () {
+                grid.changePage('first');
+                var parms = {};
+                var endDate = $('#my-endDate').text();
+                if (endDate != '')
+                    parms.endDate=endDate;
+                var startDate = $('#my-startDate').text();
+                if (startDate != '')
+                    parms.startDate = startDate;
+                var shop = $('#shop').val();
+                if (shop != '')
+                    parms.shop = shop;
+                var lb = $('#lb').val();
+                if (lb != '')
+                    parms.lb = lb;
+                var fwgw = $('#fwgw').val();
+                if (fwgw != '')
+                    parms.fwgw = fwgw;
+                var overtime = $('#overtime').val();
+                if (overtime != '')
+                    parms.overtime = overtime;
+                var zhuxiu = $('#zhuxiu').val();
+                if (zhuxiu != '')
+                    parms.zhuxiu = zhuxiu;
+                var khlb = $('#khlb').val();
+                if (khlb != '')
+                    parms.khlb = khlb;
+                var zt = $('#zt').val();
+                parms.zt = zt;
+                var searchkey = $('#searchkey').val();
+                if (searchkey != '')
+                    parms.searchkey = searchkey;
+                grid.set('parms', parms);
+                grid.reload();
+
+            });
+            reflash();
+        });
+        function reflash() {
+            grid.reload();
+            setTimeout("reflash()", 60*1000);
+
+        }
+    </script>
+
+</body>
+</html>

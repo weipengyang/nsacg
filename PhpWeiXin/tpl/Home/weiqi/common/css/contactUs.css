@@ -1,0 +1,40 @@
+.contactUs_banner{ width:100%; height:417px; background:url(../images/contactUs_banner.png) no-repeat center top;}
+.contactUs_box{ width:100%; background:#f6f7f9; padding:11px 0 15px 0;}
+.contactUs_main { width:959px; height:770px; border:1px solid #dadada;}
+.contact_left{ width:136px; height:770px; float:left; background:#ededed;}
+.contact_left a{display:block; width:131px; height:37px; border-bottom:1px solid #dadada; border-right:1px solid #dadada; border-left:4px solid #ededed; cursor:pointer; position:relative;}
+
+.contact_left .cur{ background:#fff;border-right:1px solid #fff; border-left:4px solid #95db9f;}
+.contact_left a em{display:block;  width:20px; height:20px; background:url(../images/xiaotubiao.png) no-repeat center left; position:absolute; top:9px; left:7px; z-index:9;}
+.contact_left a .em1{ background-position: 0 0;}
+.contact_left a .em2{ background-position: 0 -26px;}
+.contact_left a .em3{ background-position: 0 -52px;}
+.contact_left a .em4{ background-position: 0 -80px;}
+.contact_left a.cur .em1{ background-position: -36px 0;}
+.contact_left a.cur .em2{ background-position: -36px -26px;}
+.contact_left a.cur .em3{ background-position: -36px -52px;}
+.contact_left a.cur .em4{ background-position: -36px -80px;}
+
+.contact_left a span{ display:block;height:37px; line-height:37px; padding-left:35px; font-size:14px;}
+.contact_left a.cur span{ font-weight:bold;}
+
+.contact_left div{ width:135px; height:618px;border-right:1px solid #dadada;}
+.contact_right{ width:823px; height:761px; float:left; background:#fff; padding-top:9px;}
+.c_r_main{ width:807px; margin: 0 auto; display:none;}
+.c_r_show{display:block;}
+.r_title,.r_text .r_title{ width:795px; height:29px; line-height:29px; color:#000; padding-left:12px; font-size:14px; font-weight:bold; background:url(../images/r_tit_bg.png) no-repeat;}
+
+.r_text p{width:800px; color:#666666; line-height:24px; padding-left:5px; margin-bottom:20px; text-indent:2em;} 
+.r_text .r_m_tit{ width:807px; color:#666666; font-weight:bold; line-height:24px; margin-bottom:0px;}
+
+
+.map{ width:674px; height:401px; overflow:hidden; margin:22px auto;}
+.message{width:674px; height:276px; margin:0 auto; overflow:hidden;}
+.message_l{ width:334px; float:left; padding-left:8px;}
+.message_l p{ line-height:24px;}
+.message_l .company_name{font-size:14px; font-weight:bold;}
+.message_r{ width:331px; float:left;}
+.message_r p{ width:258px; height:16px; background:#fafafa url(../images/net_work_bg.png) no-repeat center left; line-height:16px; padding-left:32px; margin-bottom:20px;}
+.message_r .net1{ background-position: 0 0;}
+.message_r .net2{ background-position: 0 -26px;}
+.message_r .net3{ background-position: 0 -52px;}

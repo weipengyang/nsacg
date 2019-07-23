@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>维修退料</title>
+    <meta name="description" content="爱养车" />
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function ()
+        {
+            var form = $("#form1").ligerForm({
+                inputWidth: 140, labelWidth: 65, space: 10,
+                validate: true,
+                fields: [
+                   {
+                       display: "车牌号码 ", name: "车牌号码", newline: true, type: "text", readonly: true
+                   },
+                    {
+                        display: "本次退料 ", name: "本次退料", newline: false, type: "text",
+                    },
+                    {
+                        display: "退料员", name: "退料员", newline: false, type: "combobox", comboboxName: 'fwgw',
+                        options: {
+                            valueField: '姓名',
+                            textField: '姓名',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getfwgw'
+                        }
+                    },
+                    {
+                        display: "备注", name: "备注", newline: true, width: 570, type: "textarea"
+                    },
+                ],
+                buttons: [                    {
+                        text: "更新", width: 60, click: function () {
+                            var row = product.getSelectedRow();
+                            var price = $("input[ligeruiid='本次退料']").val() * row['单价'];
+                            product.updateRow(row, { 本次退料: $("input[ligeruiid='本次退料']").val(),金额:price });
+
+                        }  
+                    },                    {
+                        text: "确定", width: 60, click: function () {
+                            var data = form.getData();
+                            alert(JSON.stringify(data));
+                            if (data['领料员'] == '') {
+                                $.ligerDialog.alert('请选择退料人');
+                                return;
+                            }
+                            var submitData = {
+                                wxinfo: parent.record,
+                                products: product.rows,
+                                data:data
+                            };
+                            $.post('index.php?g=Query&m=Consume&a=backpick', submitData,
+                              function (data) {
+                                  $.ligerDialog.alert(data);
+                                  //window.parent.liger.get('maingrid4').reload();
+
+                              });
+                        }
+                    }            ]            });
+            $("input[ligeruiid='车牌号码']").val(parent.record['车牌号码']);
+            var product = $("#productgrid").ligerGrid({
+                height:'100%',
+                columns: [
+                { display: '仓库', name: '仓库', minWidth: 120 },
+                { display: '编号', name: '编号', minWidth: 100 },
+                { display: '名称', name: '名称', minWidth: 140 },
+                { display: '规格', name: '规格', minWidth: 100 },
+                { display: '数量', name: '数量', minWidth: 60 },
+                { display: '已领料数量', name: '已领料数量', minWidth: 60 },
+                { display: '本次退料', name: '本次退料', minWidth: 60 },
+                { display: '已退料数量', name: '已退料数量', minWidth: 60 },
+                { display: '单价', name: '单价', minWidth: 80 },
+                { display: '金额', name: '金额', minWidth: 80 },
+                { display: '折扣', name: '折扣', minWidth: 80 },
+                { display: '单位', name: '单位', minWidth: 80 },
+                { display: '结算类别', name: '结算方式', minWidth: 100 },
+                { display: '税率', name: '税率', minWidth: 60 },
+                { display: '税额', name: '税额', minWidth: 60 },
+                { display: '虚增类别', name: '虚增类别', minWidth: 100 },
+                { display: '虚增金额', name: '虚增金额', minWidth: 80 },
+                { display: '急件金额', name: '急件金额', minWidth: 80 },
+                { display: '适用车型', name: '适用车型', minWidth: 100 },
+                { display: '产地', name: '产地', minWidth: 100 },
+                {
+                    display: '是否同意', name: '是否同意', align: 'left', width: 100, minWidth: 60, render: function (rowdata, index, value) {
+                        if (value == '1')
+                            return '是';
+                        return '否';
+                    }
+                },
+                { display: '备注', name: '备注', minWidth: 200 },
+                ],
+                data: window.parent.product.getSelectedRows(),
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    //product.deleteSelectedRow();
+                },
+                onSelectRow: function (rowdata, rowid, rowobj) {
+                    $("input[ligeruiid='本次退料']").val(rowdata['本次退料']);
+
+                }
+            });
+            var rows = window.parent.product.getSelectedRows();
+            $(rows).each(function () {
+                this['本次退料'] = this['数量'];
+                this['金额'] = this['数量'] * this['单价'];
+            });
+            product.addRows(window.parent.product.getSelectedRows());
+            setTimeout(function () { product.select(product.currentData.Rows[0]); }, 100);
+           
+        });
+
+
+    </script>
+</head>
+
+<body style="padding:10px">
+    <div id="form1">
+    </div>
+    <div id="productgrid" style="margin:0; padding:0"></div>
+
+</body>
+</html>

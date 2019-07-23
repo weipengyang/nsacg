@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>派工</title>
+    <meta name="description" content="爱养车" />
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var form;
+        $(function () {
+            form = $("#form1").ligerForm({
+                inputWidth: 180, labelWidth: 80, space:20,
+                validate: true,
+                buttons: [
+                    {
+                        text: "保存", width: 100, click: function () {
+                            var data = {};
+                            data['itemid'] = getQueryString('id');
+                            if (getQueryString('code')) {
+                                data['code'] = getQueryString('code');
+                            }
+                            data['zhuxiu'] = $("input[ligeruiid='主修人']").val();
+                            if (data['zhuxiu'] == '') {
+                                $.ligerDialog.alert('请选择主修人');
+                                return;
+                            }
+                            data['latetime']=$("input[ligeruiid='延后时间']").val();
+                            $.post('/index.php?g=Query&m=Consume&a=assigntask', data,
+                              function (msg) {
+                                  $.ligerDialog.alert(msg);
+                                  if (parent.parent.grid) {
+                                      parent.parent.grid.reload();
+                                  }
+                                  else {
+                                      if (parent.grid) {
+                                          parent.grid.reload();
+                                      }
+                                  }
+                                  if (parent.project) {
+                                      parent.project.reload();
+                                  }
+                                  frameElement.dialog.hide();
+                                  //parent.reload();
+                                  //location.href = location.href;
+                              });
+                        }
+                    },
+                    {
+                        text: "取消", width: 100, click: function () {
+                           
+                        }
+                    }
+                ],
+                fields: [
+                    { display: "流水号", name: "流水号", newline: true, type: "hidden" },
+                    {
+                        display: "主修人", name: "主修人", newline: true, type: "combobox",
+                        options: {
+                            valueField: '姓名',
+                            textField: '姓名',
+                            autocomplete: true,
+                            alwayShowInDown: true,
+                            selectBoxHeight:50,
+                            //selectBoxWidth:180,
+                            parms: {
+                                wxlx:getQueryString('wxlb'),
+                                shop:getQueryString('shop')
+                            },
+                            url: '/index.php?g=Query&m=Consume&a=getzhuxiu',
+                        },
+
+                    },
+                    { display: "延后时间", name: "延后时间", newline: true, type: "number" },
+                ]
+            });
+
+        });
+    </script>
+</head>
+
+<body style="padding:0;margin:0">
+<div>前面还有{pigcms:$count}台车正在施工</div>
+<div id="form1" style="margin:0; padding:0;"></div>
+</body>
+</html>

@@ -1,0 +1,210 @@
+﻿<!doctype html>
+<html class="no-js fixed-layout">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>爱养车</title>
+    <meta name="description" content="爱养车">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="icon" type="image/png" href="assets/i/favicon.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+    <meta name="apple-mobile-web-app-title" content="Amaze UI" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/tpl/static/assets/css/amazeui.min.css" />
+    <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <!--[if lte IE 9]>
+    <p class="browsehappy">你正在使用<strong>过时</strong>的浏览器，Amaze UI 暂不支持。 请 <a href="http://browsehappy.com/" target="_blank">升级浏览器</a>
+      以获得更好的体验！</p>
+    <![endif]-->
+    <div class="am-cf admin-main" style="padding:0;margin:0">
+        <!-- content start -->
+        <div class="admin-content">
+                <div class="admin-content-body">
+                    <div id="doc-qrcode" class="am-text-center"></div>
+                    <div class="am-cf am-padding am-padding-bottom-0">
+                        <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">车辆列表</strong> </div>
+                    </div>
+                    <hr>
+                    <div class="am-g">
+                        <div class="am-u-sm-12 am-u-md-3">
+                            <div class="am-input-group am-input-group-sm">
+                                <input type="text" id="searchkey" class="am-form-field">
+                                <span class="am-input-group-btn">
+                                    <button id="search" class="am-btn am-btn-default" type="button">模糊查询</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="am-g">
+                        <div class="am-u-sm-12">
+                            <form class="am-form">
+                                <table class="am-table am-table-striped am-table-hover table-main">
+                                    <thead>
+                                        <tr>
+                                            <th class="table-title">车牌号码</th>
+                                            <th class="table-title">联系人</th>
+                                            <th class="table-title">联系电话</th>
+                                            <th class="table-title">品牌型号</th>
+                                            <th class="table-title">年份排量</th>
+                                           <th class="table-title">车架号</th>
+                                            <th class="table-title">发动机型号</th>
+                                            <th class="table-title">轮胎规格</th>
+                                            <th class="table-title">机油格</th>
+                                            <th class="table-title ">空气格</th>
+                                            <th class="table-title ">冷气格</th>
+                                            <th class="table-title ">保险公司</th>
+                                            <th class="table-title ">保险到期</th>
+                                            <th class="table-title ">年审到期</th>
+                                            <th class="table-title ">查看图片</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <volist name="yelist" id="item">
+                                            <tr>
+                                                <td><a href="javascript:void(0);" onclick="carinfo('{pigcms:$item.车牌号码}');"><strong>{pigcms:$item.车牌号码}</strong></a></td>
+                                                <td>{pigcms:$item.联系人}</td>
+                                                <td>{pigcms:$item.联系电话}</td>
+                                                <td>{pigcms:$item.品牌}/{pigcms:$item.车型}</td>
+                                                <td>{pigcms:$item.排量}</td>
+                                                <td>{pigcms:$item.车架号}</td>
+                                                <td>{pigcms:$item.发动机型号}</td>
+                                                <td>{pigcms:$item.轮胎规格}</td>
+                                                <td>{pigcms:$item.机油格}</td>
+                                                <td>{pigcms:$item.空气格}</td>
+                                                <td>{pigcms:$item.冷气格}</td>
+                                                <td>{pigcms:$item.保险公司}</td>
+                                                <td>{pigcms:$item.交保到期|strtotime|date='Y-m-d',###}</td>
+                                                <td>{pigcms:$item.年检日期|strtotime|date='Y-m-d',###}</td>
+                                                <td><a href="javascript:void(0);" onclick="picnfo('{pigcms:$item.流水号}');"><strong>查看照片</strong></a></td>
+                                            </tr>
+
+                                        </volist>
+                                    </tbody>
+                                </table>
+                                <div class="am-cf">
+                                    <div class="am-fr">
+                                        <div class="cLine">
+                                            <div class="pageNavigator right">
+                                                <div class="pages">{pigcms:$page}</div>
+                                            </div>
+                                            <div class="clr"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr />
+                            </form>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+        <!-- content end -->
+    </div>
+    <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
+    <script src="/tpl/static/assets/js/amazeui.min.js"></script>
+    <script src="/tpl/static/assets/js/app.js"></script>
+    <script>
+        function carinfo(carno) {
+            $.ligerDialog.open({
+                height: 500,
+                url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
+                width: 900,
+                showMax: true,
+                showToggle: true,
+                showMin: false,
+                isResize: true,
+                modal: false,
+                title: '车俩信息编辑'
+            });
+        }
+        function picnfo(carno) {
+            $.ligerDialog.open({
+                height: 500,
+                url: '/index.php?g=Query&m=Consume&a=fileupload&carno=' + carno,
+                width: 900,
+                showMax: true,
+                showToggle: true,
+                showMin: false,
+                isResize: true,
+                modal: false,
+                title: '车辆图片查看'
+            });
+        }
+
+        function modifycarinfo(carno) {
+            var submitData = {
+                carno: carno
+            };
+            $.post('index.php?g=Query&m=Consume&a=getgrade', submitData,
+                 function (data) {
+                     if (data) {
+                         $('#chezhu').val(data.车主);
+                         $('#carno').val(data.车牌号码);
+                         $('#pinpai').val(data.品牌);
+                         $('#luntai').val(data.轮胎规格);
+                         $('#jiyou').val(data.机油格);
+                         $('#kongqi').val(data.空气格);
+                         $('#lengqi').val(data.冷气格);
+                         $('#baoxian').val(data.保险公司);
+                         $('#sftp').val(data.车辆图片);
+                         //$('#bxrq').val(data.交保到期);
+                         //$('#nianshen').val(data.年检到期);
+                     }
+                     
+                 }, 'JSON'); 
+            $('#doc-modal-1').modal({
+                relatedTarget: this,
+                width: 800,
+                closeOnConfirm: true,
+                onConfirm: function (e) {
+                    var data = {
+                        carno:$('#carno').val(),
+                        pinpai:$('#pinpai').val(),
+                        luntai:$('#luntai').val(),
+                        jiyou:$('#jiyou').val(),
+                        kongqi:$('#kongqi').val(),
+                        baoxian:$('#baoxian').val(),
+                        bxrq:$('#bxrq').val(),
+                        lengqi:$('#lengqi').val(),
+                        nianshen:$('#nianshen').val(),
+                        sftp:$('#sftp').val()
+                    };
+                    $.post('/index.php?g=Query&m=Consume&a=clxx', data,
+                      function (msg) {
+                          alert(msg);
+                          $('#doc-modal-1').modal('close');
+                          location.href = location.href;
+                      });
+                },
+                onCancel: function (e) {
+                }
+            });
+        }
+        $(document).ready(function () {
+            var $alert = $('#my-alert');
+            $('#search').click(function () {
+                var url = '/index.php?g=Query&m=Consume&a=clxx';
+                var searchkey = $('#searchkey').val();
+                if (searchkey != '')
+                    url += '&searchkey=' + searchkey;
+                location.href = url;
+            });
+
+        });
+        //reflash();
+        //function reflash() {
+
+        //    location.href = location.href;
+        //    setTimeout("reflash()", 100000);
+
+        //}
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,370 @@
+<!DOCTYPE>
+<html>
+<head>
+<title>{pigcms:$PhotographyData.title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="desc" content=1111/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+<link rel="Stylesheet" type="text/css" href="tpl/Wap/default/common/photography/Style/vote.css" />
+<link href="tpl/Wap/default/common/photography/skins/flat/red.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+#customer #music {
+	width:25px;
+	height:25px;
+	z-index:9999;
+	position:fixed;
+	right:20px;
+	top:35px;
+	background:url(tpl/Wap/default/common/photography/images/music_1.png) center no-repeat;
+	background-size:25px 25px;
+	cursor:pointer
+}
+#customer #music.pause {
+	background:url(tpl/Wap/default/common/photography/images/music_2.png) center no-repeat;
+	background-size:25px 25px
+}
+</style>
+<script type="text/javascript" src="tpl/Wap/default/common/photography/Scripts/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="tpl/Wap/default/common/photography/Scripts/icheck.min.js"></script>
+<script type="text/javascript">
+$(function() {
+	$("#button").click(function() {
+		  if($("#haoma").val().length!=11)
+			{
+			 alert("您的号码不足11位");
+			}
+			else if(!$("#haoma").val().match(/^1[3|4|5|8][0-9]\d{4,8}$/))
+			{
+				 alert("手机号码格式不正确");
+			}
+			else
+			{
+				var telephone=$("#haoma").val();
+				var obj = {
+					fid:{pigcms:$Think.get.id},		
+					token:"{pigcms:$Think.get.token}",
+					phone: telephone,
+				}
+				$.post("{pigcms::U('Wap/Photography/info')}", obj,function(result){
+					alert(result);
+					if(result.indexOf("成功")>=0) $("#haoma").val("");
+				});
+			}
+    });
+	$("#btnVote").click(function() {
+		var sType=$("input[name='voteitem']:checked").val();
+		if(sType=="") alert("请选择投票内容");
+		else{
+			var obj={
+				fid:{pigcms:$Think.get.id},
+				token:"{pigcms:$Think.get.token}",
+				type:sType
+			}
+			$.post("{pigcms::U('Wap/Photography/vote')}",obj,function(result){
+				alert(result);
+				if(result.indexOf("成功")>=0){
+					$("#votedetail").hide();
+					$("#piaoshu>b").html(parseInt($("#piaoshu>b").html())+1);
+				}
+			});
+		}
+    });
+	$("li[name='voteli']").click(function(){
+		$(this).find("input[name='voteitem']").attr('checked','true');								  
+	});
+})
+</script>
+<script type="text/javascript">
+function showshare(){
+	$("#mcover").show();
+	$(".sharebox").hide();
+}
+</script>
+<script type="text/javascript">
+        $(function () {
+            var musicPlayer;
+
+            function playMusic() {
+                if (musicPlayer) {
+                    musicPlayer.play();
+                }
+            }
+
+            function pauseMusic() {
+                if (musicPlayer) {
+                    musicPlayer.pause();
+                }
+            }
+
+            function setMusic() {
+                var url = $('#music').attr('data-url');
+                if (url!="") {
+                    $('#music').click(function () {
+                        var $this = $(this).toggleClass('pause');
+                        if ($this.hasClass('pause')) {
+                            pauseMusic();
+                        } else {
+                            playMusic();
+                        }
+                    });
+                    musicPlayer = document.createElement('audio');
+                    musicPlayer.loop = true;
+                    musicPlayer.controls = false;
+                    musicPlayer.src = url;
+                    musicPlayer.preload = 'auto';
+                    $('body').append(musicPlayer);
+                    playMusic();
+                } else {
+                    $('#music').hide();
+                }
+            }
+
+
+            setMusic();
+            if (/i(Phone|P(o|a)d)|MI/.test(navigator.userAgent)) {
+                $(document).one('touchstart', function (e) {
+                    playMusic();
+                });
+            }
+        });
+		    
+    </script>
+</head>
+<body>
+<div id="customer">
+  <div id="music" data-url="{pigcms:$PhotographyData.mp3url}"></div>
+</div>
+<header> <a href="#">{pigcms:$PhotographyData.title}</a> </header>
+<div class="container">
+  <div class="rich"><em></em><em>{pigcms:$PhotographyData.man} & {pigcms:$PhotographyData.woman}</em></div>
+  <div class="main">
+    <div class="wrap"> <img src="{pigcms:$PhotographyData.toppic}" style="width:98%;"> </div>
+  </div>
+</div>
+</p>
+<div class="main">
+  <div class="wrap">
+    <if condition="$PhotographyData['video'] neq ''">
+      <div class="video-box tpl-video" id="content" style="display:block;">{pigcms:$PhotographyData.video}</div>
+      <script src="tpl/Wap/default/common/css/wedding/js/play.js" type="text/javascript"></script>
+    </if>
+  </div>
+</div>
+<div class='vote_res' id='voteres'>
+  <div class='vote_res_detail'>
+    <p style=' text-align:center; margin-top:10px;'>寄语：{pigcms:$PhotographyData.word}</span> 
+  </div>
+</div>
+<div class="spliter"> </div>
+<volist id="vo" name="photo">
+  <div class="discount" align="center"> <img alt="" src="{pigcms:$vo.picurl}" showpic="true" style="width:98%;/>
+				<div style="width:100%;">{pigcms:$vo.info}</div>
+  </div>
+</volist>
+</p>
+<div class='vote_res' id='voteres'>
+  <div class='vote_res_detail'>
+    <p style=' text-align:center; margin-top:10px;'>已经收集到<span class="piaoshu" style="color:#F00"><b>{pigcms:$PhotographyData.nownum}</b></span>个祝福！~</p>
+    <div style='margin-top:10px; text-align:center;'>达到<span class="piaoshu" style="color:#F00">{pigcms:$PhotographyData.firstnum}</span>个<span style="padding:4px;">可以获得<b>{pigcms:$PhotographyData.first}</b></span>；达到<span class="piaoshu" style="color:#F00">{pigcms:$PhotographyData.secondnum}</span>个<span style="padding:4px;">可以获得<b>{pigcms:$PhotographyData.second}</b></span></div>
+  </div>
+</div>
+</div>
+</div>
+<div class="vote" id="votedetail" 
+
+
+<if condition="$ip neq 0">style="display:none;"</if>
+>
+<ul>
+  <if condition="$PhotographyData['firstvote'] neq ''">
+    <li name="voteli" style="cursor:pointer;">{pigcms:$PhotographyData.firstvote}<span>
+      <input type='radio' name='voteitem' value='firstvotenum' />
+      </span></li>
+  </if>
+  <if condition="$PhotographyData['secondvote'] neq ''">
+    <li name="voteli" style="cursor:pointer;">{pigcms:$PhotographyData.secondvote}<span>
+      <input type='radio' name='voteitem' value='secondvotenum' />
+      </span></li>
+  </if>
+  <if condition="$PhotographyData['thirdvote'] neq ''">
+    <li name="voteli" style="cursor:pointer;">{pigcms:$PhotographyData.thirdvote}<span>
+      <input type='radio' name='voteitem' value='thirdvotenum' />
+      </span></li>
+  </if>
+</ul>
+<input type='button' title='203' style='border:none;' id='btnVote' class='button' value='送上祝福' />
+</div>
+<div class="spliter"> </div>
+<div class="discount" align="center">
+  <if condition="$PhotographyData['bottompic'] neq ''"> <img alt="" src="{pigcms:$PhotographyData.bottompic}" style="width:98%;"/> </if>
+</div>
+<div class='order' id='order'>
+  <form id="form2" name="form2" method="post" action="">
+    <input type='tel' id='haoma' class='txtTel' placeholder='请输入手机索取优惠特权' />
+    <input type='button' id='button' style='border:none' class='downBtn' value='领取'/>
+  </form>
+</div>
+<div style='margin-top:10px; margin-left:2%; margin-right:2%;' class='blocktitle'>↓ 好友特权名单名单</div>
+<div class='blockcont'>
+  <div id='tickerContainer'>
+    <dl id='ticker'>
+      <volist id="info" name="PhotographyInfo">
+        <dt class='heading'>{pigcms:$info['create_time']|date="Y-m-d H:i:s ",###}</dt>
+        <dd class='text'>恭喜手机为{pigcms:$info.phone|substr=0,3}*****{pigcms:$info.phone|substr=8,3}的好友获取特权成功</dd>
+      </volist>
+    </dl>
+  </div>
+</div>
+<div class="sharebtn"> <a class="share" onClick="document.getElementById('pointshow').style.display='block';">发送给朋友或分享到朋友圈</a> </div>
+<div class="telbtn"> <a href="tel:{pigcms:$company.tel}"><img src="tpl/Wap/default/common/photography/skin/images/tel.png" alt="" width="130" /></a> </div>
+<div class="copyright"> 版权所有{pigcms:$homeInfo.copyright} </div>
+</div>
+</div>
+<div id="pointshow" onClick="$('#pointshow').hide();"><img src="tpl/Wap/default/common/photography/images/share.png" alt="" /></div>
+<script type="text/javascript">
+window.shareData = {  
+            "imgUrl": "{pigcms:$PhotographyData.picurl}", 
+            "timeLineLink": "{pigcms:$f_siteUrl}{pigcms::U('Wap/Photography/index',array('token'=>htmlspecialchars($_GET['token']),'id'=>htmlspecialchars($_GET['id'])))}",
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Photographyding/index',array('token'=>htmlspecialchars($_GET['token']),'id'=>htmlspecialchars($_GET['id'])))}",
+            "weiboLink": "{pigcms:$f_siteUrl}{pigcms::U('Wap/Photography/index',array('token'=>htmlspecialchars($_GET['token']),'id'=>htmlspecialchars($_GET['id'])))}",
+            "tTitle": "{pigcms:$PhotographyData.title}",
+            "tContent": "{pigcms:$PhotographyData.word}",
+            "fTitle": "{pigcms:$PhotographyData.title}",
+            "fContent": "{pigcms:$PhotographyData.title}",
+            "wContent": "{pigcms:$PhotographyData.title}" 
+        };
+ 	    document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+        // 发送给好友
+        WeixinJSBridge.on('menu:share:appmessage', function (argv) {
+            WeixinJSBridge.invoke('sendAppMessage', { 
+                "img_url": window.shareData.imgUrl,
+                "img_width": "640",
+                "img_height": "640",
+                "link": window.shareData.sendFriendLink,
+                "desc": window.shareData.fContent,
+                "title": window.shareData.fTitle
+            }, function (res) {
+                _report('send_msg', res.err_msg);
+            })
+        });
+
+        // 分享到朋友圈
+        WeixinJSBridge.on('menu:share:timeline', function (argv) {
+            WeixinJSBridge.invoke('shareTimeline', {
+                "img_url": window.shareData.imgUrl,
+                "img_width": "640",
+                "img_height": "640",
+                "link": window.shareData.timeLineLink,
+                "desc": window.shareData.tContent,
+                "title": window.shareData.tTitle
+            }, function (res) {
+                _report('timeline', res.err_msg);
+            });
+        });
+
+        // 分享到微博
+        WeixinJSBridge.on('menu:share:weibo', function (argv) {
+            WeixinJSBridge.invoke('shareWeibo', {
+                "content": window.shareData.wContent,
+                "url": window.shareData.weiboLink,
+            }, function (res) {
+                _report('weibo', res.err_msg);
+            });
+        });
+        }, false)
+    </script>
+<script type="text/javascript">
+document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+WeixinJSBridge.call('hideToolbar');
+});
+</script>
+<script>  
+//下面这个函数用来转换数组到json格式
+function arrayToJson(o) { 
+    var r = []; 
+    if (typeof o == "string") return "\"" + o.replace(/([\'\"\\])/g, "\\$1").replace(/(\n)/g, "\\n").replace(/(\r)/g, "\\r").replace(/(\t)/g, "\\t") + "\""; 
+    if (typeof o == "object") { 
+    if (!o.sort) { 
+    for (var i in o) 
+    r.push(i + ":" + arrayToJson(o[i])); 
+    if (!!document.all && !/^\n?function\s*toString\(\)\s*\{\n?\s*\[native code\]\n?\s*\}\n?\s*$/.test(o.toString)) { 
+    r.push("toString:" + o.toString.toString()); 
+    } 
+    r = "{" + r.join() + "}"; 
+    } else { 
+    for (var i = 0; i < o.length; i++) { 
+    r.push(arrayToJson(o[i])); 
+    } 
+    r = "[" + r.join() + "]"; 
+    } 
+    return r; 
+    } 
+    return o.toString(); 
+}
+//这个是调用微信图片浏览器的函数 
+function imagePreview(curSrc,srcList) {
+	//这个检测是否参数为空
+	if(!curSrc || !srcList || srcList.length == 0) {
+		return;
+	}
+	//这个使用了微信浏览器提供的JsAPI 调用微信图片浏览器
+	WeixinJSBridge.invoke('imagePreview', { 
+		'current' : curSrc,
+		'urls' : srcList
+	});
+};
+ 
+(function($){
+	//下面是获取当前页面所有的img的src 转成数组 并且 转换成json格式
+	var aa=[];
+	var i=0,j=0;
+	var src=[];
+	var json=null;
+	aa=$('img');
+	for (i=0;i<aa.length;i++){
+		if(aa[i].src==""||aa[i].getAttribute("showpic")!="true") continue;
+		src[j]=aa[i].src;    //把所有的src存到数组里
+		aa[i].data_index=j++;
+	}
+	var srcList=arrayToJson(src); //转换成json并赋值给srcList
+	//下面是点击图片的时候获取当前第几个图片并且启用咱们做的调用微信图片浏览器的函数
+	$('img').click(function(){
+		var index = $('img').index(this);
+		imagePreview(src[this.data_index],srcList);
+	});    
+})(jQuery);
+</script>
+<script type="text/javascript">
+        $(document).ready(
+            function () {
+                var ticker = $("#ticker");
+                ticker.children().filter("dt").each(function () {
+                    var dt = $(this),
+		    container = $("<div>");
+                    dt.next().appendTo(container);
+                    dt.prependTo(container);
+                    container.appendTo(ticker);
+                });
+                ticker.css("overflow", "hidden");
+                function animator(currentItem) {
+                    var distance = currentItem.height();
+                    duration = (distance + parseInt(currentItem.css("marginTop"))) / 0.025;
+                    currentItem.animate({ marginTop: -distance }, duration, "linear", function () {
+                        currentItem.appendTo(currentItem.parent()).css("marginTop", 0);
+                        animator(currentItem.parent().children(":first"));
+                    });
+                };
+                animator(ticker.children(":first"));
+                ticker.mouseenter(function () {
+                    ticker.children().stop();
+                });
+                ticker.mouseleave(function () {
+                    animator(ticker.children(":first"));
+                });
+                myGod('env_list_content', 1000);
+            }
+        );
+    </script>
+<include file="Index:styleInclude"/><include file="$cateMenuFileName"/> <include file="Index:kcdh"/>
+</body>
+</html>

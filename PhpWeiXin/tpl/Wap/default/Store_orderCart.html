@@ -1,0 +1,184 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>订单结算</title>
+    <meta name="viewport" content="width=device-width,height=device-height,maximum-scale=1.0,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/0.4.1/weui.min.css" />
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="page" style="margin:0px">
+        <header class="bar bar-nav">
+            <a class="button button-link button-nav pull-left" href="#" onclick="history.go(-1);" data-transition='slide-out'>
+                <span class="icon icon-left"></span>
+                返回
+            </a>
+            <h1 class="title">订单结算</h1>
+        </header>
+        <div class="content">
+            <div class="card" style="margin:0px;padding:0px">
+                <div class="card-header">结算信息</div>
+                <div class="card-content">
+                    <div class="card-content-inner">
+                        <div class="list-block">
+                            <ul>
+                                <li>
+                                    <div class="item-content">
+                                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title label" style="width:100%">商品总数:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="color:orange">{pigcms:$totalCount}</b>件</div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="item-content">
+                                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title label" style="width:100%">商品总价: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="color:orangered">{pigcms:$totalFee}</b>元</div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="item-content">
+                                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title label" style="width:100%">会员折扣: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="color:orangered">{pigcms:$_GET['discount']}</b></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="item-content">
+                                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title label" style="width:100%">您共需支付:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b id="totalmoney" style="color:orangered">{pigcms:$totalFee*$_GET['discount']}</b>元</div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <if condition="$product['iscoupon'] eq 0">
+                                    <li>
+                                        <div class="item-content">
+                                            <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                            <div class="item-inner">
+                                                <div class="item-title label">服务门店:</div>
+                                                <div class="item-input">
+                                                    <input type="text" placeholder="选择本次服务门店" id='shop' readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <if condition="count($carlist) gt 1 ">
+                                        <li>
+                                            <div class="item-content">
+                                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                                <div class="item-inner">
+                                                    <div class="item-title label">车牌号码:</div>
+                                                    <div class="item-input">
+                                                        <input type="text" placeholder="本次使用车牌号码" id='carno' readonly />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <else />
+                                        <input type="hidden" id='carno' readonly value="{pigcms:$carlist[0].carno}" />
+                                    </if>
+                                </if>
+                                <li>
+                                    <div class="item-content">
+                                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title label">支付密码:</div>
+                                            <div class="item-input">
+                                                <input type="password" name="pass" id="pass" placeholder="请输入密码" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <div class="row">
+                    <div class="col-100"><a href="#" id="sub_order" class="button button-big button-fill button-danger">确认支付</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='http://res.wx.qq.com/open/js/jweixin-1.1.0.js' charset='utf-8'></script>
+    <script type="text/javascript">
+    </script>
+    <script language="javascript">
+        $(function () {
+            'use strict';
+            //对话框
+            $.init();
+            $("#shop").picker({
+                toolbarTemplate: '<header class="bar bar-nav">\
+                  <button class="button button-link pull-right close-picker">\
+                  确定\
+                  </button>\
+                  <h1 class="title">选择门店</h1>\
+                  </header>',
+                cols: [
+                  {
+                      textAlign: 'center',
+                      values: ['区府店','塘坑店'],
+                      cssClass: 'picker-items-col-normal'
+                  }
+                ]
+            });
+            $("#carno").picker({
+                toolbarTemplate: '<header class="bar bar-nav">\
+                  <button class="button button-link pull-right close-picker">\
+                  确定\
+                  </button>\
+                  <h1 class="title">选择车牌</h1>\
+                  </header>',
+                cols: [
+                  {
+                      textAlign: 'center',
+                      values: [
+                         <volist name="carlist" id="car">
+                            '{pigcms:$car.carno}',
+                         </volist>
+                      ],
+                      cssClass: 'picker-items-col-normal'
+                  }
+                ]
+            });
+            $("#sub_order").click(function () {
+                $.showPreloader('正在提交，请稍候');
+                $("#sub_order").hide();
+                var iscoupon={pigcms:$product['iscoupon']};
+                var url = "{pigcms::U('Store/ordersave',array('discount'=>$_GET['discount'],'orid'=>$orid,'id'=>$_GET['id'],'count'=>$_GET['count'],'did'=>$_GET['did'],'token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid,'cid' => $cid))}";
+                url+='&password='+$('#pass').val();
+                url+='&price={pigcms:$totalFee*$_GET["discount"]}';
+                if(iscoupon==0){
+                    if($('#carno').val()=='')
+                    {
+                        $.alert('请选择使用车牌号码');
+                        return false;
+                    }
+                    url+='&carno='+$('#carno').val();
+                    if($('#shop').val()=='')
+                    {
+                        $.alert('请选择服务门店');
+                        return false;
+                    }
+                    url+='&shop='+$('#shop').val();
+                }
+                $.hidePreloader();
+                location.href =url;
+            });
+        });
+    </script>
+</body>
+</html>

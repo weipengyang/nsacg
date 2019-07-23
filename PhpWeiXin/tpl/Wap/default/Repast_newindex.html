@@ -1,0 +1,128 @@
+<include file="Repast:newheader" />
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/repastnew/js/dialog.js"></script>
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/repastnew/js/showdialog.js"></script>
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/repastnew/js/nav.js"></script>
+<link href="{pigcms:$staticPath}/tpl/static/repastnew/css/nav.css" rel="stylesheet">
+<!--<link rel="stylesheet" type="text/css" href="http://developer.amap.com/Public/css/demo.Default.css"/>--地图样式，这里不需要显示出地图-->
+<script language="javascript" src="http://webapi.amap.com/maps?v=1.3&key=b6c2c19cf45cd3d2b82541bc857eed7c"></script>
+<script language="javascript">
+var mapObj,toolBar,locationInfo;
+var locationX,locationY;
+//初始化地图对象，加载地图
+function mapInit(){
+	mapObj = new AMap.Map("iCenter");
+	//地图中添加地图操作ToolBar插件
+	mapObj.plugin(["AMap.ToolBar"],function(){		
+		toolBar = new AMap.ToolBar(); //设置地位标记为自定义标记
+		mapObj.addControl(toolBar);		
+		AMap.event.addListener(toolBar,'location',function callback(e){	
+			locationInfo = e.lnglat;
+			if(locationInfo){
+			  window.location.href=window.location.href+"&nowlat="+locationInfo.lat+"&nowlng="+locationInfo.lng;
+			}
+		});
+		toolBar.doLocation();
+	});
+}
+	
+//获取定位位置信息
+function showLocationInfo()
+{
+	 locationX = locationInfo.lng; //定位坐标经度值
+	 locationY = locationInfo.lat; //定位坐标纬度值
+}
+</script>
+<body onselectstart="return true;" ondragstart="return false;" <if condition="!isset($is_dwei)">onLoad="mapInit()" </if>>
+	
+<div data-role="container" class="container list">
+	<section data-role="body" class="section_scroll_content">
+		<ul class="list order" id="booklist">
+		<div style="color:#888888;padding-left:10px;line-height:30px;font-size:12px;<if condition="isset($is_dwei)">display:none;</if>">定位中...</div>
+		<volist name="company" id="com">
+		<li>
+		<a href="{pigcms::U('Repast/ShopPage', array('token'=>$token, 'cid'=>$com['id'], 'wecha_id'=>$wecha_id,'dt'=>$com['distancestr']))}">
+			<table cellpadding="0" cellspacing="0"><tbody>
+			<tr><td class="img"><img src="{pigcms:$com['logourl']}"></td><td class="info">
+			<div class="name">{pigcms:$com['name']}</div><div class="address"><span class="icon addr"></span><label>{pigcms:$com['address']}</label></div></td><td class="opt">
+			<if condition="$select eq 1">
+			<a href="{pigcms::U('Repast/dishMenu', array('token'=>$token, 'cid'=>$com['id'], 'wecha_id'=>$wecha_id))}" onclick="javascript:;" class="btn orange">立即点菜</a>
+			<else/>
+			<a href="{pigcms::U('Repast/preMeal', array('token'=>$token, 'cid'=>$com['id'], 'wecha_id'=>$wecha_id))}" onclick="javascript:;" class="btn orange">立即预订</a>
+			</if>
+			<div><if condition="isset($com['distancestr']) && ($com['distance'] gt 0)">{pigcms:$com['distancestr']}</if></div>
+			</td></tr></tbody></table>
+		</a></li>
+		</volist>
+		</ul>
+	</section>
+	<footer data-role="footer">
+		
+			
+<nav class="nav">
+<ul class="box">
+	<li>
+		<a href="{pigcms::U('Index/index', array('token'=>$token, 'wecha_id'=>$wecha_id))}">
+		<span class="home">&nbsp;</span>
+		<label>首页</label>				
+		</a>
+	</li>
+	<li <if condition="$select eq 1">class="on"</if>>
+		<a href="{pigcms::U('Repast/index', array('token'=>$token, 'st'=>'1','wecha_id'=>$wecha_id))}">
+		<span class="order">&nbsp;</span>
+		<label>在线点餐</label>				
+		</a>
+	</li>
+	<li <if condition="$select eq 2">class="on"</if>>
+		<a href="{pigcms::U('Repast/index', array('token'=>$token, 'st'=>'2','wecha_id'=>$wecha_id))}">
+		<span class="book">&nbsp;</span>
+		<label>在线订位</label>				
+		</a>
+	</li>
+	<li class="more">
+		<a href="{pigcms::U('Repast/myOrders', array('token'=>$token,'wecha_id'=>$wecha_id))}">
+		<span class="my">&nbsp;</span>
+		<label>我的订单</label>
+		</a>
+	</li>
+	<!--
+	<li class="more">
+		<a href="javascript:;">
+		<span class="my">&nbsp;</span>
+		<label>我的</label>
+		</a>
+		<span class="adron"></span>			
+		<ul>
+			<li>
+			<a href="{pigcms::U('Repast/myOrders', array('token'=>$token,'wecha_id'=>$wecha_id))}">我的订单</a>
+			</li>
+		</ul>
+	</li>-->
+</ul>
+</nav>
+
+</footer>
+	<div class="layer transparent"> </div>
+	<div class="layer popup">
+		<div class="dialogX list">
+			<span>选择需点菜的订单</span>
+			<ul id="orderInfoList">
+			</ul>
+			<div class="see"><label><input type="radio" name="orderlist"></label>先看看</div>
+		</div>			
+	</div>
+</div>
+<div id="iCenter"style="display:none;"></div>
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"Repast",
+            "moduleID":"{pigcms:$company[0]['id']}",
+            "imgUrl": "{pigcms:$company[0]['logourl']}", 
+            "timeLineLink": "{pigcms::$f_siteUrl .  U('Repast/index',array('token' => $token))}",
+            "sendFriendLink": "{pigcms::$f_siteUrl .  U('Repast/index',array('token' => $token))}",
+            "tTitle": "{pigcms:$metaTitle}",
+            "tContent": "{pigcms:$metaTitle}"
+        };
+</script>
+{pigcms:$shareScript}
+</body>
+</html>

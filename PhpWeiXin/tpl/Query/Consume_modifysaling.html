@@ -1,0 +1,240 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>销售单编辑</title>
+    <meta name="description" content="爱养车" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <link href="//at.alicdn.com/t/font_1474792210_8989851.css" rel="stylesheet" type="text/css" />
+
+    <script type="text/javascript">
+        var form;
+        $(function ()
+        {
+            function getGridOptions(checkbox) { 
+                var options = {
+                    columns: [
+                    { display: '客户名称', name: '名称', align: 'left', width: 180},
+                    { display: '联系人', name: '联系人', minWidth: 140, width: 100 },
+                    { display: '联系电话', name: '联系电话', width: 100 },
+                    { display: '手机号码', name: '手机号码', width: 100 },
+                    { display: '业务员', name: '业务员', width: 100 },
+                    { display: '区域', name: '区域', width: 100 },
+                    { display: '通讯地址', name: '通讯地址', width: 100 },
+                    ],
+                    switchPageSizeApplyComboBox: false,
+                    url: '/index.php?g=Query&m=Consume&a=getuserinfo',
+                    //data: $.extend({}, {}),
+                    pageSize: 10,
+                    checkbox: checkbox
+                };
+                return options;
+            }
+             form = $("#form1").ligerForm({
+                inputWidth: 140, labelWidth: 75, space: 20,
+                validate: true,
+                fields: [
+                    {
+                        display: "门店", name: "门店", newline: false, type: "combobox", comboboxName: 'mendian', options: {
+                            valueField: '名称',
+                            textField: '名称',
+                            url: '/index.php?g=Query&m=Consume&a=getshoplist',
+                        }
+
+                    },
+                     {
+                         display: "销售类别", name: "销售类别", newline: false, type: "combobox", comboboxName: 'saletype', options: {
+                             valueField: 'params_name',
+                             textField: 'params_name',
+                             url: '/index.php?g=Query&m=Consume&a=getsaletype',
+                         }
+
+                     },
+                     {
+                         display: "业务员", name: "业务员", newline: false, type: "combobox", comboboxName: 'fwgw',
+                         options: {
+                             valueField: '姓名',
+                             textField: '姓名',
+                             url: '/index.php?g=Query&m=Consume&a=getfwgw',
+                         }
+                     },
+                   {
+                       display: "客户名称", name: "客户名称", newline: false, type: "popup", options: {
+                             condition: {
+                                 prefixID: 'condtion_',
+                                 fields: [{ name: 'searchkey', type: 'text', width: 120, label: '客户', labelWidth: 90 }]
+
+
+                             },
+                             onSelected:function (e) {
+                                 var row = e.data[0];
+                                 $("input[name='联系电话']").val(row['联系电话']);
+                                 var carno = liger.get('combcarno');
+                                 if (carno) {
+                                     carno.setParm('id', row['ID']);
+                                     carno.reload();
+                                 }
+                             },
+                             searchClick: function (e) {
+                                 e.grid.set('parms', { 'searchkey':e.rules[0]['value'] });
+                                 e.grid.reload();
+                             },
+                             grid: getGridOptions(false),
+                             valueField: 'ID',
+                             textField: '名称',
+                             width: 600
+                         }
+                     },
+                    {
+                        display: "发票类别 ", name: "发票类别", newline: false, type: "combobox",
+                        options: {
+                            valueField: '类别',
+                            textField: '类别',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getfplb',
+                        }
+                    },
+                     {
+                         display: "发票号 ", name: "发票号码", newline: false, type: "text",
+                     },
+                      {
+                          display: "结算方式 ", name: "结算方式", newline: false, type: "combobox",
+                          options: {
+                              valueField: '名称',
+                              textField: '名称',
+                              autocomplete: true,
+                              url: '/index.php?g=Query&m=Consume&a=getjsfs',
+                          }
+                      },
+                      {
+                          display: "货运方式 ", name: "货运方式", newline: false, type: "combobox",
+                          options: {
+                              valueField: '方式',
+                              textField: '方式',
+
+                              url: '/index.php?g=Query&m=Consume&a=gethyfs',
+                          }
+                      },
+                      {
+                          display: "运费 ", name: "运费", newline: false, type: "text", options: {
+                              onBlur: function (value) {
+                                  reflash();
+                              }
+                          }
+                      },
+                      {
+                          display: "收款日期 ", name: "收款日期", newline: false, type: "date",
+                      },
+                      {
+                          display: "送货地址", name: "送货地址", newline: false, type: "text",
+                      },
+                      {
+                          display: "合计数量", name: "合计数量", newline: false, type: "text", readonly: true
+                      },
+                    {
+                        display: "合计货款", name: "实际货款", newline: false, type: "text",readonly:true
+                    },
+                    {
+                        display: "合计税额", name: "实际税额", newline: false, type: "text", readonly: true
+                    },
+                     {
+                         display: "价税合计", name: "价税合计", newline: false, type: "text", readonly: true
+                     },
+                       {
+                           display: "总金额", name: "总金额", newline: false, type: "text",readonly:true
+                       },
+                       {
+                           display: "备注", name: "备注", newline: false, type: "text"
+                       },
+                    {
+                        display: "车牌号码", name: "车牌号码", newline: false, type: "combobox",comboboxName:'combcarno',
+                        options: {
+                            valueField: '车牌号码',
+                            textField: '车牌号码',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getcarnobypersonid',
+                        }
+                    },
+                    {
+                        display: "施工员", name: "施工员", newline: false, type: "combobox",
+                        options: {
+                            valueField: '姓名',
+                            textField: '姓名',
+
+                            url: '/index.php?g=Query&m=Consume&a=getpersonbydepart',
+                        }
+                    },
+                ],
+                buttons: [
+                    {
+                        text: "保存", width: 60, click: function () {
+                            var data = form.getData();
+                            data['客户ID'] = data['客户名称'];
+                            if (data['客户名称']==frameElement.dialog.data['客户名称'])
+                                data['客户ID'] = frameElement.dialog.data['客户ID'];
+                            data['客户名称'] = $("input[ligeruiid='客户名称']").val();
+                            data['收款日期'] = $("input[ligeruiid='收款日期']").val();
+                            if (data['业务员'] == '') {
+                                $.ligerDialog.alert('请选择业务员');
+                                return;
+                            }
+                            if(data['备注'].indexOf('蜡水洗车')!=-1&&data['业务员'] != '系统自动'){
+                                $.ligerDialog.alert('此类销售单业务员只能选系统自动');
+                                return;
+                            }
+                            if (data['客户名称'] == '') {
+                                $.ligerDialog.alert('请选择客户');
+                                return;
+                            }
+                            var submitData = {
+                                ID: frameElement.dialog.data['ID'],
+                                data:data
+                            };
+                            $.ligerDialog.alert(JSON2.stringify(data));
+                            $.post('index.php?g=Query&m=Consume&a=modifysaling', submitData,
+                              function (result) {
+                                  $.ligerDialog.alert(result);
+                                  parent.grid.reload();
+                                  frameElement.dialog.hide();
+
+                              });
+                        }
+                    }
+            ]
+             });
+             var data = frameElement.dialog.data;
+             setTimeout(function () {
+                 form.setData(data);
+                 if(data['制单人']=='系统自动'){
+
+                     $("input[ligeruiid='备注']").attr("disabled",'disabled');
+                 }
+                 $("input[ligeruiid='运费']").val(0);
+                 $("input[ligeruiid='客户名称']").val(data['客户名称']);
+                 $("input[ligeruiid='发票类别']").val(data['发票类别']);
+                 $("input[ligeruiid='结算方式']").val(data['结算方式']);
+                 $("input[ligeruiid='货运方式']").val(data['货运方式']);
+                 $("input[ligeruiid='收款日期']").val(todate(data['收款日期']));
+                 var carno = liger.get('combcarno');
+                 if (carno) {
+                     carno.setParm('id', data['客户ID']);
+                     carno.reload();
+                 }
+             }, 500);
+             
+            //calprice();
+        });
+
+
+    </script>
+</head>
+
+<body style="padding:10px">
+    <div id="form1">
+    </div>
+</body>
+</html>

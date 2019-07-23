@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if IE 9]>         <html class="no-js lt-ie10"> <![endif]-->
+<!--[if IE 10]>         <html class="no-js ie10"> <![endif]-->
+<head>
+    <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      
+  <title>功能导航_PigCms_微信营销推广行业领导品牌</title>
+  <meta name="keywords"  content="PigCms、微官网、微客服、微会员、微商圈、微电商、微营销、微支付、微推广"/>
+  <meta name="description"  content="全面的PigCms功能导航：微官网、微会员、微客服、微推广、微团购、微投票、微统计、微门店、微活动、微报名、微行业、微定制"/>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{pigcms::RES}/css/normalize.css">
+    <link rel="stylesheet" href="{pigcms::RES}/css/main.css">
+    <link rel="stylesheet" href="{pigcms::RES}/css/anythingslider.css">
+    <script src="{pigcms::RES}/js/com-9ac93d2c51d68fe2ff212cbd6355f2f6.js" type="text/javascript"></script>
+    <script src="{pigcms::RES}/js/modernizr-2.6.2.min.js"></script>
+</head>
+<body data-spy="scroll" data-target="#page-index"  id="index-0">
+    <!--[if lt IE 7]>
+        <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+<div class="html">
+    <div class="header">
+	<div class="wrap">
+		<div class="logo">
+			<a href="/"></a>
+		</div>
+		<div class="header-nav">
+			<ul>
+				<li>
+					<a href="/">首页</a>
+				</li>
+				<li>
+					<a href="{pigcms::U('Home/Index/solution')}" class="">经典案例</a>
+				</li>
+				<li>
+					<a href="{pigcms::U('Home/Index/navigation')}" class="active">功能导航</a>
+				</li>
+				<li>
+					<a href="{pigcms::U('Home/Index/spread')}" class="">渠道代理</a>
+				</li>
+				
+				<li>
+					<a href="{pigcms::U('Home/Index/about')}" class="">关于我们</a>
+				</li>
+			</ul>
+		</div>
+			<div class="header-btns">
+		<if condition="$_SESSION[uid]==false">
+		<a href="{pigcms::U('Home/Index/login')}" class="btn btn-text">登录</a>
+		<a href="{pigcms::U('Home/Index/reg')}" class="btn btn-green">注册试用</a>
+		<else/>
+		<a href="{pigcms::U('User/Index/index')}" class="btn btn-green">{pigcms:$Think.session.uname}</a>
+		<a href="/#" class="btn btn-green" onClick="Javascript:window.open('{pigcms::U('System/Admin/logout')}','_blank')" >退出</a>
+		</if>
+		</div>
+	</div>
+</div>
+
+    
+<div class="body">
+  <div class="clearfix article">
+    <div class="article-top">
+      <div class="wrap">
+        <div class="edit-box">
+          <h4>微官网——快速建立企业微信官网，全方位展现企业品牌</h4>
+          <small>5分钟快速搭建微网站，更多功能随意组合，选择更丰富，变换更随心； 作为业内首家网站流量分析的平台，PigCms通过在不同时段内针对PV、UV、IP、跳出率、访问时长等维度进行分析统计，方便快捷监控信息。</small>
+          <p class="text-center">
+            <a class="btn btn-green btn-big" href="{pigcms::U('Home/Index/reg')}">免费体验</a>
+          </p>
+      </div>
+      </div>
+    </div>
+    <div class="clearfix bg-gray bg-shadow">
+      <div class="wrap text-center">
+        <img src="{pigcms::RES}/images/website.png">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+     <!--[if !IE]>底部<![endif]-->
+<include file="Public:footer"/>
+<!--[if !IE]>底部<![endif]-->
+</div>
+
+
+</body>
+</html>

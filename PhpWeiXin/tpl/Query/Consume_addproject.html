@@ -1,0 +1,276 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>添加项目</title>
+    <meta name="description" content="爱养车" />
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var tree,form,project ,haveproject= null;
+        var data = [
+               { id: 1, name: '客付' },
+               { id: 2, name: '保险' },
+               { id: 5, name: '免费' }
+        ];
+        var data1 = [
+          { id: 1, name: '项目' },
+          { id: 2, name: '价格' }
+        ];
+        function updateRow() {
+            var data = form.getData();
+            var selected = haveproject.getSelected();
+            if (!selected) { alert('请选择行'); return; }
+            data['金额'] = data['工时'] * data['单价'];
+            //data['金额'] = data['工时'] * data['单价'] * data['折扣'];
+            data['税额'] = data['金额'] * data['税率'];
+            if (data['虚增类别'] == null || data['虚增类别'] == "NULL") {
+                data['虚增类别'] = '';
+            }
+            haveproject.updateRow(selected, data);
+        }
+        $(function () {
+            //布局
+            $("#layout1").ligerLayout({ leftWidth: 150, height: '100%', space: 2});
+            tree=$("#tree1").ligerTree({
+                url:'/index.php?g=Query&m=Consume&a=addproject',
+                checkbox: false,
+                slide: false,
+                nodeWidth: 120,
+                attribute: ['nodename', 'url'],
+                onSelect: function (node) {
+                    var key=node.data['text'];
+                    if (key == '全部')
+                        key = '';
+                    project.set('parms', { searchkey: key });
+                    project.reload();
+                }
+            });
+            var lastTime;
+            $("#txtKey").keyup(function (event) {
+                //我们可以用jQuery的event.timeStamp来标记时间，这样每次的keyup事件都会修改lastTime的值，lastTime必需是全局变量
+                lastTime = event.timeStamp;
+                setTimeout(function () {
+                    //如果时间差为0，也就是你停止输入0.5s之内都没有其它的keyup事件产生，这个时候就可以去请求服务器了
+                    if (lastTime - event.timeStamp == 0) {
+                        var key = $("#txtKey").val();
+                        project.set('parms', { searchkey: key });
+                        project.reload();
+                    }
+                }, 500);
+            });
+             project = $("#projectgrid").ligerGrid({
+                height: '42%',
+                width: '100%',
+                columns: [
+                { display: '项目编号', name: '项目编号', minWidth: 140 },
+                { display: '项目名称', name: '项目名称', minWidth: 160 },
+                { display: '维修工艺', name: '维修工艺', minWidth: 120 },
+                { display: '标准工时', name: '标准工时', minWidth: 120 },
+                { display: '标准金额', name: '标准金额', minWidth: 120 },
+                { display: '三包工时', name: '三包工时', minWidth: 120 },
+                { display: '三包金额', name: '三包金额', minWidth: 120 },
+                { display: '保险工时', name: '保险工时', minWidth: 120 },
+                { display: '保险金额', name: '保险金额', minWidth: 120 },
+                { display: '提成方式', name: '提成方式', minWidth: 120 },
+                { display: '提成比率', name: '提成比率', minWidth: 120 },
+                { display: '提成工时', name: '提成工时', minWidth: 120 },
+                { display: '提成金额', name: '提成金额', minWidth: 120 },
+                { display: '考核工时', name: '考核工时', minWidth: 120 },
+                { display: '考核金额', name: '考核金额', minWidth: 120 },
+                { display: '备注', name: '备注', minWidth: 240 },
+                { display: '对应券编号', name: '券编码', minWidth: 40 },
+
+                ],
+                url: '/index.php?g=Query&m=Consume&a=getprojectbyname',
+                pageSize: 4,
+                pageSizeOptions: [4, 5, 6, 8],
+                rownumbers: true,
+                isScroll: true,
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    var flag = false;
+                    for (var i = 0; i < haveproject.rows.length; i++)
+                    {
+                        if (haveproject.rows[i]['项目编号'] == data['项目编号']) {
+                            flag = true;
+                            haveproject.rows[i]['虚增类别'] = '';
+                            haveproject.select(haveproject.rows[i]);
+                        }
+                    }
+                    if (!flag) {
+                        var row = {};
+                        row['ID'] =$("#ID").val();
+                        row['项目编号'] = data['项目编号'];
+                        row['项目名称'] = data['项目名称'];
+                        row['券编码'] = data['券编码'];
+                        row['结算方式'] = '客付';
+                        row['工时'] = data['标准工时'];
+                        row['单价'] = data['标准金额'];
+                        row['虚增类别'] ='';
+                        row['主修人'] = getQueryString('zhuxiu');
+                        row['折扣'] = getQueryString('discount');
+                        if (parent.record['维修类别'] == '保险理赔'||parent.record['维修类别'] == '查勘理赔'){
+                            row['折扣'] = 1;
+                            row['结算方式'] = '保险';
+                        }
+                        row['金额'] = row['工时'] * row['单价'];
+                        //row['金额'] = row['工时'] * row['单价'] * row['折扣'];
+                        row['税率'] = 0;
+                        row['税额'] = row['金额'] * row['税率'];
+                        row['备注'] = data['备注'];
+                        form.setData(row);
+                        haveproject.add(row);
+                        haveproject.select(row);
+                    }
+                   
+                }
+            });
+           haveproject = $("#haveproject").ligerGrid({
+                height: '34%',
+                width: '100%',
+                columns: [
+                { display: '项目编号', name: '项目编号', minWidth: 100 },
+                { display: '项目名称', name: '项目名称', minWidth: 160 },
+                { display: '工时', name: '工时', minWidth: 80 },
+                { display: '单价', name: '单价', minWidth: 80 },
+                { display: '金额', name: '金额', minWidth: 80 },
+                { display: '折扣', name: '折扣', minWidth: 80 },
+                { display: '结算方式', name: '结算方式', minWidth: 80 },
+                { display: '税率', name: '税率', minWidth: 120 },
+                { display: '税额', name: '税额', minWidth: 120 },
+                { display: '虚增类别', name: '虚增类别', minWidth: 120 },
+                { display: '虚增金额', name: '虚增金额', minWidth: 120 },
+                { display: '备注', name: '备注', minWidth: 240 },
+                { display: '对应券编号', name: '券编码', minWidth: 40 },
+
+                ],
+                url: '/index.php?g=Query&m=Consume&a=getproject&ID='+$("#ID").val(),
+                //pageSize: 4,
+                //pageSizeOptions: [ 4, 5, 6, 8,10],
+                rownumbers: true,
+                isScroll: true,
+                usePager:false,
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    haveproject.deleteSelectedRow();
+                },
+                onSelectRow: function (rowdata, rowid, rowobj) {
+                    form.setData(rowdata);
+                }
+            });
+             form = $("#form1").ligerForm({
+                inputWidth: 100, labelWidth: 75, space:0,
+                validate: true,
+                width:'100%',
+                buttons: [
+                    {
+                         text: "更新", width: 80, click: function () {
+                            var data = form.getData();
+                            var selected = haveproject.getSelected();
+                            if (!selected) { alert('请选择行'); return; }
+                            data['金额'] = data['工时'] * data['单价'];
+                            //data['金额'] = data['工时'] * data['单价'] * data['折扣'];
+                            data['税额'] = data['金额'] * data['税率'];
+                            if (data['虚增类别'] == null || data['虚增类别'] == "NULL") {
+                                data['虚增类别'] = '';
+                            }
+                            haveproject.updateRow(selected, data);
+                        }
+                    },
+                    {
+                        text: "保存", width: 80, click: function () {
+                            var data = haveproject.getChanges();
+                            var submitData = {
+                                projects: data,
+                                record:parent.record
+
+                            };
+                            $.post('index.php?g=Query&m=Consume&a=saveproject', submitData,
+                              function (data) {
+                                  haveproject.reload();
+                                  if (parent.reflash) {
+                                      parent.reflash();
+                                  }
+                                  $.ligerDialog.alert(data);
+                              });
+                            //alert(JSON.stringify(data));
+                        }
+                    }
+                ],
+                fields: [
+                    { display: "流水号", name: "流水号", newline: false, type: "hidden" },
+                     {
+                         display: "结算类别", name: "结算方式", newline: false, type: "combobox", options: {
+                             valueField: 'name',
+                             textField: 'name',
+                             data: data,
+                         }
+                     },
+                    {
+                        display: "工时 ", name: "工时", newline: false, type: "text", options: {
+                            onBlur:updateRow 
+                        }
+                    },
+                    {
+                        display: "单价 ", name: "单价", newline: false, type: "text", options: {
+                            onBlur: updateRow
+                        }
+                    },
+                    {
+                        display: "折扣 ", name: "折扣", newline: false, type: "text", options: {
+                            onBlur: updateRow
+                        }
+                    },
+                    {
+                        display: "税率", name: "税率", newline: false, type: "text", options: {
+                            onBlur: updateRow
+                        }
+                    },
+                    {
+                        display: "虚增类别", name: "虚增类别", newline: false, type: "combobox",
+                        options: {
+                            valueField: 'name',
+                            textField: 'name',
+                            data: data1,
+                        },
+
+                    },
+                    {
+                        display: "虚增金额", name: "虚增金额", newline: false, type: "text", options: {
+                            onBlur: updateRow
+                        }
+                    },
+                    {
+                        display: "备注", name: "备注", newline: false, type: "text", options: {
+                            onBlur: updateRow
+                        }
+                    },
+
+                ]
+            });
+             $("input[ligeruiid='结算方式']").live('blur', updateRow);
+             $("input[ligeruiid='虚增类别']").live('blur', updateRow);
+        });
+    </script>
+</head>
+
+<body style="padding:0;margin:0">
+    <input type="hidden" id="ID" value="{pigcms:$ID}" />
+    <input type="hidden" id="itemID" value="{pigcms:$itemID}" />
+    <div id="layout1" style="padding:0;margin:0">
+        <div position="left" title="项目类别"  style="padding:0;margin:0" >
+            <ul id="tree1" style="margin-top:3px;" />
+        </div>
+        <div position="center" id="framecenter"  style="padding:0;margin:0">
+            <div id="searchbar">
+                模糊查询(支持拼音首字母)：<input id="txtKey" type="text" />
+            </div>
+         <div id="projectgrid" style="margin:0; padding:0"></div>
+         <div id="form1" style="margin:0;padding:0;height:24%;width:100%"></div>
+         <div id="haveproject" style="margin:0;margin-bottom:2px; padding:0"></div>
+        </div>
+    </div>
+
+</body>
+</html>

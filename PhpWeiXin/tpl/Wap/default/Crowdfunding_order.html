@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html" lang="zh-cn">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="format-detection" content="telephone=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta charset="utf-8">
+<title>{pigcms:$info.name}</title>
+<link rel="stylesheet" href="{pigcms:$staticPath}/tpl/static/crowdfunding/css/zc-common.css">
+<link rel="stylesheet" href="{pigcms:$staticPath}/tpl/static/crowdfunding/css/zc-style.css">
+
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/jquery.min.js"></script>
+<script type="text/javascript" src="{pigcms:$staticPath}/tpl/static/alert.js"></script>
+
+<style>
+.window .title{
+    background-image: linear-gradient(#f05c52, #f05c52);
+}
+</style>
+</head>
+<body>
+<div class="wrapper bg-white">
+    <div class="slide-main base-layer">
+        <!-- head -->
+        <header class="header">
+        <h2><a href="javascript:void(0);" class="text-red">订单</a></h2>
+        <a href="javascript:window.history.go(-1);" class="icon btn-goback"></a>
+        <a href="{pigcms::U('Crowdfunding/home',array('token'=>$token,'wecha_id'=>$wecha_id))}" class="icon btn-home"></a>
+        </header>
+        <!-- / -->
+        <form action="{pigcms::U('Crowdfunding/pay',array('token'=>$token,'wecha_id'=>$wecha_id))}" id="main_form" method="post">
+            <div class="cont-layer">
+                <div class="title-box">
+                    <h5>{pigcms:$info.name}</h5>
+                    <h6>简介：{pigcms:$info.intro}</h6>
+                </div>
+                <div class="placeBlock-10 bg-gray">
+                </div>
+                <div class="order-box">
+                <if condition="$reward.id eq -1">
+                    <div class="order-item clearfix">
+                        <div class="order-item-key">
+                            支持金额：
+                        </div>
+                        <div class="order-item-value">
+                            自定义
+                        </div>
+                    </div>
+                    <div class="order-item clearfix">
+                        <div class="order-item-key">
+                            自定义金额：
+                        </div>
+                        <div class="order-item-value">
+                           <input type="text" id='price' name="price" class="order-input" placeholder="请输入支持的金额" id="tel" value="">
+                        </div>
+                    </div>
+                    <div class="order-item clearfix">
+                        <div class="order-item-key">
+                            回报内容：
+                        </div>
+                        <div class="order-item-value">
+                            感谢您的无私奉献！
+                        </div>
+                    </div>
+                <else/>
+                    <div class="order-item clearfix">
+                        <div class="order-item-key">
+                            应付金额：
+                        </div>
+                        <div class="order-item-value red-money">
+                            {pigcms:$reward.payPrice}元
+                        </div>
+                    </div>
+                    <div class="order-item clearfix">
+                        <div class="order-item-key">
+                            支持金额：
+                        </div>
+                        <div class="order-item-value">
+                            ￥ {pigcms:$reward.money}
+                        </div>
+                    </div>
+                    <div class="order-item clearfix">
+                        <div class="order-item-key">
+                            配送费用：
+                        </div>
+                        <div class="order-item-value">
+                            <if condition="$reward.carriage neq 0">
+                                ￥ {pigcms:$reward.carriage}
+                            <else/>
+                                免运费
+                            </if>
+                        </div>
+                    </div>
+                    <div class="order-item clearfix">
+                        <div class="order-item-key">
+                            回报内容：
+                        </div>
+                        <div class="order-item-value">
+                            {pigcms:$reward.content}
+                        </div>
+                    </div>
+                    <if condition="$addrSign neq ''">
+                    <div class="order-item clearfix wxaddr">
+                        <a id="editAddress" href="javascript:void(0);">点击使用微信收货地址</a>
+                        
+                    </div>
+                    </if>
+                    <div class="order-item clearfix">
+                        <div class="order-item-key">
+                            收货人：
+                        </div>
+                        <div class="order-item-value">
+                            <input type="text" name="username" class="order-input" placeholder="请填写收货人" id="username" value="{pigcms:$fans.truename}">
+                        </div>
+                    </div> 
+                    <div class="order-item clearfix">
+                        <div class="order-item-key">
+                            联系方式：
+                        </div>
+                        <div class="order-item-value">
+                            <input type="text" name="tel" class="order-input" placeholder="请填写联系电话" id="tel" value="{pigcms:$fans.tel}">
+                        </div>
+                    </div> 
+                    <div class="order-item clearfix">
+                        <div class="order-item-key">
+                            收货地址：
+                        </div>
+                        <div class="order-item-value">
+                            <textarea name="address" class="order-textarea" rows="2" cols="32" id="address">{pigcms:$fans.address}</textarea>
+                        </div>
+                    </div>   
+                    </if>
+                    <div class="order-item clearfix">
+                        <div class="order-item-key">
+                            备注：
+                        </div>
+                        <div class="order-item-value">
+                            <textarea name="remark" class="order-textarea" rows="3" cols="32"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <input name="reward_id" value="{pigcms:$reward.id}" type="hidden">
+                <input name="pid" value="{pigcms:$info.id}"  type="hidden">
+                <div class="order-pay-box mt10">
+                    <button id="btn_next" type="button" is_over='<if condition="$is_over eq 1">-1<else/>0</if>' is_no='{pigcms:$reward.id}' class="btn btn-large btn-red">去付款</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <include file="Crowdfunding:footer" />
+</div>
+<input name="tapp_page_point" id="tapp_page_point" value="1025" type="hidden">
+<script>
+  
+    $(function(){
+        $("#btn_next").click(function () {     
+            if($(this).attr('is_over') == -1){
+                alert("项目已经结束");
+                return false;
+            }
+
+            if($(this).attr('is_no') == -1){
+                if($("#price").val().trim()==""){
+                    alert("请填写自定义金额");
+                    return false;
+                }
+            }else{
+                if($("#address").val().trim()==""){
+                    alert("请填写收货地址");
+                    return false;
+                }
+                if($("#username").val().trim() == ""){
+                    alert("请填写收货人");
+                    return false;
+                }
+                if($("#username").val().trim() == ""){
+                    alert("请填写联系电话");
+                    return false;
+                }
+            }
+
+            $("#main_form").submit();
+        });
+        
+        $('#editAddress').click(function(){
+            getaddr();
+        });
+        function getaddr(){
+            WeixinJSBridge.invoke('editAddress',{
+                "appId" : "{pigcms:$addrSign.appId}",
+                "scope" : "jsapi_address",
+                "signType" : "sha1",
+                "addrSign" : "{pigcms:$addrSign.addrSign}",
+                "timeStamp": "{pigcms:$addrSign.timeStamp}",
+                "nonceStr" : "{pigcms:$addrSign.nonceStr}",
+            },function(res){
+                if(res.err_msg == 'edit_address:ok'){
+                    $('#username').val(res.userName);
+                    $('#tel').val(res.telNumber);            
+                    $('#address').val(res.proviceFirstStageName+res.addressCitySecondStageName+res.addressCountiesThirdStageName+res.addressDetailInfo);
+                }
+            });
+        }
+
+    });
+</script>
+
+
+<script type="text/javascript">
+window.shareData = {  
+            "moduleName":"Crowdfunding",
+            "moduleID":"0",
+            "imgUrl": "{pigcms:$info['pic']}", 
+            "timeLineLink": "{pigcms:$f_siteUrl}{pigcms::U('Crowdfunding/index',array('token'=>$token,'id'=>$info['id']))}",
+            "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Crowdfunding/index',array('token'=>$token,'id'=>$info['id']))}",
+            "weiboLink": "{pigcms:$f_siteUrl}{pigcms::U('Crowdfunding/index',array('token'=>$token,'id'=>$info['id']))}",
+            "tTitle": "{pigcms:$info['name']}",
+            "tContent": "{pigcms:$info['intro']}"
+};
+</script>
+{pigcms:$shareScript}
+</body>
+</html>

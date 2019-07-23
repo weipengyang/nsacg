@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>打印账款单</title>
+    <meta name="description" content="爱养车" />
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        // 打印页面设置
+        function printsetup() {
+            wb.execwb(8, 1);
+        }
+        // 打印页面预览
+        function printpreview() { wb.execwb(7, 1); }
+        function printit() { if (confirm('确定打印吗？')) { wb.execwb(6, 6) } }
+
+
+        function printpage() {
+            document.getElementById("noprint").style.display = "none"; //打印整个页面包括标题，在调用打印方法之前隐藏不需要打印的页面标签。无标题将不打印标题
+            print();
+        }
+
+        function printsetup() {
+            try {
+                document.all.WebBrowser.ExecWB(8, 1);
+            }
+            catch (e) {
+            }
+            printpage();
+        }
+    </script>
+</head>
+
+<body style="padding:10px">
+    <div style="text-align: center">
+        <input type="button" value="打印" id="noprint" class="btnnm btnSearch" onmouseover="this.className='btnon btnSearch'"
+               onmouseout="this.className='btnnm btnSearch'" onclick="printsetup();" />
+    </div>
+    <br />
+    <div id="form1">
+        <table cellpadding="0" cellspacing="0" width="100%"  align="center">
+        <tr>
+            <td colspan="4" style="height: 30px; font-weight: bold; font-size: 18px; text-align: center;color:#000000">
+                广州市爱卡汽车服务有限公司{pigcms:$record['账款类别']}
+            </td>
+        </tr>
+        <tr style="height: 30px;"><td style="font-size: 13px;color:#000000">
+                单据编号:{pigcms:$record['单据编号']}
+            </td>
+            <td style="font-size: 13px;color:#000000">
+                制单日期:{pigcms:$record['制单日期']|strtotime|date="Y-m-d",###}
+            </td>
+            <td style="font-size: 13px;color:#000000">
+                制单人:{pigcms:$record['制单人']}
+            </td>
+        </tr>
+    </table>
+        <table cellpadding="0" cellspacing="0" width="100%" style="border:1px #000000 solid;border-bottom:1px;">
+            <tr style="height: 30px;">
+                <td style="font-size: 13px; padding-left:5px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                  往来单位:{pigcms:$record['单位名称']}
+                </td>
+                <td style="font-size: 13px; padding-left:5px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                  联系人:{pigcms:$userinfo['联系人']}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-style:solid;border-width: 0 0 1px 0;">
+                 联系电话:{pigcms:$userinfo['联系电话']}
+                </td>
+            </tr>
+            <tr style="height: 30px;">
+                <td style="font-size: 13px; padding-left:5px;color:#000000;border-width: 0 0 1px 0;"> 
+                 门 店：{pigcms:$record['发票类别']}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-width: 0 0 1px 0;">
+                 车牌号码：{pigcms:$record['发票号']}
+                </td>
+                <td style="font-size: 13px;color:#000000;border-width: 0 0 1px 0;">
+                 收支项目：{pigcms:$record['收支项目']}
+                </td>
+            </tr>
+            <tr style="height: 32px;">
+                <td style="font-size: 13px; width: 33%; padding-left:5px;color:#000000;border-style:solid;border-width: 1px 0 1px 0;">
+                    <if condition="$record['账款类别'] eq '收款单'">
+                        实收金额:￥{pigcms:$record['实收金额']}
+                        <else />
+                        实付金额:￥{pigcms:$record['实付金额']}
+                    </if>
+                </td>
+                <td style="font-size: 13px; width: 33%;color:#000000;border-style:solid;border-width: 1px  0 1px 0;">
+                    结算方式:{pigcms:$record['结算方式']}
+                </td>
+                <td style="font-size: 13px; width: 33%;color:#000000;border-style:solid;border-width: 1px  0 1px 0;"></td>
+            </tr>
+
+        </table>
+         <table cellpadding="0" cellspacing="0" width="100%" style="border:1px #000000 solid;border-top:1px;">
+            <tr style="height: 32px;">
+                <td colspan="3" style="padding-left:5px; font-size: 13px; color:#000000">
+                    摘　　要：{pigcms:$record['摘要']}
+                </td>
+            </tr>
+            <tr style="height: 32px;">
+                <td colspan="3" style="font-weight: bold; font-size: 13px;color:#000000;text-align:right">
+                    客户签字：____________________
+                </td>
+            </tr>
+        </table>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>注册－{pigcms:$f_siteTitle}</title>
+<meta  name="keywords"  content="{pigcms::C('keyword')}">
+<meta  name="description"  content="{pigcms::C('content')}">
+<link  rel="shortcut icon"  href="{pigcms::RES}/images/favicon.ico"  type="image/x-icon"> 
+<link  href="{pigcms::RES}/css/login.css"  rel="stylesheet"  type="text/css">
+<script  type="text/javascript"  src="{pigcms::RES}/js/jquery-1.7.2.min.js"></script>
+<link href="favicon.ico" rel="Shortcut Icon"></link>
+</head>
+<body>
+	<div  class="collwe_logo"><a  href="{pigcms::C('site_url')}"><img  src="{pigcms::RES}/images/title_logo.png"></a></div>
+	<div  class="reg_login">
+		<h2>注册{pigcms:$f_siteName}</h2>
+		  <form action="{pigcms::U('Users/checkreg')}" method="post" style="text-align: center;">
+			<ul>
+				<li  class="input_text">
+				<label  for="username"  class="login_pad">帐号</label><input  type="text"  name="username"  id="err_username"  class="text"></li>
+				<li  class="input_text"><label  for="password"  class="login_pad">密码</label><input  type="password"  name="password"  id="err_password"  class="text"></li>
+				<li  class="input_text"><label  for="repassword"  class="login_pad">密码重复</label><input  type="password"  name="repassword"  id="err_repassword"  class="text"></li>
+				<li  class="input_text"><label  for="email"  class="login_pad">邮箱</label><input  type="text"  name="email"  id="err_registeremail"  class="text"></li>
+				<input  type="hidden"  name="from"  value="">
+				<li>
+                <span>
+				 <input  type="image" name="登陆{pigcms:$f_siteName}"  src="{pigcms::RES}/images/login.png">
+				</span>
+                </li>
+			</ul>
+		</form>
+	</div>
+	<div  class="footer">
+	Copyright © 2011-<?php echo date('Y',time());?> {pigcms:$f_siteName}, Inc. All Rights Reserved </div>
+<div  style="display:none;">
+<script  type="text/javascript">
+$('.input_text input').focus(function(){
+	$(this).prev().hide();
+}).blur(function(){
+	if(!$(this).val()){
+		$(this).prev().show();
+	}
+})
+</script>
+</div>
+</body></html>

@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>优惠券赠送</title>
+    <meta name="description" content="爱养车" />
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var form;
+        $(function () {
+            form = $("#form1").ligerForm();
+            $("#proposer").ligerComboBox({
+                valueField: '姓名',
+                textField: '姓名',
+                autocomplete: true,
+                url: '/index.php?g=Query&m=Consume&a=getfwgw',            });            $('#subimit').click(function () {
+                var data = form.getData();
+                if (data['proposer'] == '')
+                {
+                    $.ligerDialog.alert('请选择申请人');
+                    return;
+                }
+                $.ligerDialog.waitting('赠送中,请稍候...');
+                $.post(location.href, data, function (msg) {
+                    $.ligerDialog.closeWaitting();
+                    $.ligerDialog.alert(msg);
+                    setTimeout(function () {
+                        parent.coupondialog.hide();
+                    }, 2000);
+                });
+            });
+        });
+
+    </script>
+</head>
+
+<body style="padding:0;margin:0">
+    <form name="form1" method="post" id="form1">
+        <div>
+           <p class="name">{pigcms:$truename}（{pigcms:$carno}）</p>
+        </div>
+        <table cellpadding="0" cellspacing="0" class="l-table-edit">
+            <tr>
+                <td align="right" class="l-table-edit-td"></td>
+                <td align="left" class="l-table-edit-td"></td>
+                <td align="left"></td>
+            </tr>
+            <volist id="list" name="list">
+                <tr>
+                    <td  align="right" class="l-table-edit-td">{pigcms:$list.title}</td>
+                    <td align="left" class="l-table-edit-td"><input type="text" name="{pigcms:$list.id }" ltype="text" value="0" class="px" style="width:150px;" /></td>
+                    <td align="left">数量(张)</td>
+                </tr>
+            </volist>
+            <tr>
+                <td align="right" class="l-table-edit-td">有效期:</td>
+                <td align="left" class="l-table-edit-td">
+                    <input name="days" type="text" id="days" ltype='text'  value="365" />
+                </td>
+                <td align="left"></td>
+            </tr>
+            <tr>
+                <td align="right" class="l-table-edit-td">申请人:</td>
+                <td align="left" class="l-table-edit-td">
+                    <input name="proposer" type="text" id="proposer" ltype='combobox' value="20" />
+                </td>
+                <td align="left"></td>
+            </tr>
+            <tr>
+                <td align="right" class="l-table-edit-td">备注:</td>
+                <td align="left" class="l-table-edit-td">
+                    <input name="comment" type="text" id="comment" ltype='text' value="" />
+                </td>
+                <td align="left"></td>
+            </tr>
+        </table>
+        <br />
+        <input type="button" value="提交" id="subimit" class="l-button l-button-submit" />
+        <input type="reset" value="重置" class="l-button l-button-reset" />
+    </form>
+
+</body>
+</html>

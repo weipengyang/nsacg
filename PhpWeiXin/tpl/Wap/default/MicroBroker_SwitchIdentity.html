@@ -1,0 +1,51 @@
+<include file="MicroBroker:header"/>
+<section class="main animated">
+	<div class="main-box jjr-edit-info">
+		<div class="rb-row fn-clear">
+			<p class="info-title">姓名</p>
+			<p class="info-value"><input type="text" id="username" placeholder="姓名" value="{pigcms:$brokeruser['username']}" class="input" /></p>
+		</div>
+		<div class="rb-row fn-clear">
+			<p class="info-title">手机</p>
+			<p class="info-value"><input type="tel" id="phone" placeholder="手机号" value="{pigcms:$brokeruser['tel']}" class="input" readonly /></p>
+		</div>
+		<if condition="$identity eq 7">
+		<div class="rb-row fn-clear" >
+			<p class="info-title">邀请码</p>
+			<p class="info-value"><input type="text" id="invitcode" placeholder="请输入产品顾问邀请码" value="" class="input" /></p>
+		</div>
+		<div class="rb-row fn-clear">
+			<p class="info-title">公司名称</p>
+			<p class="info-value"><input type="text" id="company" placeholder="公司名称" value="{pigcms:$brokeruser['company']}" class="input" /></p>
+		</div>
+		<elseif condition="$identity eq 6"/>
+			<div class="rb-row fn-clear">
+			<p class="info-title">身份证</p>
+			<p class="info-value"><input type="tel" id="identitycode" placeholder="身份证号码" value="{pigcms:$brokeruser['identitycode']}" class="input" /></p>
+		</div>
+		</if>
+		<input type="hidden" value="{pigcms:$identity}" id="toIdentity"/>
+		<p class="rb-submit"><input type="button" value="提交" class="btn confirm-btn-new" id="J_SwitchIdentity" /></p>
+	</div>
+</section>
+<footer class="foot">
+<if condition="$iscopyright eq 1">
+{pigcms:$homeInfo.copyright}
+<else/>
+{pigcms:$siteCopyright}
+</if>
+<!---<a href="{pigcms:$f_siteUrl}">&copy; Powered by {pigcms:$f_siteName}</a>-->
+</footer>
+<script src="{pigcms:$staticPath}/tpl/static/microbroker/js/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+//alert(itemjson['s1'].xmt);
+document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+	//隐藏右上角菜单，需要显示请把hideOptionMenu换成showOptionMenu
+	WeixinJSBridge.call('hideOptionMenu');
+	//隐藏下方工具栏，需要显示顶部导航栏，请把hideToolbar换成showToolbar
+	WeixinJSBridge.call('hideToolbar');
+});
+</script>
+
+<script src="http://g.tbcdn.cn/kissy/k/1.4.0/seed.js"></script>
+<script src="{pigcms:$staticPath}/tpl/static/microbroker/js/mod.jjr.js"></script>

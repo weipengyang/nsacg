@@ -1,0 +1,454 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>车主信息编辑</title>
+    <meta name="description" content="爱养车" />
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var form, memberinfo,wxmemberinfo;
+        var wxgrid, salegrid, bxgrid,wxdialog,cardialog,dbgrid,coupongrid,rechargegrid;
+        function submitForm() {
+            var data = form.getData();
+            //data = JSON2.stringify(data);
+            //data = JSON2.parse(data);
+            data['流水号'] = $("input[id='流水号']").val();
+            data['ID'] = $("input[id='ID']").val();
+            data['等级'] = $("input[ligeruiid='等级']").val();
+            data['类别'] = $("input[ligeruiid='类别']").val();
+            alert(JSON2.stringify(data));
+            $.post('/index.php?g=Query&m=Consume&a=memberinfo', data,
+              function (msg) {
+                  $.ligerDialog.alert(msg);
+                  parent.cargird.reload();
+              });
+
+        }
+        function wxinfo(xh) {
+           var wxdialog= $.ligerDialog.open({
+                height: 540,
+                url: '/index.php?g=Query&m=Consume&a=wxinfo&xh=' + xh,
+                width: 950,
+                showMax: true,
+                showToggle: true,
+                showMin: false,
+                isResize: true,
+                modal: false,
+                title: '车辆维修详细信息'
+           });
+           wxdialog.max();
+        }
+
+        function viewcarinfo(carno) {
+            if (cardialog) {
+                cardialog.setUrl('/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno);
+                cardialog.show();
+            }
+            else {
+                cardialog = $.ligerDialog.open({
+                    height: 500,
+                    url: '/index.php?g=Query&m=Consume&a=carinfo&carno=' + carno,
+                    width: 900,
+                    showMax: true,
+                    showToggle: true,
+                    showMin: false,
+                    isResize: true,
+                    modal: true,
+                    title: '车辆信息编辑'
+                });
+                cardialog.max();
+            }
+        }
+
+        function getGridOptions(checkbox) {
+            var options = {
+                columns: [
+                { display: '车主名称', name: '名称', align: 'left', width: 100, minWidth: 60 },
+                { display: '会员编号', name: '会员编号', minWidth: 120, width: 100 },
+                { display: '等级', name: '等级', minWidth: 120, width: 100 },
+                { display: '联系人', name: '联系人', minWidth: 140, width: 100 },
+                { display: '联系电话', name: '联系电话', width: 100 },
+                { display: '手机号码', name: '手机号码', width: 100 },
+                { display: '业务员', name: '业务员', width: 100 }
+                ],
+                switchPageSizeApplyComboBox: false,
+                url: '/index.php?g=Query&m=Consume&a=getuserinfo',
+                //data: $.extend({}, {}),
+                pageSize: 10,
+                checkbox: checkbox
+            };
+            return options;
+        }
+        function setdata() {
+            memberinfo ={pigcms:$memberinfo};
+            wxmemberinfo ={pigcms:$wxmemberinfo};
+            if (memberinfo && memberinfo != '') {
+                memberinfo = JSON2.stringify(memberinfo);
+                memberinfo = JSON2.parse(memberinfo);
+                form.setData(memberinfo);
+                form.setData(wxmemberinfo);
+                //$("input[ligeruiid='车主']").val(memberinfo['车主']);
+                //$("input[ligeruiid='车型']").val(memberinfo['车型']);
+                $("input[ligeruiid='类别']").val(memberinfo['类别']);
+                $("input[ligeruiid='等级']").val(memberinfo['等级']);
+                var opttype=frameElement.dialog.get('opttype');
+                if(opttype!='modify' && opttype!='add')
+                    $("div[ligeruiid='Button1003']").hide();
+                //$("input[ligeruiid='车辆类别']").val(memberinfo['车辆类别']);
+                //$("input[ligeruiid='颜色']").val(memberinfo['颜色']);
+                //$("input[ligeruiid='外观']").val(memberinfo['外观']);
+                //$("input[ligeruiid='保险公司']").val(memberinfo['保险公司']);
+                //$("div[data-index='1']").html(
+                //  '<div class="l-form-container"><iframe frameborder="0" width="100%" height="500px" src="/index.php?g=Query&m=Consume&a=fileupload&carno='+ carinfo['流水号']+ '"></iframe></div>'
+                // );
+            }
+        }
+        $(function ()
+        {
+            form = $("#form1").ligerForm({
+                inputWidth: 160, labelWidth: 85, space: 20,
+                validate: true,
+                buttons: [
+                    { text: "保存", width: 60, click: submitForm }
+                ],
+                tab: {
+                    items: [
+                        {
+                            title: '基本信息',
+                            fields: [
+                                { display: "流水号", name: "流水号", newline: true, type: "hidden" },
+                                { display: "ID", name: "ID", newline: true, type: "hidden" },
+                                { display: "会员名称", name: "名称", newline: true, type: "text" },
+                                {
+                                    display: "类别", name: "类别", newline: false, type: "combobox",
+                                    options: {
+                                        valueField: '类别',
+                                        textField: '类别',
+                                        autocomplete: true,
+                                        url: '/index.php?g=Query&m=Consume&a=getkhtype',
+                                    }
+                                },
+                                {
+                                    display: "会员等级", name: "等级", newline: false, type: "combobox",
+                                    options: {
+                                        valueField: '等级',
+                                        textField: '等级',
+                                        autocomplete: true,
+                                        url: '/index.php?g=Query&m=Consume&a=getkhgrade',
+                                    }
+                                }, 
+                                { display: "联系人", name: "联系人", newline: true, type: "text" },
+                                {
+                                    display: "性别", name: "性别", newline: false, type: "text",
+                                    
+                                },
+                                {
+                                    display: "联系电话", name: "联系电话", newline: false, type: "text",
+                                  
+
+                                },
+
+                                { display: "备用电话", name: "备用电话", newline: true, type: "text",
+                                    
+                                },
+                                { display: "传真 ", name: "传真", newline: false, type: "text" },
+                                { display: "Email", name: "Email", newline: false, type: "text" },
+                                {
+                                    display: "通讯地址", name: "通讯地址", newline: true, type: "text",
+                                   
+                                },
+                                {
+                                    display: "邮编", name: "邮编", newline: false, type: "text",
+                                   
+                                },
+                                { display: "出生日期", name: "出生日期", newline: false, type: "date" },
+                                { display: "业务员", name: "业务员", newline: false, type: "text" },
+                                { display: "备注", name: "备注", newline: false, type: "text"},
+                                { display: "助记码", name: "助记码",newline: false, type: "text" },
+                                { display: "会员编号", name: "会员编号", newline: false, type: "text" },
+                                { display: "身份证号", name: "身份证号", newline: false, type: "text" },
+                                {
+                                    display: "区域", name: "区域", newline: false, type: "combobox",
+                                    options: {
+                                        valueField: '区域',
+                                        textField: '区域',
+                                        autocomplete: true,
+                                        url: '/index.php?g=Query&m=Consume&a=getzones',
+                                    },
+                                },
+                                { display: "来自", name: "来源", newline: false, type: "text" },
+                                { display: "最近交易", name: "最近交易", newline: false, type: "date" },
+                                { display: "跟踪周期", name: "跟踪周期", newline: false, type: "text" },
+                                { display: "消费总额", name: "expensetotal", newline: false, type: "text",readonly:true },
+                                { display: "余额", name: "balance", newline: false, type: "text", readonly: true },
+                                { display: "积分", name: "total_score", newline: false, type: "text", readonly: true },
+                                { display: "服务折扣", name: "服务折扣", newline: false, type: "text" },
+                                { display: "销售折扣", name: "销售折扣", newline: false, type: "text" },
+                                {
+                                    display: "门店", name: "门店", newline: false, type: "combobox", comboboxName: 'mendian', options: {
+                                    valueField: '名称',
+                                    textField: '名称',
+                                    url: '/index.php?g=Query&m=Consume&a=getshoplist',
+                                }
+
+                                },
+                                { display: "服务顾问", name: "fwgw", newline: false, type: "text", readonly: true },
+
+
+                            ]
+
+                        },
+                        {
+                            title: '维修记录'
+                        },
+                        {
+                             title: '销售记录'
+                         },
+                        {
+                              title: '保险记录'
+                         },
+                         {
+                              title: '代办记录'
+                         },
+                         {
+                             title: '优惠券'
+                         },
+                         {
+                             title: '充值&消费'
+                         }
+
+                    ]
+                }
+
+            });
+            setdata();
+            $("div[data-index='1']").html("<div id='wxgrid'style='margin:0;padding 0'><div>");
+            $("div[data-index='2']").html("<div id='salegrid'style='margin:0;padding 0'><div>");
+            $("div[data-index='3']").html("<div id='bxgrid'style='margin:0;padding 0'><div>");
+            $("div[data-index='4']").html("<div id='dbgrid'style='margin:0;padding 0'><div>");
+            $("div[data-index='5']").html("<div id='coupongrid'style='margin:0;padding 0'><div>");
+            $("div[data-index='6']").html("<div id='rechargegrid'style='margin:0;padding 0'><div>");
+            wxgrid = $("#wxgrid").ligerGrid({
+                columns: [
+                { display: '当前状态', name: '当前状态', align: 'left', width: 60 },
+                {
+                    display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
+                        return todate(value, false);
+                    }
+                },
+                { display: '主修人', name: '主修人', width: 60, align: 'left' },
+                {
+                    display: '客户确认', name: '确认维修', align: 'center', minWidth: 50, render: function (rowdata, index, value) {
+                        if (value == null || value == '')
+                            value = '<span style="color:red">否</span>';
+                        else
+                            value = '<span style="color:blue">是</span>';
+
+                        return value;
+                    }
+                },
+                { display: '制单人', name: '制单人', width: 60, align: 'left' },
+                { display: '接车人', name: '接车人', minWidth: 60 },
+                { display: '维修类别', name: '维修类别', width: 100 },
+                {
+                    display: '车牌号码', name: '车牌号码', width: 100, render: function (rowdata, index, value) {
+
+                        return '<a href="javascript:void(0);" onclick="viewcarinfo(\'' + value + '\');"><strong>' + value + '</strong></a>';
+
+                    }
+                },
+                { display: '客户类别', name: '客户类别', width: 80 },
+                { display: '联系人', name: '联系人', minWidth: 100 },
+                { display: '报价金额', name: '报价金额', minWidth: 60 },
+                { display: '材料费', name: '材料费', minWidth: 60 },
+                { display: '工时费', name: '工时费', minWidth: 60 },
+                { display: '附加费', name: '冷气格', minWidth: 60 },
+                { display: '应收金额', name: '应收金额', minWidth: 60 },
+                { display: '现收金额', name: '现收金额', minWidth: 60 },
+                ],
+                isScroll: true,
+                pageSize: 10,
+                parms: { khID:memberinfo['ID'] },
+                url: '/index.php?g=Query&m=Consume&a=gethistoryinfo&flag=1',
+                height: '80%',
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    wxinfo(data['流水号']);
+                }
+            });
+            salegrid = $("#salegrid").ligerGrid({
+                columns: [
+                { display: '当前状态', name: '当前状态', align: 'left', width: 60 },
+                { display: '单据类别', name: '单据类别', width: 60, align: 'left' },
+                { display: '单据编号', name: '单据编号', width: 120, align: 'left' },
+                {
+                    display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
+                        return todate(value, false);
+                    }
+                },
+                { display: '制单人', name: '制单人', width: 60, align: 'left' },
+                { display: '业务员', name: '业务员', width: 60, align: 'left' },
+                { display: '结算方式', name: '结算方式', minWidth: 120 },
+                { display: '合计数量', name: '合计数量', minWidth: 60 },
+                { display: '实际货款', name: '实际货款', minWidth: 100 },
+                { display: '实际税额', name: '实际税额', minWidth: 60 },
+                { display: '虚增货款', name: '虚增货款', minWidth: 60 },
+                { display: '虚增税额', name: '虚增税额', minWidth: 60 },
+                { display: '价税合计', name: '价税合计', minWidth: 60 },
+                { display: '运费', name: '运费', minWidth: 60 },
+                { display: '总金额', name: '总金额', minWidth: 60 },
+                ],
+                isScroll: true,
+                pageSize: 10,
+                urlParms: { khID:memberinfo['ID']},
+                url: '/index.php?g=Query&m=Consume&a=getxsinfo&flag=1',
+                height: '80%',
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    wxinfo(data['流水号']);
+                }
+            });
+            bxgrid = $("#bxgrid").ligerGrid({
+                columns: [
+                { display: '当前状态', name: '当前状态', align: 'left', width: 60 },
+                { display: '业务编号', name: '业务编号', width: 120, align: 'left' },
+                {
+                    display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
+                        return todate(value, false);
+                    }
+                },
+                { display: '制单人', name: '制单人', width: 60, align: 'left' },
+                { display: '业务员', name: '业务员', width: 60, align: 'left' },
+                { display: '车牌号码', name: '车牌号码', width: 80, align: 'left' },
+                { display: '保险公司', name: '保险公司', minWidth: 80 },
+                { display: '被保险人', name: '被保险人', minWidth: 80 },
+                { display: '结算方式', name: '结算方式', minWidth: 140 },
+                { display: '交强保费', name: '交强保费', minWidth: 140 },
+                { display: '商业保费', name: '商业保费', minWidth: 100 },
+                { display: '应缴保费', name: '应缴保费', minWidth: 60 },
+                { display: '优惠金额', name: '优惠金额', minWidth: 60 },
+                { display: '车船税', name: '车船税', minWidth: 60 },
+                { display: '手续费', name: '手续费', minWidth: 60 },
+                { display: '总金额', name: '总金额', minWidth: 60 },
+                { display: '备注', name: '备注', minWidth: 150 },
+                ],
+                isScroll: true,
+                pageSize: 10,
+                urlParms: { khID: memberinfo['ID'] },
+                url: '/index.php?g=Query&m=Consume&a=getbxinfo&flag=1',
+                height: '80%',
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    wxinfo(data['流水号']);
+                }
+            });
+            dbgrid = $("#dbgrid").ligerGrid({
+                columns: [
+                { display: '当前状态', name: '当前状态', align: 'left', width: 60 },
+                { display: '业务编号', name: '业务编号', width: 120, align: 'left' },
+                {
+                    display: '制单日期', name: '制单日期', minWidth: 100, render: function (rowdata, index, value) {
+                        return todate(value, false);
+                    }
+                },
+                { display: '制单人', name: '制单人', width: 60, align: 'left' },
+                { display: '业务员', name: '业务员', width: 60, align: 'left' },
+                { display: '代办类别', name: '代办类别', minWidth: 80 },
+                { display: '车牌号码', name: '车牌号码', minWidth: 80 },
+                { display: '车管单位', name: '车管单位', minWidth: 80 },
+                { display: '结算方式', name: '结算方式', minWidth: 140 },
+                { display: '代办费用', name: '代办费用', minWidth: 140 },
+                { display: '优惠金额', name: '优惠金额', minWidth: 60 },
+                { display: '总金额', name: '总金额', minWidth: 60 },
+                { display: '备注', name: '备注', minWidth: 150 },
+                ],
+                isScroll: true,
+                pageSize: 10,
+                urlParms: { khID: memberinfo['ID'] },
+                url: '/index.php?g=Query&m=Consume&a=getdbinfo&flag=1',
+                height: '80%',
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    wxinfo(data['流水号']);
+                }
+            });
+            coupongrid = $("#coupongrid").ligerGrid({
+                columns: [
+                { display: '券名称', name: 'coupon_name', align: 'left', width: 180 },
+                { display: '券码', name: 'coupon_num', width: 120, align: 'left' },
+                {
+                    display: '购领时间', name: 'add_time', minWidth: 120, render: function (rowdata, index, value) {
+                        if(value>0)
+                            return formatdate('Y-m-d', value);
+                        return value;
+                    }
+                },
+                {
+                    display: '过期时间', name: 'over_time', minWidth: 120, render: function (rowdata, index, value) {
+                        if (value > 0)
+                            return formatdate('Y-m-d', value); 
+                        return value;
+                    }
+                },
+                {
+                    display: '使用时间', name: 'use_time', minWidth: 120, render: function (rowdata, index, value) {
+                        if (value > 0)
+                            return formatdate('Y-m-d', value);
+                        return value;
+                    }
+                },
+                ],
+                isScroll: true,
+                pageSize: 10,
+                urlParms: { khID: memberinfo['名称'] },
+                url: '/index.php?g=Query&m=Consume&a=getcouponinfo',
+                height: '80%',
+                onDblClickRow: function (data, rowindex, rowobj) {
+                    
+                }
+            });
+            rechargegrid = $("#rechargegrid").ligerGrid({
+                columns: [
+                { display: '姓名', name: 'truename', align: 'left', width: 100 },
+                { display: '会员卡号', name: 'number', align: 'left', width: 120 },
+                { display: '门店', name: 'shop', width: 60, align: 'left' },
+                {
+                     display: '消费车辆', name: 'usecar', minWidth: 100,
+                 },
+                {
+                    display: '消费日期', name: 'createtime', minWidth: 100, render: function (rowdata, index, value) {
+                        if (value > 0)
+                            return formatdate('Y-m-d', value);
+                        return value;
+                    }
+                },
+                { display: '订单号', name: 'orderid', align: 'left', width: 150 },
+                { display: '订单名称', name: 'ordername', align: 'left', width: 150 },
+                { display: '交易金额', name: 'price', align: 'left', width: 80 },
+                { display: '状态', name: 'paid', align: 'left', width: 80, render: function (rowdata, index, value) {
+                        if (value == 1)
+                            return '交易成功';
+                        return '<font color="red">未付款</font>';
+                } },
+                { display: '备注', name: 'note', align: 'left', width: 100 },
+
+                ],
+                isScroll: true,
+                pageSize: 10,
+                urlParms: { khID: memberinfo['名称'] },
+                url: '/index.php?g=Query&m=Consume&a=getrecharge',
+                height: '80%',
+                onDblClickRow: function (data, rowindex, rowobj) {
+
+                }
+            });
+        });
+
+    </script>
+</head>
+
+<body style="padding:10px">
+    <div id="form1">
+    </div>
+</body>
+</html>

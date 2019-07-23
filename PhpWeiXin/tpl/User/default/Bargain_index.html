@@ -1,0 +1,114 @@
+<include file="Public:head" />
+<link rel="stylesheet" type="text/css" href="{pigcms:$staticPath}/tpl/static/bargain/css/cymain.css" />
+<div class="content">
+	<div class="cLineB">
+		<h4 class="left">微砍价</h4>
+		<div class="clr"></div>
+	</div>
+	
+	<div class="tab">
+		<ul>
+			<li class="current tabli" id="tab1"><a href="{pigcms::U('Bargain/index',array('token'=>$token))}">砍价商品</a></li>
+			<li class="tabli" id="tab2"><a href="{pigcms::U('Bargain/order',array('token'=>$token))}">订单管理</a></li>
+		</ul>
+	</div>
+	
+	<div class="cLineB">
+		<h4 class="left">砍价商品列表</h4>
+		<div class="clr"></div>
+	</div>
+	
+	<div class="cLine">
+		<div class="pageNavigator left">
+			<a href="{pigcms::U('Bargain/add',array('token'=>$token))}" title="添加砍价" class="btnGrayS vm bigbtn">添加砍价</a>
+		</div>
+		<div class="pageNavigator right">
+			<input type="text" id="name" class="px name" placeholder="输入砍价名称"  name="name" value="{pigcms:$_GET['name']}" style="margin-top:10px">
+			<a href="javascript:seach()" id="seach" href="" class="btnGrayS" title="搜索">搜索</a>
+		</div>
+		<script>
+			
+		</script>
+		<div class="clr"></div>
+	</div>
+	
+	<div class="msgWrap">
+		<table class="ListProduct" border="0" cellspacing="0" cellpadding="0" width="100%">
+			<thead>
+				<tr>
+					<th width="120px">商品名称</th>
+					<th width="60px">原价</th>
+					<th width="60px">底价</th>
+					<th width="60px">库存</th>
+					<th width="60px">参与人数</th>
+					<th width="60px">购买人数</th>
+					<th width="65px">打开/关闭</th>
+					<th>操作</th>
+					<th width="120px" class="norightborder">添加时间</th>
+				</tr>
+			</thead>
+			<tbody>
+				<volist name="bargain_list" id="vo">
+					<tr>
+						<td>{pigcms:$vo.name}</td>
+						<td>{pigcms:$vo.original}元</td>
+						<td>{pigcms:$vo.minimum}元</td>
+						<td>{pigcms:$vo.inventory}</td>
+						<td>{pigcms:$vo.count_canyu}</td>
+						<td>{pigcms:$vo.count_pay}</td>
+						<if condition="$vo.state eq 1">
+						<td><a href="javascript:state({pigcms:$vo.pigcms_id})"><img id="state{pigcms:$vo.pigcms_id}" src="{pigcms:$staticPath}/tpl/static/bargain/images/start.png" width="100%"/></a></td>
+						<else />
+						<td><a href="javascript:state({pigcms:$vo.pigcms_id})"><img id="state{pigcms:$vo.pigcms_id}" src="{pigcms:$staticPath}/tpl/static/bargain/images/stop.png" width="100%"/></a></td>
+						</if>
+						<td class="norightborder" style="border-right:1px solid #eee">
+							<a href="{pigcms::U('Bargain/order',array('token'=>$token,'id'=>$vo['pigcms_id']))}">订单</a>
+							<a href="{pigcms::U('Bargain/update',array('token'=>$token,'id'=>$vo['pigcms_id']))}">修改</a>
+							<a href="javascript:drop_confirm('您确定要删除【{pigcms:$vo.name}】吗?', '{pigcms::U('Bargain/operate',array('token'=>$token,'id'=>$vo['pigcms_id'],'type'=>'del'))}')">删除</a>
+						</td>
+						<td  style="border-right:0">{pigcms:$vo.addtime|date="Y-m-d H:i:s",###}</td>
+					</tr>
+				</volist>
+			</tbody>
+		</table>
+	</div>
+	<div class="cLine">
+		<div class="pageNavigator right">
+			<div class="pages">{pigcms:$page}</div>
+		</div>
+		<div class="clr"></div>
+	</div>
+</div>
+<script>
+	$(document).ready(function(){
+		
+	});
+	function state(id){
+		$.ajax({
+			type:"POST",
+			url:"{pigcms::U('Bargain/ajax',array('token'=>$token))}",
+			dataType:"json",
+			data:{
+				type:"state",
+				id:id,
+				token:"{pigcms:$token}"
+			},
+			success:function(data){
+				if(data.error == 0){
+					$("#state"+id).attr("src","{pigcms:$staticPath}/tpl/static/bargain/images/stop.png");
+				}else if(data.error == 1){
+					$("#state"+id).attr("src","{pigcms:$staticPath}/tpl/static/bargain/images/start.png");
+				}
+			}
+		});
+	}
+	function seach(){
+		var name = $("#name").val();
+		if(name != ""){
+			window.location.href="{pigcms::U('Bargain/index',array('token'=>$token))}&name="+name;
+		}else{
+			window.location.href="{pigcms::U('Bargain/index',array('token'=>$token))}";
+		}
+	}
+</script>
+<include file="Public:footer"/>

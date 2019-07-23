@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+
+</head>
+<body>
+    <div class="page">
+        <header class="bar bar-nav">
+            <h1 class='title'>用户资料</h1>
+        </header>
+        <form id="normal-login-form" action="{pigcms::U('Store/register',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'twid' => $twid, 'cid' => $cid))}" autocomplete="off" method="post">
+            <p><input class="input-common" type="text" placeholder="请输入您的通信地址" name="address" /></p>
+        </form>
+        <div class="content">
+            <div class="list-block" style="margin-top:5px;padding-top:">
+                <ul>
+                    <!-- Text inputs -->
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-name"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">账号</div>
+                                <div class="item-input">
+                                    <input type="text" id="username" placeholder="用户登录名字">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-name"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">姓名</div>
+                                <div class="item-input">
+                                    <input type="text" id="truename" placeholder="真实姓名">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-email"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">手机号</div>
+                                <div class="item-input">
+                                    <input type="email" id="tel" placeholder="手机号码">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-password"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">密码</div>
+                                <div class="item-input">
+                                    <input type="password" placeholder="登录密码" class="">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-password"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">确认密码</div>
+                                <div class="item-input">
+                                    <input type="password" placeholder="确认密码" class="">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-gender"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">性别</div>
+                                <div class="item-input">
+                                    <select>
+                                        <option>男</option>
+                                        <option>女</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- Date -->
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-calendar"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">生日</div>
+                                <div class="item-input">
+                                    <input type="date" placeholder="Birth day" value="2014-04-30">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- Switch (Checkbox) -->
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-toggle"></i></div>
+                            <div class="item-inner">
+                             <a href="{pigcms::U('Store/login', array('token' => $token, 'wecha_id' => $wecha_id, 'twid' => $twid))}">已有账号，现在登录</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="content-block">
+                <div class="row">
+                    <div class="col-50"><a href="#" class="button button-big button-fill button-danger">取消</a></div>
+                    <div class="col-50"><a href="#" class="button button-big button-fill button-success">提交</a></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="meituan_check" style="margin:0 0 55px 0"><br><br><br></div>
+        </div>
+</body>
+<script type="text/javascript">
+    window.shareData = {
+        "moduleName": "Store",
+        "moduleID": "",
+        "imgUrl": "",
+        "timeLineLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/products',array('token' => $_GET['token'], 'twid' => $mytwid, 'cid' => $cid))}",
+        "sendFriendLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/products',array('token' => $_GET['token'], 'twid' => $mytwid, 'cid' => $cid))}",
+        "weiboLink": "{pigcms:$f_siteUrl}{pigcms::U('Store/products',array('token' => $_GET['token'], 'twid' => $mytwid, 'cid' => $cid))}",
+        "tTitle": "{pigcms:$metaTitle}",
+        "tContent": "{pigcms:$metaTitle}"
+    };
+</script>
+    {pigcms:$shareScript}
+</html>

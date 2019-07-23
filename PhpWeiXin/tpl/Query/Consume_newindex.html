@@ -1,0 +1,358 @@
+﻿<!doctype html>
+<html class="no-js fixed-layout">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>爱养车</title>
+    <meta name="description" content="爱养车">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="stylesheet" href="/tpl/static/assets/css/amazeui.min.css" />
+
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" id="mylink" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.min.js" type="text/javascript"></script>
+    <!--<script src="/tpl/static/lib/ligerUI/js/plugins/ligerTab.js"></script>-->
+    <script src="/tpl/static/lib/jquery.cookie.js"></script>
+    <script src="/tpl/static/lib/json2.js"></script>
+    <script src="/tpl/static/lib/menu.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/tpl/static/assets/css/admin.css">
+
+    <script type="text/javascript">
+        var tab = null;
+        var accordion = null;
+        var tree = null;
+        var tabItems = [];
+        function unsetcookie()
+        {
+            if (confirm("您确认要进行退出？")) {
+                //deleteCookie('username');
+                $.get('/index.php?g=Query&m=Consume&a=quitsystem',
+                function (data) {
+                    if (data.success == 1) {
+                        alert(data.msg);
+                        location.reload();
+
+                    } else {
+                        alert(data.msg);
+                    }
+                }, "json");
+            }
+        }
+        function getCookieVal(offset) {
+            var endstr = document.cookie.indexOf(";", offset);
+            if (endstr == -1) {
+                endstr = document.cookie.length;
+            }
+            return unescape(document.cookie.substring(offset, endstr));
+        }
+
+        // primary function to retrieve cookie by name
+        function getCookie(name) {
+            var arg = name + "=";
+            var alen = arg.length;
+            var clen = document.cookie.length;
+            var i = 0;
+            while (i < clen) {
+                var j = i + alen;
+                if (document.cookie.substring(i, j) == arg) {
+                    return getCookieVal(j);
+                }
+                i = document.cookie.indexOf(" ", i) + 1;
+                if (i == 0) break;
+            }
+            return null;
+        }
+        function deleteCookie(name, path, domain) {
+            if (getCookie(name)) {
+                document.cookie = name + "=" +
+              ((path) ? "; path=" + path : "") +
+              ((domain) ? "; domain=" + domain : "") +
+              "; expires=Thu, 01-Jan-1970 00:00:01 GMT";
+
+            }
+        }
+        $(function () {
+            //布局
+            $("#layout1").ligerLayout({ leftWidth: 210, height: '100%', heightDiff: -30, space: 2, onHeightChanged: f_heightChanged });
+            var height = $(".l-layout-center").height();
+            //Tab
+            $("#framecenter").ligerTab({
+                height: height,
+                showSwitchInTab: true,
+                showSwitch: true,
+                onAfterAddTabItem: function (tabdata) {
+                    tabItems.push(tabdata);
+                    saveTabStatus();
+                },
+                onAfterRemoveTabItem: function (tabid) {
+                    for (var i = 0; i < tabItems.length; i++) {
+                        var o = tabItems[i];
+                        if (o.tabid == tabid) {
+                            tabItems.splice(i, 1);
+                            saveTabStatus();
+                            break;
+                        }
+                    }
+                }
+            });
+
+            //面板
+            $("#accordion1").ligerAccordion({
+                height: height - 24, speed: null
+            });
+
+            $(".l-link").hover(function () {
+                $(this).addClass("l-link-over");
+            }, function () {
+                $(this).removeClass("l-link-over");
+            });
+            //树
+            $("#tree1").ligerTree({
+                data: indexdata,
+                checkbox: false,
+                slide: false,
+                nodeWidth: 120,
+                attribute: ['nodename', 'url'],
+                render: function (a) {
+                    if (!a.isnew) return a.text;
+                    return '<a href="' + a.url + '" target="_blank">' + a.text + '</a>';
+                },
+                onSelect: function (node) {
+                    if (!node.data.url) return;
+                    if (node.data.isnew) {
+                        return;
+                    }
+                    var tabid = $(node.target).attr("tabid");
+                    if (!tabid) {
+                        tabid = new Date().getTime();
+                        $(node.target).attr("tabid", tabid)
+                    }
+                    f_addTab(tabid, node.data.text, node.data.url);
+                }
+            });
+
+            function openNew(url) {
+                var jform = $('#opennew_form');
+                if (jform.length == 0) {
+                    jform = $('<form method="post" />').attr('id', 'opennew_form').hide().appendTo('body');
+                } else {
+                    jform.empty();
+                }
+                jform.attr('action', url);
+                jform.attr('target', '_blank');
+                jform.trigger('submit');
+            };
+
+
+            tab = liger.get("framecenter");
+            accordion = liger.get("accordion1");
+            tree = liger.get("tree1");
+            $("#pageloading").hide();
+            pages_init();
+        });
+        function f_heightChanged(options) {
+            if (tab)
+                tab.addHeight(options.diff);
+            if (accordion && options.middleHeight - 24 > 0)
+                accordion.setHeight(options.middleHeight - 24);
+        }
+        function f_addTab(tabid, text, url) {
+            tab.addTabItem({
+                tabid: tabid,
+                text: text,
+                url: url
+            });
+        }
+       
+        function pages_init() {
+            var tabJson = $.cookie('liger-home-tab');
+            if (tabJson) {
+                var tabitems = JSON.parse(tabJson);
+                for (var i = 0; tabitems && tabitems[i]; i++) {
+                    f_addTab(tabitems[i].tabid, tabitems[i].text, tabitems[i].url);
+                }
+            }
+        }
+        function saveTabStatus() {
+            $.cookie('liger-home-tab', JSON2.stringify(tabItems));
+        }
+        function getQueryString(name) {
+            var now_url = document.location.search.slice(1), q_array = now_url.split('&');
+            for (var i = 0; i < q_array.length; i++) {
+                var v_array = q_array[i].split('=');
+                if (v_array[0] == name) {
+                    return v_array[1];
+                }
+            }
+            return false;
+        }
+        function getLinkPrevHref(iframeId) {
+            if (!window.frames[iframeId]) return;
+            var head = window.frames[iframeId].document.getElementsByTagName('head').item(0);
+            var links = $("link:first", head);
+            for (var i = 0; links[i]; i++) {
+                var href = $(links[i]).attr("href");
+                if (href && href.toLowerCase().indexOf("ligerui") > 0) {
+                    return href.substring(0, href.toLowerCase().indexOf("lib"));
+                }
+            }
+        }
+    </script>
+    <style type="text/css">
+        body, html {
+            height: 100%;
+        }
+
+        body {
+            padding: 0px;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .l-link {
+            display: block;
+            height: 26px;
+            line-height: 26px;
+            padding-left: 10px;
+            text-decoration: underline;
+            color: #333;
+        }
+
+        .l-link2 {
+            text-decoration: underline;
+            color: white;
+            margin-left: 2px;
+            margin-right: 2px;
+        }
+
+        .l-layout-top {
+            background: #102A49;
+            color: White;
+        }
+
+        .l-layout-bottom {
+            background: #E5EDEF;
+            text-align: center;
+        }
+
+        #pageloading {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            background: white url('loading.gif') no-repeat center;
+            width: 100%;
+            height: 100%;
+            z-index: 99999;
+        }
+
+        .l-link {
+            display: block;
+            line-height: 22px;
+            height: 22px;
+            padding-left: 16px;
+            border: 1px solid white;
+            margin: 4px;
+        }
+
+        .l-link-over {
+            background: #FFEEAC;
+            border: 1px solid #DB9F00;
+        }
+
+        .l-winbar {
+            background: #2B5A76;
+            height: 30px;
+            position: absolute;
+            left: 0px;
+            bottom: 0px;
+            width: 100%;
+            z-index: 99999;
+        }
+
+        .space {
+            color: #E7E7E7;
+        }
+        /* 顶部 */
+        .l-topmenu {
+            margin: 0;
+            padding: 0;
+            height: 48px;
+            line-height: 48px;
+            position: relative;
+            border-top: 1px solid #1D438B;
+        }
+
+
+        .body-gray2014 #framecenter {
+            margin-top: 3px;
+        }
+
+        .viewsourcelink {
+            background: #B3D9F7;
+            display: block;
+            position: absolute;
+            right: 10px;
+            top: 3px;
+            padding: 6px 4px;
+            color: #333;
+            text-decoration: underline;
+        }
+
+        .viewsourcelink-over {
+            background: #81C0F2;
+        }
+        #skinSelect {
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div id="pageloading"></div>
+
+    <header class="am-topbar am-topbar-inverse admin-header l-topmenu">
+        <div class="am-topbar-brand">
+            <strong>爱养车</strong> <small>汽车服务管理</small>
+        </div>
+        <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
+            <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
+                <li class="am-dropdown"><a href="javascript:;"><span class="am-icon-envelope-o"></span> 代办事项 <span class="am-badge am-badge-warning">5</span></a></liclass="am-dropdown">
+                <li class="am-dropdown" data-am-dropdown>
+                    <a class="am-dropdown-toggle" data-am-dropdown-toggle href="javascript:;">
+                        <span class="am-icon-users"></span> {pigcms:$username} <span class="am-icon-caret-down"></span>
+                    </a>
+                    <ul class="am-dropdown-content">
+                        <li><a href="#"><span class="am-icon-user"></span> 资料</a></li>
+                        <li><a href="#"><span class="am-icon-cog"></span> 设置</a></li>
+                        <li><a href="#" onclick="unsetcookie();"><span class="am-icon-power-off"></span> 退出</a></li>
+                    </ul>
+                </li>
+                <li class="am-dropdown"><a href="javascript:;" id="admin-fullscreen"><span class="am-icon-arrows-alt"></span> <span class="admin-fullText">开启全屏</span></a></li>
+            </ul>
+
+        </div>
+    </header>
+
+    <div id="layout1" >
+        <div position="left" title="主菜单" id="accordion1" >
+            <div title="功能列表" class="l-scroll">
+                <ul id="tree1" style="margin-top:3px;"/>
+            </div>
+        </div>
+        <div position="center" id="framecenter" >
+            <div tabid="home" title="我的主页">
+                <iframe frameborder="0" name="home" id="home" src="/index.php?g=Query&m=Consume&a=members"></iframe>
+            </div>
+        </div>
+
+    </div>
+    <div style="height:30px; line-height:30px;text-align:center;">
+        <p style="text-align:center">广州市爱养车汽车服务公司(c)版权所有 <a href="http://www.miibeian.gov.cn" target="_blank">粤ICP备16029128号-1</a></p>
+    </div>
+    <script src="/tpl/static/assets/js/amazeui.min.js"></script>
+    <script src="/tpl/static/assets/js/app.js"></script>
+</body>
+</html>

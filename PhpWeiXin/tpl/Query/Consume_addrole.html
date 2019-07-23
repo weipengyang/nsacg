@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>角色增加</title>
+    <meta name="description" content="爱养车" />
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var adddialog = null;
+        $(function ()
+        {
+
+            var form = $("#form1").ligerForm({
+                inputWidth: 220, labelWidth: 80, space: 20,
+                validate: true,
+                fields: [
+                    {
+                        display: "RoleID", name: "RoleID", newline: true, type: "hidden"
+                    },
+                   {
+                       display: "角色名称", name: "RoleName", newline: true, type: "text", options: {
+                          
+                       }
+                   }, 
+                    {
+                       display: "角色排序", name: "RoleSort", newline: true, type: "spinner", options: {
+                            type: 'int',
+                            value: '10',
+                            step:1
+                        }
+                    },
+                    { display: "角色描述", name: "RoleDscript", newline: true, type: "textarea" },
+                    
+
+                ],
+                buttons: [                    {
+                        text: "取消", width: 60, click: function () {
+                            frameElement.dialog.hide();
+                        }
+                    },                    {
+                        text: "保存", width: 60, click: function () {
+                            var data = form.getData();
+                            if (data['RoleName'] == '') {
+                                $.ligerDialog.alert('角色名称不能为空');
+                                return;
+                            }
+                            var submitdata = {
+                                row: data,
+                                type: frameElement.dialog.get('opttype')
+                            };
+                            $.post('/index.php?g=Query&m=Consume&a=saverole', submitdata,
+                              function (msg) { 
+                                  $.ligerDialog.alert(msg);
+                                  window.parent.grid.reload();
+                                  frameElement.dialog.hide(); 
+                              });
+                        }
+                    }            ]            });
+            var data = parent.grid.getSelectedRow();
+            if (data) {
+                form.setData(data);
+            }
+        });
+
+
+    </script>
+</head>
+
+<body style="padding:10px">
+    <div id="form1">
+    </div>
+</body>
+</html>

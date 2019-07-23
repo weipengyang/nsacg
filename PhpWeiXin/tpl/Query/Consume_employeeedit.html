@@ -1,0 +1,213 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>员工编辑</title>
+    <meta name="description" content="爱养车" />
+    <link href="/tpl/static/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="/tpl/static/lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script src="/tpl/static/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/ligerUI/js/ligerui.all.js" type="text/javascript"></script>
+    <script src="/tpl/static/lib/json2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var dialog, codenum;
+        $(function ()
+        {
+            var form = $("#form1").ligerForm({
+                inputWidth: 160, labelWidth: 85, space: 20,
+                validate: true,
+                fields: [
+                    {
+                        display: '门店', name: '单位', newline: false, type: "combobox",
+                        options: {
+                            valueField: '名称',
+                            textField: '名称',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getshoplist',
+                        }
+                    },
+                    {
+                        display: '部门', name: '部门', newline: false, type: "combobox",
+                        options: {
+                            valueField: '部门',
+                            textField: '部门',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getdepartments',
+                        }
+                    },
+                    {
+                        display: '班组', name: '班组', newline: false, type: "combobox",
+                        options: {
+                            valueField: '名称',
+                            textField: '名称',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getdgrouplist',
+                        }
+                    },
+                    { display: '工号', name: '工号', newline: false, type: "text" },
+                    { display: '姓名', name: '姓名', newline: false, type: "text" },
+                    {
+                        display: '性别', name: '性别', newline: false, type: "combobox",
+                        options: {
+                            valueField: 'name',
+                            textField: 'name',
+                            autocomplete: true,
+                            data: [
+                               {
+                                   name: '男', value: '男'
+                               },
+                               {
+                                   name: '女', value: '女'
+                               }
+                            ],
+                        }
+                    },
+                    { display: '籍贯', name: '籍贯', newline: false, type: "text" },
+                    { display: '职务', name: '职务', newline: false, type: "text" },
+                    {
+                        display: '学历', name: '学历', newline: false, type: "combobox",
+                        options: {
+                            valueField: '方式',
+                            textField: '方式',
+                            autocomplete: true,
+                            url: '/index.php?g=Query&m=Consume&a=getgzlb',
+                        }
+                    },
+                    { display: '联系电话', name: '联系电话', newline: false, type: "text" },
+                    { display: '手机号码', name: '手机号码', newline: false, type: "text" },
+                    { display: '身份证号', name: '身份证号', newline: false, type: "text" },
+                    { display: '住址', name: '住址', newline: false, type: "text" },
+                    {
+                        display: '入职日期', name: '入职日期', newline: false, type: "date"
+                    },
+                    {
+                        display: '技术员', name: '技术员', newline: false, type: "select", options: {
+                            data: [
+                               {
+                                   name: '是', value: '1'
+                               },
+                               {
+                                   name: '否', value: '0'
+                               }
+                            ],
+                            textField: 'name',                            valueField: 'value',
+                            value:0
+                        }
+                    },
+                    {
+                        display: '业务员', name: '业务员', newline: false, type: "select", options: {
+                            data: [
+                               {
+                                   name: '是', value: '1'
+                               },
+                               {
+                                   name: '否', value: '0'
+                               }
+                            ],
+                            textField: 'name',                            valueField: 'value',
+                            value: 0
+                        }
+                    },
+                    {
+                        display: '回访员', name: '回访员', newline: false, type: "select", options: {
+                            data: [
+                               {
+                                   name: '是', value: '1'
+                               },
+                               {
+                                   name: '否', value: '0'
+                               }
+                            ],
+                            textField: 'name',                            valueField: 'value',
+                            value: 0
+                        }
+                    },
+                    {
+                        display: '接车员', name: '接车员', newline: false, type: "select", options: {
+                            data: [
+                               {
+                                   name: '是', value: '1'
+                               },
+                               {
+                                   name: '否', value: '0'
+                               }
+                            ],
+                            textField: 'name',                            valueField: 'value',
+                            value: 0
+                        }
+                    },
+                    {
+                        display: '领料员', name: '领料员', newline: false, type: "select", options: {
+                            data: [
+                               {
+                                   name: '是', value: '1'
+                               },
+                               {
+                                   name: '否', value: '0'
+                               }
+                            ],
+                            textField: 'name',                            valueField: 'value',
+                            value: 0
+                        }
+                    }, 
+                    {
+                        display: '报价员', name: '报价员', newline: false, type: "select", options: {
+                            data: [
+                               {
+                                   name: '是', value: '1'
+                               },
+                               {
+                                   name: '否', value: '0'
+                               }
+                            ],
+                            textField: 'name',                            valueField: 'value',
+                            value: 0
+                        }
+                    }
+
+                ],
+                buttons: [
+                    {
+                        text: "取消", width: 60, click: function () {
+                            window.parent.editdialog.hide();
+                        }
+                    },
+                    {
+                        text: "保存", width: 60, click: function () {
+                            var data = form.getData();
+                            if (dialog.get('type') == 'modify')
+                                data['流水号'] = codenum;
+                            var submitData = {
+                                type: dialog.get('type'),
+                                tracedata: data
+                            };
+                            alert(JSON2.stringify(data));
+                            return;
+                            $.post('index.php?g=Query&m=Consume&a=saveemployee', submitData,
+                              function (data) {
+                                  $.ligerDialog.alert(data);
+                                  window.parent.liger.get('maingrid4').reload();
+                                  dialog.hide();
+
+                              });
+                        }
+                    }
+            ]
+            });
+            dialog = frameElement.dialog;
+            var data = dialog.get('data');
+            var type = dialog.get('type');
+            if (data) {
+                setTimeout(function () {
+                    form.setData(data);
+                }, 500);
+            }
+        });
+
+
+    </script>
+</head>
+<body style="padding:10px">
+    <div id="form1">
+    </div>
+</body>
+</html>

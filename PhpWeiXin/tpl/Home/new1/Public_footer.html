@@ -1,0 +1,157 @@
+  <div class="footer">
+	<div class="footer-nav clearfix">
+		<div class="wrap clearfix">
+			<dl class="list-arrow-square">
+				<dt>关于PigCms</dt>
+				<dd><a href="{pigcms::U('Home/Index/contact')}">联系方式</a></dd>
+				<dd><a href="{pigcms::U('Home/Index/spread')}">渠道代理</a></dd>
+				<dd><a href="{pigcms::U('Home/Index/about')}">关于我们</a></dd>
+			</dl>
+			<!--<dl class="list-arrow-square">
+				<dt><a href="#">暂无</a></dt>
+			</dl>-->
+			<dl class="list-icon">
+				<dt>联系方式</dt>
+				<dd class="icon-address"><a href="{pigcms::U('Home/Index/contact')}">公司地址</a></dd>
+				<dd class="icon-phone">18888888888</dd>
+				<dd class="icon-mail"><a href="mailto:1731360691@b.qq.com">1731360691@b.qq.com</a></dd>
+			</dl>
+			<dl class="list-link">
+				<dt>友情链接</dt>
+				<dd>
+			<a href="http://www.ktvcity.com/" target="blank">KTV技术联盟</a>
+            <a href="http://weixin.qq.com/" target="blank">微信下载</a>
+            <a href="http://daxue.qq.com/" target="blank">腾讯大学</a>
+            <a href="http://www.fdsm.fudan.edu.cn/emba/" target="blank">复旦大学EMBA</a>
+            <a href="http://daxue.qq.com/wechat" target="blank">微信商学院</a>
+				</dd>
+			</dl>
+		</div>
+	</div>
+	<div class="footer-copyright">
+		<div class="wrap clearfix">
+			<p class="fl text-left">{pigcms::C('ipc')}</p>
+			<p class="fr text-right mod-share">
+				<a href="#" class="icon-weibo" target="blank"></a>
+				<a href="#" class="icon-tencent" target="blank"></a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<!--  js  -->
+  <script src="{pigcms::RES}/js/jquery.anythingslider.min.js"></script>
+  <script src="{pigcms::RES}/js/affix.js"></script>
+  <script src="{pigcms::RES}/js/scrollspy.js"></script>
+	<script src="{pigcms::RES}/js/plugins.js"></script>
+	<script src="{pigcms::RES}/js/main.js"></script>
+  <script src="{pigcms::RES}/js/jquery.cookie.js"></script>
+	<script>
+		$(function(){
+			$('#slider-spread').anythingSlider({
+				theme:"minimalist-round",
+				buildStartStop:false,
+				pauseOnHover: true,
+				startPanel:0,
+        hashTags: false
+			});
+		});
+	</script>
+	<script>
+		$("#change_verify_code").click(function() {
+			$image_code = $('#image_code');
+			$image_code.attr("src", $image_code.attr("src") + Math.random());
+			$('#verify_code').val('').focus();
+			return false;
+		});
+	</script>
+
+
+  
+<script>
+  $(function(){
+    $("#page-index").affix({
+        offset: {
+            top: 150,
+            bottom: 300
+        }
+    });
+    $.fn.scrollspy.Constructor.DEFAULTS = {
+        offset: 100
+    }
+  });
+</script>
+
+<script>
+    $(function(){
+        $(window).resize(function(){
+            $('#slider-index').anythingSlider({
+                theme:"cs-portfolio",
+                buildStartStop:false,
+                autoPlay:true,
+                pauseOnHover: true,
+                buildArrows:false,
+                startPanel:0,
+                hashTags: false
+            });
+        });
+        $('#slider-index').anythingSlider({
+            theme:"cs-portfolio",
+            buildStartStop:false,
+            autoPlay:true,
+            pauseOnHover: true,
+            buildArrows:false,
+            startPanel:0,
+            hashTags: false
+        });
+        $('#slider-note').anythingSlider({
+            mode: "vertical",
+            buildNavigation: false,
+            theme:"cs-portfolio",
+            buildStartStop:false,
+            autoPlay:true,
+            pauseOnHover: true,
+            buildArrows:false,
+            startPanel:0,
+            hashTags: false
+        });
+        $('#slider-index-4').anythingSlider({
+            theme:"minimalist-square",
+            buildStartStop:false,
+            autoPlay:true,
+            pauseOnHover: true,
+            expand : true,
+            showMultiple : 5,
+            startPanel:0,
+            hashTags: false
+        });
+
+        $('#slider-case').anythingSlider({
+            theme:"minimalist-square",
+            autoPlay: false,
+            buildStartStop:false,
+            pauseOnHover: true,
+            expand : true,
+            showMultiple : 1,
+            startPanel:3,
+            hashTags: false
+        });
+
+    });
+
+    
+</script>
+<div class="mod-tools" id="tools">
+    <a class="tools-qq" id="launch_qq">QQ:1731360691</a>
+    <a class="tools-phone">18888888888</a>
+    <a class="tools-spread" href="{pigcms::U('Home/Index/spread')}">申请代理</a>
+    <a class="tools-qrd"></a>
+</div>
+
+  <div class="mod-page-circle page-index" id="page-index">
+    <ul class="nav">
+      <li><a href="#index-0">0</a></li>
+      <li><a href="#index-1">1<i></i><span>V-领先服务</span></a></li>
+      <li><a href="#index-2">2<i></i><span>谁使用了PigCms</span></a></li>
+    </ul>
+  </div>

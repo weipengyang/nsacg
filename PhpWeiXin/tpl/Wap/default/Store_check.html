@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">   
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>结算</title>
+<link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+<link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/0.4.1/weui.min.css" />
+<link href="http://at.alicdn.com/t/font_1452909907_4403944.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="page" style="margin:0px">
+        <nav class="bar bar-tab">
+            <a class="tab-item" href="#" onclick="history.go(-1);">
+                <span class="icon icon-left"></span>
+                <span class="tab-label">返回</span>
+            </a>
+            <a class="tab-item" href="{pigcms::U('Store/cats',array('token' => $_GET['token'], 'catid' => $hostlist['id'], 'wecha_id' => $wecha_id, 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-home"></span>
+                <span class="tab-label">首页</span>
+            </a>
+            <a class="tab-item" href="{pigcms::U('Store/myinfo',array('token'=>$_GET['token'],'wecha_id'=>$_GET['wecha_id'], 'cid' => $cid, 'twid' => $twid, 'cid' => $cid))}">
+                <span class="icon icon-me"></span>
+                <span class="tab-label">我</span>
+            </a>
+        </nav>
+        <div class="content" style="margin:0px;text-align:center;">
+            <volist name="wxlist" id="item">
+                <span style="width:100%;text-align:center;font-size:0.6rem">{pigcms:$item.进厂时间|strtotime|date="Y-m-d H:i",###}</span>
+                <div class="card" style="background-color:#016FC4;color:white">
+                    <div class="card-header" ><span>{pigcms:$item.维修类别}({pigcms:$item.车牌号码})</span><span style="color:orange;font-size:1rem">{pigcms:$item.应收金额}元</span></div>
+                    <notempty name="item.items">
+                        <div class="card-content">
+                            <div class="card-content-inner" style="font-size:0.6rem;">
+                                <div class="row">
+                                    <div class="col-33">项目名称</div>
+                                    <div class="col-33">金额</div>
+                                    <div class="col-33">服务技师</div>
+                                </div>
+                                <volist name="item.items" id="xm">
+                                    <div class="row">
+                                        <div class="col-33">{pigcms:$xm.项目名称}</div>
+                                        <div class="col-33">{pigcms:$xm.金额}</div>
+                                        <div class="col-33">{pigcms:$xm.主修人}</div>
+                                    </div>
+                                </volist>
+                            </div>
+                        </div>
+                     </notempty>
+                        <notempty name="item.peijian">
+                            <div class="card-content" style="margin-top:0">
+                                <div class="card-content-inner" style="font-size:0.6rem;">
+                                    <div class="row">
+                                        <div class="col-33">配件名称</div>
+                                        <div class="col-33">数量</div>
+                                        <div class="col-33">金额(元)</div>
+                                    </div>
+                                    <volist name="item.peijian" id="pj">
+                                        <div class="row">
+                                            <div class="col-33">{pigcms:$pj.名称}</div>
+                                            <div class="col-33">x{pigcms:$pj.数量}</div>
+                                            <div class="col-33">{pigcms:$pj.金额}</div>
+                                        </div>
+                                    </volist>
+                                </div>
+                            </div>
+                        </notempty>
+                        <div class="card-footer" style="font-size:0.6rem;color:white">
+                            <a href="#" onclick="checkin({pigcms:$item.流水号},1, {pigcms:$item.应收金额})" class="button button-big button-round button-fill button-warning" style="width:100%">结账</a>
+                        </div>
+                </div>
+            </volist>
+            <volist name="xslist" id="item">
+                <span style="width:100%;text-align:center;font-size:0.6rem">{pigcms:$item.制单日期|strtotime|date="Y-m-d H:i",###}</span>
+                <div class="card" style="background-color:#016FC4;color:white">
+                    <div class="card-header"><span>{pigcms:$item.客户名称}</span><span style="color:orange;font-size:1rem">{pigcms:$item.总金额}元</span></div>
+                    <notempty name="item.xsmx">
+                        <div class="card-content">
+                            <div class="card-content-inner" style="font-size:0.6rem;">
+                                <div class="row">
+                                   <div class="col-33">产品名称</div>
+                                    <div class="col-33">数量</div>
+                                    <div class="col-33">金额</div>
+                                </div>
+                                <volist name="item.xsmx" id="mx">
+                                    <div class="row">
+                                        <div class="col-33">{pigcms:$mx.名称}</div>
+                                        <div class="col-33">x{pigcms:$mx.数量}</div>
+                                        <div class="col-33">{pigcms:$mx.金额}</div>
+                                    </div>
+                                </volist>
+                            </div>
+                        </div>
+                    </notempty>
+                    <div class="card-footer" style="font-size:0.6rem;color:white">
+                        <a href="#" onclick="checkin({pigcms:$item.流水号},2, {pigcms:$item.总金额})" class="button button-big button-round button-fill button-warning" style="width:100%">结账</a>
+                    </div>
+                </div>
+            </volist>
+            <volist name="bxlist" id="item">
+                <span style="width:100%;text-align:center;font-size:0.6rem">{pigcms:$item.制单日期|strtotime|date="Y-m-d H:i",###}</span>
+                <div class="card" style="background-color:#016FC4;color:white">
+                    <div class="card-header"><span>保险购买({pigcms:$item.车牌号码})</span><span style="color:orange;font-size:1rem">{pigcms:$item.应收金额}元</span></div>
+                    <div class="card-content">
+                        <div class="card-content-inner" style="font-size:0.6rem;">
+                            <div class="row">
+                                <div class="col-25">保险公司</div>
+                                <div class="col-25">交强险</div>
+                                <div class="col-25">商业险</div>
+                                <div class="col-25">车船税</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-25">{pigcms:$item.保险公司}</div>
+                                <div class="col-25">￥{pigcms:$item.交强保费}</div>
+                                <div class="col-25">￥{pigcms:$item.商业保费}</div>
+                                <div class="col-25">￥{pigcms:$item.车船税}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer" style="font-size:0.6rem;color:white">
+                        <a href="#" onclick="checkin({pigcms:$item.流水号},3, {pigcms:$item.应收金额})" class="button button-big button-round button-fill button-warning" style="width:100%">结账</a>
+                    </div>
+                </div>
+            </volist>
+            <volist name="dblist" id="item">
+                <span style="width:100%;text-align:center;font-size:0.6rem">{pigcms:$item.制单日期|strtotime|date="Y-m-d H:i",###}</span>
+                <div class="card" style="background-color:#016FC4;color:white">
+                    <div class="card-header"><span>{pigcms:$item.代办类别}({pigcms:$item.车牌号码})</span></div>
+                    <div class="card-content">
+                        <div class="card-content-inner" style="font-size:0.6rem;">
+                            <div class="row" style="color:orange;font-size:1rem">
+                                {pigcms:$item.应收金额}元
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer" style="font-size:0.6rem;color:white">
+                        <a href="#" cla ss="button button-big button-round button-fill button-warning" onclick="checkin({pigcms:$item.流水号},4, {pigcms:$item.应收金额})" style="width:100%">结账</a>
+                    </div>
+                </div>
+            </volist>
+            <if condition="count($wxlist) eq 0 and count($bxlist) eq 0 and count($xslist) eq 0 and count($dblist) eq 0">
+                <div class="card" style="background-color:#016FC4;color:white">
+                    <div class="card-content">
+                        <div class="card-content-inner" style="font-size:0.6rem;">
+                            <div class="row" style="color:orange;font-size:1rem">
+                              暂无未结算的订单
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </if>
+          </div>
+        </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+    <script>
+        function checkin(id, type, price)
+        {
+            location.href = "/index.php?g=Wap&m=Store&a=pay&wecha_id={pigcms:$wecha_id}&token={pigcms:$token}&type=" + type + '&id=' + id + '&price=' + price;
+        }
+        $(function () {
+            'use strict';
+            //对话框
+            $.init();
+        });
+    </script>
+</body>
+
+</html>

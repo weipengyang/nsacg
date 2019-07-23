@@ -1,0 +1,119 @@
+<include file="Public:head" />
+<div class="content">
+    <div class="cLineB">
+        <h4>
+            创建优惠券兑换码
+        </h4>
+        <a href="javascript:history.go(-1);" class="right btnGrayS vm" style="margin-top:-27px">返回</a>
+    </div>
+    <div class="msgWrap form">
+        <table class="userinfoArea" border="0" cellspacing="0" cellpadding="0" width="100%">
+            <tbody>
+                <tr>
+                    <th>兑换券名称：</th>
+                    <td>
+                        <input type="text" class="px" id="name" value="" name="name">
+                    </td>
+                </tr>
+                <tr>
+                    <th>兑换券位数：</th>
+                    <td>
+                        <input type="text" class="px" id="weishu" value="10" name="weishu">&nbsp;位
+                    </td>
+                </tr>
+                <tr>
+                    <th>类型标示：</th>
+                    <td>
+                        <input type="text" class="px" id="type" value="X" name="type">
+                    </td>
+                </tr>
+                <tr>
+                    <th>生成数量：</th>
+                    <td>
+                        <input type="text" class="px" id="num" value="10" name="num">&nbsp;张
+                    </td>
+                </tr>
+                <tr>
+                    <th>兑换活动有效期：</th>
+                    <td>
+                        <input type="text" class="px" id="days" value="30" name="days">&nbsp;天
+                    </td>
+                </tr>
+                <tr>
+                    <th>每人限兑：</th>
+                    <td>
+                        <input type="text" class="px" id="limitnum" value="2" name="limitnum">&nbsp;次
+                    </td>
+                </tr>
+                <tr>
+                    <th>包含优惠券：</th>
+                    <td>
+                        <table class="userinfoArea" id="couponlist" style="margin-left:100px;" border="0" cellspacing="0" cellpadding="0" width="70%">
+                            <thead>
+                                <tr>
+                                    <th>券名称</th>
+                                    <th>赠送数量(张)</th>
+                                    <th>有效期</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <volist id="list" name="list">
+                                    <tr>
+                                        <td>{pigcms:$list.title}</td>
+                                        <td>
+                                            <input type="text" name="{pigcms:$list.id}" value="{pigcms:$list.num}" pid="{pigcms:$list.id}" class="couponinfo px" style="width:150px;" />
+                                        </td>
+                                        <td>
+                                         <input type="text" class="couponlimitday px" value="10" style="width:150px;" />
+                                        </td>
+                                    </tr>
+                                </volist>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td><button id="button" name="button" class="btnGreen">生成</button><a href="javascript:history.go(-1);" class="btnGray vm">取消</a></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+
+</div>
+<script type="text/javascript" charset="utf-8">
+  $('#button').click(function () {
+      var couponlist = [];
+      var weishu = $("#weishu").val();
+      var num = $("#num").val();
+      var name = $("#name").val();
+      var type = $("#type").val();
+      var days = $("#days").val();
+      var limitnum = $("#limitnum").val();
+      $("#couponlist tr:gt(0)").each(function (i, a) {
+          var coupon = {};
+          coupon.num = $(this).find(".couponinfo").val();
+          coupon.id = $(this).find(".couponinfo").attr("pid");
+          coupon.days = $(this).find(".couponlimitday").val();
+          couponlist.push(coupon);
+      });
+      var submitData = {
+          couponlist: couponlist,
+          weishu: weishu,
+          num: num,
+          name: name,
+          limitnum: limitnum,
+          type: type,
+          days: days
+      };
+      $.post('/index.php?g=User&m=Member_card&a=lottery_add&token={pigcms:$token}', submitData,
+      function (data) {
+          alert(data);
+          location.href = 'index.php?g=User&m=Member_card&a=lottery';
+      });
+  });
+
+</script>
+<include file="Public:footer" />

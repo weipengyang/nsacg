@@ -1,0 +1,28 @@
+<div id="herder" >
+	<div id="top">
+		<img src="{pigcms::RES}/images/pic/logo.png" />
+		<a href="/" >首页</a>
+		<a href="{pigcms::U('Home/Index/an')}" >案例展示</a>
+		<a href="{pigcms::U('Home/Index/help')}" >帮助中心</a>
+		<a href="{pigcms::U('User/Index/index')}" >管理中心</a>
+		
+		<a class="line" ></a>
+        <if condition="$_SESSION[uid]==false"><a class="a0" href="{pigcms::U('Index/login')}">登录</a>&nbsp;&nbsp;&nbsp;&nbsp;
+			<a class="a0" href="{pigcms::U('Index/reg')}">注册</a>
+		<else/>
+		<script type="text/javascript">
+function ying(){
+	 document.getElementById('tiduser').style.display="none";
+	 document.getElementById('quit').style.display="block";
+}
+function xian(){
+	 document.getElementById('tiduser').style.display="block";
+	 document.getElementById('quit').style.display="none";
+}
+setTimeout("xian()",2000);
+</script>
+		<a href="#" class="a" id="tiduser" onmouseover="ying();" >您好：<span>{pigcms:$Think.session.uname}</span></a>
+		<a href="#" class="a1" id="quit" onclick="Javascript:window.open('{pigcms::U('System/Admin/logout')}')" onLoad=setTimeout("abc.style.display='none'",5000) >安全退出</a>
+		</if>
+	</div>
+</div>

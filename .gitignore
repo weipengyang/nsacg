@@ -1,8 +1,0 @@
-﻿################################################################################
-# 此 .gitignore 文件已由 Microsoft(R) Visual Studio 自动创建。
-################################################################################
-
-/PhpWeiXin/.vscode
-/PhpWeiXin/Conf/logs/Cache/Query/d3e82d0830b85c33a73fcc7bc42dcd6b.php
-/PhpWeiXin/Conf/logs/Logs/16_10_22.log
-/PhpWeiXin/tpl/Query/Consume_crklist - Copy.html
